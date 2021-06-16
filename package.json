@@ -1,11 +1,11 @@
 {
-  "name": "depay-multichain-crypto-wallets",
+  "name": "depay-crypto-wallets",
   "moduleName": "CryptoWallets",
   "version": "1.0.0",
-  "description": "One-Stop-Shop JavaScript library to integrate various blockchain crypto wallets and multiple chains at once with a single interface.",
+  "description": "One-Stop-Shop JavaScript library to integrate various crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
-  "source": "src/index.jsx",
+  "source": "src/index.js",
   "files": [
     "dist"
   ],
@@ -16,11 +16,10 @@
     "format": "prettier src --write",
     "prepublishOnly": "yarn build",
     "start": "rollup -c rollup.serve.config.js -w",
-    "test:integration": "yarn cypress run",
     "test:units": "yarn build && npx jest --no-cache",
     "test": "yarn test:units"
   },
-  "repository": "git@github.com:DePayFi/depay-multichain-crypto-wallets.git",
+  "repository": "git@github.com:DePayFi/depay-crypto-wallets.git",
   "keywords": [
     "react",
     "dialog"
@@ -28,15 +27,12 @@
   "author": "depay.fi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DePayFi/depay-multichain-crypto-wallets/issues"
+    "url": "https://github.com/DePayFi/depay-crypto-wallets/issues"
   },
-  "homepage": "https://github.com/DePayFi/depay-multichain-crypto-wallets#readme",
+  "homepage": "https://github.com/DePayFi/depay-crypto-wallets#readme",
   "private": false,
   "dependencies": {},
-  "peerDependencies": {
-    "react": "^17",
-    "react-dom": "^17"
-  },
+  "peerDependencies": {},
   "engines": {
     "node": ">=10"
   },
@@ -52,8 +48,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "cypress": "^6.2.1",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.6",
+    "depay-web3mock": "^0.10.0",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-loader": "^4.0.2",
@@ -62,10 +57,6 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "prettier": "^2.2.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.2",
-    "react-test-renderer": "^17.0.1",
-    "react-testing-library": "^8.0.1",
     "regenerator-runtime": "^0.13.7",
     "rollup": "^2.34.2",
     "rollup-plugin-delete": "^2.0.0",

@@ -5,54 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="https://depay.fi/favicon.png"/>
     <title>Demo</title>
-    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="dist/umd/index.js"></script>
-    <style>
-      * { 
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-      }
-      body {
-        min-height: 100vh;
-      }
-      
-      #app {
-        align-items: center;
-        bottom: 0;
-        display: flex;
-        height: 100vh;
-        justify-content: center;
-        left: 0;
-        right: 0;
-        top: 0;
-        width: 100vw;
-      }
-    </style>
-    <script>
-      var renderDialog = function(open) {
-        ReactDOM.render(
-          React.createElement(window.ReactDialog.ReactDialog, { close: closeDialog, open: open, background: 'rgba(230,230,230,0.8)' }, React.createElement('h1', {}, 'I am a dialog!')),
-          document.getElementById('dialog')
-        );
-      }
-
-      window.closeDialog = function(){
-        renderDialog(false);
-      }
-
-      window.openDialog = function(){
-        renderDialog(true);
-      }
-
-    </script>
   </head>
   <body>
-    <div id="app">
-      <button onClick='openDialog()'>Open Dialog</button>
-    </div>
+    <div class="container">
 
-    <div id="dialog"/>
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Wallet Type</h1>
+          <p>Retrieves the type of the connect crypto wallet</p>
+          <button class='btn btn-primary' onClick='alert(CryptoWallets.wallet.type())'>Test it</button>
+        </div>
+      </div>
+
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Wallet Connect</h1>
+          <p>Connects to the available crypto wallet</p>
+          <script>
+            window.connectWallet = async function(){
+              alert(await CryptoWallets.wallet.connect() + " connected")
+            }
+          </script>
+          <button class='btn btn-primary' onClick='window.connectWallet()'>Test it</button>
+        </div>
+      </div>
+
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Wallet Changes Account</h1>
+          <p>Executes callback function in case event happens</p>
+          <script>
+            window.setupAccountChanged = async function(){
+              CryptoWallets.wallet.on('account', (newAccount)=>{
+                alert(newAccount)
+              })
+              alert('Now change the wallet account!')
+            }
+          </script>
+          <button class='btn btn-primary' onClick='window.setupAccountChanged()'>Test it</button>
+        </div>
+      </div>
+
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Wallet Changes Network</h1>
+          <p>Executes callback function in case event happens</p>
+          <script>
+            window.setupNetworkChanged = async function(){
+              CryptoWallets.wallet.on('network', (newNetwork)=>{
+                alert(newNetwork)
+              })
+              alert('Now change the wallet network!')
+            }
+          </script>
+          <button class='btn btn-primary' onClick='window.setupNetworkChanged()'>Test it</button>
+        </div>
+      </div>
+
+    </div>
   </body>
 </html>
