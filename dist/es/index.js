@@ -1,17 +1,15 @@
-let chainIdToNetworkName = function(chainId){
-  switch(chainId){
-
+let chainIdToNetworkName = function (chainId) {
+  switch (chainId) {
     case '0x01':
     case '0x1':
       return 'ethereum'
-    
+
     case '0x38':
       return 'bsc'
 
     case '0x89':
       return 'polygon'
   }
-
 };
 
 class Base {
@@ -31,10 +29,10 @@ class Base {
   on(event, callback) {
     switch (event) {
       case 'account':
-        window.ethereum.on('accountsChanged', (accounts)=>callback(accounts[0]));
+        window.ethereum.on('accountsChanged', (accounts) => callback(accounts[0]));
       case 'network':
-        window.ethereum.on('chainChanged', (chainId)=>callback(chainIdToNetworkName(chainId)));
-      break
+        window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)));
+        break
     }
   }
 }
@@ -71,22 +69,30 @@ class Wallet {
   }
 
   type() {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     return this.instance().type()
   }
 
   image() {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     return this.instance().image()
   }
 
   async connect() {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     return await this.instance().connect()
   }
 
   on(event, callback) {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     this.instance().on(event, callback);
   }
 }
