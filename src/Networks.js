@@ -1,20 +1,18 @@
-let chainIdToNetworkName = function(chainId){
-  switch(chainId){
-
+let chainIdToNetworkName = function (chainId) {
+  switch (chainId) {
     case '0x01':
     case '0x1':
       return 'ethereum'
-    break
-    
+      break
+
     case '0x38':
       return 'bsc'
-    break
+      break
 
     case '0x89':
       return 'polygon'
-    break
+      break
   }
-
 }
 
 export { chainIdToNetworkName }

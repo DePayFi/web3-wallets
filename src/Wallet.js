@@ -13,22 +13,30 @@ export default class Wallet {
   }
 
   type() {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     return this.instance().type()
   }
 
   image() {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     return this.instance().image()
   }
 
   async connect() {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     return await this.instance().connect()
   }
 
   on(event, callback) {
-    if (this.instance() === undefined) { return }
+    if (this.instance() === undefined) {
+      return
+    }
     this.instance().on(event, callback)
   }
 }

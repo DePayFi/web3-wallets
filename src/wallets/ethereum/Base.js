@@ -17,10 +17,10 @@ export default class Base {
   on(event, callback) {
     switch (event) {
       case 'account':
-        window.ethereum.on('accountsChanged', (accounts)=>callback(accounts[0]))
+        window.ethereum.on('accountsChanged', (accounts) => callback(accounts[0]))
       case 'network':
-        window.ethereum.on('chainChanged', (chainId)=>callback(chainIdToNetworkName(chainId)))
-      break
+        window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)))
+        break
     }
   }
 }
