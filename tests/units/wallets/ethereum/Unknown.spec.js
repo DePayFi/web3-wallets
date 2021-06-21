@@ -59,7 +59,7 @@ describe('Unknown Ethereum Wallet', () => {
     Web3Mock.trigger('chainChanged', '0x89')
     expect(networkChangedTo).toEqual('polygon')
 
-    Web3Mock.trigger('chainChanged', '0x1')
+    Web3Mock.trigger('chainChanged', '0x01')
     expect(networkChangedTo).toEqual('ethereum')
   })
 });

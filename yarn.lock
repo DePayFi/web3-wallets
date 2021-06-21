@@ -2624,6 +2624,11 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
+depay-blockchains@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/depay-blockchains/-/depay-blockchains-1.0.1.tgz#2a53bdf7f9852a7ee2d87528d944d0d83eb72399"
+  integrity sha512-70H27HcsU9kbSKqdS+spzap6mpTZ+CUrj6w24BF66cKNFlqvxhR+CMQ+ijNyO39843a+2Thy0wDonfCNa/tpjQ==
+
 depay-web3mock@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/depay-web3mock/-/depay-web3mock-0.10.0.tgz#916e6e7ab1ec9ffb59e09f8dc0cb592d708f2ff3"

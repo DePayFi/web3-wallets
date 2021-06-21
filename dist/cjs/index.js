@@ -2,6 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var depayBlockchains = require('depay-blockchains');
+
 class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
 
   __init() {this.name = undefined;}
@@ -19,20 +21,6 @@ class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototyp
     return
   }
 }
-
-let chainIdToNetworkName = function (chainId) {
-  switch (chainId) {
-    case '0x01':
-    case '0x1':
-      return 'ethereum'
-
-    case '0x38':
-      return 'bsc'
-
-    case '0x89':
-      return 'polygon'
-  }
-};
 
 class EthereumWallet extends Wallet {constructor(...args) { super(...args); EthereumWallet.prototype.__init.call(this);EthereumWallet.prototype.__init2.call(this); }
   
@@ -62,7 +50,7 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
         window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
       break
       case 'network':
-        window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)));
+        window.ethereum.on('chainChanged', (chainId) => callback(depayBlockchains.Blockchain.findById(chainId).name));
       break
     }
   }
@@ -96,7 +84,7 @@ class EthereumWallet$1 extends Wallet {constructor(...args) { super(...args); Et
         window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
       break
       case 'network':
-        window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)));
+        window.ethereum.on('chainChanged', (chainId) => callback(depayBlockchains.Blockchain.findById(chainId).name));
       break
     }
   }

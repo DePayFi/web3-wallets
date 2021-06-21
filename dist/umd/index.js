@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.CryptoWallets = {}));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-blockchains')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'depay-blockchains'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.CryptoWallets = {}, global.depayBlockchains));
+}(this, (function (exports, depayBlockchains) { 'use strict';
 
   class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
 
@@ -21,20 +21,6 @@
       return
     }
   }
-
-  let chainIdToNetworkName = function (chainId) {
-    switch (chainId) {
-      case '0x01':
-      case '0x1':
-        return 'ethereum'
-
-      case '0x38':
-        return 'bsc'
-
-      case '0x89':
-        return 'polygon'
-    }
-  };
 
   class EthereumWallet extends Wallet {constructor(...args) { super(...args); EthereumWallet.prototype.__init.call(this);EthereumWallet.prototype.__init2.call(this); }
     
@@ -64,7 +50,7 @@
           window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
         break
         case 'network':
-          window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)));
+          window.ethereum.on('chainChanged', (chainId) => callback(depayBlockchains.Blockchain.findById(chainId).name));
         break
       }
     }
@@ -98,7 +84,7 @@
           window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
         break
         case 'network':
-          window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)));
+          window.ethereum.on('chainChanged', (chainId) => callback(depayBlockchains.Blockchain.findById(chainId).name));
         break
       }
     }

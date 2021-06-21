@@ -1,5 +1,5 @@
 import Wallet from '../Wallet'
-import { chainIdToNetworkName } from '../../Networks'
+import { Blockchain } from 'depay-blockchains'
 
 export default class EthereumWallet extends Wallet {
   
@@ -29,7 +29,7 @@ export default class EthereumWallet extends Wallet {
         window.ethereum.on('accountsChanged', (accounts) => callback(accounts))
       break
       case 'network':
-        window.ethereum.on('chainChanged', (chainId) => callback(chainIdToNetworkName(chainId)))
+        window.ethereum.on('chainChanged', (chainId) => callback(Blockchain.findById(chainId).name))
       break
     }
   }
