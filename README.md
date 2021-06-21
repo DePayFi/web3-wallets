@@ -19,11 +19,11 @@ wallet.name // MetaMask
 
 ## Support
 
-This libraries supports the following blockchains:
+This library supports the following blockchains:
 
 - [Ethereum](https://ethereum.org/)
 
-This libraries supports the following wallets:
+This library supports the following wallets:
 
 - [MetaMask](https://metamask.io/)
 
