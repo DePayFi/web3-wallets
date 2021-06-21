@@ -1,7 +1,7 @@
 {
   "name": "depay-crypto-wallets",
   "moduleName": "CryptoWallets",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "One-Stop-Shop JavaScript library to integrate various crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
