@@ -107,4 +107,8 @@ describe('Generic Ethereum Wallet', () => {
 
     expect(await wallet.assets()).toEqual(assets)
   })
+
+  it('should provides the blockchains that are supported by the wallet', () => {
+    expect(getWallet().blockchains).toEqual(['ethereum']);
+  });
 });

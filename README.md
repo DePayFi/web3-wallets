@@ -21,11 +21,12 @@ wallet.name // MetaMask
 
 This library supports the following blockchains:
 
-- [Ethereum](https://ethereum.org/)
+- [Ethereum](https://ethereum.org)
+- [Binance Smart Chain](https://www.binance.org/en/smartChain)
 
 This library supports the following wallets:
 
-- [MetaMask](https://metamask.io/)
+- [MetaMask](https://metamask.io)
 
 ## Functionalities
 
@@ -78,6 +79,16 @@ let wallet = getWallet();
 await wallet.connect() // ['0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B']
 ```
 
+### Receive supported blockchains
+
+`blockchains:Array`: Array containing the names of supported blockchains
+
+```javascript
+let wallet = getWallet();
+wallet.name // MetaMask
+wallet.blockchains // ['ethereum', 'bsc']
+```
+
 ### Receive wallet events
 
 `on(string, function):undefined`: Register a callback function for given events.
@@ -99,7 +110,7 @@ wallet.on('account', (newAccount)=>{
 
 ### Assets
 
-Retrieves all assets of the connected crypto wallet account.
+Retrieves all assets of the connected crypto wallet account for all supported blockchains at once.
 
 This requires you to have a [DePay PRO apiKey](https://depay.fi/documentation/api#introduction).
 
@@ -112,21 +123,30 @@ setApiKey('MYAPIKEY')
 let wallet = getWallet()
 
 let assets = await wallet.assets()
-// [
-//   {
-//     "name": "Dai Stablecoin",
-//     "symbol": "DAI",
-//     "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-//     "type": "ERC20",
-//     "balance": "8007804249707967889272"
-//   }, {
-//     "name": "DePay",
-//     "symbol": "DEPAY",
-//     "address": "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb",
-//     "type": "ERC20",
-//     "balance": "212816860003097638129"
-//   }
-// ]
+//[
+// {
+//   "name": "Dai Stablecoin",
+//   "symbol": "DAI",
+//   "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+//   "blockchain": "ethereum",
+//   "type": "ERC20",
+//   "balance": "8007804249707967889272"
+// }, {
+//   "name": "DePay",
+//   "symbol": "DEPAY",
+//   "address": "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb",
+//   "blockchain": "ethereum",
+//   "type": "ERC20",
+//   "balance": "212816860003097638129"
+// }, {
+//   "name": "PancakeSwap Token",
+//   "symbol": "CAKE",
+//   "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+//   "blockchain": "bsc",
+//   "type": "BEP20",
+//   "balance": "2221112213212321"
+// }
+//]
 ```
 
 ## Development

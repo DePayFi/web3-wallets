@@ -1,4 +1,4 @@
-import { getWallet } from 'dist/cjs/index.js'
+import { getWallet, setApiKey } from 'dist/cjs/index.js'
 import { mock, resetMocks, trigger } from 'depay-web3mock'
 
 describe('MetaMask', () => {
@@ -68,5 +68,84 @@ describe('MetaMask', () => {
 
     trigger('chainChanged', '0x1')
     expect(networkChangedTo).toEqual('ethereum')
+  })
+
+  it('should provides the blockchains that are supported by the wallet', () => {
+    expect(getWallet().blockchains).toEqual(['ethereum', 'bsc']);
+  });
+
+  it('provides wallet assets for all supported blockchains', async ()=> {
+    
+    mock('ethereum')
+
+    let apiKey = 'Test123'
+    setApiKey(apiKey)
+
+    let assetsEthereum = [
+      {
+        "name": "Dai Stablecoin",
+        "symbol": "DAI",
+        "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "type": "ERC20",
+        "balance": "8007804249707967889272"
+      }, {
+        "name": "DePay",
+        "symbol": "DEPAY",
+        "address": "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb",
+        "type": "ERC20",
+        "balance": "212816860003097638129"
+      }
+    ]
+
+    let assetsBsc = [
+      {
+        "name": "PancakeSwap Token",
+        "symbol": "CAKE",
+        "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        "type": "BEP20",
+        "balance": "2221112213212321"
+      }
+    ]
+
+    global.fetch = jest.fn((url, options)=>{
+      expect(options).toEqual({ headers: { 'X-Api-Key': 'Test123' } })
+      if(url.match('ethereum')) {
+        expect(url).toEqual('https://api.depay.pro/v1/assets?account=0xd8da6bf26964af9d7eed9e03e53415d37aa96045&blockchain=ethereum')
+        return Promise.resolve({
+          json: () => Promise.resolve(assetsEthereum)
+        })
+      } else if (url.match('bsc')) {
+        expect(url).toEqual('https://api.depay.pro/v1/assets?account=0xd8da6bf26964af9d7eed9e03e53415d37aa96045&blockchain=bsc')
+        return Promise.resolve({
+          json: () => Promise.resolve(assetsBsc)
+        })
+      }
+    })
+
+    let wallet = getWallet()
+    expect(await wallet.assets()).toEqual([
+      {
+        "name": "Dai Stablecoin",
+        "symbol": "DAI",
+        "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "blockchain": "ethereum",
+        "type": "ERC20",
+        "balance": "8007804249707967889272"
+      }, {
+        "name": "DePay",
+        "symbol": "DEPAY",
+        "address": "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb",
+        "blockchain": "ethereum",
+        "type": "ERC20",
+        "balance": "212816860003097638129"
+      }, {
+        "name": "PancakeSwap Token",
+        "symbol": "CAKE",
+        "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        "blockchain": "bsc",
+        "type": "BEP20",
+        "balance": "2221112213212321"
+      }
+    ])
   })
 });
