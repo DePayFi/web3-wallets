@@ -1,4 +1,4 @@
-import EthereumWallet from './wallets/ethereum/wallet'
+import EthereumWallet from './wallets/ethereum/Wallet'
 import MetaMask from './wallets/MetaMask'
 import Wallet from './wallets/Wallet'
 import { setApiKey } from './apiKey'
