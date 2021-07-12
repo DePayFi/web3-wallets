@@ -29,10 +29,10 @@ function setApiKey(key) {
 }
 
 function getApiKey() {
-  if(apiKey === undefined) { 
+  if (apiKey === undefined) {
     throw 'CryptoWallets: No apiKey set. Please set an apiKey with setApiKey (see documentation)!'
   }
-  return(apiKey)
+  return apiKey
 }
 
 class EthereumWallet extends Wallet {constructor(...args) { super(...args); EthereumWallet.prototype.__init.call(this);EthereumWallet.prototype.__init2.call(this); }

@@ -97,6 +97,38 @@ wallet.on('account', (newAccount)=>{
 
 `on('network', (newNetwork)=>{})`: Triggers when user changes network of the connected wallet.
 
+### Assets
+
+Retrieves all assets of the connected crypto wallet account.
+
+This requires you to have a [DePay PRO apiKey](https://depay.fi/documentation/api#introduction).
+
+```javascript
+
+import { getWallet, setApiKey } from 'depay-crypto-wallets'
+
+setApiKey('MYAPIKEY')
+
+let wallet = getWallet()
+
+let assets = await wallet.assets()
+// [
+//   {
+//     "name": "Dai Stablecoin",
+//     "symbol": "DAI",
+//     "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+//     "type": "ERC20",
+//     "balance": "8007804249707967889272"
+//   }, {
+//     "name": "DePay",
+//     "symbol": "DEPAY",
+//     "address": "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb",
+//     "type": "ERC20",
+//     "balance": "212816860003097638129"
+//   }
+// ]
+```
+
 ## Development
 
 ### Get started
