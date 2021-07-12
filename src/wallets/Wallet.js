@@ -1,5 +1,4 @@
 export default class Wallet {
-
   name = undefined
   logo = undefined
 
