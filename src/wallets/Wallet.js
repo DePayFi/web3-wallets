@@ -11,6 +11,10 @@ export default class Wallet {
     return
   }
 
+  async assets() {
+    return
+  }
+
   on(event, callback) {
     return
   }

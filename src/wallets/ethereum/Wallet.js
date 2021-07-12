@@ -1,5 +1,6 @@
 import Wallet from '../Wallet'
 import { Blockchain } from 'depay-blockchains'
+import { getApiKey } from '../../apiKey'
 
 export default class EthereumWallet extends Wallet {
   
@@ -18,6 +19,17 @@ export default class EthereumWallet extends Wallet {
   async accounts() {
     const accounts = await window.ethereum.request({ method: 'eth_accounts' })
     return accounts
+  }
+
+  async assets() {
+    let account = await this.account()
+    if(!account) { return }
+
+    let assets = await fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=ethereum', {
+      headers: { 'X-Api-Key': getApiKey() }
+    }).then((response) => response.json())
+
+    return assets
   }
 
   on(event, callback) {

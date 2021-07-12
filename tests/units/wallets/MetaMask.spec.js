@@ -1,28 +1,27 @@
 import { getWallet } from 'dist/cjs/index.js'
-import { Web3Mock } from 'depay-web3mock'
+import { mock, resetMocks, trigger } from 'depay-web3mock'
 
 describe('MetaMask', () => {
 
-  beforeEach(() => {
-    global.ethereum = { isMetaMask: true }
-  });
+  beforeEach(()=>{
+    resetMocks()
+    mock({ blockchain: 'ethereum', wallet: 'metamask' })
+  })
+  afterEach(resetMocks)
 
   it('should detect the wallet type', () => {
     expect(getWallet().name).toBe('MetaMask');
   });
 
   it('provides a connect function', async () => {
-    Web3Mock({ window: global, mocks: 'ethereum' });
     expect(await getWallet().connect()).toStrictEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']);
   });
 
   it('provides an account function', async () => {
-    Web3Mock({ window: global, mocks: 'ethereum' });
     expect(await getWallet().account()).toStrictEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045');
   });
 
   it('provides an accounts function', async () => {
-    Web3Mock({ window: global, mocks: 'ethereum' });
     expect(await getWallet().accounts()).toStrictEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']);
   });
 
@@ -33,13 +32,11 @@ describe('MetaMask', () => {
   it('registers a callback and informs about active connected account changes', async () => {
     let accountChangedTo;
 
-    Web3Mock({ window: global, mocks: 'ethereum' });
-
     getWallet().on('account', (newAccount)=>{
       accountChangedTo = newAccount;
     })
 
-    Web3Mock.trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
+    trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
 
     expect(accountChangedTo).toEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045')
   })
@@ -47,13 +44,11 @@ describe('MetaMask', () => {
   it('registers a callback and informs about if any connected accounts have changed', async () => {
     let accountsChangedTo;
 
-    Web3Mock({ window: global, mocks: 'ethereum' });
-
     getWallet().on('accounts', (newAccounts)=>{
       accountsChangedTo = newAccounts;
     })
 
-    Web3Mock.trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
+    trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
 
     expect(accountsChangedTo).toEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
   })
@@ -61,19 +56,17 @@ describe('MetaMask', () => {
   it('registers a callback and informs about wallet changes network', async () => {
     let networkChangedTo;
 
-    Web3Mock({ window: global, mocks: 'ethereum' });
-
     getWallet().on('network', (newNetwork)=>{
       networkChangedTo = newNetwork;
     })
 
-    Web3Mock.trigger('chainChanged', '0x38')
+    trigger('chainChanged', '0x38')
     expect(networkChangedTo).toEqual('bsc')
 
-    Web3Mock.trigger('chainChanged', '0x89')
+    trigger('chainChanged', '0x89')
     expect(networkChangedTo).toEqual('polygon')
 
-    Web3Mock.trigger('chainChanged', '0x1')
+    trigger('chainChanged', '0x1')
     expect(networkChangedTo).toEqual('ethereum')
   })
 });

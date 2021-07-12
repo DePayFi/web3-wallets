@@ -1,7 +1,7 @@
 {
   "name": "depay-crypto-wallets",
   "moduleName": "CryptoWallets",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "One-Stop-Shop JavaScript library to integrate various crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -10,12 +10,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && rollup -c",
+    "build": "rm -rf dist && rollup -c rollup.module.config.js",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "format": "prettier src --write",
     "prepublishOnly": "yarn build",
-    "start": "rollup -c rollup.serve.config.js -w",
+    "dev": "rollup -c rollup.dev.config.js -w",
     "test:units": "yarn build && npx jest --no-cache",
     "test": "yarn test:units"
   },
@@ -50,7 +50,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "cypress": "^6.2.1",
-    "depay-web3mock": "^0.10.0",
+    "depay-web3mock": "^4.1.0",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-loader": "^4.0.2",

@@ -1,6 +1,7 @@
 import EthereumWallet from './wallets/ethereum/wallet'
 import MetaMask from './wallets/MetaMask'
 import Wallet from './wallets/Wallet'
+import { setApiKey } from './apiKey'
 
 let getWallet = function () {
   if (typeof window.ethereum !== 'undefined') {
@@ -14,4 +15,4 @@ let getWallet = function () {
   return new Wallet()
 }
 
-export { getWallet }
+export { getWallet, setApiKey }

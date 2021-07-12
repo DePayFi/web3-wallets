@@ -13,9 +13,26 @@ class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototyp
     return
   }
 
+  async assets() {
+    return
+  }
+
   on(event, callback) {
     return
   }
+}
+
+let apiKey = undefined;
+
+function setApiKey(key) {
+  apiKey = key;
+}
+
+function getApiKey() {
+  if(apiKey === undefined) { 
+    throw 'CryptoWallets: No apiKey set. Please set an apiKey with setApiKey (see documentation)!'
+  }
+  return(apiKey)
 }
 
 class EthereumWallet extends Wallet {constructor(...args) { super(...args); EthereumWallet.prototype.__init.call(this);EthereumWallet.prototype.__init2.call(this); }
@@ -35,6 +52,17 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
   async accounts() {
     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
     return accounts
+  }
+
+  async assets() {
+    let account = await this.account();
+    if(!account) { return }
+
+    let assets = await fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=ethereum', {
+      headers: { 'X-Api-Key': getApiKey() }
+    }).then((response) => response.json());
+
+    return assets
   }
 
   on(event, callback) {
@@ -71,6 +99,17 @@ class EthereumWallet$1 extends Wallet {constructor(...args) { super(...args); Et
     return accounts
   }
 
+  async assets() {
+    let account = await this.account();
+    if(!account) { return }
+
+    let assets = await fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=ethereum', {
+      headers: { 'X-Api-Key': getApiKey() }
+    }).then((response) => response.json());
+
+    return assets
+  }
+
   on(event, callback) {
     switch (event) {
       case 'account':
@@ -105,4 +144,4 @@ let getWallet = function () {
   return new Wallet()
 };
 
-export { getWallet };
+export { getWallet, setApiKey };
