@@ -60,13 +60,15 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
       return
     }
 
-    let assets = Promise.all(this.blockchains.map((blockchain)=>
-      fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain,
-        { headers: { 'X-Api-Key': getApiKey() }}
-      )
-      .then((response) => response.json())
-      .then((assets) => assets.map((asset)=>Object.assign(asset, { blockchain })))
-    )).then((responses)=>responses.flat());
+    let assets = Promise.all(
+      this.blockchains.map((blockchain) =>
+        fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
+          headers: { 'X-Api-Key': getApiKey() },
+        })
+          .then((response) => response.json())
+          .then((assets) => assets.map((asset) => Object.assign(asset, { blockchain }))),
+      ),
+    ).then((responses) => responses.flat());
 
     return assets
   }
