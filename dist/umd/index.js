@@ -58,14 +58,14 @@
       return accounts
     }
 
-    async assets() {
+    async assets(blockchain) {
       let account = await this.account();
       if (!account) {
         return
       }
 
       let assets = Promise.all(
-        this.blockchains.map((blockchain) =>
+        (blockchain ? [blockchain] :  this.blockchains).map((blockchain) =>
           fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
             headers: { 'X-Api-Key': getApiKey() },
           })

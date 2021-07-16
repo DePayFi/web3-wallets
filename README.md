@@ -149,6 +149,22 @@ let assets = await wallet.assets()
 //]
 ```
 
+Also allows you to retrieve assets only for a given blockchain:
+
+```javascript
+let assets = await wallet.assets('bsc')
+//[
+// {
+//   "name": "PancakeSwap Token",
+//   "symbol": "CAKE",
+//   "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+//   "blockchain": "bsc",
+//   "type": "BEP20",
+//   "balance": "2221112213212321"
+// }
+//]
+```
+
 ## Development
 
 ### Get started
