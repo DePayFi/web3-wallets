@@ -1,10 +1,12 @@
 import fetchMock from 'fetch-mock'
 import { getWallet, setApiKey } from 'dist/cjs/index.js'
-import { mock } from 'depay-web3mock'
+import { mock, resetMocks } from 'depay-web3-mock'
 
 describe('assets', ()=>{
 
   beforeEach(()=>fetchMock.reset())
+  beforeEach(resetMocks)
+  afterEach(resetMocks)
 
   it('raises an error if api key is not set', async ()=>{
     mock('ethereum')

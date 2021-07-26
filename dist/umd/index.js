@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-blockchains')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'depay-blockchains'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.CryptoWallets = {}, global.Blockchain));
-}(this, (function (exports, depayBlockchains) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains));
+}(this, (function (exports, depayWeb3Blockchains) { 'use strict';
 
   class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
     __init() {this.name = undefined;}
@@ -86,7 +86,7 @@
           window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
           break
         case 'network':
-          window.ethereum.on('chainChanged', (chainId) => callback(depayBlockchains.Blockchain.findById(chainId).name));
+          window.ethereum.on('chainChanged', (chainId) => callback(depayWeb3Blockchains.Blockchain.findById(chainId).name));
           break
       }
     }

@@ -1,5 +1,5 @@
 import { getWallet, setApiKey } from 'dist/cjs/index.js'
-import { mock, resetMocks, trigger } from 'depay-web3mock'
+import { mock, resetMocks, trigger } from 'depay-web3-mock'
 
 describe('MetaMask', () => {
 
@@ -70,7 +70,7 @@ describe('MetaMask', () => {
     expect(networkChangedTo).toEqual('ethereum')
   })
 
-  it('should provides the blockchains that are supported by the wallet', () => {
+  it('provides the blockchains that are supported by the wallet', () => {
     expect(getWallet().blockchains).toEqual(['ethereum', 'bsc']);
   });
 

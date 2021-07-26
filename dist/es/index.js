@@ -1,4 +1,4 @@
-import { Blockchain } from 'depay-blockchains';
+import { Blockchain } from 'depay-web3-blockchains';
 
 class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
   __init() {this.name = undefined;}
