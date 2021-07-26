@@ -1,5 +1,5 @@
 import Wallet from '../Wallet'
-import { Blockchain } from 'depay-blockchains'
+import { Blockchain } from 'depay-web3-blockchains'
 import { getApiKey } from '../../apiKey'
 
 export default class EthereumWallet extends Wallet {

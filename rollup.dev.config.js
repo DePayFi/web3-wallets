@@ -26,7 +26,7 @@ export default Object.assign({}, rollup, {
     }),
     serve({
       open: 'true',
-      openPage: '/demo.html'
+      openPage: '/dev.html'
     }),
     livereload({
       watch: 'dist'

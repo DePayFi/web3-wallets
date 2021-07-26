@@ -13,9 +13,9 @@
 
       <div class="row pt-5">
         <div class="col">
-          <h1>Wallet Type</h1>
-          <p>Retrieves the type of the connect crypto wallet</p>
-          <button class='btn btn-primary' onClick='alert(CryptoWallets.wallet.type())'>Test it</button>
+          <h1>Wallet Name</h1>
+          <p>Retrieves the name of the connect crypto wallet</p>
+          <button class='btn btn-primary' onClick='alert(Web3Wallets.getWallet().name)'>Test it</button>
         </div>
       </div>
 
@@ -25,7 +25,7 @@
           <p>Connects to the available crypto wallet</p>
           <script>
             window.connectWallet = async function(){
-              alert(await CryptoWallets.wallet.connect() + " connected")
+              alert(await Web3Wallets.getWallet().connect() + " connected")
             }
           </script>
           <button class='btn btn-primary' onClick='window.connectWallet()'>Test it</button>
@@ -38,7 +38,7 @@
           <p>Executes callback function in case event happens</p>
           <script>
             window.setupAccountChanged = async function(){
-              CryptoWallets.wallet.on('account', (newAccount)=>{
+              Web3Wallets.getWallet().on('account', (newAccount)=>{
                 alert(newAccount)
               })
               alert('Now change the wallet account!')
@@ -54,7 +54,7 @@
           <p>Executes callback function in case event happens</p>
           <script>
             window.setupNetworkChanged = async function(){
-              CryptoWallets.wallet.on('network', (newNetwork)=>{
+              Web3Wallets.getWallet().on('network', (newNetwork)=>{
                 alert(newNetwork)
               })
               alert('Now change the wallet network!')

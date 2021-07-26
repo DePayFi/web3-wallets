@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var depayBlockchains = require('depay-blockchains');
+var depayWeb3Blockchains = require('depay-web3-blockchains');
 
 class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
   __init() {this.name = undefined;}
@@ -86,7 +86,7 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
         window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
         break
       case 'network':
-        window.ethereum.on('chainChanged', (chainId) => callback(depayBlockchains.Blockchain.findById(chainId).name));
+        window.ethereum.on('chainChanged', (chainId) => callback(depayWeb3Blockchains.Blockchain.findById(chainId).name));
         break
     }
   }

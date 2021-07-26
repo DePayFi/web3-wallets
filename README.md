@@ -1,19 +1,19 @@
 ## Quickstart
 
 ```
-yarn add depay-crypto-wallets
+yarn add depay-web3-wallets
 ```
 
 or 
 
 ```
-npm install --save depay-crypto-wallets
+npm install --save depay-web3-wallets
 ```
 
 ```javascript
-import { getWallet } from 'depay-crypto-wallets'
+import { getWallet } from 'depay-web3-wallets'
 
-let wallet = getWallet();
+let wallet = getWallet()
 wallet.name // MetaMask
 ```
 
@@ -116,7 +116,7 @@ This requires you to have a [DePay PRO apiKey](https://depay.fi/documentation/ap
 
 ```javascript
 
-import { getWallet, setApiKey } from 'depay-crypto-wallets'
+import { getWallet, setApiKey } from 'depay-web3-wallets'
 
 setApiKey('MYAPIKEY')
 
@@ -171,7 +171,7 @@ let assets = await wallet.assets('bsc')
 
 ```
 yarn install
-yarn start
+yarn dev
 ```
 
 ### Release
