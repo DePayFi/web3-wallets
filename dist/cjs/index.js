@@ -90,6 +90,15 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
         break
     }
   }
+
+  async connectedTo(input) {
+    const blockchain = depayWeb3Blockchains.Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }));
+    if(input) {
+      return input === blockchain.name
+    } else {
+      return blockchain.name
+    }
+  }
 }
 
 class MetaMask extends EthereumWallet {constructor(...args) { super(...args); MetaMask.prototype.__init.call(this);MetaMask.prototype.__init2.call(this);MetaMask.prototype.__init3.call(this); }

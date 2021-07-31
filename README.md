@@ -89,6 +89,22 @@ wallet.name // MetaMask
 wallet.blockchains // ['ethereum', 'bsc']
 ```
 
+### Check if wallet is connected to a specific blockchain
+
+`async connectedTo(blockchain):Boolean`: Checks if wallet is connected to a specific blockchain.
+
+```javascript
+let wallet = getWallet()
+await wallet.connectedTo('ethereum') // true
+```
+
+If no param is given it well tell you to which blockchain the wallet is connected to:
+
+```javascript
+let wallet = getWallet();
+await wallet.connectedTo() // bsc
+```
+
 ### Receive wallet events
 
 `on(string, function):undefined`: Register a callback function for given events.

@@ -121,4 +121,16 @@ describe('Generic bsc Wallet', () => {
       ])
     })
   })
+
+  it('tells you if the wallet is connected to the given blockchain', async ()=> {
+    mock('bsc')
+    let wallet = getWallet()
+    expect(await wallet.connectedTo('bsc')).toEqual(true)
+  })
+
+  it('tells you to what blockchain the wallet is connected to', async ()=> {
+    mock('bsc')
+    let wallet = getWallet()
+    expect(await wallet.connectedTo()).toEqual('bsc')
+  })
 });

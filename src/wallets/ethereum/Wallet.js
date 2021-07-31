@@ -54,4 +54,13 @@ export default class EthereumWallet extends Wallet {
         break
     }
   }
+
+  async connectedTo(input) {
+    const blockchain = Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }))
+    if(input) {
+      return input === blockchain.name
+    } else {
+      return blockchain.name
+    }
+  }
 }
