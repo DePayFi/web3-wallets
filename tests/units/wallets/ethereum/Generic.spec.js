@@ -1,5 +1,5 @@
 import fetchMock from 'fetch-mock'
-import { getWallet, setApiKey } from 'dist/cjs/index.js'
+import { getWallet } from 'dist/cjs/index.js'
 import { mock, resetMocks, trigger } from 'depay-web3-mock'
 
 describe('Generic Ethereum Wallet', () => {
@@ -70,7 +70,7 @@ describe('Generic Ethereum Wallet', () => {
     global.fetch = jest.fn(()=>{})
     let wallet = getWallet()
     await expect(wallet.assets()).rejects.toEqual(
-      'CryptoWallets: No apiKey set. Please set an apiKey with setApiKey (see documentation)!'
+      'Web3Wallets: Please pass an apiKey. See documentation.'
     )
   })
 
@@ -84,7 +84,6 @@ describe('Generic Ethereum Wallet', () => {
     afterEach(()=>fetchMock.reset())
     beforeEach(()=>{
       mock('ethereum')
-      setApiKey('TEST-123')
       fetchMock.get({
           url: 'https://api.depay.pro/v1/assets?account=0xd8da6bf26964af9d7eed9e03e53415d37aa96045&blockchain=ethereum',
           headers: { 'X-Api-Key': 'TEST-123' }
@@ -103,7 +102,7 @@ describe('Generic Ethereum Wallet', () => {
     })
 
     it('fetches only the assets of for ethereum', async()=> {
-      expect(await getWallet().assets('ethereum')).toEqual([
+      expect(await getWallet().assets({ blockchain: 'ethereum', apiKey: 'TEST-123' })).toEqual([
         {
           name: 'Ether',
           symbol: 'ETH',

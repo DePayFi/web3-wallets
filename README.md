@@ -159,13 +159,11 @@ This requires you to have a [DePay PRO apiKey](https://depay.fi/documentation/ap
 
 ```javascript
 
-import { getWallet, setApiKey } from 'depay-web3-wallets'
-
-setApiKey('MYAPIKEY')
+import { getWallet } from 'depay-web3-wallets'
 
 let wallet = getWallet()
 
-let assets = await wallet.assets()
+let assets = await wallet.assets({ apiKey: 'XXX' })
 //[
 // {
 //   "name": "Dai Stablecoin",
@@ -195,7 +193,7 @@ let assets = await wallet.assets()
 Also allows you to retrieve assets only for a given blockchain:
 
 ```javascript
-let assets = await wallet.assets('bsc')
+let assets = await wallet.assets({ blockchain: 'bsc', apiKey: 'XXX' })
 //[
 // {
 //   "name": "PancakeSwap Token",

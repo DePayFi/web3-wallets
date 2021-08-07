@@ -1,4 +1,4 @@
-import { getWallet, setApiKey } from 'dist/cjs/index.js'
+import { getWallet } from 'dist/cjs/index.js'
 import { mock, resetMocks, trigger } from 'depay-web3-mock'
 
 describe('MetaMask', () => {
@@ -79,7 +79,6 @@ describe('MetaMask', () => {
     mock('ethereum')
 
     let apiKey = 'Test123'
-    setApiKey(apiKey)
 
     let assetsEthereum = [
       {
@@ -123,7 +122,7 @@ describe('MetaMask', () => {
     })
 
     let wallet = getWallet()
-    expect(await wallet.assets()).toEqual([
+    expect(await wallet.assets({ apiKey })).toEqual([
       {
         "name": "Dai Stablecoin",
         "symbol": "DAI",

@@ -21,19 +21,6 @@ class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototyp
   }
 }
 
-let apiKey = undefined;
-
-function setApiKey(key) {
-  apiKey = key;
-}
-
-function getApiKey() {
-  if (apiKey === undefined) {
-    throw 'CryptoWallets: No apiKey set. Please set an apiKey with setApiKey (see documentation)!'
-  }
-  return apiKey
-}
-
 class EthereumWallet extends Wallet {constructor(...args) { super(...args); EthereumWallet.prototype.__init.call(this);EthereumWallet.prototype.__init2.call(this);EthereumWallet.prototype.__init3.call(this); }
   __init() {this.name = 'unknown';}
   __init2() {this.logo =
@@ -54,16 +41,20 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
     return accounts
   }
 
-  async assets(blockchain) {
+  async assets(options) {
+    if(options === undefined) { options = {}; }
+    
     let account = await this.account();
     if (!account) {
       return
     }
 
+    if(options.apiKey == undefined) { throw 'Web3Wallets: Please pass an apiKey. See documentation.' }
+    
     let assets = Promise.all(
-      (blockchain ? [blockchain] :  this.blockchains).map((blockchain) =>
+      (options.blockchain ? [options.blockchain] :  this.blockchains).map((blockchain) =>
         fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
-          headers: { 'X-Api-Key': getApiKey() },
+          headers: { 'X-Api-Key': options.apiKey },
         })
           .then((response) => response.json())
           .then((assets) => assets.map((asset) => Object.assign(asset, { blockchain }))),
@@ -114,4 +105,4 @@ let getWallet = function () {
   }
 };
 
-export { getWallet, setApiKey };
+export { getWallet };

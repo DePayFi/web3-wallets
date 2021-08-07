@@ -1,6 +1,5 @@
 import Wallet from '../Wallet'
 import { Blockchain } from 'depay-web3-blockchains'
-import { getApiKey } from '../../apiKey'
 
 export default class EthereumWallet extends Wallet {
   name = 'unknown'
@@ -22,16 +21,20 @@ export default class EthereumWallet extends Wallet {
     return accounts
   }
 
-  async assets(blockchain) {
+  async assets(options) {
+    if(options === undefined) { options = {} }
+    
     let account = await this.account()
     if (!account) {
       return
     }
 
+    if(options.apiKey == undefined) { throw 'Web3Wallets: Please pass an apiKey. See documentation.' }
+    
     let assets = Promise.all(
-      (blockchain ? [blockchain] : undefined || this.blockchains).map((blockchain) =>
+      (options.blockchain ? [options.blockchain] : undefined || this.blockchains).map((blockchain) =>
         fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
-          headers: { 'X-Api-Key': getApiKey() },
+          headers: { 'X-Api-Key': options.apiKey },
         })
           .then((response) => response.json())
           .then((assets) => assets.map((asset) => Object.assign(asset, { blockchain }))),
