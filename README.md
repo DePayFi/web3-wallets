@@ -30,6 +30,33 @@ This library supports the following wallets:
 
 ## Functionalities
 
+### Get wallet
+
+`Wallet`: Returns an instance of Wallet or undefined (if no connected wallet has been detected)
+
+```javascript
+let wallet = getWallet();
+// <Wallet name='MetaMask'>
+```
+
+```javascript
+let wallet = getWallet();
+// undefined
+```
+
+Returns `undefined` if no wallet has been detected. Make sure you check that before you continue using the wallet:
+
+
+```javascript
+let wallet getWallet();
+
+if(wallet) {
+  // continue with selected wallet
+} else {
+  // make something else
+}
+```
+
 ### Get wallet name
 
 `name:string`: Returns the name of the wallet.
@@ -39,7 +66,7 @@ let wallet = getWallet();
 wallet.name // 'MetaMask'
 ```
 
-Returns `'unknown'` if there is a wallet but type is unknown. Returns `undefined` if no wallet was found at all.
+Returns `'unknown'` if a wallet has been detected but type is unknown.
 
 ### Get wallet logo
 

@@ -112,8 +112,6 @@ let getWallet = function () {
       return new EthereumWallet()
     }
   }
-
-  return new Wallet()
 };
 
 export { getWallet, setApiKey };

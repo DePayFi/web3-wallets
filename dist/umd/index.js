@@ -116,8 +116,6 @@
         return new EthereumWallet()
       }
     }
-
-    return new Wallet()
   };
 
   exports.getWallet = getWallet;

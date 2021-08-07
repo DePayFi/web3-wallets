@@ -116,8 +116,6 @@ let getWallet = function () {
       return new EthereumWallet()
     }
   }
-
-  return new Wallet()
 };
 
 exports.getWallet = getWallet;
