@@ -1,5 +1,7 @@
 import Wallet from '../Wallet'
 import { Blockchain } from 'depay-web3-blockchains'
+import { CONSTANTS } from 'depay-web3-constants'
+import { Token } from 'depay-web3-tokens'
 
 export default class EthereumWallet extends Wallet {
   name = 'unknown'
@@ -21,6 +23,24 @@ export default class EthereumWallet extends Wallet {
     return accounts
   }
 
+  async ensureNativeTokenAsset({ account, assets, blockchain }) {
+    if(assets.find((asset)=> {
+      return asset.address.toLowerCase() == CONSTANTS[blockchain].NATIVE.toLowerCase()
+    }) == undefined) {
+      let token = new Token({ blockchain, address: CONSTANTS[blockchain].NATIVE })
+      let balance = await token.balance(account)
+      assets = [{
+        name: CONSTANTS[blockchain].CURRENCY,
+        symbol: CONSTANTS[blockchain].SYMBOL,
+        address: CONSTANTS[blockchain].NATIVE,
+        type: 'NATIVE',
+        blockchain,
+        balance: balance.toString()
+      }, ...assets]
+    }
+    return assets
+  }
+
   async assets(options) {
     if(options === undefined) { options = {} }
     
@@ -34,10 +54,16 @@ export default class EthereumWallet extends Wallet {
     let assets = Promise.all(
       (options.blockchain ? [options.blockchain] : undefined || this.blockchains).map((blockchain) =>
         fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
-          headers: { 'X-Api-Key': options.apiKey },
+          headers: { 'X-Api-Key': options.apiKey }
         })
           .then((response) => response.json())
-          .then((assets) => assets.map((asset) => Object.assign(asset, { blockchain }))),
+          .then((assets) => {
+            return this.ensureNativeTokenAsset({
+              account,
+              assets: assets.map((asset) => Object.assign(asset, { blockchain })),
+              blockchain
+            })
+          }),
       ),
     ).then((responses) => responses.flat())
 

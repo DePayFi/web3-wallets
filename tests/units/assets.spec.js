@@ -39,6 +39,11 @@ describe('assets', ()=>{
           url: 'https://api.depay.pro/v1/assets?account=0xd8da6bf26964af9d7eed9e03e53415d37aa96045&blockchain=bsc',
           headers: { 'X-Api-Key': 'TEST-123' }
         }, [{
+          "name": "Binance Coin",
+          "symbol": "BNB",
+          "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          "type": "NATIVE"
+        }, {
           "name": "PancakeSwap",
           "symbol": "CAKE",
           "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
@@ -63,6 +68,13 @@ describe('assets', ()=>{
           address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
           type: 'ERC20',
           blockchain: 'ethereum'
+        },
+        {
+          name: 'Binance Coin',
+          symbol: 'BNB',
+          address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+          type: 'NATIVE',
+          blockchain: 'bsc'
         },
         {
           name: 'PancakeSwap',
@@ -92,6 +104,13 @@ describe('assets', ()=>{
         }
       ])
       expect(await getWallet().assets({ blockchain: 'bsc', apiKey: 'TEST-123' })).toEqual([
+        {
+          name: 'Binance Coin',
+          symbol: 'BNB',
+          address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+          type: 'NATIVE',
+          blockchain: 'bsc'
+        },
         {
           name: 'PancakeSwap',
           symbol: 'CAKE',

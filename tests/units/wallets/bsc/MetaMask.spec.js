@@ -76,12 +76,19 @@ describe('MetaMask', () => {
 
   it('provides wallet assets for all supported blockchains', async ()=> {
     
-    mock('ethereum')
+    mock('bsc')
 
     let apiKey = 'Test123'
 
-    let assetsEthereum = [
+     let assetsEthereum = [
       {
+        "name": "Ether",
+        "symbol": "ETH",
+        "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "blockchain": "ethereum",
+        "type": "NATIVE",
+        "balance": "5000000000000"
+      }, {
         "name": "Dai Stablecoin",
         "symbol": "DAI",
         "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -98,6 +105,13 @@ describe('MetaMask', () => {
 
     let assetsBsc = [
       {
+        "name": "Binance Coin",
+        "symbol": "BNB",
+        "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "blockchain": "bsc",
+        "type": "NATIVE",
+        "balance": "1000000000000"
+      }, {
         "name": "PancakeSwap Token",
         "symbol": "CAKE",
         "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
@@ -105,7 +119,7 @@ describe('MetaMask', () => {
         "balance": "2221112213212321"
       }
     ]
-
+    
     global.fetch = jest.fn((url, options)=>{
       expect(options).toEqual({ headers: { 'X-Api-Key': 'Test123' } })
       if(url.match('ethereum')) {
@@ -124,6 +138,13 @@ describe('MetaMask', () => {
     let wallet = getWallet()
     expect(await wallet.assets({ apiKey })).toEqual([
       {
+        "name": "Ether",
+        "symbol": "ETH",
+        "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "blockchain": "ethereum",
+        "type": "NATIVE",
+        "balance": "5000000000000"
+      }, {
         "name": "Dai Stablecoin",
         "symbol": "DAI",
         "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -137,6 +158,13 @@ describe('MetaMask', () => {
         "blockchain": "ethereum",
         "type": "ERC20",
         "balance": "212816860003097638129"
+      }, {
+        "name": "Binance Coin",
+        "symbol": "BNB",
+        "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "blockchain": "bsc",
+        "type": "NATIVE",
+        "balance": "1000000000000"
       }, {
         "name": "PancakeSwap Token",
         "symbol": "CAKE",

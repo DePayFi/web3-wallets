@@ -119,5 +119,51 @@ describe('Generic Ethereum Wallet', () => {
         }
       ])
     })
+
+    describe('missing native token asset in API response', ()=> {
+
+      beforeEach(function(){
+        fetchMock.get({
+          url: 'https://api.depay.pro/v1/assets?account=0xd8da6bf26964af9d7eed9e03e53415d37aa96045&blockchain=ethereum',
+          headers: { 'X-Api-Key': 'TEST-123' },
+          overwriteRoutes: true
+        }, [{
+          "name": "Dai Stablecoin",
+          "symbol": "DAI",
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "type": "ERC20",
+          "balance": "21232121312312312313"
+        }])
+      })
+
+      it('makes sure native token asset is part of assets', async()=> {
+        mock({
+          blockchain: 'ethereum',
+          balance: {
+            for: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+            return: '5000000000000'
+          }
+        })
+
+        expect(await getWallet().assets({ blockchain: 'ethereum', apiKey: 'TEST-123' })).toEqual([
+          {
+            name: 'Ether',
+            symbol: 'ETH',
+            address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+            type: 'NATIVE',
+            blockchain: 'ethereum',
+            balance: '5000000000000'
+          },
+          {
+            name: 'Dai Stablecoin',
+            symbol: 'DAI',
+            address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+            type: 'ERC20',
+            blockchain: 'ethereum',
+            balance: '21232121312312312313'
+          }
+        ])
+      })
+    })
   })
 });

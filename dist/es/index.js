@@ -1,4 +1,6 @@
 import { Blockchain } from 'depay-web3-blockchains';
+import { CONSTANTS } from 'depay-web3-constants';
+import { Token } from 'depay-web3-tokens';
 
 class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
   __init() {this.name = undefined;}
@@ -41,6 +43,24 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
     return accounts
   }
 
+  async ensureNativeTokenAsset({ account, assets, blockchain }) {
+    if(assets.find((asset)=> {
+      return asset.address.toLowerCase() == CONSTANTS[blockchain].NATIVE.toLowerCase()
+    }) == undefined) {
+      let token = new Token({ blockchain, address: CONSTANTS[blockchain].NATIVE });
+      let balance = await token.balance(account);
+      assets = [{
+        name: CONSTANTS[blockchain].CURRENCY,
+        symbol: CONSTANTS[blockchain].SYMBOL,
+        address: CONSTANTS[blockchain].NATIVE,
+        type: 'NATIVE',
+        blockchain,
+        balance: balance.toString()
+      }, ...assets];
+    }
+    return assets
+  }
+
   async assets(options) {
     if(options === undefined) { options = {}; }
     
@@ -54,10 +74,16 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
     let assets = Promise.all(
       (options.blockchain ? [options.blockchain] :  this.blockchains).map((blockchain) =>
         fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
-          headers: { 'X-Api-Key': options.apiKey },
+          headers: { 'X-Api-Key': options.apiKey }
         })
           .then((response) => response.json())
-          .then((assets) => assets.map((asset) => Object.assign(asset, { blockchain }))),
+          .then((assets) => {
+            return this.ensureNativeTokenAsset({
+              account,
+              assets: assets.map((asset) => Object.assign(asset, { blockchain })),
+              blockchain
+            })
+          }),
       ),
     ).then((responses) => responses.flat());
 

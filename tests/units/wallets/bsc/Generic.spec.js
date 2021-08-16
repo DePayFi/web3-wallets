@@ -132,4 +132,50 @@ describe('Generic bsc Wallet', () => {
     let wallet = getWallet()
     expect(await wallet.connectedTo()).toEqual('bsc')
   })
+
+  describe('missing native token asset in API response', ()=> {
+
+    beforeEach(function(){
+      fetchMock.get({
+        url: 'https://api.depay.pro/v1/assets?account=0xd8da6bf26964af9d7eed9e03e53415d37aa96045&blockchain=bsc',
+        headers: { 'X-Api-Key': 'TEST-123' },
+        overwriteRoutes: true
+      }, [{
+        "name": "Dai Stablecoin",
+        "symbol": "DAI",
+        "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "type": "BEP20",
+        "balance": "21232121312312312313"
+      }])
+    })
+
+    it('makes sure native token asset is part of assets', async()=> {
+      mock({
+        blockchain: 'bsc',
+        balance: {
+          for: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+          return: '5000000000000'
+        }
+      })
+
+      expect(await getWallet().assets({ blockchain: 'bsc', apiKey: 'TEST-123' })).toEqual([
+        {
+          name: 'Binance Coin',
+          symbol: 'BNB',
+          address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+          type: 'NATIVE',
+          blockchain: 'bsc',
+          balance: '5000000000000'
+        },
+        {
+          name: 'Dai Stablecoin',
+          symbol: 'DAI',
+          address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+          type: 'BEP20',
+          blockchain: 'bsc',
+          balance: '21232121312312312313'
+        }
+      ])
+    })
+  })  
 });
