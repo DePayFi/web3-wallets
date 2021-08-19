@@ -72,8 +72,9 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
     if(options.apiKey == undefined) { throw 'Web3Wallets: Please pass an apiKey. See documentation.' }
     
     let assets = Promise.all(
-      (options.blockchain ? [options.blockchain] :  this.blockchains).map((blockchain) =>
-        fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
+      (options.blockchain ? [options.blockchain] :  this.blockchains).map((blockchain) =>{
+        
+        return fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
           headers: { 'X-Api-Key': options.apiKey }
         })
           .then((response) => response.json())
@@ -83,8 +84,8 @@ class EthereumWallet extends Wallet {constructor(...args) { super(...args); Ethe
               assets: assets.map((asset) => Object.assign(asset, { blockchain })),
               blockchain
             })
-          }),
-      ),
+          })
+      }),
     ).then((responses) => responses.flat());
 
     return assets
