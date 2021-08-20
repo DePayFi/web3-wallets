@@ -1,7 +1,5 @@
 import Wallet from '../Wallet'
 import { Blockchain } from 'depay-web3-blockchains'
-import { CONSTANTS } from 'depay-web3-constants'
-import { request } from 'depay-web3-client'
 
 export default class EthereumWallet extends Wallet {
   name = 'unknown'
@@ -21,60 +19,6 @@ export default class EthereumWallet extends Wallet {
   async accounts() {
     const accounts = await window.ethereum.request({ method: 'eth_accounts' })
     return accounts
-  }
-
-  async ensureNativeTokenAsset({ account, assets, blockchain }) {
-    if(assets.find((asset)=> {
-      return asset.address.toLowerCase() == CONSTANTS[blockchain].NATIVE.toLowerCase()
-    }) == undefined) {
-      let balance = await request(
-        {
-          blockchain: blockchain,
-          address: account,
-          method: 'balance',
-        },
-        { cache: 30000 }
-      )
-      assets = [{
-        name: CONSTANTS[blockchain].CURRENCY,
-        symbol: CONSTANTS[blockchain].SYMBOL,
-        address: CONSTANTS[blockchain].NATIVE,
-        type: 'NATIVE',
-        blockchain,
-        balance: balance.toString()
-      }, ...assets]
-    }
-    return assets
-  }
-
-  async assets(options) {
-    if(options === undefined) { options = {} }
-    
-    let account = await this.account()
-    if (!account) {
-      return
-    }
-
-    if(options.apiKey == undefined) { throw 'Web3Wallets: Please pass an apiKey. See documentation.' }
-    
-    let assets = Promise.all(
-      (options.blockchain ? [options.blockchain] : undefined || this.blockchains).map((blockchain) =>{
-        
-        return fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
-          headers: { 'X-Api-Key': options.apiKey }
-        })
-          .then((response) => response.json())
-          .then((assets) => {
-            return this.ensureNativeTokenAsset({
-              account,
-              assets: assets.map((asset) => Object.assign(asset, { blockchain })),
-              blockchain
-            })
-          })
-      }),
-    ).then((responses) => responses.flat())
-
-    return assets
   }
 
   on(event, callback) {

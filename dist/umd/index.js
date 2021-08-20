@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('depay-web3-constants'), require('depay-web3-client')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'depay-web3-constants', 'depay-web3-client'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.Web3Client));
-}(this, (function (exports, depayWeb3Blockchains, depayWeb3Constants, depayWeb3Client) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains));
+}(this, (function (exports, depayWeb3Blockchains) { 'use strict';
 
   class Wallet {constructor() { Wallet.prototype.__init.call(this);Wallet.prototype.__init2.call(this); }
     __init() {this.name = undefined;}
@@ -43,60 +43,6 @@
     async accounts() {
       const accounts = await window.ethereum.request({ method: 'eth_accounts' });
       return accounts
-    }
-
-    async ensureNativeTokenAsset({ account, assets, blockchain }) {
-      if(assets.find((asset)=> {
-        return asset.address.toLowerCase() == depayWeb3Constants.CONSTANTS[blockchain].NATIVE.toLowerCase()
-      }) == undefined) {
-        let balance = await depayWeb3Client.request(
-          {
-            blockchain: blockchain,
-            address: account,
-            method: 'balance',
-          },
-          { cache: 30000 }
-        );
-        assets = [{
-          name: depayWeb3Constants.CONSTANTS[blockchain].CURRENCY,
-          symbol: depayWeb3Constants.CONSTANTS[blockchain].SYMBOL,
-          address: depayWeb3Constants.CONSTANTS[blockchain].NATIVE,
-          type: 'NATIVE',
-          blockchain,
-          balance: balance.toString()
-        }, ...assets];
-      }
-      return assets
-    }
-
-    async assets(options) {
-      if(options === undefined) { options = {}; }
-      
-      let account = await this.account();
-      if (!account) {
-        return
-      }
-
-      if(options.apiKey == undefined) { throw 'Web3Wallets: Please pass an apiKey. See documentation.' }
-      
-      let assets = Promise.all(
-        (options.blockchain ? [options.blockchain] :  this.blockchains).map((blockchain) =>{
-          
-          return fetch('https://api.depay.pro/v1/assets?account=' + account + '&blockchain=' + blockchain, {
-            headers: { 'X-Api-Key': options.apiKey }
-          })
-            .then((response) => response.json())
-            .then((assets) => {
-              return this.ensureNativeTokenAsset({
-                account,
-                assets: assets.map((asset) => Object.assign(asset, { blockchain })),
-                blockchain
-              })
-            })
-        }),
-      ).then((responses) => responses.flat());
-
-      return assets
     }
 
     on(event, callback) {
