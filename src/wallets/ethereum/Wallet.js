@@ -1,7 +1,7 @@
 import Wallet from '../Wallet'
 import { Blockchain } from 'depay-web3-blockchains'
 import { CONSTANTS } from 'depay-web3-constants'
-import { Token } from 'depay-web3-tokens'
+import { request } from 'depay-web3-client'
 
 export default class EthereumWallet extends Wallet {
   name = 'unknown'
@@ -27,8 +27,14 @@ export default class EthereumWallet extends Wallet {
     if(assets.find((asset)=> {
       return asset.address.toLowerCase() == CONSTANTS[blockchain].NATIVE.toLowerCase()
     }) == undefined) {
-      let token = new Token({ blockchain, address: CONSTANTS[blockchain].NATIVE })
-      let balance = await token.balance(account)
+      let balance = await request(
+        {
+          blockchain: blockchain,
+          address: account,
+          method: 'balance',
+        },
+        { cache: 30000 }
+      )
       assets = [{
         name: CONSTANTS[blockchain].CURRENCY,
         symbol: CONSTANTS[blockchain].SYMBOL,
