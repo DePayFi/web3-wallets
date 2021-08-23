@@ -143,6 +143,15 @@ wallet.on('account', (newAccount)=>{
 })
 ```
 
+### Switch blockchain/network
+
+`async switchTo(blockchain)`: Changes wallet connection to a specific network (adds it to the wallet in case it's missing)
+
+```javascript
+let wallet = getWallet()
+await wallet.switchTo('bsc')
+```
+
 #### Events
 
 `on('account', (newAccount)=>{})`: Triggers when user changes the connected/active wallet account.

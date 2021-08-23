@@ -1,7 +1,7 @@
 {
   "name": "depay-web3-wallets",
   "moduleName": "Web3Wallets",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -33,7 +33,7 @@
   "homepage": "https://github.com/DePayFi/depay-web3-wallets#readme",
   "private": false,
   "dependencies": {
-    "depay-web3-blockchains": "^2.1.0"
+    "depay-web3-blockchains": "^2.4.0"
   },
   "peerDependencies": {},
   "engines": {
@@ -49,7 +49,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
-    "depay-web3-mock": "^5.3.0",
+    "depay-web3-mock": "^5.8.1",
     "eslint": "^7.15.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.1",

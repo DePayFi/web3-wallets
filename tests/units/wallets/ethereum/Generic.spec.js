@@ -1,4 +1,5 @@
 import fetchMock from 'fetch-mock'
+import { Blockchain } from 'depay-web3-blockchains'
 import { getWallet } from 'dist/cjs/index.js'
 import { mock, resetMocks, trigger } from 'depay-web3-mock'
 
@@ -70,4 +71,57 @@ describe('Generic Ethereum Wallet', () => {
     expect(getWallet().blockchains).toEqual(['ethereum'])
   });
 
+  it('allows to switch network', async ()=>{
+    let switchMock = mock({
+      blockchain: 'ethereum',
+      network: { switchTo: 'bsc' }
+    })
+    let wallet = getWallet()
+    await getWallet().switchTo('bsc')
+    expect(switchMock).toHaveBeenCalled()
+  })
+
+  it('adds the network if the network you request to switch to does not exist and switches to it afterwards', async ()=>{
+    let switchMock
+    let blockchain = Blockchain.findByName('bsc')
+
+    mock({
+      blockchain: 'ethereum',
+      network: { 
+        switchTo: 'bsc',
+        error: ()=>{
+          switchMock = mock({
+            blockchain: 'ethereum',
+            network: { switchTo: 'bsc' }
+          })
+          return { code: 4902 }
+        }
+      }
+    })
+
+    let addMock = mock({
+      blockchain: 'ethereum',
+      network: {
+        add: {
+          chainId: blockchain.id,
+          chainName: blockchain.fullName,
+          nativeCurrency: {
+            name: blockchain.currency.name,
+            symbol: blockchain.currency.symbol,
+            decimals: blockchain.currency.decimals
+          },
+          rpcUrls: [blockchain.rpc],
+          blockExplorerUrls: [blockchain.explorer],
+          iconUrls: [blockchain.logo]
+        }
+      }
+    })
+    
+    let wallet = getWallet()
+    await wallet.switchTo('bsc')
+
+    expect(switchMock).toHaveBeenCalled()
+    expect(addMock).toHaveBeenCalled()
+    expect(await wallet.connectedTo('bsc')).toEqual(true)
+  })
 });
