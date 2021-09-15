@@ -74,4 +74,11 @@ describe('MetaMask', () => {
     expect(getWallet().blockchains).toEqual(['ethereum', 'bsc']);
   });
   
+  it('provides the device types the wallet is available for', () => {
+    expect(getWallet().devices).toEqual(['desktop', 'mobile']);
+  });
+
+  it('provides a link to install the wallet', () => {
+    expect(getWallet().install).toEqual('https://metamask.io/download.html');
+  });
 });

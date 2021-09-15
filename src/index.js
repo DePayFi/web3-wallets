@@ -12,4 +12,11 @@ let getWallet = function () {
   }
 }
 
-export { getWallet }
+const supported = [
+  new MetaMask()
+]
+
+export { 
+  getWallet,
+  supported
+}
