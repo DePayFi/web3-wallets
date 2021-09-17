@@ -9,7 +9,7 @@ describe('Generic bsc Wallet', () => {
 
   it('should detect any generic bsc wallet integration that integrates window.ethereum', () => {
     mock('bsc')
-    expect(getWallet().name).toBe('unknown');
+    expect(getWallet().name).toBe('Web3 Wallet');
   });
 
   it('provides a connect function', async () => {

@@ -66,8 +66,6 @@ let wallet = getWallet();
 wallet.name // 'MetaMask'
 ```
 
-Returns `'unknown'` if a wallet has been detected but type is unknown.
-
 ### Get wallet logo
 
 `logo:string`: Returns the logo of the wallet as PNG base64-encoded.

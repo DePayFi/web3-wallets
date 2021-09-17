@@ -10,7 +10,7 @@ describe('Generic Ethereum Wallet', () => {
 
   it('should detect any generic Ethereum wallet integration that integrates window.ethereum', () => {
     mock('ethereum')
-    expect(getWallet().name).toBe('unknown');
+    expect(getWallet().name).toBe('Web3 Wallet');
   });
 
   it('provides a connect function', async () => {
