@@ -139,7 +139,8 @@
   };
 
   const supported = [
-    new MetaMask()
+    new MetaMask(),
+    new Coinbase()
   ];
 
   exports.getWallet = getWallet;

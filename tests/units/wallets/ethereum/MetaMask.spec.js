@@ -3,11 +3,14 @@ import { mock, resetMocks, trigger } from 'depay-web3-mock'
 
 describe('MetaMask', () => {
 
+  const blockchain = 'ethereum'
+  const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
+  beforeEach(resetMocks)
   beforeEach(()=>{
     resetMocks()
-    mock({ blockchain: 'ethereum', wallet: 'metamask' })
+    mock({ blockchain, wallet: 'metamask' })
   })
-  afterEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
   it('should detect the wallet type', () => {
     expect(getWallet().name).toBe('MetaMask');

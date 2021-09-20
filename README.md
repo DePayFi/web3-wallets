@@ -31,6 +31,7 @@ This library supports the following blockchains:
 This library supports the following wallets:
 
 - [MetaMask](https://metamask.io)
+- [Coinbase Wallet](https://wallet.coinbase.com)
 
 ## Functionalities
 
