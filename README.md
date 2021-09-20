@@ -17,6 +17,10 @@ let wallet = getWallet()
 wallet.name // MetaMask
 ```
 
+## Demo
+
+https://depayfi.github.io/depay-web3-wallets/dev.html
+
 ## Support
 
 This library supports the following blockchains:
