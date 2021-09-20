@@ -55,6 +55,7 @@
     "eslint": "^7.15.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.1",
+    "ethers": "^5.4.6",
     "fetch-mock": "^9.11.0",
     "node-fetch": "^2.6.1",
     "regenerator-runtime": "^0.13.7",
