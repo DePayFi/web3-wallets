@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://cdn.ethers.io/lib/ethers-5.4.umd.min.js" type="application/javascript"></script>
     <script crossorigin src="https://unpkg.com/depay-web3-blockchains@2/dist/umd/index.js"></script>
+    <script crossorigin src="https://unpkg.com/@walletconnect/client@1"></script>
+    <script crossorigin src="https://unpkg.com/@walletconnect/qrcode-modal@1"></script>
     <script src="dist/umd/index.js"></script>
   </head>
   <body>
@@ -74,6 +76,13 @@
         </div>
       </div>
 
+      <div class="row pt-5">
+        <div class="col">
+          <h1>WalletConnect connect</h1>
+          <p>Test wallet connect</p>
+          <button class='btn btn-primary' onClick='Web3Wallets.supported[0].connect()'>Test it</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>
