@@ -37,7 +37,7 @@ This library supports the following wallets:
 
 ### Get wallet
 
-`Wallet`: Returns an instance of Wallet or undefined (if no connected wallet has been detected)
+`Wallet`: Returns an instance of the automatically detected Wallet or undefined (if no wallet could be automatically detected)
 
 ```javascript
 let wallet = getWallet();
@@ -50,7 +50,6 @@ let wallet = getWallet();
 ```
 
 Returns `undefined` if no wallet has been detected. Make sure you check that before you continue using the wallet:
-
 
 ```javascript
 let wallet getWallet();
@@ -102,7 +101,7 @@ await wallet.accounts() // ['0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B']
 
 ### Connect an account
 
-`async connect():string`: Connets accounts. Potentially opens wallet connect screen. Provides connected accounts in async return.
+`async connect():string`: Connects accounts. Potentially opens wallet connect screen. Provides connected accounts in async return.
 
 ```javascript
 let wallet = getWallet();
@@ -146,6 +145,16 @@ wallet.on('account', (newAccount)=>{
 })
 ```
 
+#### Events
+
+`on('account', (newAccount)=>{})`: Triggers when user changes the connected/active wallet account.
+
+`on('accounts', (newAccounts)=>{})`: Triggers when user changes any connected wallet account.
+
+`on('network', (newNetwork)=>{})`: Triggers when user changes network of the connected wallet.
+
+`on('disconnect', ()=>{})`: Triggers when user disconnects wallet.
+
 ### Switch blockchain/network
 
 `async switchTo(blockchain)`: Changes wallet connection to a specific network (adds it to the wallet in case it's missing)
@@ -154,14 +163,6 @@ wallet.on('account', (newAccount)=>{
 let wallet = getWallet()
 await wallet.switchTo('bsc')
 ```
-
-#### Events
-
-`on('account', (newAccount)=>{})`: Triggers when user changes the connected/active wallet account.
-
-`on('accounts', (newAccounts)=>{})`: Triggers when user changes any connected wallet account.
-
-`on('network', (newNetwork)=>{})`: Triggers when user changes network of the connected wallet.
 
 ## Development
 

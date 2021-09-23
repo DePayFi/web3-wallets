@@ -1,4 +1,4 @@
-import { getWallet } from 'dist/cjs/index.js';
+import { getWallet } from 'src'
 
 describe('no wallet found', () => {
   
