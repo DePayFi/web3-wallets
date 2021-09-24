@@ -164,6 +164,55 @@ let wallet = getWallet()
 await wallet.switchTo('bsc')
 ```
 
+### sendTransaction
+
+Sign and send a transaction through the connected wallet:
+
+```javascript
+
+let wallet = getWallet()
+
+let sentTransaction = await wallet.sendTransaction({
+  blockchain: 'ethereum',
+  to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+  api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+  method: 'route',
+  params: {
+    path: ["0xb056c38f6b7Dc4064367403E26424CD2c60655e1","0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2","0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb"],
+    amounts: ["11275067000000000000000","100000000000000000000", "1632063302"],
+    addresses: ["0x39794c3171d4D82eB9C6FBb764749Eb7ED92881d", "0x39794c3171d4D82eB9C6FBb764749Eb7ED92881d"],
+    plugins: ["0xe04b08Dfc6CaA0F4Ec523a3Ae283Ece7efE00019", "0x99F3F4685a7178F26EB4F4Ca8B75a1724F1577B9"],
+    data: []
+  },
+  value: "0"
+})
+
+```
+
+or a simple value transfer:
+
+```javascript
+
+let wallet = getWallet()
+
+let sentTransaction = await wallet.sendTransaction({
+  blockchain: 'ethereum',
+  to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+  value: "1000000000000000"
+})
+
+```
+
+#### Wrong network
+
+`sendTransaction` rejects with:
+
+```javascript
+{ code: 'WRONG_NETWORK' }
+```
+
+in case wallet is connected to the wrong network and network cant be switched automatically.
+
 ## Development
 
 ### Get started

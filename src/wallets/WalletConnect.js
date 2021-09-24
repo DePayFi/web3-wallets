@@ -1,6 +1,7 @@
 import QRCodeModal from '@walletconnect/qrcode-modal'
 import WalletConnect from '@walletconnect/client'
 import { Blockchain } from 'depay-web3-blockchains'
+import { sendTransaction } from './WalletConnect/transaction'
 
 let connectedInstance
 
@@ -12,6 +13,12 @@ class WalletConnectWallet {
 
   constructor() {
     this.connector = this.newWalletConnectInstance()
+    this.sendTransaction = ({ transaction })=>{ 
+      return sendTransaction({
+        wallet: this,
+        transaction
+      })
+    }
   }
 
   newWalletConnectInstance() {
