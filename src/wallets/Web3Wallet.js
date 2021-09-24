@@ -8,14 +8,10 @@ export default class Web3Wallet {
   blockchains = ['ethereum']
 
   constructor () {
-    this.sendTransaction = ({ transaction, sent, confirmed, ensured, failed })=>{ 
+    this.sendTransaction = ({ transaction })=>{ 
       return sendTransaction({
         wallet: this,
-        transaction,
-        sent,
-        confirmed,
-        ensured,
-        failed
+        transaction
       })
     }
   }

@@ -39,13 +39,13 @@ const submitContractInteraction = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider)
   return contract
     .connect(signer)
-    [transaction.method](...argsFromTransaction({ transaction, contract }), { value: transaction.value })
+    [transaction.method](...argsFromTransaction({ transaction, contract }), { value: ethers.BigNumber.from(transaction.value.toString()) })
 }
 
 const submitSimpleTransfer = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
-    value: transaction.value
+    value: ethers.BigNumber.from(transaction.value.toString())
   })
 }
 
