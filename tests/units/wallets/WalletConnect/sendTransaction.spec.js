@@ -55,7 +55,7 @@ describe('sendTransaction with wallet connect', () => {
 
         
         it('allows to submit contract transaction', async ()=> {
-          let submittedTransaction = await wallet.sendTransaction({ transaction })
+          let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
         })
@@ -72,7 +72,7 @@ describe('sendTransaction with wallet connect', () => {
             }
           })
           await expect(
-            wallet.sendTransaction({ transaction })
+            wallet.sendTransaction(transaction)
           ).rejects.toEqual('Web3Transaction: Submitting transaction failed!')
         })
       })
@@ -97,7 +97,7 @@ describe('sendTransaction with wallet connect', () => {
 
         
         it('allows to submit value transfer transaction', async ()=> {
-          let submittedTransaction = await wallet.sendTransaction({ transaction })
+          let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
         })
@@ -112,7 +112,7 @@ describe('sendTransaction with wallet connect', () => {
             }
           })
           await expect(
-            wallet.sendTransaction({ transaction })
+            wallet.sendTransaction(transaction)
           ).rejects.toEqual('Web3Transaction: Submitting transaction failed!')
         })
       })
@@ -145,7 +145,7 @@ describe('sendTransaction with wallet connect', () => {
         it('rejects to switch network because it cant switch network automatically (user has to switch)', async ()=> {
           connect(blockchain)
           await expect(
-            wallet.sendTransaction({ transaction })
+            wallet.sendTransaction(transaction)
           ).rejects.toEqual({ code: 'WRONG_NETWORK' })
         })
       })

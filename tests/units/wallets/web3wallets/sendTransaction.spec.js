@@ -52,7 +52,7 @@ describe('sendTransaction with web3 wallet', () => {
 
         
         it('allows to submit contract transaction', async ()=> {
-          let submittedTransaction = await wallet.sendTransaction({ transaction })
+          let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
         })
@@ -69,7 +69,7 @@ describe('sendTransaction with web3 wallet', () => {
             }
           })
           await expect(
-            wallet.sendTransaction({ transaction })
+            wallet.sendTransaction(transaction)
           ).rejects.toEqual('Web3Transaction: Submitting transaction failed!')
         })
       })
@@ -94,7 +94,7 @@ describe('sendTransaction with web3 wallet', () => {
 
         
         it('allows to submit value transfer transaction', async ()=> {
-          let submittedTransaction = await wallet.sendTransaction({ transaction })
+          let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
         })
@@ -109,7 +109,7 @@ describe('sendTransaction with web3 wallet', () => {
             }
           })
           await expect(
-            wallet.sendTransaction({ transaction })
+            wallet.sendTransaction(transaction)
           ).rejects.toEqual('Web3Transaction: Submitting transaction failed!')
         })
       })
@@ -147,7 +147,7 @@ describe('sendTransaction with web3 wallet', () => {
               switchTo: otherBlockchain
             }
           })
-          let submittedTransaction = await wallet.sendTransaction({ transaction })
+          let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
           expect(switchMock).toHaveBeenCalled()

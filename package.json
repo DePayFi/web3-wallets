@@ -1,7 +1,7 @@
 {
   "name": "depay-web3-wallets",
   "moduleName": "Web3Wallets",
-  "version": "5.5.1",
+  "version": "5.5.2",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",

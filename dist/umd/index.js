@@ -17454,7 +17454,7 @@
 	  __init3() {this.blockchains = ['ethereum'];}
 
 	  constructor () {Web3Wallet.prototype.__init.call(this);Web3Wallet.prototype.__init2.call(this);Web3Wallet.prototype.__init3.call(this);
-	    this.sendTransaction = ({ transaction })=>{ 
+	    this.sendTransaction = (transaction)=>{ 
 	      return sendTransaction$1({
 	        wallet: this,
 	        transaction
@@ -17640,7 +17640,7 @@
 
 	  constructor() {WalletConnectWallet.prototype.__init.call(this);WalletConnectWallet.prototype.__init2.call(this);WalletConnectWallet.prototype.__init3.call(this);
 	    this.connector = this.newWalletConnectInstance();
-	    this.sendTransaction = ({ transaction })=>{ 
+	    this.sendTransaction = (transaction)=>{ 
 	      return sendTransaction({
 	        wallet: this,
 	        transaction

@@ -13,7 +13,7 @@ class WalletConnectWallet {
 
   constructor() {
     this.connector = this.newWalletConnectInstance()
-    this.sendTransaction = ({ transaction })=>{ 
+    this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
         wallet: this,
         transaction
