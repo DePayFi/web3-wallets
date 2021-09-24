@@ -83,6 +83,14 @@
           <button class='btn btn-primary' onClick='Web3Wallets.supported[0].connect()'>Test it</button>
         </div>
       </div>
+
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Send transaction</h1>
+          <p></p>
+          <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sendTransaction({ transaction: { blockchain: "bsc", to: "0x08B277154218CCF3380CAE48d630DA13462E3950", value: 1 } })'>Test it</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>
