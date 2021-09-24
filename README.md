@@ -203,6 +203,16 @@ let sentTransaction = await wallet.sendTransaction({
 
 ```
 
+#### Wrong network
+
+`sendTransaction` rejects with:
+
+```javascript
+{ code: 'WRONG_NETWORK' }
+```
+
+in case wallet is connected to the wrong network and network cant be switched automatically.
+
 ## Development
 
 ### Get started

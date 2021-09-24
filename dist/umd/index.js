@@ -1,5 +1,3 @@
-
-(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('buffer'), require('util'), require('@walletconnect/qrcode-modal'), require('@walletconnect/client')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'buffer', 'util', '@walletconnect/qrcode-modal', '@walletconnect/client'], factory) :
@@ -17382,33 +17380,33 @@
 	    }
 	}
 
-	const sendTransaction = ({ wallet, transaction })=> {
+	const sendTransaction$1 = ({ wallet, transaction })=> {
 	  return new Promise(async (resolve, reject)=>{
 	    let provider = new Web3Provider(window.ethereum, 'any');
 	    let signer = provider.getSigner(0);
 
 	    if(await wallet.connectedTo(transaction.blockchain)) {
-	      executeSubmit({ transaction, provider, signer, resolve, reject });
+	      executeSubmit$1({ transaction, provider, signer, resolve, reject });
 	    } else { // connected to wrong network
 	      wallet.switchTo(transaction.blockchain)
 	        .then(()=>{
-	          executeSubmit({ transaction, provider, signer, resolve, reject });
+	          executeSubmit$1({ transaction, provider, signer, resolve, reject });
 	        })
 	        .catch(reject);
 	    }
 	  })
 	};
 
-	const executeSubmit = ({ transaction, provider, signer, resolve, reject }) => {
+	const executeSubmit$1 = ({ transaction, provider, signer, resolve, reject }) => {
 	  if(transaction.method) {
-	    submitContractInteraction({ transaction, signer, provider })
+	    submitContractInteraction$1({ transaction, signer, provider })
 	      .then(()=>resolve(transaction))
 	      .catch((error)=>{
 	        console.log(error);
 	        reject('Web3Transaction: Submitting transaction failed!');
 	      });
 	  } else {
-	    submitSimpleTransfer({ transaction, signer })
+	    submitSimpleTransfer$1({ transaction, signer })
 	      .then(()=>resolve(transaction))
 	      .catch((error)=>{
 	        console.log(error);
@@ -17417,21 +17415,23 @@
 	  }
 	};
 
-	const submitContractInteraction = ({ transaction, signer, provider })=>{
+	const submitContractInteraction$1 = ({ transaction, signer, provider })=>{
 	  let contract = new Contract(transaction.to, transaction.api, provider);
 	  return contract
 	    .connect(signer)
-	    [transaction.method](...argsFromTransaction({ transaction, contract }), { value: BigNumber.from(transaction.value.toString()) })
+	    [transaction.method](...argsFromTransaction$1({ transaction, contract }), {
+	      value: transaction.value ? BigNumber.from(transaction.value.toString()) : undefined
+	    })
 	};
 
-	const submitSimpleTransfer = ({ transaction, signer })=>{
+	const submitSimpleTransfer$1 = ({ transaction, signer })=>{
 	  return signer.sendTransaction({
 	    to: transaction.to,
-	    value: BigNumber.from(transaction.value.toString())
+	    value: transaction.value ? BigNumber.from(transaction.value.toString()) : undefined
 	  })
 	};
 
-	const argsFromTransaction = ({ transaction, contract })=> {
+	const argsFromTransaction$1 = ({ transaction, contract })=> {
 	  let fragment = contract.interface.fragments.find((fragment) => {
 	    return fragment.name == transaction.method
 	  });
@@ -17455,7 +17455,7 @@
 
 	  constructor () {Web3Wallet.prototype.__init.call(this);Web3Wallet.prototype.__init2.call(this);Web3Wallet.prototype.__init3.call(this);
 	    this.sendTransaction = ({ transaction })=>{ 
-	      return sendTransaction({
+	      return sendTransaction$1({
 	        wallet: this,
 	        transaction
 	      })
@@ -17559,6 +17559,76 @@
 	  __init5() {this.install = 'https://metamask.io/download.html';}
 	}
 
+	const sendTransaction = ({ wallet, transaction })=> {
+	  return new Promise(async (resolve, reject)=>{
+	    transaction.from = await wallet.account();
+	    if(await wallet.connectedTo(transaction.blockchain)) {
+	      executeSubmit({ transaction, wallet, resolve, reject });
+	    } else { // connected to wrong network
+	      reject({ code: 'WRONG_NETWORK' });
+	    }
+	  })
+	};
+
+	const executeSubmit = ({ transaction, wallet, resolve, reject }) => {
+	  if(transaction.method) {
+	    submitContractInteraction({ transaction, wallet })
+	      .then(()=>resolve(transaction))
+	      .catch((error)=>{
+	        console.log(error);
+	        reject('Web3Transaction: Submitting transaction failed!');
+	      });
+	  } else {
+	    submitSimpleTransfer({ transaction, wallet })
+	      .then(()=>resolve(transaction))
+	      .catch((error)=>{
+	        console.log(error);
+	        reject('Web3Transaction: Submitting transaction failed!');
+	      });
+	  }
+	};
+
+	const submitContractInteraction = ({ transaction, wallet })=>{
+	  return new Promise(async (resolve, reject)=>{
+	    let contract = new Contract(transaction.to, transaction.api);
+
+	    let populatedTransaction = await contract.populateTransaction[transaction.method].apply(null, argsFromTransaction({ transaction, contract }));
+
+	    wallet.connector.sendTransaction({
+	      from: transaction.from,
+	      to: transaction.to,
+	      value: transaction.value ? BigNumber.from(transaction.value.toString()) : undefined,
+	      data: populatedTransaction.data
+	    })
+	      .then(()=>resolve(transaction))
+	      .catch(reject);
+	  })
+	};
+
+	const submitSimpleTransfer = ({ transaction, wallet })=>{
+	  return wallet.connector.sendTransaction({
+	    from: transaction.from,
+	    to: transaction.to,
+	    value: transaction.value ? BigNumber.from(transaction.value.toString()) : undefined
+	  })
+	};
+
+	const argsFromTransaction = ({ transaction, contract })=> {
+	  let fragment = contract.interface.fragments.find((fragment) => {
+	    return fragment.name == transaction.method
+	  });
+
+	  if(transaction.params instanceof Array) {
+	    return transaction.params
+	  } else if (transaction.params instanceof Object) {
+	    return fragment.inputs.map((input) => {
+	      return transaction.params[input.name]
+	    })
+	  } else {
+	    throw 'Web3Transaction: params have wrong type!'
+	  }
+	};
+
 	function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 	let connectedInstance;
 
@@ -17570,6 +17640,12 @@
 
 	  constructor() {WalletConnectWallet.prototype.__init.call(this);WalletConnectWallet.prototype.__init2.call(this);WalletConnectWallet.prototype.__init3.call(this);
 	    this.connector = this.newWalletConnectInstance();
+	    this.sendTransaction = ({ transaction })=>{ 
+	      return sendTransaction({
+	        wallet: this,
+	        transaction
+	      })
+	    };
 	  }
 
 	  newWalletConnectInstance() {
@@ -17684,26 +17760,34 @@
 	  }
 	}
 
+	const wallets = {
+	  MetaMask: new MetaMask(),
+	  Coinbase: new Coinbase(),
+	  Web3Wallet: new Web3Wallet(),
+	  WalletConnect: new WalletConnectWallet()
+	};
+
 	let getWallet = function () {
 	  if(connectedInstance) {
 	    return connectedInstance
 	  } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
-	    return new MetaMask()
+	    return wallets.MetaMask
 	  } else if (typeof window.ethereum === 'object' && window.ethereum.isCoinbaseWallet) {
-	    return new Coinbase()
+	    return wallets.Coinbase
 	  } else if (typeof window.ethereum !== 'undefined') {
-	    return new Web3Wallet()
+	    return wallets.Web3Wallet
 	  }
 	};
 
 	const supported = [
-	  new WalletConnectWallet(),
-	  new MetaMask(),
-	  new Coinbase()
+	  wallets.WalletConnect,
+	  wallets.MetaMask,
+	  wallets.Coinbase
 	];
 
 	exports.getWallet = getWallet;
 	exports.supported = supported;
+	exports.wallets = wallets;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

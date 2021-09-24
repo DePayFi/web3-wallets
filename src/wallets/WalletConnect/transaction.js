@@ -2,31 +2,25 @@ import { ethers } from 'ethers'
 
 const sendTransaction = ({ wallet, transaction })=> {
   return new Promise(async (resolve, reject)=>{
-    let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
-    let signer = provider.getSigner(0)
-
+    transaction.from = await wallet.account()
     if(await wallet.connectedTo(transaction.blockchain)) {
-      executeSubmit({ transaction, provider, signer, resolve, reject })
+      executeSubmit({ transaction, wallet, resolve, reject })
     } else { // connected to wrong network
-      wallet.switchTo(transaction.blockchain)
-        .then(()=>{
-          executeSubmit({ transaction, provider, signer, resolve, reject })
-        })
-        .catch(reject)
+      reject({ code: 'WRONG_NETWORK' })
     }
   })
 }
 
-const executeSubmit = ({ transaction, provider, signer, resolve, reject }) => {
+const executeSubmit = ({ transaction, wallet, resolve, reject }) => {
   if(transaction.method) {
-    submitContractInteraction({ transaction, signer, provider })
+    submitContractInteraction({ transaction, wallet })
       .then(()=>resolve(transaction))
       .catch((error)=>{
         console.log(error)
         reject('Web3Transaction: Submitting transaction failed!')
       })
   } else {
-    submitSimpleTransfer({ transaction, signer })
+    submitSimpleTransfer({ transaction, wallet })
       .then(()=>resolve(transaction))
       .catch((error)=>{
         console.log(error)
@@ -35,17 +29,26 @@ const executeSubmit = ({ transaction, provider, signer, resolve, reject }) => {
   }
 }
 
-const submitContractInteraction = ({ transaction, signer, provider })=>{
-  let contract = new ethers.Contract(transaction.to, transaction.api, provider)
-  return contract
-    .connect(signer)
-    [transaction.method](...argsFromTransaction({ transaction, contract }), {
-      value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined
+const submitContractInteraction = ({ transaction, wallet })=>{
+  return new Promise(async (resolve, reject)=>{
+    let contract = new ethers.Contract(transaction.to, transaction.api)
+
+    let populatedTransaction = await contract.populateTransaction[transaction.method].apply(null, argsFromTransaction({ transaction, contract }))
+
+    wallet.connector.sendTransaction({
+      from: transaction.from,
+      to: transaction.to,
+      value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined,
+      data: populatedTransaction.data
     })
+      .then(()=>resolve(transaction))
+      .catch(reject)
+  })
 }
 
-const submitSimpleTransfer = ({ transaction, signer })=>{
-  return signer.sendTransaction({
+const submitSimpleTransfer = ({ transaction, wallet })=>{
+  return wallet.connector.sendTransaction({
+    from: transaction.from,
     to: transaction.to,
     value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined
   })
