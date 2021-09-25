@@ -1,38 +1,23 @@
-import BigNumberify from '../../helpers/BigNumberify'
+import { Transaction } from '../../Transaction'
 import { ethers } from 'ethers'
 
-const sendTransaction = ({ wallet, transaction })=> {
-  return new Promise(async (resolve, reject)=>{
-    transaction.from = await wallet.account()
-    let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
-    let signer = provider.getSigner(0)
-    if(await wallet.connectedTo(transaction.blockchain)) {
-      executeSubmit({ transaction, provider, signer, resolve, reject })
-    } else { // connected to wrong network
-      wallet.switchTo(transaction.blockchain)
-        .then(()=>{
-          executeSubmit({ transaction, provider, signer, resolve, reject })
-        })
-        .catch(reject)
-    }
-  })
+const sendTransaction = async ({ transaction, wallet })=> {
+  transaction = new Transaction(transaction)
+  await transaction.prepare({ wallet })
+  let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+  let signer = provider.getSigner(0)
+  if((await wallet.connectedTo(transaction.blockchain)) == false) {
+    await wallet.switchTo(transaction.blockchain)
+  }
+  await executeSubmit({ transaction, provider, signer })
+  return transaction
 }
 
-const executeSubmit = ({ transaction, provider, signer, resolve, reject }) => {
+const executeSubmit = ({ transaction, provider, signer }) => {
   if(transaction.method) {
-    submitContractInteraction({ transaction, signer, provider })
-      .then(()=>resolve(transaction))
-      .catch((error)=>{
-        console.log(error)
-        reject('Web3Transaction: Submitting transaction failed!')
-      })
+    return submitContractInteraction({ transaction, signer, provider })
   } else {
-    submitSimpleTransfer({ transaction, signer })
-      .then(()=>resolve(transaction))
-      .catch((error)=>{
-        console.log(error)
-        reject('Web3Transaction: Submitting transaction failed!')
-      })
+    return submitSimpleTransfer({ transaction, signer })
   }
 }
 
@@ -40,32 +25,16 @@ const submitContractInteraction = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider)
   return contract
     .connect(signer)
-    [transaction.method](...argsFromTransaction({ transaction, contract }), {
-      value: BigNumberify(transaction.value, transaction.blockchain)
+    [transaction.method](...transaction.getContractArguments({ contract }), {
+      value: transaction.value
     })
 }
 
 const submitSimpleTransfer = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
-    value: BigNumberify(transaction.value, transaction.blockchain)
+    value: transaction.value
   })
-}
-
-const argsFromTransaction = ({ transaction, contract })=> {
-  let fragment = contract.interface.fragments.find((fragment) => {
-    return fragment.name == transaction.method
-  })
-
-  if(transaction.params instanceof Array) {
-    return transaction.params
-  } else if (transaction.params instanceof Object) {
-    return fragment.inputs.map((input) => {
-      return transaction.params[input.name]
-    })
-  } else {
-    throw 'Web3Transaction: params have wrong type!'
-  }
 }
 
 export {

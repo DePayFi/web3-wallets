@@ -53,7 +53,12 @@ describe('sendTransaction with web3 wallet', () => {
 
         it('allows to submit contract transaction', async ()=> {
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction);
+          expect(submittedTransaction.blockchain).toEqual(blockchain)
+          expect(submittedTransaction.from).toEqual(accounts[0])
+          expect(submittedTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(submittedTransaction.api).toEqual(api)
+          expect(submittedTransaction.method).toEqual(method)
+          expect(submittedTransaction.params).toEqual(params)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
@@ -70,41 +75,36 @@ describe('sendTransaction with web3 wallet', () => {
           })
           await expect(
             wallet.sendTransaction(transaction)
-          ).rejects.toEqual('Web3Transaction: Submitting transaction failed!')
+          ).rejects.toEqual(Error('something failed'))
         })
 
         it('allows to pass params as array', async ()=> {
           transaction.params = [transaction.params.path, transaction.params.amounts, transaction.params.addresses, transaction.params.plugins, transaction.params.data]
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as number', async ()=> {
           transaction.value = 1
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as float', async ()=> {
           transaction.value = 1.0
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as string', async ()=> {
           transaction.value = '1000000000000000000'
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as BigNumber', async ()=> {
           transaction.value = ethers.BigNumber.from('1000000000000000000')
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
       })
@@ -129,14 +129,16 @@ describe('sendTransaction with web3 wallet', () => {
         
         it('allows to submit value transfer transaction', async ()=> {
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
+          expect(submittedTransaction.blockchain).toEqual(blockchain)
+          expect(submittedTransaction.from).toEqual(accounts[0])
+          expect(submittedTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(submittedTransaction.value.toString()).toEqual('1000000000000000000')
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as number', async ()=> {
           transaction.value = 1
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
@@ -150,21 +152,18 @@ describe('sendTransaction with web3 wallet', () => {
           })
           transaction.value = 0.1
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as string', async ()=> {
           transaction.value = '1000000000000000000'
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
         it('sends transaction with value provided as BigNumber', async ()=> {
           transaction.value = ethers.BigNumber.from('1000000000000000000')
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
 
@@ -179,7 +178,7 @@ describe('sendTransaction with web3 wallet', () => {
           })
           await expect(
             wallet.sendTransaction(transaction)
-          ).rejects.toEqual('Web3Transaction: Submitting transaction failed!')
+          ).rejects.toEqual(Error('something failed'))
         })
 
         it('sets the from address if transaction has been sent', async ()=>{
@@ -222,7 +221,6 @@ describe('sendTransaction with web3 wallet', () => {
             }
           })
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction).toEqual(transaction);
           expect(mockedTransaction).toHaveBeenCalled()
           expect(switchMock).toHaveBeenCalled()
         })

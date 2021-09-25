@@ -17757,48 +17757,113 @@ function parseUnits(value, unitName) {
     return parseFixed(value, (unitName != null) ? unitName : 18);
 }
 
-var BigNumberify = (value, blockchain) => {
-  if (typeof value === 'number') {
-    return parseUnits(value.toString(), CONSTANTS[blockchain].DECIMALS)
-  } else if (value && value.toString) {
-    return BigNumber.from(value.toString())
-  } else {
-    return value
+class Transaction {
+
+  constructor({ blockchain, from, to, api, method, params, value, sent, confirmed, ensured, failed }) {
+
+    this.blockchain = blockchain;
+    this.from = from;
+    this.to = to;
+    this.api = api;
+    this.method = method;
+    this.params = params;
+    this.value = this.bigNumberify(value);
+    this.sent = sent;
+    this.confirmed = confirmed;
+    this.ensured = ensured;
+    this.failed = ensured;
+    this._confirmed = false;
+    this._ensured = false;
+    this._failed = false;
   }
-};
 
-const sendTransaction$1 = ({ wallet, transaction })=> {
-  return new Promise(async (resolve, reject)=>{
-    transaction.from = await wallet.account();
-    let provider = new Web3Provider(window.ethereum, 'any');
-    let signer = provider.getSigner(0);
-    if(await wallet.connectedTo(transaction.blockchain)) {
-      executeSubmit$1({ transaction, provider, signer, resolve, reject });
-    } else { // connected to wrong network
-      wallet.switchTo(transaction.blockchain)
-        .then(()=>{
-          executeSubmit$1({ transaction, provider, signer, resolve, reject });
-        })
-        .catch(reject);
+  async prepare({ wallet }) {
+    this.from = await wallet.account();
+  }
+
+  bigNumberify(value) {
+    if (typeof value === 'number') {
+      return parseUnits(value.toString(), CONSTANTS[this.blockchain].DECIMALS)
+    } else if (value && value.toString) {
+      return BigNumber.from(value.toString())
+    } else {
+      return value
     }
-  })
+  }
+
+  getContractArguments ({ contract }) {
+    let fragment = contract.interface.fragments.find((fragment) => {
+      return fragment.name == this.method
+    });
+
+    if(this.params instanceof Array) {
+      return this.params
+    } else if (this.params instanceof Object) {
+      return fragment.inputs.map((input) => {
+        return this.params[input.name]
+      })
+    } else {
+      throw 'Contract params have wrong type!'
+    }
+  }
+
+  confirmation() {
+    if (this._confirmed) {
+      return Promise.resolve(this)
+    }
+    return new Promise((resolve, reject) => {
+      let originalConfirmed = this.confirmed;
+      this.confirmed = () => {
+        if (originalConfirmed) originalConfirmed(this);
+        resolve(this);
+      };
+    })
+  }
+
+  ensurance() {
+    if (this._ensured) {
+      return Promise.resolve(this)
+    }
+    return new Promise((resolve, reject) => {
+      let originalEnsured = this.ensured;
+      this.ensured = () => {
+        if (originalEnsured) originalEnsured(this);
+        resolve(this);
+      };
+    })
+  }
+
+  failure() {
+    if (this._failed) {
+      return Promise.resolve(this)
+    }
+    return new Promise((resolve, reject) => {
+      let originalFailed = this.failed;
+      this.failed = () => {
+        if (originalFailed) originalFailed(this);
+        resolve(this);
+      };
+    })
+  }
+}
+
+const sendTransaction$1 = async ({ transaction, wallet })=> {
+  transaction = new Transaction(transaction);
+  await transaction.prepare({ wallet });
+  let provider = new Web3Provider(window.ethereum, 'any');
+  let signer = provider.getSigner(0);
+  if((await wallet.connectedTo(transaction.blockchain)) == false) {
+    await wallet.switchTo(transaction.blockchain);
+  }
+  await executeSubmit$1({ transaction, provider, signer });
+  return transaction
 };
 
-const executeSubmit$1 = ({ transaction, provider, signer, resolve, reject }) => {
+const executeSubmit$1 = ({ transaction, provider, signer }) => {
   if(transaction.method) {
-    submitContractInteraction$1({ transaction, signer, provider })
-      .then(()=>resolve(transaction))
-      .catch((error)=>{
-        console.log(error);
-        reject('Web3Transaction: Submitting transaction failed!');
-      });
+    return submitContractInteraction$1({ transaction, signer, provider })
   } else {
-    submitSimpleTransfer$1({ transaction, signer })
-      .then(()=>resolve(transaction))
-      .catch((error)=>{
-        console.log(error);
-        reject('Web3Transaction: Submitting transaction failed!');
-      });
+    return submitSimpleTransfer$1({ transaction, signer })
   }
 };
 
@@ -17806,32 +17871,16 @@ const submitContractInteraction$1 = ({ transaction, signer, provider })=>{
   let contract = new Contract(transaction.to, transaction.api, provider);
   return contract
     .connect(signer)
-    [transaction.method](...argsFromTransaction$1({ transaction, contract }), {
-      value: BigNumberify(transaction.value, transaction.blockchain)
+    [transaction.method](...transaction.getContractArguments({ contract }), {
+      value: transaction.value
     })
 };
 
 const submitSimpleTransfer$1 = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
-    value: BigNumberify(transaction.value, transaction.blockchain)
+    value: transaction.value
   })
-};
-
-const argsFromTransaction$1 = ({ transaction, contract })=> {
-  let fragment = contract.interface.fragments.find((fragment) => {
-    return fragment.name == transaction.method
-  });
-
-  if(transaction.params instanceof Array) {
-    return transaction.params
-  } else if (transaction.params instanceof Object) {
-    return fragment.inputs.map((input) => {
-      return transaction.params[input.name]
-    })
-  } else {
-    throw 'Web3Transaction: params have wrong type!'
-  }
 };
 
 class Web3Wallet {
@@ -17946,32 +17995,21 @@ class MetaMask extends Web3Wallet {constructor(...args) { super(...args); MetaMa
   __init5() {this.install = 'https://metamask.io/download.html';}
 }
 
-const sendTransaction = ({ wallet, transaction })=> {
-  return new Promise(async (resolve, reject)=>{
-    transaction.from = await wallet.account();
-    if(await wallet.connectedTo(transaction.blockchain)) {
-      executeSubmit({ transaction, wallet, resolve, reject });
-    } else { // connected to wrong network
-      reject({ code: 'WRONG_NETWORK' });
-    }
-  })
+const sendTransaction = async ({ transaction, wallet })=> {
+  transaction = new Transaction(transaction);
+  await transaction.prepare({ wallet });
+  if((await wallet.connectedTo(transaction.blockchain)) == false) {
+    throw({ code: 'WRONG_NETWORK' })
+  }
+  await executeSubmit({ transaction, wallet });
+  return transaction
 };
 
-const executeSubmit = ({ transaction, wallet, resolve, reject }) => {
+const executeSubmit = ({ transaction, wallet }) => {
   if(transaction.method) {
-    submitContractInteraction({ transaction, wallet })
-      .then(()=>resolve(transaction))
-      .catch((error)=>{
-        console.log(error);
-        reject('Web3Transaction: Submitting transaction failed!');
-      });
+    return submitContractInteraction({ transaction, wallet })
   } else {
-    submitSimpleTransfer({ transaction, wallet })
-      .then(()=>resolve(transaction))
-      .catch((error)=>{
-        console.log(error);
-        reject('Web3Transaction: Submitting transaction failed!');
-      });
+    return submitSimpleTransfer({ transaction, wallet })
   }
 };
 
@@ -17979,12 +18017,14 @@ const submitContractInteraction = ({ transaction, wallet })=>{
   return new Promise(async (resolve, reject)=>{
     let contract = new Contract(transaction.to, transaction.api);
 
-    let populatedTransaction = await contract.populateTransaction[transaction.method].apply(null, argsFromTransaction({ transaction, contract }));
+    let populatedTransaction = await contract.populateTransaction[transaction.method].apply(
+      null, transaction.getContractArguments({ contract })
+    );
 
     wallet.connector.sendTransaction({
       from: transaction.from,
       to: transaction.to,
-      value: BigNumberify(transaction.value, transaction.blockchain),
+      value: transaction.value,
       data: populatedTransaction.data
     })
       .then(()=>resolve(transaction))
@@ -17996,24 +18036,8 @@ const submitSimpleTransfer = ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: BigNumberify(transaction.value, transaction.blockchain)
+    value: transaction.value
   })
-};
-
-const argsFromTransaction = ({ transaction, contract })=> {
-  let fragment = contract.interface.fragments.find((fragment) => {
-    return fragment.name == transaction.method
-  });
-
-  if(transaction.params instanceof Array) {
-    return transaction.params
-  } else if (transaction.params instanceof Object) {
-    return fragment.inputs.map((input) => {
-      return transaction.params[input.name]
-    })
-  } else {
-    throw 'Web3Transaction: params have wrong type!'
-  }
 };
 
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
