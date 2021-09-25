@@ -111,6 +111,16 @@ describe('sendTransaction with wallet connect', () => {
           let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
+
+        it('populates basic information for the transaction after sent', async () => {
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(submittedTransaction.id == undefined).toEqual(false)
+          let blockexplorer = {
+            'ethereum': 'https://etherscan.io/tx/',
+            'bsc': 'https://bscscan.com/tx/'
+          }[blockchain]
+          expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
+        })
       })
 
       describe('simple value transfer transaction', ()=>{
@@ -188,6 +198,16 @@ describe('sendTransaction with wallet connect', () => {
           transaction.value = ethers.BigNumber.from('1000000000000000000')
           let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
+        })
+
+        it('populates basic information for the transaction after sent', async () => {
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(submittedTransaction.id == undefined).toEqual(false)
+          let blockexplorer = {
+            'ethereum': 'https://etherscan.io/tx/',
+            'bsc': 'https://bscscan.com/tx/'
+          }[blockchain]
+          expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
       })
 

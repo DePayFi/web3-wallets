@@ -2499,10 +2499,10 @@ del@^5.1.0:
     rimraf "^3.0.0"
     slash "^3.0.0"
 
-depay-web3-blockchains@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/depay-web3-blockchains/-/depay-web3-blockchains-2.5.0.tgz#6816e87b5f94f051133ec9c17aab1851d78e4f16"
-  integrity sha512-MV6lm5BDBZWC8aQaOe7aWCqRzFWV5v4rKbYqpNsnXuBM1vsIkxLXPpXRah2OJA6drajqOtZmkI4Nnr2WDs1CVw==
+depay-web3-blockchains@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/depay-web3-blockchains/-/depay-web3-blockchains-2.6.0.tgz#384081d0df8d4835703ee4faafab10dce8540959"
+  integrity sha512-aKRAgfNmrsqCHEjF7rCdfEBc865nzi82pz7BPG3ga4nO9GwIQLtLM1xcmLYMJITuDM0e9SPrJma9QcFvmTQz+A==
 
 depay-web3-constants@^3.0.1:
   version "3.0.1"

@@ -107,6 +107,16 @@ describe('sendTransaction with web3 wallet', () => {
           let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
         })
+
+        it('populates basic information for the transaction after sent', async () => {
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(submittedTransaction.id == undefined).toEqual(false)
+          let blockexplorer = {
+            'ethereum': 'https://etherscan.io/tx/',
+            'bsc': 'https://bscscan.com/tx/'
+          }[blockchain]
+          expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
+        })
       })
 
       describe('simple value transfer transaction', ()=>{
@@ -184,6 +194,16 @@ describe('sendTransaction with web3 wallet', () => {
         it('sets the from address if transaction has been sent', async ()=>{
           let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(submittedTransaction.from).toEqual(accounts[0])
+        })
+
+        it('populates basic information for the transaction after sent', async () => {
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(submittedTransaction.id == undefined).toEqual(false)
+          let blockexplorer = {
+            'ethereum': 'https://etherscan.io/tx/',
+            'bsc': 'https://bscscan.com/tx/'
+          }[blockchain]
+          expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
       })
 

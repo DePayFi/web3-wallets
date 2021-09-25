@@ -38,7 +38,7 @@
     "tslib": "^2.3.1"
   },
   "peerDependencies": {
-    "depay-web3-blockchains": "^2.5.0",
+    "depay-web3-blockchains": "^2.6.0",
     "depay-web3-constants": "^3.0.1"
   },
   "engines": {
@@ -55,7 +55,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
-    "depay-web3-blockchains": "^2.5.0",
+    "depay-web3-blockchains": "^2.6.0",
     "depay-web3-constants": "^3.0.1",
     "depay-web3-mock": "^8.2.5",
     "eslint": "^7.15.0",

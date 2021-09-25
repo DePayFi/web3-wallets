@@ -1,4 +1,5 @@
 import { Transaction } from '../../Transaction'
+import { Blockchain } from 'depay-web3-blockchains'
 import { ethers } from 'ethers'
 
 const sendTransaction = async ({ transaction, wallet })=> {
@@ -9,7 +10,10 @@ const sendTransaction = async ({ transaction, wallet })=> {
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
   }
-  await executeSubmit({ transaction, provider, signer })
+  await executeSubmit({ transaction, provider, signer }).then((sentTransaction)=>{
+    transaction.id = sentTransaction.hash
+    transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
+  })
   return transaction
 }
 
