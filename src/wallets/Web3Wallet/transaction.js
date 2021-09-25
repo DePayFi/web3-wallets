@@ -1,10 +1,11 @@
+import BigNumberify from '../../helpers/BigNumberify'
 import { ethers } from 'ethers'
 
 const sendTransaction = ({ wallet, transaction })=> {
   return new Promise(async (resolve, reject)=>{
+    transaction.from = await wallet.account()
     let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
     let signer = provider.getSigner(0)
-
     if(await wallet.connectedTo(transaction.blockchain)) {
       executeSubmit({ transaction, provider, signer, resolve, reject })
     } else { // connected to wrong network
@@ -40,14 +41,14 @@ const submitContractInteraction = ({ transaction, signer, provider })=>{
   return contract
     .connect(signer)
     [transaction.method](...argsFromTransaction({ transaction, contract }), {
-      value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined
+      value: BigNumberify(transaction.value, transaction.blockchain)
     })
 }
 
 const submitSimpleTransfer = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
-    value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined
+    value: BigNumberify(transaction.value, transaction.blockchain)
   })
 }
 

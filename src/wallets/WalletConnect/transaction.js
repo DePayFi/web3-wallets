@@ -1,3 +1,4 @@
+import BigNumberify from '../../helpers/BigNumberify'
 import { ethers } from 'ethers'
 
 const sendTransaction = ({ wallet, transaction })=> {
@@ -38,7 +39,7 @@ const submitContractInteraction = ({ transaction, wallet })=>{
     wallet.connector.sendTransaction({
       from: transaction.from,
       to: transaction.to,
-      value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined,
+      value: BigNumberify(transaction.value, transaction.blockchain),
       data: populatedTransaction.data
     })
       .then(()=>resolve(transaction))
@@ -50,7 +51,7 @@ const submitSimpleTransfer = ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()) : undefined
+    value: BigNumberify(transaction.value, transaction.blockchain)
   })
 }
 
