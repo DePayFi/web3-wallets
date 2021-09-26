@@ -11,8 +11,24 @@ const sendTransaction = async ({ transaction, wallet })=> {
     await wallet.switchTo(transaction.blockchain)
   }
   await executeSubmit({ transaction, provider, signer }).then((sentTransaction)=>{
-    transaction.id = sentTransaction.hash
-    transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
+    if (sentTransaction) {
+      transaction.id = sentTransaction.hash
+      transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
+      if (transaction.sent) transaction.sent(transaction)
+      sentTransaction.wait(1).then(() => {
+        transaction._confirmed = true
+        if (transaction.confirmed) transaction.confirmed(transaction)
+      }).catch((error)=>{
+        transaction._failed = true
+        if(transaction.failed) transaction.failed(transaction)
+      })
+      sentTransaction.wait(12).then(() => {
+        transaction._ensured = true
+        if (transaction.ensured) transaction.ensured(transaction)
+      })
+    } else {
+      throw('Submitting transaction failed!')
+    }
   })
   return transaction
 }

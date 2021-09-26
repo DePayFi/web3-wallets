@@ -290,6 +290,12 @@ in case wallet is connected to the wrong network and network cant be switched au
 
 `value: BigNumber`: Amount/value of the native token the transaction is forwarding as part of the interaction.
 
+`confirmation: Promise`: Returns a promise that resolves once the transaction confirms.
+
+`ensurance: Promise`: Returns a promise that resolves once the transaction confirms enough times to consider it ensured.
+
+`failure: Promise`: Returns a promise that resolves once the transaction fails.
+
 ## Development
 
 ### Get started

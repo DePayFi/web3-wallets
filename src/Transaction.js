@@ -15,7 +15,7 @@ class Transaction {
     this.sent = sent
     this.confirmed = confirmed
     this.ensured = ensured
-    this.failed = ensured
+    this.failed = failed
     this._confirmed = false
     this._ensured = false
     this._failed = false

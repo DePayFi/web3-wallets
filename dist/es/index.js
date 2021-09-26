@@ -17771,7 +17771,7 @@ class Transaction {
     this.sent = sent;
     this.confirmed = confirmed;
     this.ensured = ensured;
-    this.failed = ensured;
+    this.failed = failed;
     this._confirmed = false;
     this._ensured = false;
     this._failed = false;
@@ -17856,8 +17856,24 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
     await wallet.switchTo(transaction.blockchain);
   }
   await executeSubmit$1({ transaction, provider, signer }).then((sentTransaction)=>{
-    transaction.id = sentTransaction.hash;
-    transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+    if (sentTransaction) {
+      transaction.id = sentTransaction.hash;
+      transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+      if (transaction.sent) transaction.sent(transaction);
+      sentTransaction.wait(1).then(() => {
+        transaction._confirmed = true;
+        if (transaction.confirmed) transaction.confirmed(transaction);
+      }).catch((error)=>{
+        transaction._failed = true;
+        if(transaction.failed) transaction.failed(transaction);
+      });
+      sentTransaction.wait(12).then(() => {
+        transaction._ensured = true;
+        if (transaction.ensured) transaction.ensured(transaction);
+      });
+    } else {
+      throw('Submitting transaction failed!')
+    }
   });
   return transaction
 };
@@ -17998,15 +18014,53 @@ class MetaMask extends Web3Wallet {constructor(...args) { super(...args); MetaMa
   __init5() {this.install = 'https://metamask.io/download.html';}
 }
 
+class WalletConnectProvider extends JsonRpcProvider {
+
+  constructor({ connector, chainId }) {
+    super();
+    this.chainId = chainId;
+    this.connector = connector;
+  }
+
+  send(method, params) {
+    switch(method) {
+      case 'eth_chainId':
+        return this.chainId
+      default:
+        return this.connector.sendCustomRequest({ method, params })
+    }
+  }
+
+}
+
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   await transaction.prepare({ wallet });
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     throw({ code: 'WRONG_NETWORK' })
   }
-  await executeSubmit({ transaction, wallet }).then((tx)=>{
-    transaction.id = tx;
-    transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+  await executeSubmit({ transaction, wallet }).then(async (tx)=>{
+    if (tx) {
+      let blockchain = Blockchain.findByName(transaction.blockchain);
+      transaction.id = tx;
+      transaction.url = blockchain.explorerUrlFor({ transaction });
+      if (transaction.sent) transaction.sent(transaction);
+      let provider = new WalletConnectProvider({ connector: wallet.connector, chainId: blockchain.id });
+      let sentTransaction = await provider.getTransaction(tx);
+      sentTransaction.wait(1).then(() => {
+        transaction._confirmed = true;
+        if (transaction.confirmed) transaction.confirmed(transaction);
+      }).catch((error)=>{
+        transaction._failed = true;
+        if(transaction.failed) transaction.failed(transaction);
+      });
+      sentTransaction.wait(12).then(() => {
+        transaction._ensured = true;
+        if (transaction.ensured) transaction.ensured(transaction);
+      });
+    } else {
+      throw('Submitting transaction failed!')
+    }
   });
   return transaction
 };

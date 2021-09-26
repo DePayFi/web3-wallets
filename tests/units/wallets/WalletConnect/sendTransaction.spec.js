@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { getWallet, wallets } from 'src'
-import { mock, connect, resetMocks } from 'depay-web3-mock'
+import { mock, connect, resetMocks, confirm, increaseBlock, fail } from 'depay-web3-mock'
 
 describe('sendTransaction with wallet connect', () => {
 
@@ -121,6 +121,49 @@ describe('sendTransaction with wallet connect', () => {
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
+
+        it("calls the transaction's sent callback", async ()=> {
+          let sentCalled = false
+          transaction.sent = function(){ sentCalled = true}
+          expect(sentCalled).toEqual(false)
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(sentCalled).toEqual(true)
+        })
+
+        it("calls the transaction's confirmed callback", async ()=> {
+          let confirmedCalled = false
+          transaction.confirmed = function(){ confirmedCalled = true }
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(confirmedCalled).toEqual(false)
+          confirm(mockedTransaction)
+          await submittedTransaction.confirmation()
+          expect(confirmedCalled).toEqual(true)
+        })
+
+        it("calls the transaction's ensured callback", async ()=> {
+          let ensuredCalled = false
+          transaction.ensured = function(){ ensuredCalled = true }
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(ensuredCalled).toEqual(false)
+          confirm(mockedTransaction)
+          await submittedTransaction.confirmation()
+          expect(ensuredCalled).toEqual(false)
+          increaseBlock(12)
+          await submittedTransaction.ensurance()
+          expect(ensuredCalled).toEqual(true)
+        })
+
+        it("calls the transaction's failed callback", async ()=> {
+          let failedCalled = false
+          transaction.failed = function(){ 
+            failedCalled = true 
+          }
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(failedCalled).toEqual(false)
+          fail(mockedTransaction)
+          await submittedTransaction.failure()
+          expect(failedCalled).toEqual(true)
+        })
       })
 
       describe('simple value transfer transaction', ()=>{
@@ -208,6 +251,49 @@ describe('sendTransaction with wallet connect', () => {
             'bsc': 'https://bscscan.com/tx/'
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
+        })
+
+        it("calls the transaction's sent callback", async ()=> {
+          let sentCalled = false
+          transaction.sent = function(){ sentCalled = true}
+          expect(sentCalled).toEqual(false)
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(sentCalled).toEqual(true)
+        })
+
+        it("calls the transaction's confirmed callback", async ()=> {
+          let confirmedCalled = false
+          transaction.confirmed = function(){ confirmedCalled = true }
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(confirmedCalled).toEqual(false)
+          confirm(mockedTransaction)
+          await submittedTransaction.confirmation()
+          expect(confirmedCalled).toEqual(true)
+        })
+
+        it("calls the transaction's ensured callback", async ()=> {
+          let ensuredCalled = false
+          transaction.ensured = function(){ ensuredCalled = true }
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(ensuredCalled).toEqual(false)
+          confirm(mockedTransaction)
+          await submittedTransaction.confirmation()
+          expect(ensuredCalled).toEqual(false)
+          increaseBlock(12)
+          await submittedTransaction.ensurance()
+          expect(ensuredCalled).toEqual(true)
+        })
+
+        it("calls the transaction's failed callback", async ()=> {
+          let failedCalled = false
+          transaction.failed = function(){ 
+            failedCalled = true 
+          }
+          let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(failedCalled).toEqual(false)
+          fail(mockedTransaction)
+          await submittedTransaction.failure()
+          expect(failedCalled).toEqual(true)
         })
       })
 
