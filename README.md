@@ -214,7 +214,7 @@ let sentTransaction = await wallet.sendTransaction({
 
 ```
 
-`blockchain: String`: Name of the blockchain ['ethereum'].
+`blockchain: String`: Name of the blockchain e.g. 'ethereum'.
 
 `to String`: Address of the contract to be transacted with.
 
