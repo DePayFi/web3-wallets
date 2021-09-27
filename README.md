@@ -317,7 +317,15 @@ let cost = await wallet.estimate({
 }) // 22111100000
 ```
 
-Instead of a BigNumber estimating the cost of the transaction, `estimate` rejects the promise in case the transaction is not possible to be executed.
+Returns the cost of the estimate, otherwise rejects if transaction is not executable.
+
+Rejects with 
+
+```javascript
+{ code: 'WRONG_NETWORK' }
+```
+
+in case wallet is connected to the wrong network.
 
 ## Development
 
