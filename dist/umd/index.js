@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('depay-web3-constants'), require('buffer'), require('util'), require('@walletconnect/qrcode-modal'), require('@walletconnect/client')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'depay-web3-constants', 'buffer', 'util', '@walletconnect/qrcode-modal', '@walletconnect/client'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnectQRCodeModal, global.WalletConnect));
-}(this, (function (exports, depayWeb3Blockchains, depayWeb3Constants, require$$0, require$$0$1, QRCodeModal, WalletConnect) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('depay-web3-constants'), require('buffer'), require('util'), require('@walletconnect/qrcode-modal'), require('@walletconnect/client'), require('depay-web3-client')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'depay-web3-constants', 'buffer', 'util', '@walletconnect/qrcode-modal', '@walletconnect/client', 'depay-web3-client'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnectQRCodeModal, global.WalletConnect, global.Web3Client));
+}(this, (function (exports, depayWeb3Blockchains, depayWeb3Constants, require$$0, require$$0$1, QRCodeModal, WalletConnect, depayWeb3Client) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -18061,25 +18061,6 @@
 	  })
 	};
 
-	class WalletConnectProvider extends JsonRpcProvider {
-
-	  constructor({ connector, chainId }) {
-	    super();
-	    this.chainId = chainId;
-	    this.connector = connector;
-	  }
-
-	  send(method, params) {
-	    switch(method) {
-	      case 'eth_chainId':
-	        return this.chainId
-	      default:
-	        return this.connector.sendCustomRequest({ method, params })
-	    }
-	  }
-
-	}
-
 	function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 	const sendTransaction = async ({ transaction, wallet })=> {
 	  transaction = new Transaction(transaction);
@@ -18093,8 +18074,7 @@
 	      transaction.id = tx;
 	      transaction.url = blockchain.explorerUrlFor({ transaction });
 	      if (transaction.sent) transaction.sent(transaction);
-	      let provider = new WalletConnectProvider({ connector: wallet.connector, chainId: blockchain.id });
-	      let sentTransaction = await provider.getTransaction(tx);
+	      let sentTransaction = await depayWeb3Client.provider(transaction.blockchain).getTransaction(tx);
 	      sentTransaction.wait(1).then(() => {
 	        transaction._confirmed = true;
 	        if (transaction.confirmed) transaction.confirmed(transaction);

@@ -8,6 +8,7 @@ var require$$0 = require('buffer');
 var require$$0$1 = require('util');
 var QRCodeModal = require('@walletconnect/qrcode-modal');
 var WalletConnect = require('@walletconnect/client');
+var depayWeb3Client = require('depay-web3-client');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -18066,25 +18067,6 @@ const estimate = async ({ transaction, wallet })=> {
   })
 };
 
-class WalletConnectProvider extends JsonRpcProvider {
-
-  constructor({ connector, chainId }) {
-    super();
-    this.chainId = chainId;
-    this.connector = connector;
-  }
-
-  send(method, params) {
-    switch(method) {
-      case 'eth_chainId':
-        return this.chainId
-      default:
-        return this.connector.sendCustomRequest({ method, params })
-    }
-  }
-
-}
-
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
@@ -18098,8 +18080,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.id = tx;
       transaction.url = blockchain.explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
-      let provider = new WalletConnectProvider({ connector: wallet.connector, chainId: blockchain.id });
-      let sentTransaction = await provider.getTransaction(tx);
+      let sentTransaction = await depayWeb3Client.provider(transaction.blockchain).getTransaction(tx);
       sentTransaction.wait(1).then(() => {
         transaction._confirmed = true;
         if (transaction.confirmed) transaction.confirmed(transaction);

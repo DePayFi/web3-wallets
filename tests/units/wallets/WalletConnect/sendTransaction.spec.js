@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { getWallet, wallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from 'depay-web3-mock'
+import { provider } from 'depay-web3-client'
 
 describe('sendTransaction with wallet connect', () => {
 
@@ -13,7 +14,9 @@ describe('sendTransaction with wallet connect', () => {
       beforeEach(resetMocks)
       afterEach(resetMocks)
       beforeEach(async ()=>{
-        mock({ blockchain, accounts: { return: accounts }, wallet: 'walletconnect', connector: wallets.WalletConnect.connector })
+        mock({ blockchain, accounts: { return: accounts } })
+        mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect.connector })
+        mock({ blockchain, provider: provider(blockchain) })
         await wallets.WalletConnect.connect()
         wallet = getWallet()
       })
@@ -319,7 +322,7 @@ describe('sendTransaction with wallet connect', () => {
             value: 1
           }
 
-          mock({ blockchain: otherBlockchain, accounts: { return: accounts } })
+          mock({ blockchain: otherBlockchain, provider: provider(blockchain), accounts: { return: accounts } })
         })
 
         it('rejects to switch network because it cant switch network automatically (user has to switch)', async ()=> {

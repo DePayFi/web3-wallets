@@ -1,7 +1,7 @@
 import { Blockchain } from 'depay-web3-blockchains'
 import { ethers } from 'ethers'
+import { provider } from 'depay-web3-client'
 import { Transaction } from '../../Transaction'
-import { WalletConnectProvider } from './provider'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
@@ -15,8 +15,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.id = tx
       transaction.url = blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
-      let provider = new WalletConnectProvider({ connector: wallet.connector, chainId: blockchain.id })
-      let sentTransaction = await provider.getTransaction(tx)
+      let sentTransaction = await provider(transaction.blockchain).getTransaction(tx)
       sentTransaction.wait(1).then(() => {
         transaction._confirmed = true
         if (transaction.confirmed) transaction.confirmed(transaction)
