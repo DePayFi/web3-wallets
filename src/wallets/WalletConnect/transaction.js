@@ -53,7 +53,7 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: transaction.value,
+    value: transaction.value?.toString(),
     data: populatedTransaction.data
   })
 }
@@ -62,7 +62,7 @@ const submitSimpleTransfer = ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: transaction.value
+    value: transaction.value?.toString()
   })
 }
 

@@ -17768,6 +17768,7 @@ function parseUnits(value, unitName) {
     return parseFixed(value, (unitName != null) ? unitName : 18);
 }
 
+function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Transaction {
 
   constructor({ blockchain, from, to, api, method, params, value, sent, confirmed, ensured, failed }) {
@@ -17778,7 +17779,7 @@ class Transaction {
     this.api = api;
     this.method = method;
     this.params = params;
-    this.value = this.bigNumberify(value);
+    this.value = _optionalChain$1([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
     this.sent = sent;
     this.confirmed = confirmed;
     this.ensured = ensured;
@@ -17792,9 +17793,9 @@ class Transaction {
     this.from = await wallet.account();
   }
 
-  bigNumberify(value) {
+  static bigNumberify(value, blockchain) {
     if (typeof value === 'number') {
-      return parseUnits(value.toString(), depayWeb3Constants.CONSTANTS[this.blockchain].DECIMALS)
+      return parseUnits(value.toString(), depayWeb3Constants.CONSTANTS[blockchain].DECIMALS)
     } else if (value && value.toString) {
       return BigNumber.from(value.toString())
     } else {
@@ -17902,14 +17903,14 @@ const submitContractInteraction$1 = ({ transaction, signer, provider })=>{
   return contract
     .connect(signer)
     [transaction.method](...transaction.getContractArguments({ contract }), {
-      value: transaction.value
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
     })
 };
 
 const submitSimpleTransfer$1 = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
-    value: transaction.value
+    value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
   })
 };
 

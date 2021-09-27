@@ -11,7 +11,7 @@ class Transaction {
     this.api = api
     this.method = method
     this.params = params
-    this.value = this.bigNumberify(value)
+    this.value = Transaction.bigNumberify(value, blockchain)?.toString()
     this.sent = sent
     this.confirmed = confirmed
     this.ensured = ensured
@@ -25,9 +25,9 @@ class Transaction {
     this.from = await wallet.account()
   }
 
-  bigNumberify(value) {
+  static bigNumberify(value, blockchain) {
     if (typeof value === 'number') {
-      return ethers.utils.parseUnits(value.toString(), CONSTANTS[this.blockchain].DECIMALS)
+      return ethers.utils.parseUnits(value.toString(), CONSTANTS[blockchain].DECIMALS)
     } else if (value && value.toString) {
       return ethers.BigNumber.from(value.toString())
     } else {

@@ -46,14 +46,14 @@ const submitContractInteraction = ({ transaction, signer, provider })=>{
   return contract
     .connect(signer)
     [transaction.method](...transaction.getContractArguments({ contract }), {
-      value: transaction.value
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
     })
 }
 
 const submitSimpleTransfer = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
-    value: transaction.value
+    value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
   })
 }
 
