@@ -1,4 +1,5 @@
 import { Blockchain } from 'depay-web3-blockchains'
+import { estimate } from './Web3Wallet/estimate'
 import { sendTransaction } from './Web3Wallet/transaction'
 
 export default class Web3Wallet {
@@ -10,6 +11,12 @@ export default class Web3Wallet {
   constructor () {
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
+        wallet: this,
+        transaction
+      })
+    }
+    this.estimate = (transaction)=> {
+      return estimate({
         wallet: this,
         transaction
       })

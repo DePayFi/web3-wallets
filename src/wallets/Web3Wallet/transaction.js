@@ -4,12 +4,12 @@ import { ethers } from 'ethers'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
-  await transaction.prepare({ wallet })
-  let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
-  let signer = provider.getSigner(0)
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
   }
+  await transaction.prepare({ wallet })
+  let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+  let signer = provider.getSigner(0)
   await executeSubmit({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash

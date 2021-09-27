@@ -17768,7 +17768,7 @@ function parseUnits(value, unitName) {
     return parseFixed(value, (unitName != null) ? unitName : 18);
 }
 
-function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Transaction {
 
   constructor({ blockchain, from, to, api, method, params, value, sent, confirmed, ensured, failed }) {
@@ -17779,7 +17779,7 @@ class Transaction {
     this.api = api;
     this.method = method;
     this.params = params;
-    this.value = _optionalChain$2([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+    this.value = _optionalChain$4([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
     this.sent = sent;
     this.confirmed = confirmed;
     this.ensured = ensured;
@@ -17859,14 +17859,26 @@ class Transaction {
   }
 }
 
-const sendTransaction$1 = async ({ transaction, wallet })=> {
+function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+const estimate$1 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
-  await transaction.prepare({ wallet });
-  let provider = new Web3Provider(window.ethereum, 'any');
-  let signer = provider.getSigner(0);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
   }
+  let provider = new Web3Provider(window.ethereum, 'any');
+  let signer = provider.getSigner(0);
+  let contract = new Contract(transaction.to, _optionalChain$3([transaction, 'optionalAccess', _ => _.api]), provider);
+  return contract.connect(signer).estimateGas[transaction.method](...transaction.getContractArguments({ contract }))
+};
+
+const sendTransaction$1 = async ({ transaction, wallet })=> {
+  transaction = new Transaction(transaction);
+  if((await wallet.connectedTo(transaction.blockchain)) == false) {
+    await wallet.switchTo(transaction.blockchain);
+  }
+  await transaction.prepare({ wallet });
+  let provider = new Web3Provider(window.ethereum, 'any');
+  let signer = provider.getSigner(0);
   await executeSubmit$1({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash;
@@ -17923,6 +17935,12 @@ class Web3Wallet {
   constructor () {Web3Wallet.prototype.__init.call(this);Web3Wallet.prototype.__init2.call(this);Web3Wallet.prototype.__init3.call(this);
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction$1({
+        wallet: this,
+        transaction
+      })
+    };
+    this.estimate = (transaction)=> {
+      return estimate$1({
         wallet: this,
         transaction
       })
@@ -18026,6 +18044,28 @@ class MetaMask extends Web3Wallet {constructor(...args) { super(...args); MetaMa
   __init5() {this.install = 'https://metamask.io/download.html';}
 }
 
+function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+const estimate = async ({ transaction, wallet })=> {
+  transaction = new Transaction(transaction);
+  if((await wallet.connectedTo(transaction.blockchain)) == false) {
+    throw({ code: 'WRONG_NETWORK' })
+  }
+  let from = await wallet.account();
+  let contract = new Contract(transaction.to, transaction.api);
+  let populatedTransaction = await contract.populateTransaction[transaction.method].apply(
+    null, transaction.getContractArguments({ contract })
+  );
+  return wallet.connector.sendCustomRequest({
+    method: 'eth_estimateGas',
+    params: [{
+      from,
+      to: transaction.to,
+      value: _optionalChain$2([transaction, 'access', _ => _.value, 'optionalAccess', _2 => _2.toString, 'call', _3 => _3()]),
+      data: populatedTransaction.data
+    }]
+  })
+};
+
 class WalletConnectProvider extends JsonRpcProvider {
 
   constructor({ connector, chainId }) {
@@ -18122,6 +18162,12 @@ class WalletConnectWallet {
     this.connector = this.newWalletConnectInstance();
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
+        wallet: this,
+        transaction
+      })
+    };
+    this.estimate = (transaction)=> {
+      return estimate({
         wallet: this,
         transaction
       })
