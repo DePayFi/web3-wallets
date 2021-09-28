@@ -20,18 +20,19 @@ const sendTransaction = async ({ transaction, wallet })=> {
         transaction._failed = true
         console.log('Error retrieving transaction')
         if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction')
+      } else {
+        sentTransaction.wait(1).then(() => {
+          transaction._confirmed = true
+          if (transaction.confirmed) transaction.confirmed(transaction)
+        }).catch((error)=>{
+          transaction._failed = true
+          if(transaction.failed) transaction.failed(transaction, error)
+        })
+        sentTransaction.wait(12).then(() => {
+          transaction._ensured = true
+          if (transaction.ensured) transaction.ensured(transaction)
+        })
       }
-      sentTransaction.wait(1).then(() => {
-        transaction._confirmed = true
-        if (transaction.confirmed) transaction.confirmed(transaction)
-      }).catch((error)=>{
-        transaction._failed = true
-        if(transaction.failed) transaction.failed(transaction, error)
-      })
-      sentTransaction.wait(12).then(() => {
-        transaction._ensured = true
-        if (transaction.ensured) transaction.ensured(transaction)
-      })
     } else {
       throw('Submitting transaction failed!')
     }
@@ -43,11 +44,15 @@ const retrieveTransaction = async (tx, blockchain)=>{
   let sentTransaction
   const maxRetries = 10
   let attempt = 1
+  console.log('ATTEMPT', tx)
   while (attempt <= maxRetries && !sentTransaction) {
+    console.log('ATTEMPT', attempt)
     sentTransaction = await provider(blockchain).getTransaction(tx)
+    console.log('sentTransaction', sentTransaction)
     await (()=>{ return new Promise((resolve)=>setTimeout(resolve, 1000)) })
     attempt++;
   }
+  console.log('return', sentTransaction)
   return sentTransaction
 }
 
