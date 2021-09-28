@@ -18079,18 +18079,19 @@
 	        transaction._failed = true;
 	        console.log('Error retrieving transaction');
 	        if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
+	      } else {
+	        sentTransaction.wait(1).then(() => {
+	          transaction._confirmed = true;
+	          if (transaction.confirmed) transaction.confirmed(transaction);
+	        }).catch((error)=>{
+	          transaction._failed = true;
+	          if(transaction.failed) transaction.failed(transaction, error);
+	        });
+	        sentTransaction.wait(12).then(() => {
+	          transaction._ensured = true;
+	          if (transaction.ensured) transaction.ensured(transaction);
+	        });
 	      }
-	      sentTransaction.wait(1).then(() => {
-	        transaction._confirmed = true;
-	        if (transaction.confirmed) transaction.confirmed(transaction);
-	      }).catch((error)=>{
-	        transaction._failed = true;
-	        if(transaction.failed) transaction.failed(transaction, error);
-	      });
-	      sentTransaction.wait(12).then(() => {
-	        transaction._ensured = true;
-	        if (transaction.ensured) transaction.ensured(transaction);
-	      });
 	    } else {
 	      throw('Submitting transaction failed!')
 	    }
@@ -18100,11 +18101,11 @@
 
 	const retrieveTransaction = async (tx, blockchain)=>{
 	  let sentTransaction;
-	  const maxRetries = 10;
+	  const maxRetries = 120;
 	  let attempt = 1;
 	  while (attempt <= maxRetries && !sentTransaction) {
 	    sentTransaction = await depayWeb3Client.provider(blockchain).getTransaction(tx);
-	    await (()=>{ return new Promise((resolve)=>setTimeout(resolve, 1000)) });
+	    await (new Promise((resolve)=>setTimeout(resolve, 5000)));
 	    attempt++;
 	  }
 	  return sentTransaction

@@ -42,17 +42,13 @@ const sendTransaction = async ({ transaction, wallet })=> {
 
 const retrieveTransaction = async (tx, blockchain)=>{
   let sentTransaction
-  const maxRetries = 10
+  const maxRetries = 120
   let attempt = 1
-  console.log('ATTEMPT', tx)
   while (attempt <= maxRetries && !sentTransaction) {
-    console.log('ATTEMPT', attempt)
     sentTransaction = await provider(blockchain).getTransaction(tx)
-    console.log('sentTransaction', sentTransaction)
-    await (()=>{ return new Promise((resolve)=>setTimeout(resolve, 1000)) })
+    await (new Promise((resolve)=>setTimeout(resolve, 5000)))
     attempt++;
   }
-  console.log('return', sentTransaction)
   return sentTransaction
 }
 
