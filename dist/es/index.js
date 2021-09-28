@@ -17879,7 +17879,7 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
         if (transaction.confirmed) transaction.confirmed(transaction);
       }).catch((error)=>{
         transaction._failed = true;
-        if(transaction.failed) transaction.failed(transaction);
+        if(transaction.failed) transaction.failed(transaction, error);
       });
       sentTransaction.wait(12).then(() => {
         transaction._ensured = true;
@@ -18075,7 +18075,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
         if (transaction.confirmed) transaction.confirmed(transaction);
       }).catch((error)=>{
         transaction._failed = true;
-        if(transaction.failed) transaction.failed(transaction);
+        if(transaction.failed) transaction.failed(transaction, error);
       });
       sentTransaction.wait(12).then(() => {
         transaction._ensured = true;

@@ -188,10 +188,10 @@ let sentTransaction = await wallet.sendTransaction({
     data: []
   },
   value: "0",
-  sent: function(){},
-  confirmed: function(){},
-  ensured: function(){},
-  failed: function(error){}
+  sent: function(transaction){},
+  confirmed: function(transaction){},
+  ensured: function(transaction){},
+  failed: function(transaction){}
 })
 
 ```
@@ -206,10 +206,10 @@ let sentTransaction = await wallet.sendTransaction({
   blockchain: 'ethereum',
   to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
   value: "1000000000000000",
-  sent: function(){},
-  confirmed: function(){},
-  ensured: function(){},
-  failed: function(error){}
+  sent: function(transaction){},
+  confirmed: function(transaction){},
+  ensured: function(transaction){},
+  failed: function(transaction){}
 })
 
 Arguments for `sendTransaction`:
