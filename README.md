@@ -268,9 +268,9 @@ transaction.value // '1000000000000000000'
 
 in case wallet is connected to the wrong network and network cant be switched automatically.
 
-#### returns Transaction
+#### Transaction
 
-`sendTransaction` returns an instance of `Transaction` in the following format:
+Returned instances of `Transaction` have the following format:
 
 `blockchain: string`: Blockchain the transaction belongs to.
 
