@@ -18098,6 +18098,7 @@ const retrieveTransaction = async (tx, blockchain)=>{
   let sentTransaction;
   const maxRetries = 120;
   let attempt = 1;
+  sentTransaction = await provider(blockchain).getTransaction(tx);
   while (attempt <= maxRetries && !sentTransaction) {
     sentTransaction = await provider(blockchain).getTransaction(tx);
     await (new Promise((resolve)=>setTimeout(resolve, 5000)));
