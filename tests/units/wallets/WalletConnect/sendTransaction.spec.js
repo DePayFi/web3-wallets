@@ -60,6 +60,8 @@ describe('sendTransaction with wallet connect', () => {
         
         it('allows to submit contract transaction', async ()=> {
           let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(submittedTransaction.id).toBeDefined()
+          expect(submittedTransaction.url).toBeDefined()
           expect(submittedTransaction.blockchain).toEqual(blockchain)
           expect(submittedTransaction.from).toEqual(accounts[0])
           expect(submittedTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
@@ -126,46 +128,67 @@ describe('sendTransaction with wallet connect', () => {
         })
 
         it("calls the transaction's sent callback", async ()=> {
-          let sentCalled = false
-          transaction.sent = function(){ sentCalled = true}
-          expect(sentCalled).toEqual(false)
-          let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(sentCalled).toEqual(true)
+          let sentCallbackTransaction;
+          transaction.sent = function(transaction){ sentCallbackTransaction = transaction  }
+          await wallet.sendTransaction(transaction)
+          expect(sentCallbackTransaction.id).toBeDefined()
+          expect(sentCallbackTransaction.url).toBeDefined()
+          expect(sentCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(sentCallbackTransaction.from).toEqual(accounts[0])
+          expect(sentCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(sentCallbackTransaction.api).toEqual(api)
+          expect(sentCallbackTransaction.method).toEqual(method)
+          expect(sentCallbackTransaction.params).toEqual(params)
         })
 
         it("calls the transaction's confirmed callback", async ()=> {
-          let confirmedCalled = false
-          transaction.confirmed = function(){ confirmedCalled = true }
+          let confirmedCallbackTransaction
+          transaction.confirmed = function(transaction){ confirmedCallbackTransaction = transaction }
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(confirmedCalled).toEqual(false)
           confirm(mockedTransaction)
           await submittedTransaction.confirmation()
-          expect(confirmedCalled).toEqual(true)
+          expect(confirmedCallbackTransaction.id).toBeDefined()
+          expect(confirmedCallbackTransaction.url).toBeDefined()
+          expect(confirmedCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(confirmedCallbackTransaction.from).toEqual(accounts[0])
+          expect(confirmedCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(confirmedCallbackTransaction.api).toEqual(api)
+          expect(confirmedCallbackTransaction.method).toEqual(method)
+          expect(confirmedCallbackTransaction.params).toEqual(params)
         })
 
         it("calls the transaction's ensured callback", async ()=> {
-          let ensuredCalled = false
-          transaction.ensured = function(){ ensuredCalled = true }
+          let ensuredCallbackTransaction
+          transaction.ensured = function(transaction){ ensuredCallbackTransaction = transaction }
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(ensuredCalled).toEqual(false)
           confirm(mockedTransaction)
           await submittedTransaction.confirmation()
-          expect(ensuredCalled).toEqual(false)
           increaseBlock(12)
           await submittedTransaction.ensurance()
-          expect(ensuredCalled).toEqual(true)
+          expect(ensuredCallbackTransaction.id).toBeDefined()
+          expect(ensuredCallbackTransaction.url).toBeDefined()
+          expect(ensuredCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(ensuredCallbackTransaction.from).toEqual(accounts[0])
+          expect(ensuredCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(ensuredCallbackTransaction.api).toEqual(api)
+          expect(ensuredCallbackTransaction.method).toEqual(method)
+          expect(ensuredCallbackTransaction.params).toEqual(params)
         })
 
         it("calls the transaction's failed callback", async ()=> {
-          let failedCalled = false
-          transaction.failed = function(){ 
-            failedCalled = true 
-          }
+          let failedCallbackTransaction
+          transaction.failed = function(transaction){ failedCallbackTransaction = transaction }
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(failedCalled).toEqual(false)
           fail(mockedTransaction)
           await submittedTransaction.failure()
-          expect(failedCalled).toEqual(true)
+          expect(failedCallbackTransaction.id).toBeDefined()
+          expect(failedCallbackTransaction.url).toBeDefined()
+          expect(failedCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(failedCallbackTransaction.from).toEqual(accounts[0])
+          expect(failedCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(failedCallbackTransaction.api).toEqual(api)
+          expect(failedCallbackTransaction.method).toEqual(method)
+          expect(failedCallbackTransaction.params).toEqual(params)
         })
       })
 
@@ -189,6 +212,8 @@ describe('sendTransaction with wallet connect', () => {
 
         it('allows to submit value transfer transaction', async ()=> {
           let submittedTransaction = await wallet.sendTransaction(transaction)
+          expect(submittedTransaction.id).toBeDefined()
+          expect(submittedTransaction.url).toBeDefined()
           expect(submittedTransaction.blockchain).toEqual(blockchain)
           expect(submittedTransaction.from).toEqual(accounts[0])
           expect(submittedTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
@@ -257,46 +282,59 @@ describe('sendTransaction with wallet connect', () => {
         })
 
         it("calls the transaction's sent callback", async ()=> {
-          let sentCalled = false
-          transaction.sent = function(){ sentCalled = true}
-          expect(sentCalled).toEqual(false)
-          let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(sentCalled).toEqual(true)
-        })
+          let sentCallbackTransaction;
+          transaction.sent = function(transaction){ sentCallbackTransaction = transaction  }
+          await wallet.sendTransaction(transaction)
+          expect(sentCallbackTransaction.id).toBeDefined()
+          expect(sentCallbackTransaction.url).toBeDefined()
+          expect(sentCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(sentCallbackTransaction.from).toEqual(accounts[0])
+          expect(sentCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(sentCallbackTransaction.value.toString()).toEqual('1000000000000000000')
+        });
 
         it("calls the transaction's confirmed callback", async ()=> {
-          let confirmedCalled = false
-          transaction.confirmed = function(){ confirmedCalled = true }
+          let confirmedCallbackTransaction
+          transaction.confirmed = function(transaction){ confirmedCallbackTransaction = transaction }
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(confirmedCalled).toEqual(false)
           confirm(mockedTransaction)
           await submittedTransaction.confirmation()
-          expect(confirmedCalled).toEqual(true)
+          expect(confirmedCallbackTransaction.id).toBeDefined()
+          expect(confirmedCallbackTransaction.url).toBeDefined()
+          expect(confirmedCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(confirmedCallbackTransaction.from).toEqual(accounts[0])
+          expect(confirmedCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(confirmedCallbackTransaction.value.toString()).toEqual('1000000000000000000')
         })
 
         it("calls the transaction's ensured callback", async ()=> {
-          let ensuredCalled = false
-          transaction.ensured = function(){ ensuredCalled = true }
+          let ensuredCallbackTransaction
+          transaction.ensured = function(transaction){ ensuredCallbackTransaction = transaction }
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(ensuredCalled).toEqual(false)
           confirm(mockedTransaction)
           await submittedTransaction.confirmation()
-          expect(ensuredCalled).toEqual(false)
           increaseBlock(12)
           await submittedTransaction.ensurance()
-          expect(ensuredCalled).toEqual(true)
+          expect(ensuredCallbackTransaction.id).toBeDefined()
+          expect(ensuredCallbackTransaction.url).toBeDefined()
+          expect(ensuredCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(ensuredCallbackTransaction.from).toEqual(accounts[0])
+          expect(ensuredCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(ensuredCallbackTransaction.value.toString()).toEqual('1000000000000000000')
         })
 
         it("calls the transaction's failed callback", async ()=> {
-          let failedCalled = false
-          transaction.failed = function(){ 
-            failedCalled = true 
-          }
+          let failedCallbackTransaction
+          transaction.failed = function(transaction){ failedCallbackTransaction = transaction }
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(failedCalled).toEqual(false)
           fail(mockedTransaction)
           await submittedTransaction.failure()
-          expect(failedCalled).toEqual(true)
+          expect(failedCallbackTransaction.id).toBeDefined()
+          expect(failedCallbackTransaction.url).toBeDefined()
+          expect(failedCallbackTransaction.blockchain).toEqual(blockchain)
+          expect(failedCallbackTransaction.from).toEqual(accounts[0])
+          expect(failedCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(failedCallbackTransaction.value.toString()).toEqual('1000000000000000000')
         })
       })
 

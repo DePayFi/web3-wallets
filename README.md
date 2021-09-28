@@ -212,8 +212,9 @@ let sentTransaction = await wallet.sendTransaction({
   failed: function(error){}
 })
 
-```
+Arguments for `sendTransaction`:
 
+```
 `blockchain: String`: Name of the blockchain e.g. 'ethereum'.
 
 `to String`: Address of the contract to be transacted with.
@@ -270,7 +271,7 @@ in case wallet is connected to the wrong network and network cant be switched au
 
 #### Transaction
 
-Returned instances of `Transaction` have the following format:
+Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `confirmed`, `ensured` or `failed` callback) have the following format:
 
 `blockchain: string`: Blockchain the transaction belongs to.
 
