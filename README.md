@@ -31,8 +31,17 @@ This library supports the following blockchains:
 This library supports the following wallets:
 
 - [MetaMask](https://metamask.io)
-- [WalletConnect](https://walletconnect.org)
 - [Coinbase Wallet](https://wallet.coinbase.com)
+- [WalletConnect](https://walletconnect.org)
+
+via WalletConnect:
+
+- [Trust Wallet](https://trustwallet.com)
+- [imToken Wallet](https://www.token.im)
+- [Argent Wallet](https://www.argent.xyz)
+- [Unstoppable Wallet](https://unstoppable.money)
+- [Atomic Wallet](https://atomicwallet.io)
+- and more...
 
 ## Functionalities
 
