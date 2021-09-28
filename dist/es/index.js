@@ -18069,7 +18069,12 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.id = tx;
       transaction.url = blockchain.explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
-      let sentTransaction = await provider(transaction.blockchain).getTransaction(tx);
+      let sentTransaction = await retrieveTransaction(tx, transaction.blockchain);
+      if(!sentTransaction) {
+        transaction._failed = true;
+        console.log('Error retrieving transaction');
+        if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
+      }
       sentTransaction.wait(1).then(() => {
         transaction._confirmed = true;
         if (transaction.confirmed) transaction.confirmed(transaction);
@@ -18086,6 +18091,18 @@ const sendTransaction = async ({ transaction, wallet })=> {
     }
   });
   return transaction
+};
+
+const retrieveTransaction = async (tx, blockchain)=>{
+  let sentTransaction;
+  const maxRetries = 10;
+  let attempt = 1;
+  while (attempt <= maxRetries && !sentTransaction) {
+    sentTransaction = await provider(blockchain).getTransaction(tx);
+    await (()=>{ return new Promise((resolve)=>setTimeout(resolve, 1000)) });
+    attempt++;
+  }
+  return sentTransaction
 };
 
 const executeSubmit = ({ transaction, wallet }) => {
