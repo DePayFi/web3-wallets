@@ -1,5 +1,4 @@
-import QRCodeModal from '@walletconnect/qrcode-modal'
-import WalletConnect from '@walletconnect/client'
+import { WalletConnect, QRCodeModal } from '@depay/walletconnect'
 import { Blockchain } from 'depay-web3-blockchains'
 import { estimate } from './WalletConnect/estimate'
 import { sendTransaction } from './WalletConnect/transaction'

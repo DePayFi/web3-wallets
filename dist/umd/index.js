@@ -1,15 +1,13 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('depay-web3-constants'), require('buffer'), require('util'), require('@walletconnect/qrcode-modal'), require('@walletconnect/client'), require('depay-web3-client')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'depay-web3-constants', 'buffer', 'util', '@walletconnect/qrcode-modal', '@walletconnect/client', 'depay-web3-client'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnectQRCodeModal, global.WalletConnect, global.Web3Client));
-}(this, (function (exports, depayWeb3Blockchains, depayWeb3Constants, require$$0, require$$0$1, QRCodeModal, WalletConnect, depayWeb3Client) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('depay-web3-constants'), require('buffer'), require('util'), require('@depay/walletconnect'), require('depay-web3-client')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'depay-web3-constants', 'buffer', 'util', '@depay/walletconnect', 'depay-web3-client'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnect, global.Web3Client));
+}(this, (function (exports, depayWeb3Blockchains, depayWeb3Constants, require$$0, require$$0$1, walletconnect, depayWeb3Client) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 	var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0);
 	var require$$0__default$1 = /*#__PURE__*/_interopDefaultLegacy(require$$0$1);
-	var QRCodeModal__default = /*#__PURE__*/_interopDefaultLegacy(QRCodeModal);
-	var WalletConnect__default = /*#__PURE__*/_interopDefaultLegacy(WalletConnect);
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -18169,9 +18167,9 @@
 	  }
 
 	  newWalletConnectInstance() {
-	    let instance = new WalletConnect__default['default']({
+	    let instance = new walletconnect.WalletConnect({
 	      bridge: "https://bridge.walletconnect.org",
-	      qrcodeModal: QRCodeModal__default['default']
+	      qrcodeModal: walletconnect.QRCodeModal
 	    });
 
 	    instance.on("connect", (error, payload) => {
