@@ -1,7 +1,7 @@
 {
   "name": "depay-web3-wallets",
   "moduleName": "Web3Wallets",
-  "version": "5.6.8",
+  "version": "5.6.9",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -35,7 +35,7 @@
   "dependencies": {
   },
   "peerDependencies": {
-    "@depay/walletconnect": "^1.0.1",
+    "@depay/walletconnect": "^1.0.2",
     "depay-web3-blockchains": "^2.6.0",
     "depay-web3-constants": "^3.0.1",
     "depay-web3-client": "^6.0.0"
@@ -50,7 +50,7 @@
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",
     "@rollup/plugin-sucrase": "^3.1.0",
-    "@depay/walletconnect": "^1.0.1",
+    "@depay/walletconnect": "^1.0.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",

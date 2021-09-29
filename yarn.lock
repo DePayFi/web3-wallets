@@ -875,10 +875,10 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@depay/walletconnect@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/walletconnect/-/walletconnect-1.0.1.tgz#c6b56af3bcff9a82369a6287a8e688082bb2f26c"
-  integrity sha512-YqYIfJpTy3u8OAl/eEvvEqy/avCkwOA4rPLh27LhaB1N6zrtuLXtK4m5MvsVMQ+BpK2dFOoaD3u8knqixeoOQg==
+"@depay/walletconnect@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@depay/walletconnect/-/walletconnect-1.0.2.tgz#64faf6987fc266f96a143108c0a7c44b62c425e9"
+  integrity sha512-F+/qEJ/JXMD9rs8RzLO/uJzYNopsjNk7ei64ufhjpk1z7/RyME+wGVTdOdn+nipeOq6t+R7OEMhcN0IcWOhzpQ==
   dependencies:
     "@walletconnect/client" "^1.6.5"
     "@walletconnect/qrcode-modal" "^1.6.5"
