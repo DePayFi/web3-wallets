@@ -17757,7 +17757,7 @@ function parseUnits(value, unitName) {
     return parseFixed(value, (unitName != null) ? unitName : 18);
 }
 
-function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Transaction {
 
   constructor({ blockchain, from, to, api, method, params, value, sent, confirmed, ensured, failed }) {
@@ -17768,7 +17768,7 @@ class Transaction {
     this.api = api;
     this.method = method;
     this.params = params;
-    this.value = _optionalChain$4([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+    this.value = _optionalChain$5([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
     this.sent = sent;
     this.confirmed = confirmed;
     this.ensured = ensured;
@@ -17848,7 +17848,7 @@ class Transaction {
   }
 }
 
-function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 const estimate$1 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
@@ -17856,7 +17856,7 @@ const estimate$1 = async ({ transaction, wallet })=> {
   }
   let provider = new Web3Provider(window.ethereum, 'any');
   let signer = provider.getSigner(0);
-  let contract = new Contract(transaction.to, _optionalChain$3([transaction, 'optionalAccess', _ => _.api]), provider);
+  let contract = new Contract(transaction.to, _optionalChain$4([transaction, 'optionalAccess', _ => _.api]), provider);
   return contract.connect(signer).estimateGas[transaction.method](...transaction.getContractArguments({ contract }))
 };
 
@@ -17915,6 +17915,7 @@ const submitSimpleTransfer$1 = ({ transaction, signer })=>{
   })
 };
 
+function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Web3Wallet {
   __init() {this.name = 'Web3 Wallet';}
   __init2() {this.logo =
@@ -17941,11 +17942,13 @@ class Web3Wallet {
   }
 
   async accounts() {
+    if(!_optionalChain$3([window, 'optionalAccess', _ => _.ethereum])) { return [] }
     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
     return accounts
   }
 
   async connect() {
+    if(!_optionalChain$3([window, 'optionalAccess', _2 => _2.ethereum])) { return [] }
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     return accounts
   }

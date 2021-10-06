@@ -28,11 +28,13 @@ export default class Web3Wallet {
   }
 
   async accounts() {
+    if(!window?.ethereum) { return [] }
     const accounts = await window.ethereum.request({ method: 'eth_accounts' })
     return accounts
   }
 
   async connect() {
+    if(!window?.ethereum) { return [] }
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
     return accounts
   }

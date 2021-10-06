@@ -111,7 +111,7 @@ await wallet.accounts() // ['0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B']
 
 ### Connect an account
 
-`async connect():string`: Connects accounts. Potentially opens wallet connect screen. Provides connected accounts in async return.
+`async connect():string`: Connects accounts. Potentially opens wallet connect screen. Provides connected accounts in async return. If wallet fails to connect, also returns an empty array `[]`.
 
 ```javascript
 let wallet = getWallet();
