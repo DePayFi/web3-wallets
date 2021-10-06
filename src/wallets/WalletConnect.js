@@ -5,6 +5,10 @@ import { sendTransaction } from './WalletConnect/transaction'
 
 let connectedInstance
 
+const setConnectedInstance = (value)=>{
+  connectedInstance = value
+}
+
 class WalletConnectWallet {
   name = 'WalletConnect'
   logo =
@@ -66,28 +70,31 @@ class WalletConnectWallet {
   }
 
   async accounts() {
-    if(this.connectedAccounts == undefined) { return }
+    if(this.connectedAccounts == undefined) { return [] }
     return this.connectedAccounts
   }
 
   async connect(options) {
+    try {
+      if(this.connector.connected) {
+        await this.connector.killSession()
+        connectedInstance = undefined
+        this.connector = this.newWalletConnectInstance()
+      }
 
-    if(this.connector.connected) {
-      await this.connector.killSession()
-      connectedInstance = undefined
-      this.connector = this.newWalletConnectInstance()
+      const { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
+
+      if(accounts instanceof Array && accounts.length) {
+        connectedInstance = this
+      }
+
+      this.connectedAccounts = accounts
+      this.connectedChainId = chainId
+        
+      return accounts
+    } catch {
+      return []
     }
-
-    const { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
-
-    if(accounts instanceof Array && accounts.length) {
-      connectedInstance = this
-    }
-
-    this.connectedAccounts = accounts
-    this.connectedChainId = chainId
-      
-    return accounts
   }
 
   async connectedTo(input) {
@@ -141,5 +148,6 @@ class WalletConnectWallet {
 
 export {
   WalletConnectWallet,
-  connectedInstance
+  connectedInstance,
+  setConnectedInstance
 }

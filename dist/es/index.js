@@ -18204,28 +18204,31 @@ class WalletConnectWallet {
   }
 
   async accounts() {
-    if(this.connectedAccounts == undefined) { return }
+    if(this.connectedAccounts == undefined) { return [] }
     return this.connectedAccounts
   }
 
   async connect(options) {
+    try {
+      if(this.connector.connected) {
+        await this.connector.killSession();
+        connectedInstance = undefined;
+        this.connector = this.newWalletConnectInstance();
+      }
 
-    if(this.connector.connected) {
-      await this.connector.killSession();
-      connectedInstance = undefined;
-      this.connector = this.newWalletConnectInstance();
+      const { accounts, chainId } = await this.connector.connect({ chainId: _optionalChain([options, 'optionalAccess', _ => _.chainId]) });
+
+      if(accounts instanceof Array && accounts.length) {
+        connectedInstance = this;
+      }
+
+      this.connectedAccounts = accounts;
+      this.connectedChainId = chainId;
+        
+      return accounts
+    } catch (e) {
+      return []
     }
-
-    const { accounts, chainId } = await this.connector.connect({ chainId: _optionalChain([options, 'optionalAccess', _ => _.chainId]) });
-
-    if(accounts instanceof Array && accounts.length) {
-      connectedInstance = this;
-    }
-
-    this.connectedAccounts = accounts;
-    this.connectedChainId = chainId;
-      
-    return accounts
   }
 
   async connectedTo(input) {
