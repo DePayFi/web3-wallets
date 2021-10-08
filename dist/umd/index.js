@@ -18295,7 +18295,7 @@
 	    return connectedInstance
 	  } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
 	    return wallets.MetaMask
-	  } else if (typeof window.ethereum === 'object' && window.ethereum.isCoinbaseWallet) {
+	  } else if (typeof window.ethereum === 'object' && (window.ethereum.isCoinbaseWallet || window.ethereum.isWalletLink)) {
 	    return wallets.Coinbase
 	  } else if (typeof window.ethereum !== 'undefined') {
 	    return wallets.Web3Wallet
