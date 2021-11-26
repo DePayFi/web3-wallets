@@ -1,17 +1,17 @@
 ## Quickstart
 
 ```
-yarn add depay-web3-wallets
+yarn add @depay/web3-wallets
 ```
 
 or 
 
 ```
-npm install --save depay-web3-wallets
+npm install --save @depay/web3-wallets
 ```
 
 ```javascript
-import { getWallet } from 'depay-web3-wallets'
+import { getWallet } from '@depay/web3-wallets'
 
 let wallet = getWallet()
 wallet.name // MetaMask
@@ -19,7 +19,7 @@ wallet.name // MetaMask
 
 ## Demo
 
-https://depayfi.github.io/depay-web3-wallets/dev.html
+https://depayfi.github.io/@depay/web3-wallets/dev.html
 
 ## Support
 

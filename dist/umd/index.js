@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('depay-web3-blockchains'), require('depay-web3-constants'), require('buffer'), require('util'), require('@depay/walletconnect'), require('depay-web3-client')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'depay-web3-blockchains', 'depay-web3-constants', 'buffer', 'util', '@depay/walletconnect', 'depay-web3-client'], factory) :
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('@depay/web3-constants'), require('buffer'), require('util'), require('@depay/walletconnect'), require('@depay/web3-client')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', '@depay/web3-constants', 'buffer', 'util', '@depay/walletconnect', '@depay/web3-client'], factory) :
 	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnect, global.Web3Client));
-}(this, (function (exports, depayWeb3Blockchains, depayWeb3Constants, require$$0, require$$0$1, walletconnect, depayWeb3Client) { 'use strict';
+}(this, (function (exports, web3Blockchains, web3Constants, require$$0, require$$0$1, walletconnect, web3Client) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -17788,7 +17788,7 @@
 
 	  static bigNumberify(value, blockchain) {
 	    if (typeof value === 'number') {
-	      return parseUnits(value.toString(), depayWeb3Constants.CONSTANTS[blockchain].DECIMALS)
+	      return parseUnits(value.toString(), web3Constants.CONSTANTS[blockchain].DECIMALS)
 	    } else if (value && value.toString) {
 	      return BigNumber.from(value.toString())
 	    } else {
@@ -17875,7 +17875,7 @@
 	  await executeSubmit$1({ transaction, provider, signer }).then((sentTransaction)=>{
 	    if (sentTransaction) {
 	      transaction.id = sentTransaction.hash;
-	      transaction.url = depayWeb3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+	      transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
 	      if (transaction.sent) transaction.sent(transaction);
 	      sentTransaction.wait(1).then(() => {
 	        transaction._confirmed = true;
@@ -17966,7 +17966,7 @@
 	        window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
 	        break
 	      case 'network':
-	        window.ethereum.on('chainChanged', (chainId) => callback(depayWeb3Blockchains.Blockchain.findById(chainId).name));
+	        window.ethereum.on('chainChanged', (chainId) => callback(web3Blockchains.Blockchain.findById(chainId).name));
 	        break
 	      case 'disconnect':
 	        window.ethereum.on('disconnect', callback);
@@ -17975,7 +17975,7 @@
 	  }
 
 	  async connectedTo(input) {
-	    const blockchain = depayWeb3Blockchains.Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }));
+	    const blockchain = web3Blockchains.Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }));
 	    if(input) {
 	      return input === blockchain.name
 	    } else {
@@ -17985,7 +17985,7 @@
 
 	  addNetwork(blockchainName) {
 	    return new Promise((resolve, reject)=>{
-	      const blockchain = depayWeb3Blockchains.Blockchain.findByName(blockchainName);
+	      const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
 	      ethereum.request({
 	        method: 'wallet_addEthereumChain',
 	        params: [{
@@ -18006,7 +18006,7 @@
 
 	  switchTo(blockchainName) {
 	    return new Promise((resolve, reject)=>{
-	      const blockchain = depayWeb3Blockchains.Blockchain.findByName(blockchainName);
+	      const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
 	      ethereum.request({
 	        method: 'wallet_switchEthereumChain',
 	        params: [{ chainId: blockchain.id }],
@@ -18070,7 +18070,7 @@
 	  }
 	  await executeSubmit({ transaction, wallet }).then(async (tx)=>{
 	    if (tx) {
-	      let blockchain = depayWeb3Blockchains.Blockchain.findByName(transaction.blockchain);
+	      let blockchain = web3Blockchains.Blockchain.findByName(transaction.blockchain);
 	      transaction.id = tx;
 	      transaction.url = blockchain.explorerUrlFor({ transaction });
 	      if (transaction.sent) transaction.sent(transaction);
@@ -18103,9 +18103,9 @@
 	  let sentTransaction;
 	  const maxRetries = 120;
 	  let attempt = 1;
-	  sentTransaction = await depayWeb3Client.provider(blockchain).getTransaction(tx);
+	  sentTransaction = await web3Client.provider(blockchain).getTransaction(tx);
 	  while (attempt <= maxRetries && !sentTransaction) {
-	    sentTransaction = await depayWeb3Client.provider(blockchain).getTransaction(tx);
+	    sentTransaction = await web3Client.provider(blockchain).getTransaction(tx);
 	    await (new Promise((resolve)=>setTimeout(resolve, 5000)));
 	    attempt++;
 	  }
@@ -18236,7 +18236,7 @@
 
 	  async connectedTo(input) {
 	    let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
-	    const blockchain = depayWeb3Blockchains.Blockchain.findById(chainId);
+	    const blockchain = web3Blockchains.Blockchain.findById(chainId);
 	    if(input) {
 	      return input === blockchain.name
 	    } else {
@@ -18273,7 +18273,7 @@
 	      case 'network':
 	        this.connector.on("session_update", (error, payload) => {
 	          const { chainId } = payload.params[0];
-	          if(chainId) { callback(depayWeb3Blockchains.Blockchain.findByNetworkId(chainId).name); }
+	          if(chainId) { callback(web3Blockchains.Blockchain.findByNetworkId(chainId).name); }
 	        });
 	        break
 	      case 'disconnect':

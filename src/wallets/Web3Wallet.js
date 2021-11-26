@@ -1,4 +1,4 @@
-import { Blockchain } from 'depay-web3-blockchains'
+import { Blockchain } from '@depay/web3-blockchains'
 import { estimate } from './Web3Wallet/estimate'
 import { sendTransaction } from './Web3Wallet/transaction'
 

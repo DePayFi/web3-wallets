@@ -1,5 +1,5 @@
 import { Transaction } from '../../Transaction'
-import { Blockchain } from 'depay-web3-blockchains'
+import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 
 const sendTransaction = async ({ transaction, wallet })=> {

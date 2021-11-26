@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { CONSTANTS } from 'depay-web3-constants'
+import { CONSTANTS } from '@depay/web3-constants'
 
 class Transaction {
 

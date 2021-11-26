@@ -1,35 +1,25 @@
-import commonjs from '@rollup/plugin-commonjs'
+import globals from './rollup.globals.js'
 import livereload from 'rollup-plugin-livereload'
-import replace from '@rollup/plugin-replace'
-import resolve from '@rollup/plugin-node-resolve'
+import pkg from './package.json'
 import rollup from './rollup.module.config.js'
 import serve from 'rollup-plugin-serve'
-import sucrase from '@rollup/plugin-sucrase'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
 
 export default Object.assign({}, rollup, {
-  plugins: [
-    sucrase({
-      exclude: ['node_modules/**'],
-      transforms: ['typescript', 'jsx']
-    }),
-    resolve({
-      extensions: ['.js', '.ts', '.jsx']
-    }),
-    nodeResolve(),
-    commonjs({
-      include: 'node_modules/**'
-    }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify( 'production' ),
-      preventAssignment: true
-    }),
+  output: [
+    {
+      format: 'umd',
+      name: pkg.moduleName,
+      globals: globals,
+      file: 'tmp/index.dev.js'
+    },
+  ],
+  plugins: [...rollup.plugins,
     serve({
       open: 'true',
       openPage: '/dev.html'
     }),
     livereload({
-      watch: 'dist'
+      watch: ['dist', 'src']
     })
-  ],
+  ]
 })

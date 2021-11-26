@@ -1,6 +1,6 @@
-import { Blockchain } from 'depay-web3-blockchains'
+import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
-import { provider } from 'depay-web3-client'
+import { provider } from '@depay/web3-client'
 import { Transaction } from '../../Transaction'
 
 const sendTransaction = async ({ transaction, wallet })=> {
