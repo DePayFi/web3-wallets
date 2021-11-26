@@ -1,7 +1,7 @@
 import fetchMock from 'fetch-mock'
-import { Blockchain } from 'depay-web3-blockchains'
+import { Blockchain } from '@depay/web3-blockchains'
 import { getWallet, wallets } from 'src'
-import { mock, resetMocks, trigger } from 'depay-web3-mock'
+import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('Ethereum generic Web3 Wallet', () => {
 

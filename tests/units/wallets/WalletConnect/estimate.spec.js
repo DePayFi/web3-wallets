@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { getWallet, wallets } from 'src'
-import { mock, connect, resetMocks, confirm, increaseBlock, fail } from 'depay-web3-mock'
+import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
 
 describe('estimate transactions', () => {
 

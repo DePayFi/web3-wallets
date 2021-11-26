@@ -1,6 +1,6 @@
 import { getWallet, wallets, supported } from 'src'
 import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletConnect'
-import { mock, resetMocks, trigger } from 'depay-web3-mock'
+import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('WalletConnect', () => {
 

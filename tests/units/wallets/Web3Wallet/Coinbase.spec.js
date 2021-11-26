@@ -1,5 +1,5 @@
 import { getWallet } from 'src'
-import { mock, resetMocks, trigger } from 'depay-web3-mock'
+import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('Coinbase Wallet', () => {
 
