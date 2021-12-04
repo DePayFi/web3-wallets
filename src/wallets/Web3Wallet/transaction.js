@@ -13,6 +13,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   await executeSubmit({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash
+      transaction.nonce = sentTransaction.nonce
       transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
       sentTransaction.wait(1).then(() => {

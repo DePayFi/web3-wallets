@@ -3,10 +3,11 @@ import { CONSTANTS } from '@depay/web3-constants'
 
 class Transaction {
 
-  constructor({ blockchain, from, to, api, method, params, value, sent, confirmed, ensured, failed }) {
+  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, ensured, failed }) {
 
     this.blockchain = blockchain
     this.from = from
+    this.nonce = nonce
     this.to = to
     this.api = api
     this.method = method

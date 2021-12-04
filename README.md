@@ -290,6 +290,8 @@ Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `con
 
 `from: string`: Address the transaction is sent from.
 
+`nonce: Number`: The number of the sent transactions (from the given address).
+
 `to: string`: Address the transaction is interacting with.
 
 `api: array`: Api of a contract the transaction is interacting with.

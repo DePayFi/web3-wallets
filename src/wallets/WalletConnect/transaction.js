@@ -16,6 +16,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.url = blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
       let sentTransaction = await retrieveTransaction(tx, transaction.blockchain)
+      transaction.nonce = sentTransaction.nonce
       if(!sentTransaction) {
         transaction._failed = true
         console.log('Error retrieving transaction')

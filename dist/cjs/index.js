@@ -17769,10 +17769,11 @@ function parseUnits(value, unitName) {
 function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Transaction {
 
-  constructor({ blockchain, from, to, api, method, params, value, sent, confirmed, ensured, failed }) {
+  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, ensured, failed }) {
 
     this.blockchain = blockchain;
     this.from = from;
+    this.nonce = nonce;
     this.to = to;
     this.api = api;
     this.method = method;
@@ -17880,6 +17881,7 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
   await executeSubmit$1({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash;
+      transaction.nonce = sentTransaction.nonce;
       transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
       sentTransaction.wait(1).then(() => {
@@ -18080,6 +18082,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.url = blockchain.explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
       let sentTransaction = await retrieveTransaction(tx, transaction.blockchain);
+      transaction.nonce = sentTransaction.nonce;
       if(!sentTransaction) {
         transaction._failed = true;
         console.log('Error retrieving transaction');
