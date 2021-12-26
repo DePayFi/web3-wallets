@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-wallets",
   "moduleName": "Web3Wallets",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
@@ -15,7 +15,7 @@
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "prepublishOnly": "yarn build",
     "dev": "rollup -c rollup.dev.config.js -w",
-    "test:units": "yarn build && npx jest --no-cache",
+    "test:units": "yarn build && npx jest --no-cache --runInBand",
     "test": "yarn test:units"
   },
   "repository": "git@github.com:DePayFi/web3-wallets.git",
@@ -37,8 +37,8 @@
   "peerDependencies": {
     "@depay/walletconnect": "^1.0.2",
     "@depay/web3-blockchains": "^3.0.0",
-    "@depay/web3-constants": "^4.0.0",
-    "@depay/web3-client": "^7.0.0"
+    "@depay/web3-constants": "^4.0.1",
+    "@depay/web3-client": "^7.2.0"
   },
   "engines": {
     "node": ">=10"
@@ -48,9 +48,9 @@
     "@babel/preset-env": "^7.12.7",
     "@depay/walletconnect": "^1.0.2",
     "@depay/web3-blockchains": "^3.0.0",
-    "@depay/web3-client": "^7.0.0",
-    "@depay/web3-constants": "^4.0.0",
-    "@depay/web3-mock": "^9.1.1",
+    "@depay/web3-client": "^7.2.0",
+    "@depay/web3-constants": "^4.0.1",
+    "@depay/web3-mock": "^9.2.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",
