@@ -17889,6 +17889,9 @@
 	      sentTransaction.wait(12).then(() => {
 	        transaction._ensured = true;
 	        if (transaction.ensured) transaction.ensured(transaction);
+	      }).catch((error)=>{
+	        transaction._failed = true;
+	        if(transaction.failed) transaction.failed(transaction, error);
 	      });
 	    } else {
 	      throw('Submitting transaction failed!')
@@ -18093,6 +18096,9 @@
 	        sentTransaction.wait(12).then(() => {
 	          transaction._ensured = true;
 	          if (transaction.ensured) transaction.ensured(transaction);
+	        }).catch((error)=>{
+	          transaction._failed = true;
+	          if(transaction.failed) transaction.failed(transaction, error);
 	        });
 	      }
 	    } else {

@@ -15,7 +15,7 @@
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "prepublishOnly": "yarn build",
     "dev": "rollup -c rollup.dev.config.js -w",
-    "test:units": "yarn build && npx jest --no-cache --runInBand",
+    "test:units": "yarn build && npx jest --no-cache",
     "test": "yarn test:units"
   },
   "repository": "git@github.com:DePayFi/web3-wallets.git",
