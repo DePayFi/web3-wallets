@@ -18183,7 +18183,7 @@ class WalletConnectWallet {
   }
 
   newWalletConnectInstance() {
-    let instance = new walletconnect.WalletConnect({
+    let instance = new walletconnect.WalletConnectClient({
       bridge: "https://bridge.walletconnect.org",
       qrcodeModal: walletconnect.QRCodeModal
     });

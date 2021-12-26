@@ -2,7 +2,7 @@ import { Blockchain } from '@depay/web3-blockchains';
 import { CONSTANTS } from '@depay/web3-constants';
 import require$$0 from 'buffer';
 import require$$0$1 from 'util';
-import { WalletConnect, QRCodeModal } from '@depay/walletconnect';
+import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect';
 import { provider } from '@depay/web3-client';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -18174,7 +18174,7 @@ class WalletConnectWallet {
   }
 
   newWalletConnectInstance() {
-    let instance = new WalletConnect({
+    let instance = new WalletConnectClient({
       bridge: "https://bridge.walletconnect.org",
       qrcodeModal: QRCodeModal
     });

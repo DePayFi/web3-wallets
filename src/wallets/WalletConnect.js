@@ -1,4 +1,4 @@
-import { WalletConnect, QRCodeModal } from '@depay/walletconnect'
+import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect'
 import { Blockchain } from '@depay/web3-blockchains'
 import { estimate } from './WalletConnect/estimate'
 import { sendTransaction } from './WalletConnect/transaction'
@@ -32,7 +32,7 @@ class WalletConnectWallet {
   }
 
   newWalletConnectInstance() {
-    let instance = new WalletConnect({
+    let instance = new WalletConnectClient({
       bridge: "https://bridge.walletconnect.org",
       qrcodeModal: QRCodeModal
     })
