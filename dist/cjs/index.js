@@ -6,7 +6,7 @@ var web3Blockchains = require('@depay/web3-blockchains');
 var web3Constants = require('@depay/web3-constants');
 var require$$0 = require('buffer');
 var require$$0$1 = require('util');
-var walletconnect = require('@depay/walletconnect');
+var walletconnectV1 = require('@depay/walletconnect-v1');
 var web3Client = require('@depay/web3-client');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -18183,9 +18183,9 @@ class WalletConnectWallet {
   }
 
   newWalletConnectInstance() {
-    let instance = new walletconnect.WalletConnectClient({
+    let instance = new walletconnectV1.WalletConnectClient({
       bridge: "https://bridge.walletconnect.org",
-      qrcodeModal: walletconnect.QRCodeModal
+      qrcodeModal: walletconnectV1.QRCodeModal
     });
 
     instance.on("connect", (error, payload) => {

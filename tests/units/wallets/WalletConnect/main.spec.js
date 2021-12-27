@@ -6,6 +6,8 @@ describe('WalletConnect', () => {
 
   ['ethereum', 'bsc'].forEach((blockchain)=>{
 
+    const wallet = supported[0]
+
     describe(blockchain, ()=> {
 
       describe('with no supported wallet connected', ()=>{
@@ -16,6 +18,7 @@ describe('WalletConnect', () => {
             connectedInstance.connectedAccounts = []
           }
           setConnectedInstance(undefined)
+          mock({ blockchain, wallet: 'walletconnect', connector: wallet.connector })
         })
 
         it('provides an accounts function that returns empty list of accounts', async () => {
@@ -34,12 +37,10 @@ describe('WalletConnect', () => {
       describe('with supported wallet connected', ()=>{
 
         const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-        const wallet = supported[0]
         beforeEach(()=>{
           resetMocks()
         })
         beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
-        beforeEach(()=>mock({ blockchain, wallet: 'walletconnect', connector: wallet.connector }))
 
         it('requires to be connected first', async()=> {
           let accounts = await wallet.connect()
