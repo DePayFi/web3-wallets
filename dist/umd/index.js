@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('@depay/web3-constants'), require('buffer'), require('util'), require('@depay/walletconnect-v1'), require('@depay/web3-client')) :
 	typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', '@depay/web3-constants', 'buffer', 'util', '@depay/walletconnect-v1', '@depay/web3-client'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnectV1, global.Web3Client));
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnect, global.Web3Client));
 }(this, (function (exports, web3Blockchains, web3Constants, require$$0, require$$0$1, walletconnectV1, web3Client) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
