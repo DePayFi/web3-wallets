@@ -10,11 +10,6 @@ export default {
   input: 'src/index.js',
   output: [
     {
-      format: 'cjs',
-      globals: globals,
-      file: 'dist/cjs/index.js'
-    },
-    {
       format: 'es',
       globals: globals,
       file: 'dist/es/index.js'
