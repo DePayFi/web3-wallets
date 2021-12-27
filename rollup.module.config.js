@@ -12,7 +12,7 @@ export default {
     {
       format: 'es',
       globals: globals,
-      file: 'dist/es/index.js'
+      file: 'dist/esm/index.js'
     },
     {
       format: 'umd',
