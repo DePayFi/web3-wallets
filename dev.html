@@ -71,6 +71,22 @@
 
       <div class="row pt-5">
         <div class="col">
+          <h1>Wallet Disconnected</h1>
+          <p>Executes callback function in case disconnect happens</p>
+          <script>
+            window.setupDisconnected = async function(){
+              Web3Wallets.getWallet().on('disconnect', ()=>{
+                alert('Disconnected')
+              })
+              alert('Now disconnect the wallet!')
+            }
+          </script>
+          <button class='btn btn-primary' onClick='window.setupDisconnected()'>Test it</button>
+        </div>
+      </div>
+
+      <div class="row pt-5">
+        <div class="col">
           <h1>Wallet Debug</h1>
           <p>Yields the entire window.ethereum</p>
           <button class='btn btn-primary' onClick='alert(Object.keys(window.ethereum))'>Test it</button>
