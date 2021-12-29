@@ -120,27 +120,50 @@ class WalletConnectWallet {
   }
 
   on(event, callback) {
+    let internalCallback
     switch (event) {
       case 'account':
-        this.connector.on("session_update", (error, payload) => {
+        internalCallback = (error, payload) => {
           const { accounts } = payload.params[0]
           if(accounts instanceof Array) { callback(accounts[0]) }
-        })
+        }
+        this.connector.on("session_update", internalCallback)
         break
       case 'accounts':
-        this.connector.on("session_update", (error, payload) => {
+        internalCallback = (error, payload) => {
           const { accounts } = payload.params[0]
           callback(accounts)
-        })
+        }
+        this.connector.on("session_update", internalCallback)
         break
       case 'network':
-        this.connector.on("session_update", (error, payload) => {
+        internalCallback = (error, payload) => {
           const { chainId } = payload.params[0]
           if(chainId) { callback(Blockchain.findByNetworkId(chainId).name) }
-        })
+        }
+        this.connector.on("session_update", internalCallback)
         break
       case 'disconnect':
-        this.connector.on('disconnect', callback)
+        internalCallback = callback
+        this.connector.on('disconnect', internalCallback)
+        break
+    }
+    return internalCallback
+  }
+
+  off(event, callback) {
+    switch (event) {
+      case 'account':
+        this.connector.off("session_update")
+        break
+      case 'accounts':
+        this.connector.off("session_update")
+        break
+      case 'network':
+        this.connector.off("session_update")
+        break
+      case 'disconnect':
+        this.connector.off('disconnect')
         break
     }
   }

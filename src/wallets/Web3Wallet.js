@@ -40,20 +40,44 @@ export default class Web3Wallet {
   }
 
   on(event, callback) {
+    let internalCallback
     switch (event) {
       case 'account':
-        window.ethereum.on('accountsChanged', (accounts) => callback(accounts[0]))
+        internalCallback = (accounts) => callback(accounts[0])
+        window.ethereum.on('accountsChanged', internalCallback)
         break
       case 'accounts':
-        window.ethereum.on('accountsChanged', (accounts) => callback(accounts))
+        internalCallback = (accounts) => callback(accounts)
+        window.ethereum.on('accountsChanged', internalCallback)
         break
       case 'network':
-        window.ethereum.on('chainChanged', (chainId) => callback(Blockchain.findById(chainId).name))
+        internalCallback = (chainId) => callback(Blockchain.findById(chainId).name)
+        window.ethereum.on('chainChanged', internalCallback)
         break
       case 'disconnect':
-        window.ethereum.on('disconnect', callback)
+        internalCallback = callback
+        window.ethereum.on('disconnect', internalCallback)
         break
     }
+    return internalCallback
+  }
+
+  off(event, internalCallback) {
+    switch (event) {
+      case 'account':
+        window.ethereum.removeListener('accountsChanged', internalCallback)
+        break
+      case 'accounts':
+        window.ethereum.removeListener('accountsChanged', internalCallback)
+        break
+      case 'network':
+        window.ethereum.removeListener('chainChanged', internalCallback)
+        break
+      case 'disconnect':
+        window.ethereum.removeListener('disconnect', internalCallback)
+        break
+    }
+    return internalCallback
   }
 
   async connectedTo(input) {

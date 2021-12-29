@@ -76,44 +76,6 @@ describe('WalletConnect', () => {
           expect(await wallet.connectedTo()).toEqual(blockchain)
         })
 
-        it('register an event to be called back if walletConnect disconnects', async()=> {
-          let disconnectCalled
-          wallet.on('disconnect', ()=>{
-            disconnectCalled = true
-          })
-          trigger('disconnect')
-          expect(disconnectCalled).toEqual(true)
-        })
-
-        it('register an event to be called back if network changes', async()=> {
-          let newNetworkName
-          wallet.on('network', (networkName)=>{
-            newNetworkName = networkName
-          })
-          trigger('session_update', [null, { params: [{ chainId: 1 }] }])
-          expect(newNetworkName).toEqual('ethereum')
-          trigger('session_update', [null, { params: [{ chainId: 56 }] }])
-          expect(newNetworkName).toEqual('bsc')
-        })
-
-        it('register an event to be called back if accounts change', async()=> {
-          let newAccounts
-          wallet.on('accounts', (accounts)=>{
-            newAccounts = accounts
-          })
-          trigger('session_update', [null, { params: [{ accounts }] }])
-          expect(newAccounts).toEqual(accounts)
-        })
-
-        it('register an event to be called back if account change', async()=> {
-          let newAccount
-          wallet.on('account', (account)=>{
-            newAccount = account
-          })
-          trigger('session_update', [null, { params: [{ accounts }] }])
-          expect(newAccount).toEqual(accounts[0])
-        })
-
         it('rejects switchTo with NOT_SUPPORTED', async()=> {
           await expect(
             wallet.switchTo('bsc')

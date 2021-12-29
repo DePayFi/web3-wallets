@@ -165,6 +165,21 @@ wallet.on('account', (newAccount)=>{
 
 `on('disconnect', ()=>{})`: Triggers when user disconnects wallet.
 
+#### Deregister wallet events
+
+`.on` returns a callback function that needs to be passed to `.off` if you want to deregister the event listener:
+
+```javascript
+let wallet = getWallet();
+let callback = wallet.on('account', (newAccount)=>{
+  doSomething(newAccount)
+})
+
+//...
+
+wallet.off('account', callback) // removes listener
+```
+
 ### Switch blockchain/network
 
 `async switchTo(blockchain)`: Changes wallet connection to a specific network (adds it to the wallet in case it's missing)

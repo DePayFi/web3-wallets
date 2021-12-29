@@ -17959,20 +17959,44 @@ class Web3Wallet {
   }
 
   on(event, callback) {
+    let internalCallback;
     switch (event) {
       case 'account':
-        window.ethereum.on('accountsChanged', (accounts) => callback(accounts[0]));
+        internalCallback = (accounts) => callback(accounts[0]);
+        window.ethereum.on('accountsChanged', internalCallback);
         break
       case 'accounts':
-        window.ethereum.on('accountsChanged', (accounts) => callback(accounts));
+        internalCallback = (accounts) => callback(accounts);
+        window.ethereum.on('accountsChanged', internalCallback);
         break
       case 'network':
-        window.ethereum.on('chainChanged', (chainId) => callback(Blockchain.findById(chainId).name));
+        internalCallback = (chainId) => callback(Blockchain.findById(chainId).name);
+        window.ethereum.on('chainChanged', internalCallback);
         break
       case 'disconnect':
-        window.ethereum.on('disconnect', callback);
+        internalCallback = callback;
+        window.ethereum.on('disconnect', internalCallback);
         break
     }
+    return internalCallback
+  }
+
+  off(event, internalCallback) {
+    switch (event) {
+      case 'account':
+        window.ethereum.removeListener('accountsChanged', internalCallback);
+        break
+      case 'accounts':
+        window.ethereum.removeListener('accountsChanged', internalCallback);
+        break
+      case 'network':
+        window.ethereum.removeListener('chainChanged', internalCallback);
+        break
+      case 'disconnect':
+        window.ethereum.removeListener('disconnect', internalCallback);
+        break
+    }
+    return internalCallback
   }
 
   async connectedTo(input) {
@@ -18262,27 +18286,50 @@ class WalletConnectWallet {
   }
 
   on(event, callback) {
+    let internalCallback;
     switch (event) {
       case 'account':
-        this.connector.on("session_update", (error, payload) => {
+        internalCallback = (error, payload) => {
           const { accounts } = payload.params[0];
           if(accounts instanceof Array) { callback(accounts[0]); }
-        });
+        };
+        this.connector.on("session_update", internalCallback);
         break
       case 'accounts':
-        this.connector.on("session_update", (error, payload) => {
+        internalCallback = (error, payload) => {
           const { accounts } = payload.params[0];
           callback(accounts);
-        });
+        };
+        this.connector.on("session_update", internalCallback);
         break
       case 'network':
-        this.connector.on("session_update", (error, payload) => {
+        internalCallback = (error, payload) => {
           const { chainId } = payload.params[0];
           if(chainId) { callback(Blockchain.findByNetworkId(chainId).name); }
-        });
+        };
+        this.connector.on("session_update", internalCallback);
         break
       case 'disconnect':
-        this.connector.on('disconnect', callback);
+        internalCallback = callback;
+        this.connector.on('disconnect', internalCallback);
+        break
+    }
+    return internalCallback
+  }
+
+  off(event, callback) {
+    switch (event) {
+      case 'account':
+        this.connector.off("session_update");
+        break
+      case 'accounts':
+        this.connector.off("session_update");
+        break
+      case 'network':
+        this.connector.off("session_update");
+        break
+      case 'disconnect':
+        this.connector.off('disconnect');
         break
     }
   }
