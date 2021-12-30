@@ -167,6 +167,13 @@ class WalletConnectWallet {
         break
     }
   }
+
+  async sign(message) {
+    let address = await this.account()
+    var params = [ethers.utils.toUtf8Bytes(message), address]
+    let signature = await this.connector.signPersonalMessage(params)
+    return signature
+  }
 }
 
 export {

@@ -18015,7 +18015,7 @@
 	  addNetwork(blockchainName) {
 	    return new Promise((resolve, reject)=>{
 	      const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
-	      ethereum.request({
+	      window.ethereum.request({
 	        method: 'wallet_addEthereumChain',
 	        params: [{
 	          chainId: blockchain.id,
@@ -18036,7 +18036,7 @@
 	  switchTo(blockchainName) {
 	    return new Promise((resolve, reject)=>{
 	      const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
-	      ethereum.request({
+	      window.ethereum.request({
 	        method: 'wallet_switchEthereumChain',
 	        params: [{ chainId: blockchain.id }],
 	      }).then(resolve).catch((error)=> {
@@ -18049,6 +18049,14 @@
 	        }
 	      });
 	    })
+	  }
+
+	  async sign(message) {
+	    await this.account();
+	    let provider = new Web3Provider(window.ethereum, 'any');
+	    let signer = provider.getSigner(0);
+	    let signature = await signer.signMessage(message);
+	    return signature
 	  }
 	}
 
@@ -18336,6 +18344,13 @@
 	        this.connector.off('disconnect');
 	        break
 	    }
+	  }
+
+	  async sign(message) {
+	    let address = await this.account();
+	    var params = [ethers.utils.toUtf8Bytes(message), address];
+	    let signature = await this.connector.signPersonalMessage(params);
+	    return signature
 	  }
 	}
 

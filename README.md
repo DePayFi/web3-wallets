@@ -354,6 +354,18 @@ Rejects with
 
 in case wallet is connected to the wrong network.
 
+### Signatures
+
+#### sign message
+
+`web3-wallets` allows you to sign a personal message:
+
+```javascript
+let wallet = getWallet()
+
+let signature = await wallet.sign("This is a message to be signed")
+```
+
 ## Development
 
 ### Get started

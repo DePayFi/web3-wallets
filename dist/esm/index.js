@@ -18011,7 +18011,7 @@ class Web3Wallet {
   addNetwork(blockchainName) {
     return new Promise((resolve, reject)=>{
       const blockchain = Blockchain.findByName(blockchainName);
-      ethereum.request({
+      window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
           chainId: blockchain.id,
@@ -18032,7 +18032,7 @@ class Web3Wallet {
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
       const blockchain = Blockchain.findByName(blockchainName);
-      ethereum.request({
+      window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
       }).then(resolve).catch((error)=> {
@@ -18045,6 +18045,14 @@ class Web3Wallet {
         }
       });
     })
+  }
+
+  async sign(message) {
+    await this.account();
+    let provider = new Web3Provider(window.ethereum, 'any');
+    let signer = provider.getSigner(0);
+    let signature = await signer.signMessage(message);
+    return signature
   }
 }
 
@@ -18332,6 +18340,13 @@ class WalletConnectWallet {
         this.connector.off('disconnect');
         break
     }
+  }
+
+  async sign(message) {
+    let address = await this.account();
+    var params = [ethers.utils.toUtf8Bytes(message), address];
+    let signature = await this.connector.signPersonalMessage(params);
+    return signature
   }
 }
 

@@ -1,5 +1,6 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { estimate } from './Web3Wallet/estimate'
+import { ethers } from 'ethers'
 import { sendTransaction } from './Web3Wallet/transaction'
 
 export default class Web3Wallet {
@@ -92,7 +93,7 @@ export default class Web3Wallet {
   addNetwork(blockchainName) {
     return new Promise((resolve, reject)=>{
       const blockchain = Blockchain.findByName(blockchainName)
-      ethereum.request({
+      window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
           chainId: blockchain.id,
@@ -113,7 +114,7 @@ export default class Web3Wallet {
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
       const blockchain = Blockchain.findByName(blockchainName)
-      ethereum.request({
+      window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
       }).then(resolve).catch((error)=> {
@@ -126,5 +127,13 @@ export default class Web3Wallet {
         }
       })
     })
+  }
+
+  async sign(message) {
+    let address = await this.account()
+    let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+    let signer = provider.getSigner(0)
+    let signature = await signer.signMessage(message)
+    return signature
   }
 }

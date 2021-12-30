@@ -108,6 +108,14 @@
           <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sendTransaction({ transaction: { blockchain: "ethereum", to: "0x08B277154218CCF3380CAE48d630DA13462E3950", value: "1000000000000000" } })'>Test it</button>
         </div>
       </div>
+
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Sign message</h1>
+          <p></p>
+          <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sign("This is a test message\n\n And a new line").then((signature)=>{console.log(signature)})'>Test it</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>
