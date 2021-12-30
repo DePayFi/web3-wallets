@@ -1,7 +1,8 @@
-import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
 import { Blockchain } from '@depay/web3-blockchains'
 import { estimate } from './WalletConnect/estimate'
+import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnect/transaction'
+import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
 
 let connectedInstance
 

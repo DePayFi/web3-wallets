@@ -2,8 +2,8 @@ import { Blockchain } from '@depay/web3-blockchains';
 import { CONSTANTS } from '@depay/web3-constants';
 import require$$0 from 'buffer';
 import require$$0$1 from 'util';
-import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1';
 import { provider } from '@depay/web3-client';
+import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -18344,7 +18344,7 @@ class WalletConnectWallet {
 
   async sign(message) {
     let address = await this.account();
-    var params = [ethers.utils.toUtf8Bytes(message), address];
+    var params = [toUtf8Bytes(message), address];
     let signature = await this.connector.signPersonalMessage(params);
     return signature
   }

@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('@depay/web3-constants'), require('buffer'), require('util'), require('@depay/walletconnect-v1'), require('@depay/web3-client')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', '@depay/web3-constants', 'buffer', 'util', '@depay/walletconnect-v1', '@depay/web3-client'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.WalletConnect, global.Web3Client));
-}(this, (function (exports, web3Blockchains, web3Constants, require$$0, require$$0$1, walletconnectV1, web3Client) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('@depay/web3-constants'), require('buffer'), require('util'), require('@depay/web3-client'), require('@depay/walletconnect-v1')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', '@depay/web3-constants', 'buffer', 'util', '@depay/web3-client', '@depay/walletconnect-v1'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.Web3Client, global.WalletConnect));
+}(this, (function (exports, web3Blockchains, web3Constants, require$$0, require$$0$1, web3Client, walletconnectV1) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -18348,7 +18348,7 @@
 
 	  async sign(message) {
 	    let address = await this.account();
-	    var params = [ethers.utils.toUtf8Bytes(message), address];
+	    var params = [toUtf8Bytes(message), address];
 	    let signature = await this.connector.signPersonalMessage(params);
 	    return signature
 	  }
