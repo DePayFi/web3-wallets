@@ -14,15 +14,15 @@ describe('Ethereum generic Web3 Wallet', () => {
         beforeEach(resetMocks)
 
         it('provides an accounts function that returns empty list of accounts', async () => {
-          expect(await wallets.Web3Wallet.accounts()).toStrictEqual([])
+          expect(await new wallets.Web3Wallet().accounts()).toStrictEqual([])
         })
 
         it('provides an account function that returns undefined', async () => {
-          expect(await wallets.Web3Wallet.account()).toStrictEqual(undefined)
+          expect(await new wallets.Web3Wallet().account()).toStrictEqual(undefined)
         })
 
         it('provides an connect function that returns empty list of accounts', async () => {
-          expect(await wallets.Web3Wallet.connect()).toStrictEqual([])
+          expect(await new wallets.Web3Wallet().connect()).toStrictEqual([])
         })
       })
 

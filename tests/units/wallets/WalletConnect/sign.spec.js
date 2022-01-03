@@ -10,16 +10,17 @@ describe('Ethereum generic Web3 Wallet', () => {
 
     describe(blockchain, ()=> {
 
-      const wallet = supported[0]
       const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
-      beforeEach(()=>{
+      beforeEach(async ()=>{
         if(connectedInstance) {
           connectedInstance.connectedAccounts = []
         }
         setConnectedInstance(undefined)
-        mock({ blockchain, wallet: 'walletconnect', connector: wallet.connector })
+        mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect })
+        await new wallets.WalletConnect().connect()
+        expect(getWallet().name).toEqual('WalletConnect')
       })
 
       it('allows to sign a personal message', async()=> {

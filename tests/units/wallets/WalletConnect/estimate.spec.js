@@ -9,12 +9,10 @@ describe('estimate transactions', () => {
     describe(blockchain, ()=> {
 
       const accounts = ['0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045']
-      let wallet
       beforeEach(resetMocks)
       beforeEach(async ()=>{ 
-        mock({ blockchain, accounts: { return: accounts }, wallet: 'walletconnect', connector: wallets.WalletConnect.connector })
-        await wallets.WalletConnect.connect()
-        wallet = getWallet()
+        mock({ blockchain, accounts: { return: accounts }, wallet: 'walletconnect', connector: wallets.WalletConnect })
+        await new wallets.WalletConnect().connect()
       })
 
       let api = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
@@ -38,7 +36,7 @@ describe('estimate transactions', () => {
           }
         })
         
-        let cost = await wallet.estimate({
+        let cost = await getWallet().estimate({
           blockchain,
           to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
           api,
@@ -77,7 +75,7 @@ describe('estimate transactions', () => {
         })
 
         await expect(
-          wallet.estimate({
+          getWallet().estimate({
             blockchain,
             to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
             method: 'route',
@@ -101,7 +99,7 @@ describe('estimate transactions', () => {
           mock({ blockchain: otherBlockchain, accounts: { return: accounts } })
           connect(blockchain)
           await expect(
-            wallet.estimate({
+            getWallet().estimate({
               blockchain: otherBlockchain,
               to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
               api,

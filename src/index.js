@@ -4,21 +4,37 @@ import { WalletConnectWallet as WalletConnect, connectedInstance as connectedWal
 import Web3Wallet from './wallets/Web3Wallet'
 
 const wallets = {
-  MetaMask: new MetaMask(),
-  Coinbase: new Coinbase(),
-  Web3Wallet: new Web3Wallet(),
-  WalletConnect: new WalletConnect()
+  MetaMask,
+  Coinbase,
+  Web3Wallet,
+  WalletConnect
 }
 
-let getWallet = function () {
+const instances = {}
+
+const getWalletClass = function(){
   if(connectedWalletConnectInstance) {
-    return connectedWalletConnectInstance
+    return wallets.WalletConnect
   } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
     return wallets.MetaMask
   } else if (typeof window.ethereum === 'object' && (window.ethereum.isCoinbaseWallet || window.ethereum.isWalletLink)) {
     return wallets.Coinbase
   } else if (typeof window.ethereum !== 'undefined') {
     return wallets.Web3Wallet
+  }
+}
+
+const getWallet = function () {
+  const walletClass = getWalletClass()
+  const existingInstance = instances[walletClass]
+
+  if(connectedWalletConnectInstance) {
+    return connectedWalletConnectInstance
+  } else if(existingInstance) {
+    return existingInstance
+  } else if(walletClass) {
+    instances[walletClass] = new walletClass()
+    return instances[walletClass]
   }
 }
 

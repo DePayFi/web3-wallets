@@ -6,8 +6,6 @@ describe('WalletConnect', () => {
 
   ['ethereum', 'bsc'].forEach((blockchain)=>{
 
-    const wallet = supported[0]
-
     describe(blockchain, ()=> {
 
       describe('with supported wallet connected', ()=>{
@@ -15,17 +13,19 @@ describe('WalletConnect', () => {
         const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
         beforeEach(resetMocks)
         beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
-        beforeEach(()=>{
+        beforeEach(async ()=>{
           if(connectedInstance) {
             connectedInstance.connectedAccounts = []
           }
           setConnectedInstance(undefined)
-          mock({ blockchain, wallet: 'walletconnect', connector: wallet.connector })
+          mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect })
+          await new wallets.WalletConnect().connect()
+          expect(getWallet().name).toEqual('WalletConnect')
         })
 
         it('register an event to be called back if walletConnect disconnects', async()=> {
           let disconnectCalled
-          wallet.on('disconnect', ()=>{
+          getWallet().on('disconnect', ()=>{
             disconnectCalled = true
           })
           trigger('disconnect')
@@ -34,17 +34,17 @@ describe('WalletConnect', () => {
 
         it('allows to deregister an event to be called back if walletConnect disconnects', async()=> {
           let disconnectCalled
-          let callback = wallet.on('disconnect', ()=>{
+          let callback = getWallet().on('disconnect', ()=>{
             disconnectCalled = true
           })
-          wallet.off('disconnect', callback)
+          getWallet().off('disconnect', callback)
           trigger('disconnect')
           expect(disconnectCalled).toEqual(undefined)
         })
 
         it('register an event to be called back if network changes', async()=> {
           let newNetworkName
-          wallet.on('network', (networkName)=>{
+          getWallet().on('network', (networkName)=>{
             newNetworkName = networkName
           })
           trigger('session_update', [null, { params: [{ chainId: 1 }] }])
@@ -55,17 +55,17 @@ describe('WalletConnect', () => {
 
         it('allows to deregister an event to be called back if network changes', async()=> {
           let newNetworkName
-          let callback = wallet.on('network', (networkName)=>{
+          let callback = getWallet().on('network', (networkName)=>{
             newNetworkName = networkName
           })
-          wallet.off('network', callback)
+          getWallet().off('network', callback)
           trigger('session_update', [null, { params: [{ chainId: 1 }] }])
           expect(newNetworkName).toEqual(undefined)
         })
 
         it('register an event to be called back if accounts change', async()=> {
           let newAccounts
-          wallet.on('accounts', (accounts)=>{
+          getWallet().on('accounts', (accounts)=>{
             newAccounts = accounts
           })
           trigger('session_update', [null, { params: [{ accounts }] }])
@@ -74,17 +74,17 @@ describe('WalletConnect', () => {
 
         it('allows to deregister an event to be called back if accounts change', async()=> {
           let newAccounts
-          let callback = wallet.on('accounts', (accounts)=>{
+          let callback = getWallet().on('accounts', (accounts)=>{
             newAccounts = accounts
           })
-          wallet.off('accounts', callback)
+          getWallet().off('accounts', callback)
           trigger('session_update', [null, { params: [{ accounts }] }])
           expect(newAccounts).toEqual(undefined)
         })
 
         it('register an event to be called back if account change', async()=> {
           let newAccount
-          wallet.on('account', (account)=>{
+          getWallet().on('account', (account)=>{
             newAccount = account
           })
           trigger('session_update', [null, { params: [{ accounts }] }])
@@ -93,10 +93,10 @@ describe('WalletConnect', () => {
 
         it('allows to deregister an event to be called back if account change', async()=> {
           let newAccount
-          let callback = wallet.on('account', (account)=>{
+          let callback = getWallet().on('account', (account)=>{
             newAccount = account
           })
-          wallet.off('account', callback)
+          getWallet().off('account', callback)
           trigger('session_update', [null, { params: [{ accounts }] }])
           expect(newAccount).toEqual(undefined)
         })

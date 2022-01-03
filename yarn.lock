@@ -883,25 +883,25 @@
     "@walletconnect/client" "^1.6.5"
     "@walletconnect/qrcode-modal" "^1.6.5"
 
-"@depay/web3-blockchains@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-3.0.0.tgz#e393d547b88bc4d7bf65ec7f7b98ba8ad9f76ac5"
-  integrity sha512-Mnc3fCCwD+B9YMBGcAB6DJC5cVNn5AcddGcpXbX9cvVY1iJ8IDe0sVKYEBJmHPr1punumU1H1nrhs5ctPZkosQ==
+"@depay/web3-blockchains@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-4.0.0.tgz#049f3132d309f90401f138485b5257e6f1a98650"
+  integrity sha512-mMtWwubtYhjygJso3iVAYrRBmANH3VbBHkvtOwOc2rPHoTAS3uYZTMfbNc9sFVCyxXo+hsa8453rsxFNJi9Y3A==
 
-"@depay/web3-client@^7.2.0":
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-7.2.0.tgz#4b09fe88bbb750fa246b66013fe0644b6423fb69"
-  integrity sha512-AONOg+HzLAYhXy2hu4d697bk0o+7nC3v1ys64DUcSn1tN1GxkoSfDvIWNABoPbMpkGjb2HUx9/Nox4Oz2ADv7g==
+"@depay/web3-client@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-8.0.0.tgz#e48fbab16cf0f07dfbdd12160e3ab55d714cdd4e"
+  integrity sha512-QY7jIxCayOuZqHAm+Sdl25CtvnBGDw/gr/CpTBi9HXzwccbx0J6INb6K6Nk8aDPLHaN6ynEOXYyXcBqR3S3j3g==
 
-"@depay/web3-constants@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-4.0.1.tgz#07f5c0e48f86bb9c0d54bcf8a47c95f683200bf4"
-  integrity sha512-vTHEa2ieHFyypQ5JaQSozIn1Wk8/fvExyxGBQP6REldoRxgH/nglX3H6TDCoquNn0UjU/LvV89XUgr0q6nNXPw==
+"@depay/web3-constants@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-5.0.0.tgz#89a8392586a619d63ab73f483b341ba17f03dd51"
+  integrity sha512-P7GnRdykODAJUH9EC1d6/ZektPmL42hVcklUsub8oGmngDCa+AFz+Pyf1TcL3jaVaznlUTcRZt0fu+r+5MJBew==
 
-"@depay/web3-mock@^9.5.0":
-  version "9.5.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-9.5.0.tgz#7d8fbb44b402c9503777e1b29fe707eaedc17733"
-  integrity sha512-j4BoDbjiOvhKmy6v+RIC8I6nEgawnu+MN7QonXfLBZ3KOQuXScM3i32t98Z0byrp7+E9G19KmeqBcYUO1vk5Gg==
+"@depay/web3-mock@^11.0.0":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-11.0.0.tgz#e5768ca934e000d67e60d8b62937815f5c63974e"
+  integrity sha512-73jlVh6lDbAGREqdXMeom76NBofJZLysNuo4meuJeVOaGn+mJf6U8ware5XbjysC+Rk11NhMvN4MJyOZCUMpDA==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
