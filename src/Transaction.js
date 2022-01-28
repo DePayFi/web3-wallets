@@ -3,7 +3,7 @@ import { CONSTANTS } from '@depay/web3-constants'
 
 class Transaction {
 
-  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, ensured, failed }) {
+  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, failed }) {
 
     this.blockchain = blockchain
     this.from = from
@@ -15,10 +15,8 @@ class Transaction {
     this.value = Transaction.bigNumberify(value, blockchain)?.toString()
     this.sent = sent
     this.confirmed = confirmed
-    this.ensured = ensured
     this.failed = failed
     this._confirmed = false
-    this._ensured = false
     this._failed = false
   }
 
@@ -60,19 +58,6 @@ class Transaction {
       let originalConfirmed = this.confirmed
       this.confirmed = () => {
         if (originalConfirmed) originalConfirmed(this)
-        resolve(this)
-      }
-    })
-  }
-
-  ensurance() {
-    if (this._ensured) {
-      return Promise.resolve(this)
-    }
-    return new Promise((resolve, reject) => {
-      let originalEnsured = this.ensured
-      this.ensured = () => {
-        if (originalEnsured) originalEnsured(this)
         resolve(this)
       }
     })

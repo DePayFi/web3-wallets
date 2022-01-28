@@ -17764,7 +17764,7 @@
 	function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 	class Transaction {
 
-	  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, ensured, failed }) {
+	  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, failed }) {
 
 	    this.blockchain = blockchain;
 	    this.from = from;
@@ -17776,10 +17776,8 @@
 	    this.value = _optionalChain$5([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
 	    this.sent = sent;
 	    this.confirmed = confirmed;
-	    this.ensured = ensured;
 	    this.failed = failed;
 	    this._confirmed = false;
-	    this._ensured = false;
 	    this._failed = false;
 	  }
 
@@ -17821,19 +17819,6 @@
 	      let originalConfirmed = this.confirmed;
 	      this.confirmed = () => {
 	        if (originalConfirmed) originalConfirmed(this);
-	        resolve(this);
-	      };
-	    })
-	  }
-
-	  ensurance() {
-	    if (this._ensured) {
-	      return Promise.resolve(this)
-	    }
-	    return new Promise((resolve, reject) => {
-	      let originalEnsured = this.ensured;
-	      this.ensured = () => {
-	        if (originalEnsured) originalEnsured(this);
 	        resolve(this);
 	      };
 	    })
@@ -17883,15 +17868,22 @@
 	        transaction._confirmed = true;
 	        if (transaction.confirmed) transaction.confirmed(transaction);
 	      }).catch((error)=>{
-	        transaction._failed = true;
-	        if(transaction.failed) transaction.failed(transaction, error);
-	      });
-	      sentTransaction.wait(12).then(() => {
-	        transaction._ensured = true;
-	        if (transaction.ensured) transaction.ensured(transaction);
-	      }).catch((error)=>{
-	        transaction._failed = true;
-	        if(transaction.failed) transaction.failed(transaction, error);
+	        if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
+	          if(error.replacement && error.replacement.hash) {
+	            transaction.id = error.replacement.hash;
+	            transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+	          }
+	          if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
+	            transaction._confirmed = true;
+	            if (transaction.confirmed) transaction.confirmed(transaction);
+	          } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
+	            transaction._failed = true;
+	            if(transaction.failed) transaction.failed(transaction, error);  
+	          }
+	        } else {
+	          transaction._failed = true;
+	          if(transaction.failed) transaction.failed(transaction, error);
+	        }
 	      });
 	    } else {
 	      throw('Submitting transaction failed!')
@@ -18132,15 +18124,20 @@
 	          transaction._confirmed = true;
 	          if (transaction.confirmed) transaction.confirmed(transaction);
 	        }).catch((error)=>{
-	          transaction._failed = true;
-	          if(transaction.failed) transaction.failed(transaction, error);
-	        });
-	        sentTransaction.wait(12).then(() => {
-	          transaction._ensured = true;
-	          if (transaction.ensured) transaction.ensured(transaction);
-	        }).catch((error)=>{
-	          transaction._failed = true;
-	          if(transaction.failed) transaction.failed(transaction, error);
+	          if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
+	            if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
+	              transaction.id = error.replacement.hash;
+	              transaction._confirmed = true;
+	              if (transaction.confirmed) transaction.confirmed(transaction);
+	            } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
+	              transaction.id = error.replacement.hash;
+	              transaction._failed = true;
+	              if(transaction.failed) transaction.failed(transaction, error);  
+	            }
+	          } else {
+	            transaction._failed = true;
+	            if(transaction.failed) transaction.failed(transaction, error);
+	          }
 	        });
 	      }
 	    } else {

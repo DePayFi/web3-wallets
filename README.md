@@ -214,7 +214,6 @@ let sentTransaction = await wallet.sendTransaction({
   value: "0",
   sent: function(transaction){},
   confirmed: function(transaction){},
-  ensured: function(transaction){},
   failed: function(transaction){}
 })
 
@@ -232,7 +231,6 @@ let sentTransaction = await wallet.sendTransaction({
   value: "1000000000000000",
   sent: function(transaction){},
   confirmed: function(transaction){},
-  ensured: function(transaction){},
   failed: function(transaction){}
 })
 
@@ -254,8 +252,6 @@ Arguments for `sendTransaction`:
 `sent: Function`: Callback to be executed if transaction has been sent to the network.
 
 `confirmed: Function`: Callback to be executed if transaction has been confirmed once by the network.
-
-`ensured: Function`: Callback to be executed if transaction has been reached safe amount of confirmations (successful transaction confirmation can be ensured).
 
 `failed: Function`: Callback to be executed if transaction failed to confirm on the network (aka reverted).
 
@@ -295,7 +291,7 @@ in case wallet is connected to the wrong network and network cant be switched au
 
 #### Transaction
 
-Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `confirmed`, `ensured` or `failed` callback) have the following format:
+Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `confirmed` or `failed` callback) have the following format:
 
 `blockchain: string`: Blockchain the transaction belongs to.
 
@@ -318,8 +314,6 @@ Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `con
 `value: BigNumber`: Amount/value of the native token the transaction is forwarding as part of the interaction.
 
 `confirmation: Promise`: Returns a promise that resolves once the transaction confirms.
-
-`ensurance: Promise`: Returns a promise that resolves once the transaction confirms enough times to consider it ensured.
 
 `failure: Promise`: Returns a promise that resolves once the transaction fails.
 

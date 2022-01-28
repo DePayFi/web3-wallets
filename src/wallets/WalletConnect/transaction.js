@@ -26,15 +26,20 @@ const sendTransaction = async ({ transaction, wallet })=> {
           transaction._confirmed = true
           if (transaction.confirmed) transaction.confirmed(transaction)
         }).catch((error)=>{
-          transaction._failed = true
-          if(transaction.failed) transaction.failed(transaction, error)
-        })
-        sentTransaction.wait(12).then(() => {
-          transaction._ensured = true
-          if (transaction.ensured) transaction.ensured(transaction)
-        }).catch((error)=>{
-          transaction._failed = true
-          if(transaction.failed) transaction.failed(transaction, error)
+          if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
+            if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
+              transaction.id = error.replacement.hash
+              transaction._confirmed = true
+              if (transaction.confirmed) transaction.confirmed(transaction)
+            } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
+              transaction.id = error.replacement.hash
+              transaction._failed = true
+              if(transaction.failed) transaction.failed(transaction, error)  
+            }
+          } else {
+            transaction._failed = true
+            if(transaction.failed) transaction.failed(transaction, error)
+          }
         })
       }
     } else {
