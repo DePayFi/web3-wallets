@@ -10,7 +10,7 @@
     <script crossorigin src="https://unpkg.com/@depay/web3-blockchains@4"></script>
     <script crossorigin src="https://unpkg.com/@depay/web3-constants@5"></script>
     <script crossorigin src="https://unpkg.com/@depay/web3-client@8"></script>
-    <script crossorigin src="https://unpkg.com/@depay/walletconnect-v1@1"></script>
+    <script crossorigin src="https://unpkg.com/@depay/walletconnect-v1@1.1"></script>
     <script src="tmp/index.dev.js"></script>
   </head>
   <body>
@@ -105,7 +105,15 @@
         <div class="col">
           <h1>Send transaction</h1>
           <p></p>
-          <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sendTransaction({ transaction: { blockchain: "ethereum", to: "0x08B277154218CCF3380CAE48d630DA13462E3950", value: "1000000000000000" } })'>Test it</button>
+          <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sendTransaction({ blockchain: "bsc", to: "0x08B277154218CCF3380CAE48d630DA13462E3950", from: "0x317D875cA3B9f8d14f960486C0d1D1913be74e90", value: "1000000000000000", sent: function(transaction){ console.log("sent callack", transaction) }, confirmed: function(transaction){ console.log("confirmed callack", transaction) }, failed: function(transaction){ console.log("failed callack", transaction) }  } )'>Test it</button>
+        </div>
+      </div>
+
+      <div class="row pt-5">
+        <div class="col">
+          <h1>Send smart contract transaction</h1>
+          <p></p>
+          <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sendTransaction({ blockchain: "bsc", to: "0x0Dfb7137bC64b63F7a0de7Cb9CDa178702666220", from: "0x317D875cA3B9f8d14f960486C0d1D1913be74e90", value: "1000000000000000", method: "route", params: { path: ["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"], amounts: ["1000000000000000","1000000000000000"], addresses: ["0x08B277154218CCF3380CAE48d630DA13462E3950"], plugins: ["0x8B127D169D232D5F3ebE1C3D06CE343FD7C1AA11"], data: [] }, sent: function(transaction){ console.log("sent callack", transaction) }, confirmed: function(transaction){ console.log("confirmed callack", transaction) }, failed: function(transaction){ console.log("failed callack", transaction) }, api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}] } )'>Test it</button>
         </div>
       </div>
 
