@@ -18270,6 +18270,10 @@
 
 	  async connect(options) {
 	    try {
+	      if(this.connector == undefined){
+	        this.connector = this.newWalletConnectInstance();
+	      }
+
 	      if(this.connector.connected) {
 	        await this.connector.killSession();
 	        connectedInstance = undefined;
@@ -18286,7 +18290,8 @@
 	      this.connectedChainId = chainId;
 	        
 	      return accounts
-	    } catch (e) {
+	    } catch (error) {
+	      console.log('WALLETCONNECT ERROR', error);
 	      return []
 	    }
 	  }
