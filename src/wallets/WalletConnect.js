@@ -4,14 +4,12 @@ import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnect/transaction'
 import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
 
-let connectedInstance
-
 const setConnectedInstance = (value)=>{
-  connectedInstance = value
+  window._connectedWalletConnectInstance = value
 }
 
 const getConnectedInstance = ()=>{
-  return connectedInstance
+  return window._connectedWalletConnectInstance
 }
 
 class WalletConnectWallet {
@@ -62,12 +60,12 @@ class WalletConnectWallet {
     })
 
     instance.on("disconnect", (error, payload) => {
-      connectedInstance = undefined
+      setConnectedInstance(undefined)
       if (error) { throw error }
     })
 
     instance.on("modal_closed", ()=>{
-      connectedInstance = undefined
+      setConnectedInstance(undefined)
       this.connector = undefined
     })
 
@@ -92,14 +90,14 @@ class WalletConnectWallet {
 
       if(this.connector.connected) {
         await this.connector.killSession()
-        connectedInstance = undefined
+        setConnectedInstance(undefined)
         this.connector = this.newWalletConnectInstance()
       }
 
       const { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
 
       if(accounts instanceof Array && accounts.length) {
-        connectedInstance = this
+        setConnectedInstance(this)
       }
 
       this.connectedAccounts = accounts
