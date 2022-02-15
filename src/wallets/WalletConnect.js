@@ -10,6 +10,10 @@ const setConnectedInstance = (value)=>{
   connectedInstance = value
 }
 
+const getConnectedInstance = ()=>{
+  return connectedInstance
+}
+
 class WalletConnectWallet {
 
   static info = {
@@ -184,6 +188,6 @@ class WalletConnectWallet {
 
 export {
   WalletConnectWallet,
-  connectedInstance,
+  getConnectedInstance,
   setConnectedInstance
 }

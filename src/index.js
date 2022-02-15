@@ -1,6 +1,6 @@
 import Coinbase from './wallets/Coinbase'
 import MetaMask from './wallets/MetaMask'
-import { WalletConnectWallet as WalletConnect, connectedInstance as connectedWalletConnectInstance } from './wallets/WalletConnect'
+import { WalletConnectWallet as WalletConnect, getConnectedInstance as getConnectedWalletConnectInstance } from './wallets/WalletConnect'
 import Web3Wallet from './wallets/Web3Wallet'
 
 const wallets = {
@@ -13,7 +13,7 @@ const wallets = {
 const instances = {}
 
 const getWalletClass = function(){
-  if(connectedWalletConnectInstance) {
+  if(getConnectedWalletConnectInstance()) {
     return wallets.WalletConnect
   } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
     return wallets.MetaMask
@@ -28,8 +28,8 @@ const getWallet = function () {
   const walletClass = getWalletClass()
   const existingInstance = instances[walletClass]
 
-  if(connectedWalletConnectInstance) {
-    return connectedWalletConnectInstance
+  if(getConnectedWalletConnectInstance()) {
+    return getConnectedWalletConnectInstance()
   } else if(existingInstance) {
     return existingInstance
   } else if(walletClass) {
