@@ -12,7 +12,7 @@ const getConnectedInstance = ()=>{
   return window._connectedWalletConnectInstance
 }
 
-class WalletConnectWallet {
+class WalletConnect {
 
   static info = {
     name: 'WalletConnect',
@@ -24,7 +24,7 @@ class WalletConnectWallet {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
-    this.connector = WalletConnectWallet.instance || this.newWalletConnectInstance()
+    this.connector = WalletConnect.instance || this.newWalletConnectInstance()
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
         wallet: this,
@@ -190,7 +190,7 @@ class WalletConnectWallet {
 }
 
 export {
-  WalletConnectWallet,
+  WalletConnect,
   getConnectedInstance,
   setConnectedInstance
 }
