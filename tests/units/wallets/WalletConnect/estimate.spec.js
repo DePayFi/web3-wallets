@@ -55,6 +55,45 @@ describe('estimate transactions', () => {
         expect(cost.toString()).toEqual('123333')
       });
 
+      it('allows you to estimate transactions with value', async ()=> {
+
+        let estimationMock = mock({
+          blockchain,
+          estimate: {
+            api,
+            to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+            method: 'route',
+            params: {
+              path: ['0x1cBb83EbcD552D5EBf8131eF8c9CD9d9BAB342bC'],
+              amounts: ['160000000000000000', '160000000000000000', '1626096776'],
+              addresses: ['0x4e260bB2b25EC6F3A59B478fCDe5eD5B8D783B02'],
+              plugins: ['0x99F3F4685a7178F26EB4F4Ca8B75a1724F1577B9'],
+              data: []
+            },
+            value: '140000',
+            return: '123333'
+          }
+        })
+        
+        let cost = await getWallet().estimate({
+          blockchain,
+          to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+          api,
+          method: 'route',
+          params: {
+            path: ['0x1cBb83EbcD552D5EBf8131eF8c9CD9d9BAB342bC'],
+            amounts: ['160000000000000000', '160000000000000000', '1626096776'],
+            addresses: ['0x4e260bB2b25EC6F3A59B478fCDe5eD5B8D783B02'],
+            plugins: ['0x99F3F4685a7178F26EB4F4Ca8B75a1724F1577B9'],
+            data: []
+          },
+          value: '140000'
+        })
+
+        expect(estimationMock).toHaveBeenCalled()
+        expect(cost.toString()).toEqual('123333')
+      });
+
       it('rejects the promise in case the transaction is not possible', async ()=> {
 
         mock({

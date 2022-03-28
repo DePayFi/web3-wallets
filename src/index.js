@@ -1,13 +1,15 @@
 import Coinbase from './wallets/Coinbase'
 import MetaMask from './wallets/MetaMask'
-import { WalletConnectWallet as WalletConnect, getConnectedInstance as getConnectedWalletConnectInstance } from './wallets/WalletConnect'
 import Web3Wallet from './wallets/Web3Wallet'
+import { WalletConnect, getConnectedInstance as getConnectedWalletConnectInstance } from './wallets/WalletConnect'
+import { WalletLink, getConnectedInstance as getConnectedWalletLinkInstance } from './wallets/WalletLink'
 
 const wallets = {
   MetaMask,
   Coinbase,
   Web3Wallet,
-  WalletConnect
+  WalletConnect,
+  WalletLink
 }
 
 const instances = {}
@@ -15,6 +17,8 @@ const instances = {}
 const getWalletClass = function(){
   if(getConnectedWalletConnectInstance()) {
     return wallets.WalletConnect
+  } else if(getConnectedWalletLinkInstance()) {
+    return wallets.WalletLink
   } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
     return wallets.MetaMask
   } else if (typeof window.ethereum === 'object' && (window.ethereum.isCoinbaseWallet || window.ethereum.isWalletLink)) {
@@ -30,6 +34,8 @@ const getWallet = function () {
 
   if(getConnectedWalletConnectInstance()) {
     return getConnectedWalletConnectInstance()
+  } else if(getConnectedWalletLinkInstance()) {
+    return getConnectedWalletLinkInstance()
   } else if(existingInstance) {
     return existingInstance
   } else if(walletClass) {
@@ -39,9 +45,10 @@ const getWallet = function () {
 }
 
 const supported = [
-  wallets.WalletConnect,
   wallets.MetaMask,
-  wallets.Coinbase
+  wallets.Coinbase,
+  wallets.WalletConnect,
+  wallets.WalletLink
 ]
 
 export { 

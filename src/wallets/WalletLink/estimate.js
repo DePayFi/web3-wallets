@@ -6,7 +6,7 @@ const estimate = async ({ transaction, wallet })=> {
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
   }
-  let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+  let provider = new ethers.providers.Web3Provider(wallet.connector, 'any')
   let signer = provider.getSigner(0)
   let contract = new ethers.Contract(transaction.to, transaction?.api, provider)
   return contract.connect(signer).estimateGas[transaction.method](...transaction.getContractArguments({ contract }), { value: transaction.value })

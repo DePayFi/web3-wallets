@@ -124,7 +124,7 @@ export default class Web3Wallet {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
       }).then(resolve).catch((error)=> {
-        if(error.code === 4902){ // metamask chain not yet added {
+        if(error.code === 4902){ // chain not yet added
           this.addNetwork(blockchainName)
             .then(()=>this.switchTo(blockchainName).then(resolve))
             .catch(reject)
