@@ -15,7 +15,7 @@ describe('Coinbase Wallet', () => {
       beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
       it('should detect the wallet type', () => {
-        expect(getWallet().name).toBe('Coinbase Wallet');
+        expect(getWallet().name).toBe('Coinbase');
       });
 
       it('provides a connect function', async () => {

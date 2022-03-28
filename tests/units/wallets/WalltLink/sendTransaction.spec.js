@@ -17,7 +17,7 @@ describe('sendTransaction with wallet connect', () => {
         mock({ blockchain, provider: provider(blockchain) })
         mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
         await new wallets.WalletLink().connect()
-        expect(getWallet().name).toEqual('Coinbase WalletLink')
+        expect(getWallet().name).toEqual('Coinbase')
       })
 
       let address = '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92';

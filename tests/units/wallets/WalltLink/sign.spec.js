@@ -20,7 +20,7 @@ describe('Ethereum generic Web3 Wallet', () => {
         setConnectedInstance(undefined)
         mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
         await new wallets.WalletLink().connect()
-        expect(getWallet().name).toEqual('Coinbase WalletLink')
+        expect(getWallet().name).toEqual('Coinbase')
       })
 
       it('allows to sign a personal message', async()=> {
