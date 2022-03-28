@@ -952,10 +952,10 @@
     rxjs "^6.6.3"
     stream-browserify "^3.0.0"
 
-"@depay/coinbase-wallet-sdk@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@depay/coinbase-wallet-sdk/-/coinbase-wallet-sdk-1.0.4.tgz#712512548ade793992948449a136a456746862b8"
-  integrity sha512-ZVAvze9m9rs3pswOTTgxzTqORYlPvWhpn2OlYiB5vYt7zLpw9VzDScv8A3GLXkYPtDZNCd+aoBqgvwnNt73CVQ==
+"@depay/coinbase-wallet-sdk@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@depay/coinbase-wallet-sdk/-/coinbase-wallet-sdk-1.0.5.tgz#e4539995c3a221190da5cea0997b2d5ae425d9fc"
+  integrity sha512-TMmX3eKWmWERL40h660rBrdOrcopvDRI/cBrve2gm5H+4CApn6XacbhFCULTBe0/1n3Nu+RhxjqedMmpKxGdEw==
   dependencies:
     "@coinbase/wallet-sdk" "^3.0.5"
 
