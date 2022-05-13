@@ -4,7 +4,7 @@ import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/
 
 describe('estimate transactions', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -134,7 +134,7 @@ describe('estimate transactions', () => {
       describe('switch network', ()=>{
 
         it('switches network if transaction is supposed to be estimated on different network', async ()=> {
-          let otherBlockchain = ['ethereum', 'bsc'].filter((b)=>b != blockchain)[0]
+          let otherBlockchain = ['ethereum', 'bsc', 'polygon'].filter((b)=>b != blockchain)[0]
           mock({ blockchain: otherBlockchain, accounts: { return: accounts } })
           let mockedEstimation = mock({
             blockchain,

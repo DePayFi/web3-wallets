@@ -5,7 +5,7 @@ import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('Coinbase WalletLink', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -67,7 +67,7 @@ describe('Coinbase WalletLink', () => {
         })
 
         it('receives supported blockchains', async()=> {
-          expect(getWallet().blockchains).toEqual(['ethereum', 'bsc'])
+          expect(getWallet().blockchains).toEqual(['ethereum', 'bsc', 'polygon'])
         })
 
         it('receives connected blockchain', async()=> {

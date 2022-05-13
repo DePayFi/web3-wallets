@@ -4,7 +4,7 @@ import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('WalletConnect', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -70,7 +70,7 @@ describe('WalletConnect', () => {
         })
 
         it('receives supported blockchains', async()=> {
-          expect(getWallet().blockchains).toEqual(['ethereum', 'bsc'])
+          expect(getWallet().blockchains).toEqual(['ethereum', 'bsc', 'polygon'])
         })
 
         it('receives connected blockchain', async()=> {

@@ -26,7 +26,8 @@ https://depayfi.github.io/@depay/web3-wallets/dev.html
 This library supports the following blockchains:
 
 - [Ethereum](https://ethereum.org)
-- [Binance Smart Chain](https://www.binance.org/en/smartChain)
+- [BNB Smart Chain](https://www.binance.org/smartChain)
+- [Polygon](https://polygon.technology)
 
 This library supports the following wallets:
 
@@ -125,7 +126,7 @@ await wallet.connect() // ['0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B']
 ```javascript
 let wallet = getWallet();
 wallet.name // MetaMask
-wallet.blockchains // ['ethereum', 'bsc']
+wallet.blockchains // ['ethereum', 'bsc', 'polygon']
 ```
 
 ### Check if wallet is connected to a specific blockchain
