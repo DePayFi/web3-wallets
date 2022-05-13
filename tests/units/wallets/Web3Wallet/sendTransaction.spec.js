@@ -4,7 +4,7 @@ import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/
 
 describe('sendTransaction with web3 wallet', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -116,7 +116,8 @@ describe('sendTransaction with web3 wallet', () => {
           expect(submittedTransaction.id == undefined).toEqual(false)
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
-            'bsc': 'https://bscscan.com/tx/'
+            'bsc': 'https://bscscan.com/tx/',
+            'polygon': 'https://polygonscan.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -256,7 +257,8 @@ describe('sendTransaction with web3 wallet', () => {
           expect(submittedTransaction.id == undefined).toEqual(false)
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
-            'bsc': 'https://bscscan.com/tx/'
+            'bsc': 'https://bscscan.com/tx/',
+            'polygon': 'https://polygonscan.com/tx/'
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -311,7 +313,7 @@ describe('sendTransaction with web3 wallet', () => {
         
         beforeEach(()=>{
 
-          otherBlockchain = ['ethereum', 'bsc'].filter((b)=>b != blockchain)[0]
+          otherBlockchain = ['ethereum', 'bsc', 'polygon'].filter((b)=>b != blockchain)[0]
 
           mockedTransaction = mock({
             blockchain: otherBlockchain,

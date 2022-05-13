@@ -4,9 +4,9 @@ import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletConne
 import { getWallet, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
-describe('Ethereum generic Web3 Wallet', () => {
+describe('Generic Web3 Wallet', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

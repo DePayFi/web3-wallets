@@ -5,7 +5,7 @@ import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('WalletLink events', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

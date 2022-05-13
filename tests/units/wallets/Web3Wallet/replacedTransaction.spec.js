@@ -4,7 +4,7 @@ import { mock, connect, resetMocks, confirm, increaseBlock, fail, replace } from
 
 describe('calls "confirmed" and "failed" even for replaced transactions', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

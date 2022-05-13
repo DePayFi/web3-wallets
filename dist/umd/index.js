@@ -3462,7 +3462,7 @@
 	})(module, commonjsGlobal);
 	});
 
-	const version$j = "logger/5.4.1";
+	const version$i = "logger/5.6.0";
 
 	let _permanentCensorErrors = false;
 	let _censorErrors = false;
@@ -3559,7 +3559,7 @@
 	    //  - errorArgs?: The EIP848 error parameters
 	    //  - reason: The reason (only for EIP848 "Error(string)")
 	    ErrorCode["CALL_EXCEPTION"] = "CALL_EXCEPTION";
-	    // Insufficien funds (< value + gasLimit * gasPrice)
+	    // Insufficient funds (< value + gasLimit * gasPrice)
 	    //   - transaction: the transaction attempted
 	    ErrorCode["INSUFFICIENT_FUNDS"] = "INSUFFICIENT_FUNDS";
 	    // Nonce has already been used
@@ -3641,6 +3641,40 @@
 	        messageDetails.push(`code=${code}`);
 	        messageDetails.push(`version=${this.version}`);
 	        const reason = message;
+	        let url = "";
+	        switch (code) {
+	            case ErrorCode.NUMERIC_FAULT: {
+	                url = "NUMERIC_FAULT";
+	                const fault = message;
+	                switch (fault) {
+	                    case "overflow":
+	                    case "underflow":
+	                    case "division-by-zero":
+	                        url += "-" + fault;
+	                        break;
+	                    case "negative-power":
+	                    case "negative-width":
+	                        url += "-unsupported";
+	                        break;
+	                    case "unbound-bitwise-result":
+	                        url += "-unbound-result";
+	                        break;
+	                }
+	                break;
+	            }
+	            case ErrorCode.CALL_EXCEPTION:
+	            case ErrorCode.INSUFFICIENT_FUNDS:
+	            case ErrorCode.MISSING_NEW:
+	            case ErrorCode.NONCE_EXPIRED:
+	            case ErrorCode.REPLACEMENT_UNDERPRICED:
+	            case ErrorCode.TRANSACTION_REPLACED:
+	            case ErrorCode.UNPREDICTABLE_GAS_LIMIT:
+	                url = code;
+	                break;
+	        }
+	        if (url) {
+	            message += " [ See: https:/\/links.ethers.org/v5-errors-" + url + " ]";
+	        }
 	        if (messageDetails.length) {
 	            message += " (" + messageDetails.join(", ") + ")";
 	        }
@@ -3738,7 +3772,7 @@
 	    }
 	    static globalLogger() {
 	        if (!_globalLogger) {
-	            _globalLogger = new Logger(version$j);
+	            _globalLogger = new Logger(version$i);
 	        }
 	        return _globalLogger;
 	    }
@@ -3774,9 +3808,9 @@
 	Logger.errors = ErrorCode;
 	Logger.levels = LogLevel;
 
-	const version$i = "bytes/5.4.0";
+	const version$h = "bytes/5.6.1";
 
-	const logger$q = new Logger(version$i);
+	const logger$p = new Logger(version$h);
 	///////////////////////////////
 	function isHexable(value) {
 	    return !!(value.toHexString);
@@ -3794,6 +3828,9 @@
 	function isBytesLike(value) {
 	    return ((isHexString(value) && !(value.length % 2)) || isBytes(value));
 	}
+	function isInteger(value) {
+	    return (typeof (value) === "number" && value == value && (value % 1) === 0);
+	}
 	function isBytes(value) {
 	    if (value == null) {
 	        return false;
@@ -3804,12 +3841,12 @@
 	    if (typeof (value) === "string") {
 	        return false;
 	    }
-	    if (value.length == null) {
+	    if (!isInteger(value.length) || value.length < 0) {
 	        return false;
 	    }
 	    for (let i = 0; i < value.length; i++) {
 	        const v = value[i];
-	        if (typeof (v) !== "number" || v < 0 || v >= 256 || (v % 1)) {
+	        if (!isInteger(v) || v < 0 || v >= 256) {
 	            return false;
 	        }
 	    }
@@ -3820,7 +3857,7 @@
 	        options = {};
 	    }
 	    if (typeof (value) === "number") {
-	        logger$q.checkSafeUint53(value, "invalid arrayify value");
+	        logger$p.checkSafeUint53(value, "invalid arrayify value");
 	        const result = [];
 	        while (value) {
 	            result.unshift(value & 0xff);
@@ -3841,13 +3878,13 @@
 	        let hex = value.substring(2);
 	        if (hex.length % 2) {
 	            if (options.hexPad === "left") {
-	                hex = "0x0" + hex.substring(2);
+	                hex = "0" + hex;
 	            }
 	            else if (options.hexPad === "right") {
 	                hex += "0";
 	            }
 	            else {
-	                logger$q.throwArgumentError("hex data is odd-length", "value", value);
+	                logger$p.throwArgumentError("hex data is odd-length", "value", value);
 	            }
 	        }
 	        const result = [];
@@ -3859,7 +3896,7 @@
 	    if (isBytes(value)) {
 	        return addSlice(new Uint8Array(value));
 	    }
-	    return logger$q.throwArgumentError("invalid arrayify value", "value", value);
+	    return logger$p.throwArgumentError("invalid arrayify value", "value", value);
 	}
 	function concat(items) {
 	    const objects = items.map(item => arrayify(item));
@@ -3890,7 +3927,7 @@
 	function zeroPad(value, length) {
 	    value = arrayify(value);
 	    if (value.length > length) {
-	        logger$q.throwArgumentError("value out of range", "value", arguments[0]);
+	        logger$p.throwArgumentError("value out of range", "value", arguments[0]);
 	    }
 	    const result = new Uint8Array(length);
 	    result.set(value, length - value.length);
@@ -3911,7 +3948,7 @@
 	        options = {};
 	    }
 	    if (typeof (value) === "number") {
-	        logger$q.checkSafeUint53(value, "invalid hexlify value");
+	        logger$p.checkSafeUint53(value, "invalid hexlify value");
 	        let hex = "";
 	        while (value) {
 	            hex = HexCharacters[value & 0xf] + hex;
@@ -3947,7 +3984,7 @@
 	                value += "0";
 	            }
 	            else {
-	                logger$q.throwArgumentError("hex data is odd-length", "value", value);
+	                logger$p.throwArgumentError("hex data is odd-length", "value", value);
 	            }
 	        }
 	        return value.toLowerCase();
@@ -3960,7 +3997,7 @@
 	        }
 	        return result;
 	    }
-	    return logger$q.throwArgumentError("invalid hexlify value", "value", value);
+	    return logger$p.throwArgumentError("invalid hexlify value", "value", value);
 	}
 	/*
 	function unoddify(value: BytesLike | Hexable | number): BytesLike | Hexable | number {
@@ -3984,7 +4021,7 @@
 	        data = hexlify(data);
 	    }
 	    else if (!isHexString(data) || (data.length % 2)) {
-	        logger$q.throwArgumentError("invalid hexData", "value", data);
+	        logger$p.throwArgumentError("invalid hexData", "value", data);
 	    }
 	    offset = 2 + 2 * offset;
 	    if (endOffset != null) {
@@ -4011,7 +4048,7 @@
 	        value = hexlify(value);
 	    }
 	    if (!isHexString(value)) {
-	        logger$q.throwArgumentError("invalid hex string", "value", value);
+	        logger$p.throwArgumentError("invalid hex string", "value", value);
 	    }
 	    value = value.substring(2);
 	    let offset = 0;
@@ -4025,10 +4062,10 @@
 	        value = hexlify(value);
 	    }
 	    else if (!isHexString(value)) {
-	        logger$q.throwArgumentError("invalid hex string", "value", value);
+	        logger$p.throwArgumentError("invalid hex string", "value", value);
 	    }
 	    if (value.length > 2 * length + 2) {
-	        logger$q.throwArgumentError("value out of range", "value", arguments[1]);
+	        logger$p.throwArgumentError("value out of range", "value", arguments[1]);
 	    }
 	    while (value.length < 2 * length + 2) {
 	        value = "0x0" + value.substring(2);
@@ -4041,24 +4078,35 @@
 	        s: "0x",
 	        _vs: "0x",
 	        recoveryParam: 0,
-	        v: 0
+	        v: 0,
+	        yParityAndS: "0x",
+	        compact: "0x"
 	    };
 	    if (isBytesLike(signature)) {
-	        const bytes = arrayify(signature);
-	        if (bytes.length !== 65) {
-	            logger$q.throwArgumentError("invalid signature string; must be 65 bytes", "signature", signature);
-	        }
+	        let bytes = arrayify(signature);
 	        // Get the r, s and v
-	        result.r = hexlify(bytes.slice(0, 32));
-	        result.s = hexlify(bytes.slice(32, 64));
-	        result.v = bytes[64];
+	        if (bytes.length === 64) {
+	            // EIP-2098; pull the v from the top bit of s and clear it
+	            result.v = 27 + (bytes[32] >> 7);
+	            bytes[32] &= 0x7f;
+	            result.r = hexlify(bytes.slice(0, 32));
+	            result.s = hexlify(bytes.slice(32, 64));
+	        }
+	        else if (bytes.length === 65) {
+	            result.r = hexlify(bytes.slice(0, 32));
+	            result.s = hexlify(bytes.slice(32, 64));
+	            result.v = bytes[64];
+	        }
+	        else {
+	            logger$p.throwArgumentError("invalid signature string", "signature", signature);
+	        }
 	        // Allow a recid to be used as the v
 	        if (result.v < 27) {
 	            if (result.v === 0 || result.v === 1) {
 	                result.v += 27;
 	            }
 	            else {
-	                logger$q.throwArgumentError("signature invalid v byte", "signature", signature);
+	                logger$p.throwArgumentError("signature invalid v byte", "signature", signature);
 	            }
 	        }
 	        // Compute recoveryParam from v
@@ -4086,7 +4134,7 @@
 	                result.recoveryParam = recoveryParam;
 	            }
 	            else if (result.recoveryParam !== recoveryParam) {
-	                logger$q.throwArgumentError("signature recoveryParam mismatch _vs", "signature", signature);
+	                logger$p.throwArgumentError("signature recoveryParam mismatch _vs", "signature", signature);
 	            }
 	            // Set or check the s
 	            vs[0] &= 0x7f;
@@ -4095,13 +4143,13 @@
 	                result.s = s;
 	            }
 	            else if (result.s !== s) {
-	                logger$q.throwArgumentError("signature v mismatch _vs", "signature", signature);
+	                logger$p.throwArgumentError("signature v mismatch _vs", "signature", signature);
 	            }
 	        }
 	        // Use recid and v to populate each other
 	        if (result.recoveryParam == null) {
 	            if (result.v == null) {
-	                logger$q.throwArgumentError("signature missing v and recoveryParam", "signature", signature);
+	                logger$p.throwArgumentError("signature missing v and recoveryParam", "signature", signature);
 	            }
 	            else if (result.v === 0 || result.v === 1) {
 	                result.recoveryParam = result.v;
@@ -4114,25 +4162,28 @@
 	            if (result.v == null) {
 	                result.v = 27 + result.recoveryParam;
 	            }
-	            else if (result.recoveryParam !== (1 - (result.v % 2))) {
-	                logger$q.throwArgumentError("signature recoveryParam mismatch v", "signature", signature);
+	            else {
+	                const recId = (result.v === 0 || result.v === 1) ? result.v : (1 - (result.v % 2));
+	                if (result.recoveryParam !== recId) {
+	                    logger$p.throwArgumentError("signature recoveryParam mismatch v", "signature", signature);
+	                }
 	            }
 	        }
 	        if (result.r == null || !isHexString(result.r)) {
-	            logger$q.throwArgumentError("signature missing or invalid r", "signature", signature);
+	            logger$p.throwArgumentError("signature missing or invalid r", "signature", signature);
 	        }
 	        else {
 	            result.r = hexZeroPad(result.r, 32);
 	        }
 	        if (result.s == null || !isHexString(result.s)) {
-	            logger$q.throwArgumentError("signature missing or invalid s", "signature", signature);
+	            logger$p.throwArgumentError("signature missing or invalid s", "signature", signature);
 	        }
 	        else {
 	            result.s = hexZeroPad(result.s, 32);
 	        }
 	        const vs = arrayify(result.s);
 	        if (vs[0] >= 128) {
-	            logger$q.throwArgumentError("signature s out of range", "signature", signature);
+	            logger$p.throwArgumentError("signature s out of range", "signature", signature);
 	        }
 	        if (result.recoveryParam) {
 	            vs[0] |= 0x80;
@@ -4140,7 +4191,7 @@
 	        const _vs = hexlify(vs);
 	        if (result._vs) {
 	            if (!isHexString(result._vs)) {
-	                logger$q.throwArgumentError("signature invalid _vs", "signature", signature);
+	                logger$p.throwArgumentError("signature invalid _vs", "signature", signature);
 	            }
 	            result._vs = hexZeroPad(result._vs, 32);
 	        }
@@ -4149,20 +4200,22 @@
 	            result._vs = _vs;
 	        }
 	        else if (result._vs !== _vs) {
-	            logger$q.throwArgumentError("signature _vs mismatch v and s", "signature", signature);
+	            logger$p.throwArgumentError("signature _vs mismatch v and s", "signature", signature);
 	        }
 	    }
+	    result.yParityAndS = result._vs;
+	    result.compact = result.r + result.yParityAndS.substring(2);
 	    return result;
 	}
 
-	const version$h = "bignumber/5.4.1";
+	const version$g = "bignumber/5.6.0";
 
-	var BN$1 = bn.BN;
-	const logger$p = new Logger(version$h);
-	const _constructorGuard$4 = {};
-	const MAX_SAFE$1 = 0x1fffffffffffff;
+	var BN = bn.BN;
+	const logger$o = new Logger(version$g);
+	const _constructorGuard$3 = {};
+	const MAX_SAFE = 0x1fffffffffffff;
 	function isBigNumberish(value) {
-	    return (value != null) && (BigNumber$1.isBigNumber(value) ||
+	    return (value != null) && (BigNumber.isBigNumber(value) ||
 	        (typeof (value) === "number" && (value % 1) === 0) ||
 	        (typeof (value) === "string" && !!value.match(/^-?[0-9]+$/)) ||
 	        isHexString(value) ||
@@ -4170,12 +4223,12 @@
 	        isBytes(value));
 	}
 	// Only warn about passing 10 into radix once
-	let _warnedToStringRadix$1 = false;
-	class BigNumber$1 {
+	let _warnedToStringRadix = false;
+	class BigNumber {
 	    constructor(constructorGuard, hex) {
-	        logger$p.checkNew(new.target, BigNumber$1);
-	        if (constructorGuard !== _constructorGuard$4) {
-	            logger$p.throwError("cannot call constructor directly; use BigNumber.from", Logger.errors.UNSUPPORTED_OPERATION, {
+	        logger$o.checkNew(new.target, BigNumber);
+	        if (constructorGuard !== _constructorGuard$3) {
+	            logger$o.throwError("cannot call constructor directly; use BigNumber.from", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "new (BigNumber)"
 	            });
 	        }
@@ -4184,113 +4237,113 @@
 	        Object.freeze(this);
 	    }
 	    fromTwos(value) {
-	        return toBigNumber$1(toBN$1(this).fromTwos(value));
+	        return toBigNumber(toBN(this).fromTwos(value));
 	    }
 	    toTwos(value) {
-	        return toBigNumber$1(toBN$1(this).toTwos(value));
+	        return toBigNumber(toBN(this).toTwos(value));
 	    }
 	    abs() {
 	        if (this._hex[0] === "-") {
-	            return BigNumber$1.from(this._hex.substring(1));
+	            return BigNumber.from(this._hex.substring(1));
 	        }
 	        return this;
 	    }
 	    add(other) {
-	        return toBigNumber$1(toBN$1(this).add(toBN$1(other)));
+	        return toBigNumber(toBN(this).add(toBN(other)));
 	    }
 	    sub(other) {
-	        return toBigNumber$1(toBN$1(this).sub(toBN$1(other)));
+	        return toBigNumber(toBN(this).sub(toBN(other)));
 	    }
 	    div(other) {
-	        const o = BigNumber$1.from(other);
+	        const o = BigNumber.from(other);
 	        if (o.isZero()) {
-	            throwFault$2("division by zero", "div");
+	            throwFault$1("division-by-zero", "div");
 	        }
-	        return toBigNumber$1(toBN$1(this).div(toBN$1(other)));
+	        return toBigNumber(toBN(this).div(toBN(other)));
 	    }
 	    mul(other) {
-	        return toBigNumber$1(toBN$1(this).mul(toBN$1(other)));
+	        return toBigNumber(toBN(this).mul(toBN(other)));
 	    }
 	    mod(other) {
-	        const value = toBN$1(other);
+	        const value = toBN(other);
 	        if (value.isNeg()) {
-	            throwFault$2("cannot modulo negative values", "mod");
+	            throwFault$1("division-by-zero", "mod");
 	        }
-	        return toBigNumber$1(toBN$1(this).umod(value));
+	        return toBigNumber(toBN(this).umod(value));
 	    }
 	    pow(other) {
-	        const value = toBN$1(other);
+	        const value = toBN(other);
 	        if (value.isNeg()) {
-	            throwFault$2("cannot raise to negative values", "pow");
+	            throwFault$1("negative-power", "pow");
 	        }
-	        return toBigNumber$1(toBN$1(this).pow(value));
+	        return toBigNumber(toBN(this).pow(value));
 	    }
 	    and(other) {
-	        const value = toBN$1(other);
+	        const value = toBN(other);
 	        if (this.isNegative() || value.isNeg()) {
-	            throwFault$2("cannot 'and' negative values", "and");
+	            throwFault$1("unbound-bitwise-result", "and");
 	        }
-	        return toBigNumber$1(toBN$1(this).and(value));
+	        return toBigNumber(toBN(this).and(value));
 	    }
 	    or(other) {
-	        const value = toBN$1(other);
+	        const value = toBN(other);
 	        if (this.isNegative() || value.isNeg()) {
-	            throwFault$2("cannot 'or' negative values", "or");
+	            throwFault$1("unbound-bitwise-result", "or");
 	        }
-	        return toBigNumber$1(toBN$1(this).or(value));
+	        return toBigNumber(toBN(this).or(value));
 	    }
 	    xor(other) {
-	        const value = toBN$1(other);
+	        const value = toBN(other);
 	        if (this.isNegative() || value.isNeg()) {
-	            throwFault$2("cannot 'xor' negative values", "xor");
+	            throwFault$1("unbound-bitwise-result", "xor");
 	        }
-	        return toBigNumber$1(toBN$1(this).xor(value));
+	        return toBigNumber(toBN(this).xor(value));
 	    }
 	    mask(value) {
 	        if (this.isNegative() || value < 0) {
-	            throwFault$2("cannot mask negative values", "mask");
+	            throwFault$1("negative-width", "mask");
 	        }
-	        return toBigNumber$1(toBN$1(this).maskn(value));
+	        return toBigNumber(toBN(this).maskn(value));
 	    }
 	    shl(value) {
 	        if (this.isNegative() || value < 0) {
-	            throwFault$2("cannot shift negative values", "shl");
+	            throwFault$1("negative-width", "shl");
 	        }
-	        return toBigNumber$1(toBN$1(this).shln(value));
+	        return toBigNumber(toBN(this).shln(value));
 	    }
 	    shr(value) {
 	        if (this.isNegative() || value < 0) {
-	            throwFault$2("cannot shift negative values", "shr");
+	            throwFault$1("negative-width", "shr");
 	        }
-	        return toBigNumber$1(toBN$1(this).shrn(value));
+	        return toBigNumber(toBN(this).shrn(value));
 	    }
 	    eq(other) {
-	        return toBN$1(this).eq(toBN$1(other));
+	        return toBN(this).eq(toBN(other));
 	    }
 	    lt(other) {
-	        return toBN$1(this).lt(toBN$1(other));
+	        return toBN(this).lt(toBN(other));
 	    }
 	    lte(other) {
-	        return toBN$1(this).lte(toBN$1(other));
+	        return toBN(this).lte(toBN(other));
 	    }
 	    gt(other) {
-	        return toBN$1(this).gt(toBN$1(other));
+	        return toBN(this).gt(toBN(other));
 	    }
 	    gte(other) {
-	        return toBN$1(this).gte(toBN$1(other));
+	        return toBN(this).gte(toBN(other));
 	    }
 	    isNegative() {
 	        return (this._hex[0] === "-");
 	    }
 	    isZero() {
-	        return toBN$1(this).isZero();
+	        return toBN(this).isZero();
 	    }
 	    toNumber() {
 	        try {
-	            return toBN$1(this).toNumber();
+	            return toBN(this).toNumber();
 	        }
 	        catch (error) {
-	            throwFault$2("overflow", "toNumber", this.toString());
+	            throwFault$1("overflow", "toNumber", this.toString());
 	        }
 	        return null;
 	    }
@@ -4299,7 +4352,7 @@
 	            return BigInt(this.toString());
 	        }
 	        catch (e) { }
-	        return logger$p.throwError("this platform does not support BigInt", Logger.errors.UNSUPPORTED_OPERATION, {
+	        return logger$o.throwError("this platform does not support BigInt", Logger.errors.UNSUPPORTED_OPERATION, {
 	            value: this.toString()
 	        });
 	    }
@@ -4307,19 +4360,19 @@
 	        // Lots of people expect this, which we do not support, so check (See: #889)
 	        if (arguments.length > 0) {
 	            if (arguments[0] === 10) {
-	                if (!_warnedToStringRadix$1) {
-	                    _warnedToStringRadix$1 = true;
-	                    logger$p.warn("BigNumber.toString does not accept any parameters; base-10 is assumed");
+	                if (!_warnedToStringRadix) {
+	                    _warnedToStringRadix = true;
+	                    logger$o.warn("BigNumber.toString does not accept any parameters; base-10 is assumed");
 	                }
 	            }
 	            else if (arguments[0] === 16) {
-	                logger$p.throwError("BigNumber.toString does not accept any parameters; use bigNumber.toHexString()", Logger.errors.UNEXPECTED_ARGUMENT, {});
+	                logger$o.throwError("BigNumber.toString does not accept any parameters; use bigNumber.toHexString()", Logger.errors.UNEXPECTED_ARGUMENT, {});
 	            }
 	            else {
-	                logger$p.throwError("BigNumber.toString does not accept parameters", Logger.errors.UNEXPECTED_ARGUMENT, {});
+	                logger$o.throwError("BigNumber.toString does not accept parameters", Logger.errors.UNEXPECTED_ARGUMENT, {});
 	            }
 	        }
-	        return toBN$1(this).toString(10);
+	        return toBN(this).toString(10);
 	    }
 	    toHexString() {
 	        return this._hex;
@@ -4328,40 +4381,40 @@
 	        return { type: "BigNumber", hex: this.toHexString() };
 	    }
 	    static from(value) {
-	        if (value instanceof BigNumber$1) {
+	        if (value instanceof BigNumber) {
 	            return value;
 	        }
 	        if (typeof (value) === "string") {
 	            if (value.match(/^-?0x[0-9a-f]+$/i)) {
-	                return new BigNumber$1(_constructorGuard$4, toHex$2(value));
+	                return new BigNumber(_constructorGuard$3, toHex$1(value));
 	            }
 	            if (value.match(/^-?[0-9]+$/)) {
-	                return new BigNumber$1(_constructorGuard$4, toHex$2(new BN$1(value)));
+	                return new BigNumber(_constructorGuard$3, toHex$1(new BN(value)));
 	            }
-	            return logger$p.throwArgumentError("invalid BigNumber string", "value", value);
+	            return logger$o.throwArgumentError("invalid BigNumber string", "value", value);
 	        }
 	        if (typeof (value) === "number") {
 	            if (value % 1) {
-	                throwFault$2("underflow", "BigNumber.from", value);
+	                throwFault$1("underflow", "BigNumber.from", value);
 	            }
-	            if (value >= MAX_SAFE$1 || value <= -MAX_SAFE$1) {
-	                throwFault$2("overflow", "BigNumber.from", value);
+	            if (value >= MAX_SAFE || value <= -MAX_SAFE) {
+	                throwFault$1("overflow", "BigNumber.from", value);
 	            }
-	            return BigNumber$1.from(String(value));
+	            return BigNumber.from(String(value));
 	        }
 	        const anyValue = value;
 	        if (typeof (anyValue) === "bigint") {
-	            return BigNumber$1.from(anyValue.toString());
+	            return BigNumber.from(anyValue.toString());
 	        }
 	        if (isBytes(anyValue)) {
-	            return BigNumber$1.from(hexlify(anyValue));
+	            return BigNumber.from(hexlify(anyValue));
 	        }
 	        if (anyValue) {
-	            // Hexable interface (takes piority)
+	            // Hexable interface (takes priority)
 	            if (anyValue.toHexString) {
 	                const hex = anyValue.toHexString();
 	                if (typeof (hex) === "string") {
-	                    return BigNumber$1.from(hex);
+	                    return BigNumber.from(hex);
 	                }
 	            }
 	            else {
@@ -4373,33 +4426,33 @@
 	                }
 	                if (typeof (hex) === "string") {
 	                    if (isHexString(hex) || (hex[0] === "-" && isHexString(hex.substring(1)))) {
-	                        return BigNumber$1.from(hex);
+	                        return BigNumber.from(hex);
 	                    }
 	                }
 	            }
 	        }
-	        return logger$p.throwArgumentError("invalid BigNumber value", "value", value);
+	        return logger$o.throwArgumentError("invalid BigNumber value", "value", value);
 	    }
 	    static isBigNumber(value) {
 	        return !!(value && value._isBigNumber);
 	    }
 	}
 	// Normalize the hex string
-	function toHex$2(value) {
+	function toHex$1(value) {
 	    // For BN, call on the hex string
 	    if (typeof (value) !== "string") {
-	        return toHex$2(value.toString(16));
+	        return toHex$1(value.toString(16));
 	    }
 	    // If negative, prepend the negative sign to the normalized positive value
 	    if (value[0] === "-") {
 	        // Strip off the negative sign
 	        value = value.substring(1);
-	        // Cannot have mulitple negative signs (e.g. "--0x04")
+	        // Cannot have multiple negative signs (e.g. "--0x04")
 	        if (value[0] === "-") {
-	            logger$p.throwArgumentError("invalid hex", "value", value);
+	            logger$o.throwArgumentError("invalid hex", "value", value);
 	        }
 	        // Call toHex on the positive component
-	        value = toHex$2(value);
+	        value = toHex$1(value);
 	        // Do not allow "-0x00"
 	        if (value === "0x00") {
 	            return value;
@@ -4425,38 +4478,38 @@
 	    }
 	    return value;
 	}
-	function toBigNumber$1(value) {
-	    return BigNumber$1.from(toHex$2(value));
+	function toBigNumber(value) {
+	    return BigNumber.from(toHex$1(value));
 	}
-	function toBN$1(value) {
-	    const hex = BigNumber$1.from(value).toHexString();
+	function toBN(value) {
+	    const hex = BigNumber.from(value).toHexString();
 	    if (hex[0] === "-") {
-	        return (new BN$1("-" + hex.substring(3), 16));
+	        return (new BN("-" + hex.substring(3), 16));
 	    }
-	    return new BN$1(hex.substring(2), 16);
+	    return new BN(hex.substring(2), 16);
 	}
-	function throwFault$2(fault, operation, value) {
+	function throwFault$1(fault, operation, value) {
 	    const params = { fault: fault, operation: operation };
 	    if (value != null) {
 	        params.value = value;
 	    }
-	    return logger$p.throwError(fault, Logger.errors.NUMERIC_FAULT, params);
+	    return logger$o.throwError(fault, Logger.errors.NUMERIC_FAULT, params);
 	}
 	// value should have no prefix
 	function _base36To16(value) {
-	    return (new BN$1(value, 36)).toString(16);
+	    return (new BN(value, 36)).toString(16);
 	}
 
-	const logger$o = new Logger(version$h);
-	const _constructorGuard$3 = {};
-	const Zero$2 = BigNumber$1.from(0);
-	const NegativeOne$2 = BigNumber$1.from(-1);
-	function throwFault$1(message, fault, operation, value) {
+	const logger$n = new Logger(version$g);
+	const _constructorGuard$2 = {};
+	const Zero$2 = BigNumber.from(0);
+	const NegativeOne$2 = BigNumber.from(-1);
+	function throwFault(message, fault, operation, value) {
 	    const params = { fault: fault, operation: operation };
 	    if (value !== undefined) {
 	        params.value = value;
 	    }
-	    return logger$o.throwError(message, Logger.errors.NUMERIC_FAULT, params);
+	    return logger$n.throwError(message, Logger.errors.NUMERIC_FAULT, params);
 	}
 	// Constant to pull zeros from for multipliers
 	let zeros = "0";
@@ -4467,14 +4520,14 @@
 	function getMultiplier(decimals) {
 	    if (typeof (decimals) !== "number") {
 	        try {
-	            decimals = BigNumber$1.from(decimals).toNumber();
+	            decimals = BigNumber.from(decimals).toNumber();
 	        }
 	        catch (e) { }
 	    }
 	    if (typeof (decimals) === "number" && decimals >= 0 && decimals <= 256 && !(decimals % 1)) {
 	        return ("1" + zeros.substring(0, decimals));
 	    }
-	    return logger$o.throwArgumentError("invalid decimal size", "decimals", decimals);
+	    return logger$n.throwArgumentError("invalid decimal size", "decimals", decimals);
 	}
 	function formatFixed(value, decimals) {
 	    if (decimals == null) {
@@ -4482,7 +4535,7 @@
 	    }
 	    const multiplier = getMultiplier(decimals);
 	    // Make sure wei is a big number (convert as necessary)
-	    value = BigNumber$1.from(value);
+	    value = BigNumber.from(value);
 	    const negative = value.lt(Zero$2);
 	    if (negative) {
 	        value = value.mul(NegativeOne$2);
@@ -4510,8 +4563,8 @@
 	        decimals = 0;
 	    }
 	    const multiplier = getMultiplier(decimals);
-	    if (typeof (value) !== "string" || !value.match(/^-?[0-9.,]+$/)) {
-	        logger$o.throwArgumentError("invalid decimal value", "value", value);
+	    if (typeof (value) !== "string" || !value.match(/^-?[0-9.]+$/)) {
+	        logger$n.throwArgumentError("invalid decimal value", "value", value);
 	    }
 	    // Is it negative?
 	    const negative = (value.substring(0, 1) === "-");
@@ -4519,12 +4572,12 @@
 	        value = value.substring(1);
 	    }
 	    if (value === ".") {
-	        logger$o.throwArgumentError("missing value", "value", value);
+	        logger$n.throwArgumentError("missing value", "value", value);
 	    }
 	    // Split it into a whole and fractional part
 	    const comps = value.split(".");
 	    if (comps.length > 2) {
-	        logger$o.throwArgumentError("too many decimal points", "value", value);
+	        logger$n.throwArgumentError("too many decimal points", "value", value);
 	    }
 	    let whole = comps[0], fraction = comps[1];
 	    if (!whole) {
@@ -4533,19 +4586,24 @@
 	    if (!fraction) {
 	        fraction = "0";
 	    }
-	    // Get significant digits to check truncation for underflow
-	    {
-	        const sigFraction = fraction.replace(/^([0-9]*?)(0*)$/, (all, sig, zeros) => (sig));
-	        if (sigFraction.length > multiplier.length - 1) {
-	            throwFault$1("fractional component exceeds decimals", "underflow", "parseFixed");
-	        }
+	    // Trim trailing zeros
+	    while (fraction[fraction.length - 1] === "0") {
+	        fraction = fraction.substring(0, fraction.length - 1);
+	    }
+	    // Check the fraction doesn't exceed our decimals size
+	    if (fraction.length > multiplier.length - 1) {
+	        throwFault("fractional component exceeds decimals", "underflow", "parseFixed");
+	    }
+	    // If decimals is 0, we have an empty string for fraction
+	    if (fraction === "") {
+	        fraction = "0";
 	    }
 	    // Fully pad the string with zeros to get to wei
 	    while (fraction.length < multiplier.length - 1) {
 	        fraction += "0";
 	    }
-	    const wholeValue = BigNumber$1.from(whole);
-	    const fractionValue = BigNumber$1.from(fraction);
+	    const wholeValue = BigNumber.from(whole);
+	    const fractionValue = BigNumber.from(fraction);
 	    let wei = (wholeValue.mul(multiplier)).add(fractionValue);
 	    if (negative) {
 	        wei = wei.mul(NegativeOne$2);
@@ -4554,8 +4612,8 @@
 	}
 	class FixedFormat {
 	    constructor(constructorGuard, signed, width, decimals) {
-	        if (constructorGuard !== _constructorGuard$3) {
-	            logger$o.throwError("cannot use FixedFormat constructor; use FixedFormat.from", Logger.errors.UNSUPPORTED_OPERATION, {
+	        if (constructorGuard !== _constructorGuard$2) {
+	            logger$n.throwError("cannot use FixedFormat constructor; use FixedFormat.from", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "new FixedFormat"
 	            });
 	        }
@@ -4584,7 +4642,7 @@
 	            else {
 	                const match = value.match(/^(u?)fixed([0-9]+)x([0-9]+)$/);
 	                if (!match) {
-	                    logger$o.throwArgumentError("invalid fixed format", "format", value);
+	                    logger$n.throwArgumentError("invalid fixed format", "format", value);
 	                }
 	                signed = (match[1] !== "u");
 	                width = parseInt(match[2]);
@@ -4597,7 +4655,7 @@
 	                    return defaultValue;
 	                }
 	                if (typeof (value[key]) !== type) {
-	                    logger$o.throwArgumentError("invalid fixed format (" + key + " not " + type + ")", "format." + key, value[key]);
+	                    logger$n.throwArgumentError("invalid fixed format (" + key + " not " + type + ")", "format." + key, value[key]);
 	                }
 	                return value[key];
 	            };
@@ -4606,19 +4664,19 @@
 	            decimals = check("decimals", "number", decimals);
 	        }
 	        if (width % 8) {
-	            logger$o.throwArgumentError("invalid fixed format width (not byte aligned)", "format.width", width);
+	            logger$n.throwArgumentError("invalid fixed format width (not byte aligned)", "format.width", width);
 	        }
 	        if (decimals > 80) {
-	            logger$o.throwArgumentError("invalid fixed format (decimals too large)", "format.decimals", decimals);
+	            logger$n.throwArgumentError("invalid fixed format (decimals too large)", "format.decimals", decimals);
 	        }
-	        return new FixedFormat(_constructorGuard$3, signed, width, decimals);
+	        return new FixedFormat(_constructorGuard$2, signed, width, decimals);
 	    }
 	}
 	class FixedNumber {
 	    constructor(constructorGuard, hex, value, format) {
-	        logger$o.checkNew(new.target, FixedNumber);
-	        if (constructorGuard !== _constructorGuard$3) {
-	            logger$o.throwError("cannot use FixedNumber constructor; use FixedNumber.from", Logger.errors.UNSUPPORTED_OPERATION, {
+	        logger$n.checkNew(new.target, FixedNumber);
+	        if (constructorGuard !== _constructorGuard$2) {
+	            logger$n.throwError("cannot use FixedNumber constructor; use FixedNumber.from", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "new FixedFormat"
 	            });
 	        }
@@ -4630,7 +4688,7 @@
 	    }
 	    _checkFormat(other) {
 	        if (this.format.name !== other.format.name) {
-	            logger$o.throwArgumentError("incompatible format; use fixedNumber.toFormat", "other", other);
+	            logger$n.throwArgumentError("incompatible format; use fixedNumber.toFormat", "other", other);
 	        }
 	    }
 	    addUnsafe(other) {
@@ -4692,7 +4750,7 @@
 	            comps.push("0");
 	        }
 	        if (decimals < 0 || decimals > 80 || (decimals % 1)) {
-	            logger$o.throwArgumentError("invalid decimal count", "decimals", decimals);
+	            logger$n.throwArgumentError("invalid decimal count", "decimals", decimals);
 	        }
 	        if (comps[1].length <= decimals) {
 	            return this;
@@ -4713,9 +4771,9 @@
 	            return this._hex;
 	        }
 	        if (width % 8) {
-	            logger$o.throwArgumentError("invalid byte width", "width", width);
+	            logger$n.throwArgumentError("invalid byte width", "width", width);
 	        }
-	        const hex = BigNumber$1.from(this._hex).fromTwos(this.format.width).toTwos(width).toHexString();
+	        const hex = BigNumber.from(this._hex).fromTwos(this.format.width).toTwos(width).toHexString();
 	        return hexZeroPad(hex, width / 8);
 	    }
 	    toUnsafeFloat() { return parseFloat(this.toString()); }
@@ -4743,7 +4801,7 @@
 	        const fixedFormat = FixedFormat.from(format);
 	        const numeric = parseFixed(value, fixedFormat.decimals);
 	        if (!fixedFormat.signed && numeric.lt(Zero$2)) {
-	            throwFault$1("unsigned value cannot be negative", "overflow", "value", value);
+	            throwFault("unsigned value cannot be negative", "overflow", "value", value);
 	        }
 	        let hex = null;
 	        if (fixedFormat.signed) {
@@ -4754,7 +4812,7 @@
 	            hex = hexZeroPad(hex, fixedFormat.width / 8);
 	        }
 	        const decimal = formatFixed(numeric, fixedFormat.decimals);
-	        return new FixedNumber(_constructorGuard$3, hex, decimal, fixedFormat);
+	        return new FixedNumber(_constructorGuard$2, hex, decimal, fixedFormat);
 	    }
 	    static fromBytes(value, format) {
 	        if (format == null) {
@@ -4764,13 +4822,13 @@
 	        if (arrayify(value).length > fixedFormat.width / 8) {
 	            throw new Error("overflow");
 	        }
-	        let numeric = BigNumber$1.from(value);
+	        let numeric = BigNumber.from(value);
 	        if (fixedFormat.signed) {
 	            numeric = numeric.fromTwos(fixedFormat.width);
 	        }
 	        const hex = numeric.toTwos((fixedFormat.signed ? 0 : 1) + fixedFormat.width).toHexString();
 	        const decimal = formatFixed(numeric, fixedFormat.decimals);
-	        return new FixedNumber(_constructorGuard$3, hex, decimal, fixedFormat);
+	        return new FixedNumber(_constructorGuard$2, hex, decimal, fixedFormat);
 	    }
 	    static from(value, format) {
 	        if (typeof (value) === "string") {
@@ -4788,7 +4846,7 @@
 	                throw error;
 	            }
 	        }
-	        return logger$o.throwArgumentError("invalid FixedNumber value", "value", value);
+	        return logger$n.throwArgumentError("invalid FixedNumber value", "value", value);
 	    }
 	    static isFixedNumber(value) {
 	        return !!(value && value._isFixedNumber);
@@ -4797,7 +4855,7 @@
 	const ONE = FixedNumber.from(1);
 	const BUMP = FixedNumber.from("0.5");
 
-	const version$g = "properties/5.4.1";
+	const version$f = "properties/5.6.0";
 
 	var __awaiter$8 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4808,7 +4866,7 @@
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	const logger$n = new Logger(version$g);
+	const logger$m = new Logger(version$f);
 	function defineReadOnly(object, name, value) {
 	    Object.defineProperty(object, name, {
 	        enumerable: true,
@@ -4844,11 +4902,11 @@
 	}
 	function checkProperties(object, properties) {
 	    if (!object || typeof (object) !== "object") {
-	        logger$n.throwArgumentError("invalid object", "object", object);
+	        logger$m.throwArgumentError("invalid object", "object", object);
 	    }
 	    Object.keys(object).forEach((key) => {
 	        if (!properties[key]) {
-	            logger$n.throwArgumentError("invalid object key - " + key, "transaction:" + key, object);
+	            logger$m.throwArgumentError("invalid object key - " + key, "transaction:" + key, object);
 	        }
 	    });
 	}
@@ -4886,7 +4944,7 @@
 	        }
 	        return true;
 	    }
-	    return logger$n.throwArgumentError(`Cannot deepCopy ${typeof (object)}`, "object", object);
+	    return logger$m.throwArgumentError(`Cannot deepCopy ${typeof (object)}`, "object", object);
 	}
 	// Returns a new copy of object, such that no properties may be replaced.
 	// New properties may be added only to objects.
@@ -4909,7 +4967,7 @@
 	        }
 	        return result;
 	    }
-	    return logger$n.throwArgumentError(`Cannot deepCopy ${typeof (object)}`, "object", object);
+	    return logger$m.throwArgumentError(`Cannot deepCopy ${typeof (object)}`, "object", object);
 	}
 	function deepCopy(object) {
 	    return _deepCopy(object);
@@ -4922,10 +4980,10 @@
 	    }
 	}
 
-	const version$f = "abi/5.4.1";
+	const version$e = "abi/5.6.1";
 
-	const logger$m = new Logger(version$f);
-	const _constructorGuard$2 = {};
+	const logger$l = new Logger(version$e);
+	const _constructorGuard$1 = {};
 	let ModifiersBytes = { calldata: true, memory: true, storage: true };
 	let ModifiersNest = { calldata: true, memory: true };
 	function checkModifier(type, name) {
@@ -4945,7 +5003,7 @@
 	        }
 	    }
 	    if (ModifiersBytes[name] || name === "payable") {
-	        logger$m.throwArgumentError("invalid modifier", "name", name);
+	        logger$l.throwArgumentError("invalid modifier", "name", name);
 	    }
 	    return false;
 	}
@@ -4953,7 +5011,7 @@
 	function parseParamType(param, allowIndexed) {
 	    let originalParam = param;
 	    function throwError(i) {
-	        logger$m.throwArgumentError(`unexpected character at position ${i}`, "param", param);
+	        logger$l.throwArgumentError(`unexpected character at position ${i}`, "param", param);
 	    }
 	    param = param.replace(/\s/g, " ");
 	    function newNode(parent) {
@@ -5092,7 +5150,7 @@
 	        }
 	    }
 	    if (node.parent) {
-	        logger$m.throwArgumentError("unexpected eof", "param", param);
+	        logger$l.throwArgumentError("unexpected eof", "param", param);
 	    }
 	    delete parent.state;
 	    if (node.name === "indexed") {
@@ -5121,7 +5179,7 @@
 	    sighash: "sighash",
 	    // Human-Readable with Minimal spacing and without names (compact human-readable)
 	    minimal: "minimal",
-	    // Human-Readble with nice spacing, including all names
+	    // Human-Readable with nice spacing, including all names
 	    full: "full",
 	    // JSON-format a la Solidity
 	    json: "json"
@@ -5129,8 +5187,8 @@
 	const paramTypeArray = new RegExp(/^(.*)\[([0-9]*)\]$/);
 	class ParamType {
 	    constructor(constructorGuard, params) {
-	        if (constructorGuard !== _constructorGuard$2) {
-	            logger$m.throwError("use fromString", Logger.errors.UNSUPPORTED_OPERATION, {
+	        if (constructorGuard !== _constructorGuard$1) {
+	            logger$l.throwError("use fromString", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "new ParamType()"
 	            });
 	        }
@@ -5159,13 +5217,13 @@
 	    // Format the parameter fragment
 	    //   - sighash: "(uint256,address)"
 	    //   - minimal: "tuple(uint256,address) indexed"
-	    //   - full:    "tuple(uint256 foo, addres bar) indexed baz"
+	    //   - full:    "tuple(uint256 foo, address bar) indexed baz"
 	    format(format) {
 	        if (!format) {
 	            format = FormatTypes.sighash;
 	        }
 	        if (!FormatTypes[format]) {
-	            logger$m.throwArgumentError("invalid format type", "format", format);
+	            logger$l.throwArgumentError("invalid format type", "format", format);
 	        }
 	        if (format === FormatTypes.json) {
 	            let result = {
@@ -5217,7 +5275,7 @@
 	        if (ParamType.isParamType(value)) {
 	            return value;
 	        }
-	        return new ParamType(_constructorGuard$2, {
+	        return new ParamType(_constructorGuard$1, {
 	            name: (value.name || null),
 	            type: verifyType(value.type),
 	            indexed: ((value.indexed == null) ? null : !!value.indexed),
@@ -5244,8 +5302,8 @@
 	}
 	class Fragment {
 	    constructor(constructorGuard, params) {
-	        if (constructorGuard !== _constructorGuard$2) {
-	            logger$m.throwError("use a static from method", Logger.errors.UNSUPPORTED_OPERATION, {
+	        if (constructorGuard !== _constructorGuard$1) {
+	            logger$l.throwError("use a static from method", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "new Fragment()"
 	            });
 	        }
@@ -5280,7 +5338,7 @@
 	                // @TODO: Something? Maybe return a FunctionFragment? A custom DefaultFunctionFragment?
 	                return null;
 	        }
-	        return logger$m.throwArgumentError("invalid fragment object", "value", value);
+	        return logger$l.throwArgumentError("invalid fragment object", "value", value);
 	    }
 	    static fromString(value) {
 	        // Make sure the "returns" is surrounded by a space and all whitespace is exactly one space
@@ -5299,7 +5357,7 @@
 	        else if (value.split(" ")[0] === "error") {
 	            return ErrorFragment.fromString(value.substring(5).trim());
 	        }
-	        return logger$m.throwArgumentError("unsupported fragment", "value", value);
+	        return logger$l.throwArgumentError("unsupported fragment", "value", value);
 	    }
 	    static isFragment(value) {
 	        return !!(value && value._isFragment);
@@ -5311,7 +5369,7 @@
 	            format = FormatTypes.sighash;
 	        }
 	        if (!FormatTypes[format]) {
-	            logger$m.throwArgumentError("invalid format type", "format", format);
+	            logger$l.throwArgumentError("invalid format type", "format", format);
 	        }
 	        if (format === FormatTypes.json) {
 	            return JSON.stringify({
@@ -5344,7 +5402,7 @@
 	            return value;
 	        }
 	        if (value.type !== "event") {
-	            logger$m.throwArgumentError("invalid event object", "value", value);
+	            logger$l.throwArgumentError("invalid event object", "value", value);
 	        }
 	        const params = {
 	            name: verifyIdentifier(value.name),
@@ -5352,12 +5410,12 @@
 	            inputs: (value.inputs ? value.inputs.map(ParamType.fromObject) : []),
 	            type: "event"
 	        };
-	        return new EventFragment(_constructorGuard$2, params);
+	        return new EventFragment(_constructorGuard$1, params);
 	    }
 	    static fromString(value) {
 	        let match = value.match(regexParen);
 	        if (!match) {
-	            logger$m.throwArgumentError("invalid event string", "value", value);
+	            logger$l.throwArgumentError("invalid event string", "value", value);
 	        }
 	        let anonymous = false;
 	        match[3].split(" ").forEach((modifier) => {
@@ -5368,7 +5426,7 @@
 	                case "":
 	                    break;
 	                default:
-	                    logger$m.warn("unknown modifier: " + modifier);
+	                    logger$l.warn("unknown modifier: " + modifier);
 	            }
 	        });
 	        return EventFragment.fromObject({
@@ -5387,12 +5445,12 @@
 	    let comps = value.split("@");
 	    if (comps.length !== 1) {
 	        if (comps.length > 2) {
-	            logger$m.throwArgumentError("invalid human-readable ABI signature", "value", value);
+	            logger$l.throwArgumentError("invalid human-readable ABI signature", "value", value);
 	        }
 	        if (!comps[1].match(/^[0-9]+$/)) {
-	            logger$m.throwArgumentError("invalid human-readable ABI signature gas", "value", value);
+	            logger$l.throwArgumentError("invalid human-readable ABI signature gas", "value", value);
 	        }
-	        params.gas = BigNumber$1.from(comps[1]);
+	        params.gas = BigNumber.from(comps[1]);
 	        return comps[0];
 	    }
 	    return value;
@@ -5443,14 +5501,14 @@
 	        result.constant = (result.stateMutability === "view" || result.stateMutability === "pure");
 	        if (value.constant != null) {
 	            if ((!!value.constant) !== result.constant) {
-	                logger$m.throwArgumentError("cannot have constant function with mutability " + result.stateMutability, "value", value);
+	                logger$l.throwArgumentError("cannot have constant function with mutability " + result.stateMutability, "value", value);
 	            }
 	        }
 	        // Set (and check things are consistent) the payable property
 	        result.payable = (result.stateMutability === "payable");
 	        if (value.payable != null) {
 	            if ((!!value.payable) !== result.payable) {
-	                logger$m.throwArgumentError("cannot have payable function with mutability " + result.stateMutability, "value", value);
+	                logger$l.throwArgumentError("cannot have payable function with mutability " + result.stateMutability, "value", value);
 	            }
 	        }
 	    }
@@ -5458,7 +5516,7 @@
 	        result.payable = !!value.payable;
 	        // If payable we can assume non-constant; otherwise we can't assume
 	        if (value.constant == null && !result.payable && value.type !== "constructor") {
-	            logger$m.throwArgumentError("unable to determine stateMutability", "value", value);
+	            logger$l.throwArgumentError("unable to determine stateMutability", "value", value);
 	        }
 	        result.constant = !!value.constant;
 	        if (result.constant) {
@@ -5468,7 +5526,7 @@
 	            result.stateMutability = (result.payable ? "payable" : "nonpayable");
 	        }
 	        if (result.payable && result.constant) {
-	            logger$m.throwArgumentError("cannot have constant payable function", "value", value);
+	            logger$l.throwArgumentError("cannot have constant payable function", "value", value);
 	        }
 	    }
 	    else if (value.constant != null) {
@@ -5477,7 +5535,7 @@
 	        result.stateMutability = (result.constant ? "view" : "payable");
 	    }
 	    else if (value.type !== "constructor") {
-	        logger$m.throwArgumentError("unable to determine stateMutability", "value", value);
+	        logger$l.throwArgumentError("unable to determine stateMutability", "value", value);
 	    }
 	    return result;
 	}
@@ -5487,7 +5545,7 @@
 	            format = FormatTypes.sighash;
 	        }
 	        if (!FormatTypes[format]) {
-	            logger$m.throwArgumentError("invalid format type", "format", format);
+	            logger$l.throwArgumentError("invalid format type", "format", format);
 	        }
 	        if (format === FormatTypes.json) {
 	            return JSON.stringify({
@@ -5499,7 +5557,7 @@
 	            });
 	        }
 	        if (format === FormatTypes.sighash) {
-	            logger$m.throwError("cannot format a constructor for sighash", Logger.errors.UNSUPPORTED_OPERATION, {
+	            logger$l.throwError("cannot format a constructor for sighash", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "format(sighash)"
 	            });
 	        }
@@ -5520,11 +5578,11 @@
 	            return value;
 	        }
 	        if (value.type !== "constructor") {
-	            logger$m.throwArgumentError("invalid constructor object", "value", value);
+	            logger$l.throwArgumentError("invalid constructor object", "value", value);
 	        }
 	        let state = verifyState(value);
 	        if (state.constant) {
-	            logger$m.throwArgumentError("constructor cannot be constant", "value", value);
+	            logger$l.throwArgumentError("constructor cannot be constant", "value", value);
 	        }
 	        const params = {
 	            name: null,
@@ -5532,16 +5590,16 @@
 	            inputs: (value.inputs ? value.inputs.map(ParamType.fromObject) : []),
 	            payable: state.payable,
 	            stateMutability: state.stateMutability,
-	            gas: (value.gas ? BigNumber$1.from(value.gas) : null)
+	            gas: (value.gas ? BigNumber.from(value.gas) : null)
 	        };
-	        return new ConstructorFragment(_constructorGuard$2, params);
+	        return new ConstructorFragment(_constructorGuard$1, params);
 	    }
 	    static fromString(value) {
 	        let params = { type: "constructor" };
 	        value = parseGas(value, params);
 	        let parens = value.match(regexParen);
 	        if (!parens || parens[1].trim() !== "constructor") {
-	            logger$m.throwArgumentError("invalid constructor string", "value", value);
+	            logger$l.throwArgumentError("invalid constructor string", "value", value);
 	        }
 	        params.inputs = parseParams(parens[2].trim(), false);
 	        parseModifiers(parens[3].trim(), params);
@@ -5557,7 +5615,7 @@
 	            format = FormatTypes.sighash;
 	        }
 	        if (!FormatTypes[format]) {
-	            logger$m.throwArgumentError("invalid format type", "format", format);
+	            logger$l.throwArgumentError("invalid format type", "format", format);
 	        }
 	        if (format === FormatTypes.json) {
 	            return JSON.stringify({
@@ -5605,7 +5663,7 @@
 	            return value;
 	        }
 	        if (value.type !== "function") {
-	            logger$m.throwArgumentError("invalid function object", "value", value);
+	            logger$l.throwArgumentError("invalid function object", "value", value);
 	        }
 	        let state = verifyState(value);
 	        const params = {
@@ -5616,20 +5674,20 @@
 	            outputs: (value.outputs ? value.outputs.map(ParamType.fromObject) : []),
 	            payable: state.payable,
 	            stateMutability: state.stateMutability,
-	            gas: (value.gas ? BigNumber$1.from(value.gas) : null)
+	            gas: (value.gas ? BigNumber.from(value.gas) : null)
 	        };
-	        return new FunctionFragment(_constructorGuard$2, params);
+	        return new FunctionFragment(_constructorGuard$1, params);
 	    }
 	    static fromString(value) {
 	        let params = { type: "function" };
 	        value = parseGas(value, params);
 	        let comps = value.split(" returns ");
 	        if (comps.length > 2) {
-	            logger$m.throwArgumentError("invalid function string", "value", value);
+	            logger$l.throwArgumentError("invalid function string", "value", value);
 	        }
 	        let parens = comps[0].match(regexParen);
 	        if (!parens) {
-	            logger$m.throwArgumentError("invalid function signature", "value", value);
+	            logger$l.throwArgumentError("invalid function signature", "value", value);
 	        }
 	        params.name = parens[1].trim();
 	        if (params.name) {
@@ -5641,7 +5699,7 @@
 	        if (comps.length > 1) {
 	            let returns = comps[1].match(regexParen);
 	            if (returns[1].trim() != "" || returns[3].trim() != "") {
-	                logger$m.throwArgumentError("unexpected tokens", "value", value);
+	                logger$l.throwArgumentError("unexpected tokens", "value", value);
 	            }
 	            params.outputs = parseParams(returns[2], false);
 	        }
@@ -5659,7 +5717,7 @@
 	function checkForbidden(fragment) {
 	    const sig = fragment.format();
 	    if (sig === "Error(string)" || sig === "Panic(uint256)") {
-	        logger$m.throwArgumentError(`cannot specify user defined ${sig} error`, "fragment", fragment);
+	        logger$l.throwArgumentError(`cannot specify user defined ${sig} error`, "fragment", fragment);
 	    }
 	    return fragment;
 	}
@@ -5669,7 +5727,7 @@
 	            format = FormatTypes.sighash;
 	        }
 	        if (!FormatTypes[format]) {
-	            logger$m.throwArgumentError("invalid format type", "format", format);
+	            logger$l.throwArgumentError("invalid format type", "format", format);
 	        }
 	        if (format === FormatTypes.json) {
 	            return JSON.stringify({
@@ -5696,20 +5754,20 @@
 	            return value;
 	        }
 	        if (value.type !== "error") {
-	            logger$m.throwArgumentError("invalid error object", "value", value);
+	            logger$l.throwArgumentError("invalid error object", "value", value);
 	        }
 	        const params = {
 	            type: value.type,
 	            name: verifyIdentifier(value.name),
 	            inputs: (value.inputs ? value.inputs.map(ParamType.fromObject) : [])
 	        };
-	        return checkForbidden(new ErrorFragment(_constructorGuard$2, params));
+	        return checkForbidden(new ErrorFragment(_constructorGuard$1, params));
 	    }
 	    static fromString(value) {
 	        let params = { type: "error" };
 	        let parens = value.match(regexParen);
 	        if (!parens) {
-	            logger$m.throwArgumentError("invalid error signature", "value", value);
+	            logger$l.throwArgumentError("invalid error signature", "value", value);
 	        }
 	        params.name = parens[1].trim();
 	        if (params.name) {
@@ -5737,7 +5795,7 @@
 	const regexIdentifier = new RegExp("^[a-zA-Z$_][a-zA-Z0-9$_]*$");
 	function verifyIdentifier(value) {
 	    if (!value || !value.match(regexIdentifier)) {
-	        logger$m.throwArgumentError(`invalid identifier "${value}"`, "value", value);
+	        logger$l.throwArgumentError(`invalid identifier "${value}"`, "value", value);
 	    }
 	    return value;
 	}
@@ -5761,7 +5819,7 @@
 	            else if (c === ")") {
 	                depth--;
 	                if (depth === -1) {
-	                    logger$m.throwArgumentError("unbalanced parenthesis", "value", value);
+	                    logger$l.throwArgumentError("unbalanced parenthesis", "value", value);
 	                }
 	            }
 	        }
@@ -5772,7 +5830,7 @@
 	    return result;
 	}
 
-	const logger$l = new Logger(version$f);
+	const logger$k = new Logger(version$e);
 	function checkResultErrors(result) {
 	    // Find the first error (if any)
 	    const errors = [];
@@ -5803,7 +5861,7 @@
 	        this.dynamic = dynamic;
 	    }
 	    _throwError(message, value) {
-	        logger$l.throwArgumentError(message, this.localName, value);
+	        logger$k.throwArgumentError(message, this.localName, value);
 	    }
 	}
 	class Writer {
@@ -5835,9 +5893,9 @@
 	        return this._writeData(bytes);
 	    }
 	    _getValue(value) {
-	        let bytes = arrayify(BigNumber$1.from(value));
+	        let bytes = arrayify(BigNumber.from(value));
 	        if (bytes.length > this.wordSize) {
-	            logger$l.throwError("value out-of-bounds", Logger.errors.BUFFER_OVERRUN, {
+	            logger$k.throwError("value out-of-bounds", Logger.errors.BUFFER_OVERRUN, {
 	                length: this.wordSize,
 	                offset: bytes.length
 	            });
@@ -5891,7 +5949,7 @@
 	                alignedLength = length;
 	            }
 	            else {
-	                logger$l.throwError("data out-of-bounds", Logger.errors.BUFFER_OVERRUN, {
+	                logger$k.throwError("data out-of-bounds", Logger.errors.BUFFER_OVERRUN, {
 	                    length: this._data.length,
 	                    offset: this._offset + alignedLength
 	                });
@@ -5909,16 +5967,16 @@
 	        return bytes.slice(0, length);
 	    }
 	    readValue() {
-	        return BigNumber$1.from(this.readBytes(this.wordSize));
+	        return BigNumber.from(this.readBytes(this.wordSize));
 	    }
 	}
 
 	/**
 	 * [js-sha3]{@link https://github.com/emn178/js-sha3}
 	 *
-	 * @version 0.5.7
+	 * @version 0.8.0
 	 * @author Chen, Yi-Cyuan [emn178@gmail.com]
-	 * @copyright Chen, Yi-Cyuan 2015-2016
+	 * @copyright Chen, Yi-Cyuan 2015-2018
 	 * @license MIT
 	 */
 
@@ -5926,25 +5984,52 @@
 	/*jslint bitwise: true */
 	(function () {
 
-	  var root = typeof window === 'object' ? window : {};
+	  var INPUT_ERROR = 'input is invalid type';
+	  var FINALIZE_ERROR = 'finalize already called';
+	  var WINDOW = typeof window === 'object';
+	  var root = WINDOW ? window : {};
+	  if (root.JS_SHA3_NO_WINDOW) {
+	    WINDOW = false;
+	  }
+	  var WEB_WORKER = !WINDOW && typeof self === 'object';
 	  var NODE_JS = !root.JS_SHA3_NO_NODE_JS && typeof process === 'object' && process.versions && process.versions.node;
 	  if (NODE_JS) {
 	    root = commonjsGlobal;
+	  } else if (WEB_WORKER) {
+	    root = self;
 	  }
 	  var COMMON_JS = !root.JS_SHA3_NO_COMMON_JS && 'object' === 'object' && module.exports;
+	  var ARRAY_BUFFER = !root.JS_SHA3_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
 	  var HEX_CHARS = '0123456789abcdef'.split('');
 	  var SHAKE_PADDING = [31, 7936, 2031616, 520093696];
+	  var CSHAKE_PADDING = [4, 1024, 262144, 67108864];
 	  var KECCAK_PADDING = [1, 256, 65536, 16777216];
 	  var PADDING = [6, 1536, 393216, 100663296];
 	  var SHIFT = [0, 8, 16, 24];
 	  var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649,
-	            0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0,
-	            2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771,
-	            2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
-	            2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
+	    0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0,
+	    2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771,
+	    2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
+	    2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
 	  var BITS = [224, 256, 384, 512];
 	  var SHAKE_BITS = [128, 256];
-	  var OUTPUT_TYPES = ['hex', 'buffer', 'arrayBuffer', 'array'];
+	  var OUTPUT_TYPES = ['hex', 'buffer', 'arrayBuffer', 'array', 'digest'];
+	  var CSHAKE_BYTEPAD = {
+	    '128': 168,
+	    '256': 136
+	  };
+
+	  if (root.JS_SHA3_NO_NODE_JS || !Array.isArray) {
+	    Array.isArray = function (obj) {
+	      return Object.prototype.toString.call(obj) === '[object Array]';
+	    };
+	  }
+
+	  if (ARRAY_BUFFER && (root.JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
+	    ArrayBuffer.isView = function (obj) {
+	      return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
+	    };
+	  }
 
 	  var createOutputMethod = function (bits, padding, outputType) {
 	    return function (message) {
@@ -5958,6 +6043,26 @@
 	    };
 	  };
 
+	  var createCshakeOutputMethod = function (bits, padding, outputType) {
+	    return function (message, outputBits, n, s) {
+	      return methods['cshake' + bits].update(message, outputBits, n, s)[outputType]();
+	    };
+	  };
+
+	  var createKmacOutputMethod = function (bits, padding, outputType) {
+	    return function (key, message, outputBits, s) {
+	      return methods['kmac' + bits].update(key, message, outputBits, s)[outputType]();
+	    };
+	  };
+
+	  var createOutputMethods = function (method, createMethod, bits, padding) {
+	    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+	      var type = OUTPUT_TYPES[i];
+	      method[type] = createMethod(bits, padding, type);
+	    }
+	    return method;
+	  };
+
 	  var createMethod = function (bits, padding) {
 	    var method = createOutputMethod(bits, padding, 'hex');
 	    method.create = function () {
@@ -5966,11 +6071,7 @@
 	    method.update = function (message) {
 	      return method.create().update(message);
 	    };
-	    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
-	      var type = OUTPUT_TYPES[i];
-	      method[type] = createOutputMethod(bits, padding, type);
-	    }
-	    return method;
+	    return createOutputMethods(method, createOutputMethod, bits, padding);
 	  };
 
 	  var createShakeMethod = function (bits, padding) {
@@ -5981,28 +6082,59 @@
 	    method.update = function (message, outputBits) {
 	      return method.create(outputBits).update(message);
 	    };
-	    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
-	      var type = OUTPUT_TYPES[i];
-	      method[type] = createShakeOutputMethod(bits, padding, type);
-	    }
-	    return method;
+	    return createOutputMethods(method, createShakeOutputMethod, bits, padding);
+	  };
+
+	  var createCshakeMethod = function (bits, padding) {
+	    var w = CSHAKE_BYTEPAD[bits];
+	    var method = createCshakeOutputMethod(bits, padding, 'hex');
+	    method.create = function (outputBits, n, s) {
+	      if (!n && !s) {
+	        return methods['shake' + bits].create(outputBits);
+	      } else {
+	        return new Keccak(bits, padding, outputBits).bytepad([n, s], w);
+	      }
+	    };
+	    method.update = function (message, outputBits, n, s) {
+	      return method.create(outputBits, n, s).update(message);
+	    };
+	    return createOutputMethods(method, createCshakeOutputMethod, bits, padding);
+	  };
+
+	  var createKmacMethod = function (bits, padding) {
+	    var w = CSHAKE_BYTEPAD[bits];
+	    var method = createKmacOutputMethod(bits, padding, 'hex');
+	    method.create = function (key, outputBits, s) {
+	      return new Kmac(bits, padding, outputBits).bytepad(['KMAC', s], w).bytepad([key], w);
+	    };
+	    method.update = function (key, message, outputBits, s) {
+	      return method.create(key, outputBits, s).update(message);
+	    };
+	    return createOutputMethods(method, createKmacOutputMethod, bits, padding);
 	  };
 
 	  var algorithms = [
-	    {name: 'keccak', padding: KECCAK_PADDING, bits: BITS, createMethod: createMethod},
-	    {name: 'sha3', padding: PADDING, bits: BITS, createMethod: createMethod},
-	    {name: 'shake', padding: SHAKE_PADDING, bits: SHAKE_BITS, createMethod: createShakeMethod}
+	    { name: 'keccak', padding: KECCAK_PADDING, bits: BITS, createMethod: createMethod },
+	    { name: 'sha3', padding: PADDING, bits: BITS, createMethod: createMethod },
+	    { name: 'shake', padding: SHAKE_PADDING, bits: SHAKE_BITS, createMethod: createShakeMethod },
+	    { name: 'cshake', padding: CSHAKE_PADDING, bits: SHAKE_BITS, createMethod: createCshakeMethod },
+	    { name: 'kmac', padding: CSHAKE_PADDING, bits: SHAKE_BITS, createMethod: createKmacMethod }
 	  ];
 
 	  var methods = {}, methodNames = [];
 
 	  for (var i = 0; i < algorithms.length; ++i) {
 	    var algorithm = algorithms[i];
-	    var bits  = algorithm.bits;
+	    var bits = algorithm.bits;
 	    for (var j = 0; j < bits.length; ++j) {
-	      var methodName = algorithm.name +'_' + bits[j];
+	      var methodName = algorithm.name + '_' + bits[j];
 	      methodNames.push(methodName);
 	      methods[methodName] = algorithm.createMethod(bits[j], algorithm.padding);
+	      if (algorithm.name !== 'sha3') {
+	        var newMethodName = algorithm.name + bits[j];
+	        methodNames.push(newMethodName);
+	        methods[newMethodName] = methods[methodName];
+	      }
 	    }
 	  }
 
@@ -6012,6 +6144,7 @@
 	    this.padding = padding;
 	    this.outputBits = outputBits;
 	    this.reset = true;
+	    this.finalized = false;
 	    this.block = 0;
 	    this.start = 0;
 	    this.blockCount = (1600 - (bits << 1)) >> 5;
@@ -6025,11 +6158,27 @@
 	  }
 
 	  Keccak.prototype.update = function (message) {
-	    var notString = typeof message !== 'string';
-	    if (notString && message.constructor === ArrayBuffer) {
-	      message = new Uint8Array(message);
+	    if (this.finalized) {
+	      throw new Error(FINALIZE_ERROR);
 	    }
-	    var length = message.length, blocks = this.blocks, byteCount = this.byteCount,
+	    var notString, type = typeof message;
+	    if (type !== 'string') {
+	      if (type === 'object') {
+	        if (message === null) {
+	          throw new Error(INPUT_ERROR);
+	        } else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
+	          message = new Uint8Array(message);
+	        } else if (!Array.isArray(message)) {
+	          if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
+	            throw new Error(INPUT_ERROR);
+	          }
+	        }
+	      } else {
+	        throw new Error(INPUT_ERROR);
+	      }
+	      notString = true;
+	    }
+	    var blocks = this.blocks, byteCount = this.byteCount, length = message.length,
 	      blockCount = this.blockCount, index = 0, s = this.s, i, code;
 
 	    while (index < length) {
@@ -6081,7 +6230,84 @@
 	    return this;
 	  };
 
+	  Keccak.prototype.encode = function (x, right) {
+	    var o = x & 255, n = 1;
+	    var bytes = [o];
+	    x = x >> 8;
+	    o = x & 255;
+	    while (o > 0) {
+	      bytes.unshift(o);
+	      x = x >> 8;
+	      o = x & 255;
+	      ++n;
+	    }
+	    if (right) {
+	      bytes.push(n);
+	    } else {
+	      bytes.unshift(n);
+	    }
+	    this.update(bytes);
+	    return bytes.length;
+	  };
+
+	  Keccak.prototype.encodeString = function (str) {
+	    var notString, type = typeof str;
+	    if (type !== 'string') {
+	      if (type === 'object') {
+	        if (str === null) {
+	          throw new Error(INPUT_ERROR);
+	        } else if (ARRAY_BUFFER && str.constructor === ArrayBuffer) {
+	          str = new Uint8Array(str);
+	        } else if (!Array.isArray(str)) {
+	          if (!ARRAY_BUFFER || !ArrayBuffer.isView(str)) {
+	            throw new Error(INPUT_ERROR);
+	          }
+	        }
+	      } else {
+	        throw new Error(INPUT_ERROR);
+	      }
+	      notString = true;
+	    }
+	    var bytes = 0, length = str.length;
+	    if (notString) {
+	      bytes = length;
+	    } else {
+	      for (var i = 0; i < str.length; ++i) {
+	        var code = str.charCodeAt(i);
+	        if (code < 0x80) {
+	          bytes += 1;
+	        } else if (code < 0x800) {
+	          bytes += 2;
+	        } else if (code < 0xd800 || code >= 0xe000) {
+	          bytes += 3;
+	        } else {
+	          code = 0x10000 + (((code & 0x3ff) << 10) | (str.charCodeAt(++i) & 0x3ff));
+	          bytes += 4;
+	        }
+	      }
+	    }
+	    bytes += this.encode(bytes * 8);
+	    this.update(str);
+	    return bytes;
+	  };
+
+	  Keccak.prototype.bytepad = function (strs, w) {
+	    var bytes = this.encode(w);
+	    for (var i = 0; i < strs.length; ++i) {
+	      bytes += this.encodeString(strs[i]);
+	    }
+	    var paddingBytes = w - bytes % w;
+	    var zeros = [];
+	    zeros.length = paddingBytes;
+	    this.update(zeros);
+	    return this;
+	  };
+
 	  Keccak.prototype.finalize = function () {
+	    if (this.finalized) {
+	      return;
+	    }
+	    this.finalized = true;
 	    var blocks = this.blocks, i = this.lastByteIndex, blockCount = this.blockCount, s = this.s;
 	    blocks[i >> 2] |= this.padding[i & 3];
 	    if (this.lastByteIndex === this.byteCount) {
@@ -6101,15 +6327,15 @@
 	    this.finalize();
 
 	    var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks,
-	        extraBytes = this.extraBytes, i = 0, j = 0;
+	      extraBytes = this.extraBytes, i = 0, j = 0;
 	    var hex = '', block;
 	    while (j < outputBlocks) {
 	      for (i = 0; i < blockCount && j < outputBlocks; ++i, ++j) {
 	        block = s[i];
 	        hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F] +
-	               HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F] +
-	               HEX_CHARS[(block >> 20) & 0x0F] + HEX_CHARS[(block >> 16) & 0x0F] +
-	               HEX_CHARS[(block >> 28) & 0x0F] + HEX_CHARS[(block >> 24) & 0x0F];
+	          HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F] +
+	          HEX_CHARS[(block >> 20) & 0x0F] + HEX_CHARS[(block >> 16) & 0x0F] +
+	          HEX_CHARS[(block >> 28) & 0x0F] + HEX_CHARS[(block >> 24) & 0x0F];
 	      }
 	      if (j % blockCount === 0) {
 	        f(s);
@@ -6118,9 +6344,7 @@
 	    }
 	    if (extraBytes) {
 	      block = s[i];
-	      if (extraBytes > 0) {
-	        hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F];
-	      }
+	      hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F];
 	      if (extraBytes > 1) {
 	        hex += HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F];
 	      }
@@ -6135,7 +6359,7 @@
 	    this.finalize();
 
 	    var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks,
-	        extraBytes = this.extraBytes, i = 0, j = 0;
+	      extraBytes = this.extraBytes, i = 0, j = 0;
 	    var bytes = this.outputBits >> 3;
 	    var buffer;
 	    if (extraBytes) {
@@ -6165,7 +6389,7 @@
 	    this.finalize();
 
 	    var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks,
-	        extraBytes = this.extraBytes, i = 0, j = 0;
+	      extraBytes = this.extraBytes, i = 0, j = 0;
 	    var array = [], offset, block;
 	    while (j < outputBlocks) {
 	      for (i = 0; i < blockCount && j < outputBlocks; ++i, ++j) {
@@ -6183,9 +6407,7 @@
 	    if (extraBytes) {
 	      offset = j << 2;
 	      block = s[i];
-	      if (extraBytes > 0) {
-	        array[offset] = block & 0xFF;
-	      }
+	      array[offset] = block & 0xFF;
 	      if (extraBytes > 1) {
 	        array[offset + 1] = (block >> 8) & 0xFF;
 	      }
@@ -6196,11 +6418,22 @@
 	    return array;
 	  };
 
+	  function Kmac(bits, padding, outputBits) {
+	    Keccak.call(this, bits, padding, outputBits);
+	  }
+
+	  Kmac.prototype = new Keccak();
+
+	  Kmac.prototype.finalize = function () {
+	    this.encode(this.outputBits, true);
+	    return Keccak.prototype.finalize.call(this);
+	  };
+
 	  var f = function (s) {
 	    var h, l, n, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9,
-	        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17,
-	        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33,
-	        b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
+	      b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17,
+	      b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33,
+	      b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
 	    for (n = 0; n < 48; n += 2) {
 	      c0 = s[0] ^ s[10] ^ s[20] ^ s[30] ^ s[40];
 	      c1 = s[1] ^ s[11] ^ s[21] ^ s[31] ^ s[41];
@@ -6384,7 +6617,7 @@
 	  if (COMMON_JS) {
 	    module.exports = methods;
 	  } else {
-	    for (var i = 0; i < methodNames.length; ++i) {
+	    for (i = 0; i < methodNames.length; ++i) {
 	      root[methodNames[i]] = methods[methodNames[i]];
 	    }
 	  }
@@ -6397,9 +6630,9 @@
 	    return '0x' + sha3$1.keccak_256(arrayify(data));
 	}
 
-	const version$e = "rlp/5.4.0";
+	const version$d = "rlp/5.6.0";
 
-	const logger$k = new Logger(version$e);
+	const logger$j = new Logger(version$d);
 	function arrayifyInteger(value) {
 	    const result = [];
 	    while (value) {
@@ -6430,7 +6663,7 @@
 	        return length.concat(payload);
 	    }
 	    if (!isBytesLike(object)) {
-	        logger$k.throwArgumentError("RLP object must be BytesLike", "object", object);
+	        logger$j.throwArgumentError("RLP object must be BytesLike", "object", object);
 	    }
 	    const data = Array.prototype.slice.call(arrayify(object));
 	    if (data.length === 1 && data[0] <= 0x7f) {
@@ -6454,7 +6687,7 @@
 	        result.push(decoded.result);
 	        childOffset += decoded.consumed;
 	        if (childOffset > offset + 1 + length) {
-	            logger$k.throwError("child data too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("child data too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	    }
 	    return { consumed: (1 + length), result: result };
@@ -6462,35 +6695,35 @@
 	// returns { consumed: number, result: Object }
 	function _decode(data, offset) {
 	    if (data.length === 0) {
-	        logger$k.throwError("data too short", Logger.errors.BUFFER_OVERRUN, {});
+	        logger$j.throwError("data too short", Logger.errors.BUFFER_OVERRUN, {});
 	    }
 	    // Array with extra length prefix
 	    if (data[offset] >= 0xf8) {
 	        const lengthLength = data[offset] - 0xf7;
 	        if (offset + 1 + lengthLength > data.length) {
-	            logger$k.throwError("data short segment too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("data short segment too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	        const length = unarrayifyInteger(data, offset + 1, lengthLength);
 	        if (offset + 1 + lengthLength + length > data.length) {
-	            logger$k.throwError("data long segment too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("data long segment too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	        return _decodeChildren(data, offset, offset + 1 + lengthLength, lengthLength + length);
 	    }
 	    else if (data[offset] >= 0xc0) {
 	        const length = data[offset] - 0xc0;
 	        if (offset + 1 + length > data.length) {
-	            logger$k.throwError("data array too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("data array too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	        return _decodeChildren(data, offset, offset + 1, length);
 	    }
 	    else if (data[offset] >= 0xb8) {
 	        const lengthLength = data[offset] - 0xb7;
 	        if (offset + 1 + lengthLength > data.length) {
-	            logger$k.throwError("data array too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("data array too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	        const length = unarrayifyInteger(data, offset + 1, lengthLength);
 	        if (offset + 1 + lengthLength + length > data.length) {
-	            logger$k.throwError("data array too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("data array too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	        const result = hexlify(data.slice(offset + 1 + lengthLength, offset + 1 + lengthLength + length));
 	        return { consumed: (1 + lengthLength + length), result: result };
@@ -6498,28 +6731,28 @@
 	    else if (data[offset] >= 0x80) {
 	        const length = data[offset] - 0x80;
 	        if (offset + 1 + length > data.length) {
-	            logger$k.throwError("data too short", Logger.errors.BUFFER_OVERRUN, {});
+	            logger$j.throwError("data too short", Logger.errors.BUFFER_OVERRUN, {});
 	        }
 	        const result = hexlify(data.slice(offset + 1, offset + 1 + length));
 	        return { consumed: (1 + length), result: result };
 	    }
 	    return { consumed: 1, result: hexlify(data[offset]) };
 	}
-	function decode$1(data) {
+	function decode$2(data) {
 	    const bytes = arrayify(data);
 	    const decoded = _decode(bytes, 0);
 	    if (decoded.consumed !== bytes.length) {
-	        logger$k.throwArgumentError("invalid rlp data", "data", data);
+	        logger$j.throwArgumentError("invalid rlp data", "data", data);
 	    }
 	    return decoded.result;
 	}
 
-	const version$d = "address/5.4.0";
+	const version$c = "address/5.6.0";
 
-	const logger$j = new Logger(version$d);
+	const logger$i = new Logger(version$c);
 	function getChecksumAddress(address) {
 	    if (!isHexString(address, 20)) {
-	        logger$j.throwArgumentError("invalid address", "address", address);
+	        logger$i.throwArgumentError("invalid address", "address", address);
 	    }
 	    address = address.toLowerCase();
 	    const chars = address.substring(2).split("");
@@ -6575,7 +6808,7 @@
 	function getAddress(address) {
 	    let result = null;
 	    if (typeof (address) !== "string") {
-	        logger$j.throwArgumentError("invalid address", "address", address);
+	        logger$i.throwArgumentError("invalid address", "address", address);
 	    }
 	    if (address.match(/^(0x)?[0-9a-fA-F]{40}$/)) {
 	        // Missing the 0x prefix
@@ -6585,14 +6818,14 @@
 	        result = getChecksumAddress(address);
 	        // It is a checksummed address with a bad checksum
 	        if (address.match(/([A-F].*[a-f])|([a-f].*[A-F])/) && result !== address) {
-	            logger$j.throwArgumentError("bad address checksum", "address", address);
+	            logger$i.throwArgumentError("bad address checksum", "address", address);
 	        }
 	        // Maybe ICAP? (we only support direct mode)
 	    }
 	    else if (address.match(/^XE[0-9]{2}[0-9A-Za-z]{30,31}$/)) {
 	        // It is an ICAP address with a bad checksum
 	        if (address.substring(2, 4) !== ibanChecksum(address)) {
-	            logger$j.throwArgumentError("bad icap checksum", "address", address);
+	            logger$i.throwArgumentError("bad icap checksum", "address", address);
 	        }
 	        result = _base36To16(address.substring(4));
 	        while (result.length < 40) {
@@ -6601,7 +6834,7 @@
 	        result = getChecksumAddress("0x" + result);
 	    }
 	    else {
-	        logger$j.throwArgumentError("invalid address", "address", address);
+	        logger$i.throwArgumentError("invalid address", "address", address);
 	    }
 	    return result;
 	}
@@ -6612,9 +6845,9 @@
 	        from = getAddress(transaction.from);
 	    }
 	    catch (error) {
-	        logger$j.throwArgumentError("missing from address", "transaction", transaction);
+	        logger$i.throwArgumentError("missing from address", "transaction", transaction);
 	    }
-	    const nonce = stripZeros(arrayify(BigNumber$1.from(transaction.nonce).toHexString()));
+	    const nonce = stripZeros(arrayify(BigNumber.from(transaction.nonce).toHexString()));
 	    return getAddress(hexDataSlice(keccak256(encode$2([from, nonce])), 12));
 	}
 
@@ -6656,7 +6889,7 @@
 	    }
 	}
 
-	const logger$i = new Logger(version$f);
+	const logger$h = new Logger(version$e);
 	function pack(writer, coders, values) {
 	    let arrayValues = null;
 	    if (Array.isArray(values)) {
@@ -6667,14 +6900,14 @@
 	        arrayValues = coders.map((coder) => {
 	            const name = coder.localName;
 	            if (!name) {
-	                logger$i.throwError("cannot encode object for signature with missing names", Logger.errors.INVALID_ARGUMENT, {
+	                logger$h.throwError("cannot encode object for signature with missing names", Logger.errors.INVALID_ARGUMENT, {
 	                    argument: "values",
 	                    coder: coder,
 	                    value: values
 	                });
 	            }
 	            if (unique[name]) {
-	                logger$i.throwError("cannot encode object for signature with duplicate names", Logger.errors.INVALID_ARGUMENT, {
+	                logger$h.throwError("cannot encode object for signature with duplicate names", Logger.errors.INVALID_ARGUMENT, {
 	                    argument: "values",
 	                    coder: coder,
 	                    value: values
@@ -6685,10 +6918,10 @@
 	        });
 	    }
 	    else {
-	        logger$i.throwArgumentError("invalid tuple value", "tuple", values);
+	        logger$h.throwArgumentError("invalid tuple value", "tuple", values);
 	    }
 	    if (coders.length !== arrayValues.length) {
-	        logger$i.throwArgumentError("types/value length mismatch", "tuple", values);
+	        logger$h.throwArgumentError("types/value length mismatch", "tuple", values);
 	    }
 	    let staticWriter = new Writer(writer.wordSize);
 	    let dynamicWriter = new Writer(writer.wordSize);
@@ -6829,7 +7062,7 @@
 	            count = value.length;
 	            writer.writeValue(value.length);
 	        }
-	        logger$i.checkArgumentCount(value.length, count, "coder array" + (this.localName ? (" " + this.localName) : ""));
+	        logger$h.checkArgumentCount(value.length, count, "coder array" + (this.localName ? (" " + this.localName) : ""));
 	        let coders = [];
 	        for (let i = 0; i < value.length; i++) {
 	            coders.push(this.coder);
@@ -6846,7 +7079,7 @@
 	            // bytes as a link to the data). This could use a much
 	            // tighter bound, but we are erroring on the side of safety.
 	            if (count * 32 > reader._data.length) {
-	                logger$i.throwError("insufficient data length", Logger.errors.BUFFER_OVERRUN, {
+	                logger$h.throwError("insufficient data length", Logger.errors.BUFFER_OVERRUN, {
 	                    length: reader._data.length,
 	                    count: count
 	                });
@@ -6944,10 +7177,10 @@
 
 	const AddressZero = "0x0000000000000000000000000000000000000000";
 
-	const NegativeOne$1 = ( /*#__PURE__*/BigNumber$1.from(-1));
-	const Zero$1 = ( /*#__PURE__*/BigNumber$1.from(0));
-	const One$1 = ( /*#__PURE__*/BigNumber$1.from(1));
-	const MaxUint256$1 = ( /*#__PURE__*/BigNumber$1.from("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+	const NegativeOne$1 = ( /*#__PURE__*/BigNumber.from(-1));
+	const Zero$1 = ( /*#__PURE__*/BigNumber.from(0));
+	const One$1 = ( /*#__PURE__*/BigNumber.from(1));
+	const MaxUint256$1 = ( /*#__PURE__*/BigNumber.from("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
 
 	const HashZero = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -6962,7 +7195,7 @@
 	        return 0;
 	    }
 	    encode(writer, value) {
-	        let v = BigNumber$1.from(value);
+	        let v = BigNumber.from(value);
 	        // Check bounds are safe for encoding
 	        let maxUintValue = MaxUint256$1.mask(writer.wordSize * 8);
 	        if (this.signed) {
@@ -6989,9 +7222,9 @@
 	    }
 	}
 
-	const version$c = "strings/5.4.0";
+	const version$b = "strings/5.6.0";
 
-	const logger$h = new Logger(version$c);
+	const logger$g = new Logger(version$b);
 	///////////////////////////////
 	var UnicodeNormalizationForm;
 	(function (UnicodeNormalizationForm) {
@@ -7023,13 +7256,13 @@
 	    // - offset       = start of this codepoint
 	    // - badCodepoint = the computed codepoint; inside the UTF-16 surrogate range
 	    Utf8ErrorReason["UTF16_SURROGATE"] = "UTF-16 surrogate";
-	    // The string is an overlong reperesentation
+	    // The string is an overlong representation
 	    // - offset       = start of this codepoint
 	    // - badCodepoint = the computed codepoint; already bounds checked
 	    Utf8ErrorReason["OVERLONG"] = "overlong representation";
 	})(Utf8ErrorReason || (Utf8ErrorReason = {}));
 	function errorFunc(reason, offset, bytes, output, badCodepoint) {
-	    return logger$h.throwArgumentError(`invalid codepoint at offset ${offset}; ${reason}`, "bytes", bytes);
+	    return logger$g.throwArgumentError(`invalid codepoint at offset ${offset}; ${reason}`, "bytes", bytes);
 	}
 	function ignoreFunc(reason, offset, bytes, output, badCodepoint) {
 	    // If there is an invalid prefix (including stray continuation), skip any additional continuation bytes
@@ -7129,7 +7362,7 @@
 	            res = (res << 6) | (nextChar & 0x3f);
 	            i++;
 	        }
-	        // See above loop for invalid contimuation byte
+	        // See above loop for invalid continuation byte
 	        if (res === null) {
 	            continue;
 	        }
@@ -7155,7 +7388,7 @@
 	// http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
 	function toUtf8Bytes(str, form = UnicodeNormalizationForm.current) {
 	    if (form != UnicodeNormalizationForm.current) {
-	        logger$h.checkNormalize();
+	        logger$g.checkNormalize();
 	        str = str.normalize(form);
 	    }
 	    let result = [];
@@ -7460,12 +7693,12 @@
 	    }
 	}
 
-	const logger$g = new Logger(version$f);
+	const logger$f = new Logger(version$e);
 	const paramTypeBytes = new RegExp(/^bytes([0-9]*)$/);
 	const paramTypeNumber = new RegExp(/^(u?int)([0-9]*)$/);
 	class AbiCoder {
 	    constructor(coerceFunc) {
-	        logger$g.checkNew(new.target, AbiCoder);
+	        logger$f.checkNew(new.target, AbiCoder);
 	        defineReadOnly(this, "coerceFunc", coerceFunc || null);
 	    }
 	    _getCoder(param) {
@@ -7492,7 +7725,7 @@
 	        if (match) {
 	            let size = parseInt(match[2] || "256");
 	            if (size === 0 || size > 256 || (size % 8) !== 0) {
-	                logger$g.throwArgumentError("invalid " + match[1] + " bit length", "param", param);
+	                logger$f.throwArgumentError("invalid " + match[1] + " bit length", "param", param);
 	            }
 	            return new NumberCoder(size / 8, (match[1] === "int"), param.name);
 	        }
@@ -7501,11 +7734,11 @@
 	        if (match) {
 	            let size = parseInt(match[1]);
 	            if (size === 0 || size > 32) {
-	                logger$g.throwArgumentError("invalid bytes length", "param", param);
+	                logger$f.throwArgumentError("invalid bytes length", "param", param);
 	            }
 	            return new FixedBytesCoder(size, param.name);
 	        }
-	        return logger$g.throwArgumentError("invalid type", "type", param.type);
+	        return logger$f.throwArgumentError("invalid type", "type", param.type);
 	    }
 	    _getWordSize() { return 32; }
 	    _getReader(data, allowLoose) {
@@ -7521,7 +7754,7 @@
 	    }
 	    encode(types, values) {
 	        if (types.length !== values.length) {
-	            logger$g.throwError("types/values length mismatch", Logger.errors.INVALID_ARGUMENT, {
+	            logger$f.throwError("types/values length mismatch", Logger.errors.INVALID_ARGUMENT, {
 	                count: { types: types.length, values: values.length },
 	                value: { types: types, values: values }
 	            });
@@ -7544,29 +7777,38 @@
 	    return keccak256(toUtf8Bytes(text));
 	}
 
-	const version$b = "hash/5.4.0";
+	const version$a = "hash/5.6.0";
 
-	const logger$f = new Logger(version$b);
+	const logger$e = new Logger(version$a);
 	const Zeros = new Uint8Array(32);
 	Zeros.fill(0);
 	const Partition = new RegExp("^((.*)\\.)?([^.]+)$");
 	function namehash(name) {
 	    /* istanbul ignore if */
 	    if (typeof (name) !== "string") {
-	        logger$f.throwArgumentError("invalid ENS name; not a string", "name", name);
+	        logger$e.throwArgumentError("invalid ENS name; not a string", "name", name);
 	    }
 	    let current = name;
 	    let result = Zeros;
 	    while (current.length) {
 	        const partition = current.match(Partition);
 	        if (partition == null || partition[2] === "") {
-	            logger$f.throwArgumentError("invalid ENS address; missing component", "name", name);
+	            logger$e.throwArgumentError("invalid ENS address; missing component", "name", name);
 	        }
 	        const label = toUtf8Bytes(nameprep(partition[3]));
 	        result = keccak256(concat([result, keccak256(label)]));
 	        current = partition[2] || "";
 	    }
 	    return hexlify(result);
+	}
+	function dnsEncode(name) {
+	    return hexlify(concat(name.split(".").map((comp) => {
+	        // We jam in an _ prefix to fill in with the length later
+	        // Note: Nameprep throws if the component is over 63 bytes
+	        const bytes = toUtf8Bytes("_" + nameprep(comp));
+	        bytes[0] = bytes.length - 1;
+	        return bytes;
+	    }))) + "00";
 	}
 
 	var __awaiter$7 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -7578,13 +7820,13 @@
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	const logger$e = new Logger(version$b);
+	const logger$d = new Logger(version$a);
 	const padding = new Uint8Array(32);
 	padding.fill(0);
-	const NegativeOne = BigNumber$1.from(-1);
-	const Zero = BigNumber$1.from(0);
-	const One = BigNumber$1.from(1);
-	const MaxUint256 = BigNumber$1.from("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+	const NegativeOne = BigNumber.from(-1);
+	const Zero = BigNumber.from(0);
+	const One = BigNumber.from(1);
+	const MaxUint256 = BigNumber.from("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 	function hexPadRight(value) {
 	    const bytes = arrayify(value);
 	    const padOffset = bytes.length % 32;
@@ -7608,7 +7850,7 @@
 	function checkString(key) {
 	    return function (value) {
 	        if (typeof (value) !== "string") {
-	            logger$e.throwArgumentError(`invalid domain value for ${JSON.stringify(key)}`, `domain.${key}`, value);
+	            logger$d.throwArgumentError(`invalid domain value for ${JSON.stringify(key)}`, `domain.${key}`, value);
 	        }
 	        return value;
 	    };
@@ -7618,17 +7860,17 @@
 	    version: checkString("version"),
 	    chainId: function (value) {
 	        try {
-	            return BigNumber$1.from(value).toString();
+	            return BigNumber.from(value).toString();
 	        }
 	        catch (error) { }
-	        return logger$e.throwArgumentError(`invalid domain value for "chainId"`, "domain.chainId", value);
+	        return logger$d.throwArgumentError(`invalid domain value for "chainId"`, "domain.chainId", value);
 	    },
 	    verifyingContract: function (value) {
 	        try {
 	            return getAddress(value).toLowerCase();
 	        }
 	        catch (error) { }
-	        return logger$e.throwArgumentError(`invalid domain value "verifyingContract"`, "domain.verifyingContract", value);
+	        return logger$d.throwArgumentError(`invalid domain value "verifyingContract"`, "domain.verifyingContract", value);
 	    },
 	    salt: function (value) {
 	        try {
@@ -7639,7 +7881,7 @@
 	            return hexlify(bytes);
 	        }
 	        catch (error) { }
-	        return logger$e.throwArgumentError(`invalid domain value "salt"`, "domain.salt", value);
+	        return logger$d.throwArgumentError(`invalid domain value "salt"`, "domain.salt", value);
 	    }
 	};
 	function getBaseEncoder(type) {
@@ -7650,14 +7892,14 @@
 	            const signed = (match[1] === "");
 	            const width = parseInt(match[2] || "256");
 	            if (width % 8 !== 0 || width > 256 || (match[2] && match[2] !== String(width))) {
-	                logger$e.throwArgumentError("invalid numeric width", "type", type);
+	                logger$d.throwArgumentError("invalid numeric width", "type", type);
 	            }
 	            const boundsUpper = MaxUint256.mask(signed ? (width - 1) : width);
 	            const boundsLower = signed ? boundsUpper.add(One).mul(NegativeOne) : Zero;
 	            return function (value) {
-	                const v = BigNumber$1.from(value);
+	                const v = BigNumber.from(value);
 	                if (v.lt(boundsLower) || v.gt(boundsUpper)) {
-	                    logger$e.throwArgumentError(`value out-of-bounds for ${type}`, "value", value);
+	                    logger$d.throwArgumentError(`value out-of-bounds for ${type}`, "value", value);
 	                }
 	                return hexZeroPad(v.toTwos(256).toHexString(), 32);
 	            };
@@ -7669,12 +7911,12 @@
 	        if (match) {
 	            const width = parseInt(match[1]);
 	            if (width === 0 || width > 32 || match[1] !== String(width)) {
-	                logger$e.throwArgumentError("invalid bytes width", "type", type);
+	                logger$d.throwArgumentError("invalid bytes width", "type", type);
 	            }
 	            return function (value) {
 	                const bytes = arrayify(value);
 	                if (bytes.length !== width) {
-	                    logger$e.throwArgumentError(`invalid length for ${type}`, "value", value);
+	                    logger$d.throwArgumentError(`invalid length for ${type}`, "value", value);
 	                }
 	                return hexPadRight(value);
 	            };
@@ -7720,13 +7962,13 @@
 	            types[name].forEach((field) => {
 	                // Check each field has a unique name
 	                if (uniqueNames[field.name]) {
-	                    logger$e.throwArgumentError(`duplicate variable name ${JSON.stringify(field.name)} in ${JSON.stringify(name)}`, "types", types);
+	                    logger$d.throwArgumentError(`duplicate variable name ${JSON.stringify(field.name)} in ${JSON.stringify(name)}`, "types", types);
 	                }
 	                uniqueNames[field.name] = true;
 	                // Get the base type (drop any array specifiers)
 	                const baseType = field.type.match(/^([^\x5b]*)(\x5b|$)/)[1];
 	                if (baseType === name) {
-	                    logger$e.throwArgumentError(`circular type reference to ${JSON.stringify(baseType)}`, "types", types);
+	                    logger$d.throwArgumentError(`circular type reference to ${JSON.stringify(baseType)}`, "types", types);
 	                }
 	                // Is this a base encoding type?
 	                const encoder = getBaseEncoder(baseType);
@@ -7734,7 +7976,7 @@
 	                    return;
 	                }
 	                if (!parents[baseType]) {
-	                    logger$e.throwArgumentError(`unknown type ${JSON.stringify(baseType)}`, "types", types);
+	                    logger$d.throwArgumentError(`unknown type ${JSON.stringify(baseType)}`, "types", types);
 	                }
 	                // Add linkage
 	                parents[baseType].push(name);
@@ -7744,16 +7986,16 @@
 	        // Deduce the primary type
 	        const primaryTypes = Object.keys(parents).filter((n) => (parents[n].length === 0));
 	        if (primaryTypes.length === 0) {
-	            logger$e.throwArgumentError("missing primary type", "types", types);
+	            logger$d.throwArgumentError("missing primary type", "types", types);
 	        }
 	        else if (primaryTypes.length > 1) {
-	            logger$e.throwArgumentError(`ambiguous primary types or unused types: ${primaryTypes.map((t) => (JSON.stringify(t))).join(", ")}`, "types", types);
+	            logger$d.throwArgumentError(`ambiguous primary types or unused types: ${primaryTypes.map((t) => (JSON.stringify(t))).join(", ")}`, "types", types);
 	        }
 	        defineReadOnly(this, "primaryType", primaryTypes[0]);
 	        // Check for circular type references
 	        function checkCircular(type, found) {
 	            if (found[type]) {
-	                logger$e.throwArgumentError(`circular type reference to ${JSON.stringify(type)}`, "types", types);
+	                logger$d.throwArgumentError(`circular type reference to ${JSON.stringify(type)}`, "types", types);
 	            }
 	            found[type] = true;
 	            Object.keys(links[type]).forEach((child) => {
@@ -7800,7 +8042,7 @@
 	            const length = parseInt(match[3]);
 	            return (value) => {
 	                if (length >= 0 && value.length !== length) {
-	                    logger$e.throwArgumentError("array length mismatch; expected length ${ arrayLength }", "value", value);
+	                    logger$d.throwArgumentError("array length mismatch; expected length ${ arrayLength }", "value", value);
 	                }
 	                let result = value.map(subEncoder);
 	                if (this._types[subtype]) {
@@ -7825,12 +8067,12 @@
 	                return hexConcat(values);
 	            };
 	        }
-	        return logger$e.throwArgumentError(`unknown type: ${type}`, "type", type);
+	        return logger$d.throwArgumentError(`unknown type: ${type}`, "type", type);
 	    }
 	    encodeType(name) {
 	        const result = this._types[name];
 	        if (!result) {
-	            logger$e.throwArgumentError(`unknown type: ${JSON.stringify(name)}`, "name", name);
+	            logger$d.throwArgumentError(`unknown type: ${JSON.stringify(name)}`, "name", name);
 	        }
 	        return result;
 	    }
@@ -7860,7 +8102,7 @@
 	            const subtype = match[1];
 	            const length = parseInt(match[3]);
 	            if (length >= 0 && value.length !== length) {
-	                logger$e.throwArgumentError("array length mismatch; expected length ${ arrayLength }", "value", value);
+	                logger$d.throwArgumentError("array length mismatch; expected length ${ arrayLength }", "value", value);
 	            }
 	            return value.map((v) => this._visit(subtype, v, callback));
 	        }
@@ -7872,7 +8114,7 @@
 	                return accum;
 	            }, {});
 	        }
-	        return logger$e.throwArgumentError(`unknown type: ${type}`, "type", type);
+	        return logger$d.throwArgumentError(`unknown type: ${type}`, "type", type);
 	    }
 	    visit(value, callback) {
 	        return this._visit(this.primaryType, value, callback);
@@ -7891,7 +8133,7 @@
 	        for (const name in domain) {
 	            const type = domainFieldTypes[name];
 	            if (!type) {
-	                logger$e.throwArgumentError(`invalid typed-data domain key: ${JSON.stringify(name)}`, "domain", domain);
+	                logger$d.throwArgumentError(`invalid typed-data domain key: ${JSON.stringify(name)}`, "domain", domain);
 	            }
 	            domainFields.push({ name, type });
 	        }
@@ -7965,7 +8207,7 @@
 	        const encoder = TypedDataEncoder.from(types);
 	        const typesWithDomain = shallowCopy(types);
 	        if (typesWithDomain.EIP712Domain) {
-	            logger$e.throwArgumentError("types must not contain EIP712Domain type", "types.EIP712Domain", types);
+	            logger$d.throwArgumentError("types must not contain EIP712Domain type", "types.EIP712Domain", types);
 	        }
 	        else {
 	            typesWithDomain.EIP712Domain = domainTypes;
@@ -7983,7 +8225,7 @@
 	                }
 	                // uint or int
 	                if (type.match(/^u?int/)) {
-	                    return BigNumber$1.from(value).toString();
+	                    return BigNumber.from(value).toString();
 	                }
 	                switch (type) {
 	                    case "address":
@@ -7992,17 +8234,17 @@
 	                        return !!value;
 	                    case "string":
 	                        if (typeof (value) !== "string") {
-	                            logger$e.throwArgumentError(`invalid string`, "value", value);
+	                            logger$d.throwArgumentError(`invalid string`, "value", value);
 	                        }
 	                        return value;
 	                }
-	                return logger$e.throwArgumentError("unsupported type", "type", type);
+	                return logger$d.throwArgumentError("unsupported type", "type", type);
 	            })
 	        };
 	    }
 	}
 
-	const logger$d = new Logger(version$f);
+	const logger$c = new Logger(version$e);
 	class LogDescription extends Description {
 	}
 	class TransactionDescription extends Description {
@@ -8038,7 +8280,7 @@
 	*/
 	class Interface {
 	    constructor(fragments) {
-	        logger$d.checkNew(new.target, Interface);
+	        logger$c.checkNew(new.target, Interface);
 	        let abi = [];
 	        if (typeof (fragments) === "string") {
 	            abi = JSON.parse(fragments);
@@ -8049,7 +8291,7 @@
 	        defineReadOnly(this, "fragments", abi.map((fragment) => {
 	            return Fragment.from(fragment);
 	        }).filter((fragment) => (fragment != null)));
-	        defineReadOnly(this, "_abiCoder", getStatic((new.target), "getAbiCoder")());
+	        defineReadOnly(this, "_abiCoder", getStatic(new.target, "getAbiCoder")());
 	        defineReadOnly(this, "functions", {});
 	        defineReadOnly(this, "errors", {});
 	        defineReadOnly(this, "events", {});
@@ -8060,7 +8302,7 @@
 	            switch (fragment.type) {
 	                case "constructor":
 	                    if (this.deploy) {
-	                        logger$d.warn("duplicate definition - constructor");
+	                        logger$c.warn("duplicate definition - constructor");
 	                        return;
 	                    }
 	                    //checkNames(fragment, "input", fragment.inputs);
@@ -8083,7 +8325,7 @@
 	            }
 	            let signature = fragment.format();
 	            if (bucket[signature]) {
-	                logger$d.warn("duplicate definition - " + signature);
+	                logger$c.warn("duplicate definition - " + signature);
 	                return;
 	            }
 	            bucket[signature] = fragment;
@@ -8102,7 +8344,7 @@
 	            format = FormatTypes.full;
 	        }
 	        if (format === FormatTypes.sighash) {
-	            logger$d.throwArgumentError("interface does not support formatting sighash", "format", format);
+	            logger$c.throwArgumentError("interface does not support formatting sighash", "format", format);
 	        }
 	        const abi = this.fragments.map((fragment) => fragment.format(format));
 	        // We need to re-bundle the JSON fragments a bit
@@ -8132,24 +8374,24 @@
 	                    return this.functions[name];
 	                }
 	            }
-	            logger$d.throwArgumentError("no matching function", "sighash", nameOrSignatureOrSighash);
+	            logger$c.throwArgumentError("no matching function", "sighash", nameOrSignatureOrSighash);
 	        }
 	        // It is a bare name, look up the function (will return null if ambiguous)
 	        if (nameOrSignatureOrSighash.indexOf("(") === -1) {
 	            const name = nameOrSignatureOrSighash.trim();
 	            const matching = Object.keys(this.functions).filter((f) => (f.split("(" /* fix:) */)[0] === name));
 	            if (matching.length === 0) {
-	                logger$d.throwArgumentError("no matching function", "name", name);
+	                logger$c.throwArgumentError("no matching function", "name", name);
 	            }
 	            else if (matching.length > 1) {
-	                logger$d.throwArgumentError("multiple matching functions", "name", name);
+	                logger$c.throwArgumentError("multiple matching functions", "name", name);
 	            }
 	            return this.functions[matching[0]];
 	        }
-	        // Normlize the signature and lookup the function
+	        // Normalize the signature and lookup the function
 	        const result = this.functions[FunctionFragment.fromString(nameOrSignatureOrSighash).format()];
 	        if (!result) {
-	            logger$d.throwArgumentError("no matching function", "signature", nameOrSignatureOrSighash);
+	            logger$c.throwArgumentError("no matching function", "signature", nameOrSignatureOrSighash);
 	        }
 	        return result;
 	    }
@@ -8162,24 +8404,24 @@
 	                    return this.events[name];
 	                }
 	            }
-	            logger$d.throwArgumentError("no matching event", "topichash", topichash);
+	            logger$c.throwArgumentError("no matching event", "topichash", topichash);
 	        }
 	        // It is a bare name, look up the function (will return null if ambiguous)
 	        if (nameOrSignatureOrTopic.indexOf("(") === -1) {
 	            const name = nameOrSignatureOrTopic.trim();
 	            const matching = Object.keys(this.events).filter((f) => (f.split("(" /* fix:) */)[0] === name));
 	            if (matching.length === 0) {
-	                logger$d.throwArgumentError("no matching event", "name", name);
+	                logger$c.throwArgumentError("no matching event", "name", name);
 	            }
 	            else if (matching.length > 1) {
-	                logger$d.throwArgumentError("multiple matching events", "name", name);
+	                logger$c.throwArgumentError("multiple matching events", "name", name);
 	            }
 	            return this.events[matching[0]];
 	        }
-	        // Normlize the signature and lookup the function
+	        // Normalize the signature and lookup the function
 	        const result = this.events[EventFragment.fromString(nameOrSignatureOrTopic).format()];
 	        if (!result) {
-	            logger$d.throwArgumentError("no matching event", "signature", nameOrSignatureOrTopic);
+	            logger$c.throwArgumentError("no matching event", "signature", nameOrSignatureOrTopic);
 	        }
 	        return result;
 	    }
@@ -8193,24 +8435,24 @@
 	                    return this.errors[name];
 	                }
 	            }
-	            logger$d.throwArgumentError("no matching error", "sighash", nameOrSignatureOrSighash);
+	            logger$c.throwArgumentError("no matching error", "sighash", nameOrSignatureOrSighash);
 	        }
 	        // It is a bare name, look up the function (will return null if ambiguous)
 	        if (nameOrSignatureOrSighash.indexOf("(") === -1) {
 	            const name = nameOrSignatureOrSighash.trim();
 	            const matching = Object.keys(this.errors).filter((f) => (f.split("(" /* fix:) */)[0] === name));
 	            if (matching.length === 0) {
-	                logger$d.throwArgumentError("no matching error", "name", name);
+	                logger$c.throwArgumentError("no matching error", "name", name);
 	            }
 	            else if (matching.length > 1) {
-	                logger$d.throwArgumentError("multiple matching errors", "name", name);
+	                logger$c.throwArgumentError("multiple matching errors", "name", name);
 	            }
 	            return this.errors[matching[0]];
 	        }
-	        // Normlize the signature and lookup the function
+	        // Normalize the signature and lookup the function
 	        const result = this.errors[FunctionFragment.fromString(nameOrSignatureOrSighash).format()];
 	        if (!result) {
-	            logger$d.throwArgumentError("no matching error", "signature", nameOrSignatureOrSighash);
+	            logger$c.throwArgumentError("no matching error", "signature", nameOrSignatureOrSighash);
 	        }
 	        return result;
 	    }
@@ -8253,7 +8495,7 @@
 	        }
 	        const bytes = arrayify(data);
 	        if (hexlify(bytes.slice(0, 4)) !== this.getSighash(fragment)) {
-	            logger$d.throwArgumentError(`data signature does not match error ${fragment.name}.`, "data", hexlify(bytes));
+	            logger$c.throwArgumentError(`data signature does not match error ${fragment.name}.`, "data", hexlify(bytes));
 	        }
 	        return this._decodeParams(fragment.inputs, bytes.slice(4));
 	    }
@@ -8273,7 +8515,7 @@
 	        }
 	        const bytes = arrayify(data);
 	        if (hexlify(bytes.slice(0, 4)) !== this.getSighash(functionFragment)) {
-	            logger$d.throwArgumentError(`data signature does not match function ${functionFragment.name}.`, "data", hexlify(bytes));
+	            logger$c.throwArgumentError(`data signature does not match function ${functionFragment.name}.`, "data", hexlify(bytes));
 	        }
 	        return this._decodeParams(functionFragment.inputs, bytes.slice(4));
 	    }
@@ -8294,6 +8536,7 @@
 	        }
 	        let bytes = arrayify(data);
 	        let reason = null;
+	        let message = "";
 	        let errorArgs = null;
 	        let errorName = null;
 	        let errorSignature = null;
@@ -8314,6 +8557,12 @@
 	                    if (builtin.reason) {
 	                        reason = errorArgs[0];
 	                    }
+	                    if (errorName === "Error") {
+	                        message = `; VM Exception while processing transaction: reverted with reason string ${JSON.stringify(errorArgs[0])}`;
+	                    }
+	                    else if (errorName === "Panic") {
+	                        message = `; VM Exception while processing transaction: reverted with panic code ${errorArgs[0]}`;
+	                    }
 	                }
 	                else {
 	                    try {
@@ -8322,16 +8571,14 @@
 	                        errorName = error.name;
 	                        errorSignature = error.format();
 	                    }
-	                    catch (error) {
-	                        console.log(error);
-	                    }
+	                    catch (error) { }
 	                }
 	                break;
 	            }
 	        }
-	        return logger$d.throwError("call revert exception", Logger.errors.CALL_EXCEPTION, {
+	        return logger$c.throwError("call revert exception" + message, Logger.errors.CALL_EXCEPTION, {
 	            method: functionFragment.format(),
-	            errorArgs, errorName, errorSignature, reason
+	            data: hexlify(data), errorArgs, errorName, errorSignature, reason
 	        });
 	    }
 	    // Encode the result for a function call (e.g. for eth_call)
@@ -8347,7 +8594,7 @@
 	            eventFragment = this.getEvent(eventFragment);
 	        }
 	        if (values.length > eventFragment.inputs.length) {
-	            logger$d.throwError("too many arguments for " + eventFragment.format(), Logger.errors.UNEXPECTED_ARGUMENT, {
+	            logger$c.throwError("too many arguments for " + eventFragment.format(), Logger.errors.UNEXPECTED_ARGUMENT, {
 	                argument: "values",
 	                value: values
 	            });
@@ -8373,7 +8620,7 @@
 	            let param = eventFragment.inputs[index];
 	            if (!param.indexed) {
 	                if (value != null) {
-	                    logger$d.throwArgumentError("cannot filter non-indexed parameters; must be null", ("contract." + param.name), value);
+	                    logger$c.throwArgumentError("cannot filter non-indexed parameters; must be null", ("contract." + param.name), value);
 	                }
 	                return;
 	            }
@@ -8381,7 +8628,7 @@
 	                topics.push(null);
 	            }
 	            else if (param.baseType === "array" || param.baseType === "tuple") {
-	                logger$d.throwArgumentError("filtering with tuples or arrays not supported", ("contract." + param.name), value);
+	                logger$c.throwArgumentError("filtering with tuples or arrays not supported", ("contract." + param.name), value);
 	            }
 	            else if (Array.isArray(value)) {
 	                topics.push(value.map((value) => encodeTopic(param, value)));
@@ -8407,7 +8654,7 @@
 	            topics.push(this.getEventTopic(eventFragment));
 	        }
 	        if (values.length !== eventFragment.inputs.length) {
-	            logger$d.throwArgumentError("event arguments/values mismatch", "values", values);
+	            logger$c.throwArgumentError("event arguments/values mismatch", "values", values);
 	        }
 	        eventFragment.inputs.forEach((param, index) => {
 	            const value = values[index];
@@ -8419,7 +8666,7 @@
 	                    topics.push(keccak256(value));
 	                }
 	                else if (param.baseType === "tuple" || param.baseType === "array") {
-	                    // @TOOD
+	                    // @TODO
 	                    throw new Error("not implemented");
 	                }
 	                else {
@@ -8444,7 +8691,7 @@
 	        if (topics != null && !eventFragment.anonymous) {
 	            let topicHash = this.getEventTopic(eventFragment);
 	            if (!isHexString(topics[0], 32) || topics[0].toLowerCase() !== topicHash) {
-	                logger$d.throwError("fragment/topic mismatch", Logger.errors.INVALID_ARGUMENT, { argument: "topics[0]", expected: topicHash, value: topics[0] });
+	                logger$c.throwError("fragment/topic mismatch", Logger.errors.INVALID_ARGUMENT, { argument: "topics[0]", expected: topicHash, value: topics[0] });
 	            }
 	            topics = topics.slice(1);
 	        }
@@ -8536,7 +8783,7 @@
 	            name: fragment.name,
 	            signature: fragment.format(),
 	            sighash: this.getSighash(fragment),
-	            value: BigNumber$1.from(tx.value || "0"),
+	            value: BigNumber.from(tx.value || "0"),
 	        });
 	    }
 	    // @TODO
@@ -8550,7 +8797,7 @@
 	        }
 	        // @TODO: If anonymous, and the only method, and the input count matches, should we parse?
 	        //        Probably not, because just because it is the only event in the ABI does
-	        //        not mean we have the full ABI; maybe jsut a fragment?
+	        //        not mean we have the full ABI; maybe just a fragment?
 	        return new LogDescription({
 	            eventFragment: fragment,
 	            name: fragment.name,
@@ -8589,7 +8836,7 @@
 	    }
 	}
 
-	const version$a = "abstract-provider/5.4.1";
+	const version$9 = "abstract-provider/5.6.0";
 
 	var __awaiter$6 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -8600,7 +8847,7 @@
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	const logger$c = new Logger(version$a);
+	const logger$b = new Logger(version$9);
 	//export type CallTransactionable = {
 	//    call(transaction: TransactionRequest): Promise<TransactionResponse>;
 	//};
@@ -8613,7 +8860,7 @@
 	// Exported Abstracts
 	class Provider {
 	    constructor() {
-	        logger$c.checkAbstract(new.target, Provider);
+	        logger$b.checkAbstract(new.target, Provider);
 	        defineReadOnly(this, "_isProvider", true);
 	    }
 	    getFeeData() {
@@ -8631,7 +8878,7 @@
 	                // We may want to compute this more accurately in the future,
 	                // using the formula "check if the base fee is correct".
 	                // See: https://eips.ethereum.org/EIPS/eip-1559
-	                maxPriorityFeePerGas = BigNumber$1.from("2500000000");
+	                maxPriorityFeePerGas = BigNumber.from("1500000000");
 	                maxFeePerGas = block.baseFeePerGas.mul(2).add(maxPriorityFeePerGas);
 	            }
 	            return { maxFeePerGas, maxPriorityFeePerGas, gasPrice };
@@ -8650,7 +8897,7 @@
 	    }
 	}
 
-	const version$9 = "abstract-signer/5.4.1";
+	const version$8 = "abstract-signer/5.6.0";
 
 	var __awaiter$5 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -8661,9 +8908,9 @@
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	const logger$b = new Logger(version$9);
+	const logger$a = new Logger(version$8);
 	const allowedTransactionKeys$1 = [
-	    "accessList", "chainId", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value"
+	    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value"
 	];
 	const forwardErrors = [
 	    Logger.errors.INSUFFICIENT_FUNDS,
@@ -8674,7 +8921,7 @@
 	    ///////////////////
 	    // Sub-classes MUST call super
 	    constructor() {
-	        logger$b.checkAbstract(new.target, Signer);
+	        logger$a.checkAbstract(new.target, Signer);
 	        defineReadOnly(this, "_isSigner", true);
 	    }
 	    ///////////////////
@@ -8691,7 +8938,7 @@
 	            return yield this.provider.getTransactionCount(this.getAddress(), blockTag);
 	        });
 	    }
-	    // Populates "from" if unspecified, and estimates the gas for the transation
+	    // Populates "from" if unspecified, and estimates the gas for the transaction
 	    estimateGas(transaction) {
 	        return __awaiter$5(this, void 0, void 0, function* () {
 	            this._checkProvider("estimateGas");
@@ -8699,7 +8946,7 @@
 	            return yield this.provider.estimateGas(tx);
 	        });
 	    }
-	    // Populates "from" if unspecified, and calls with the transation
+	    // Populates "from" if unspecified, and calls with the transaction
 	    call(transaction, blockTag) {
 	        return __awaiter$5(this, void 0, void 0, function* () {
 	            this._checkProvider("call");
@@ -8753,7 +9000,7 @@
 	    checkTransaction(transaction) {
 	        for (const key in transaction) {
 	            if (allowedTransactionKeys$1.indexOf(key) === -1) {
-	                logger$b.throwArgumentError("invalid transaction key: " + key, "transaction", transaction);
+	                logger$a.throwArgumentError("invalid transaction key: " + key, "transaction", transaction);
 	            }
 	        }
 	        const tx = shallowCopy(transaction);
@@ -8767,7 +9014,7 @@
 	                this.getAddress()
 	            ]).then((result) => {
 	                if (result[0].toLowerCase() !== result[1].toLowerCase()) {
-	                    logger$b.throwArgumentError("from address mismatch", "transaction", transaction);
+	                    logger$a.throwArgumentError("from address mismatch", "transaction", transaction);
 	                }
 	                return result[0];
 	            });
@@ -8791,20 +9038,20 @@
 	                    }
 	                    const address = yield this.resolveName(to);
 	                    if (address == null) {
-	                        logger$b.throwArgumentError("provided ENS name resolves to null", "tx.to", to);
+	                        logger$a.throwArgumentError("provided ENS name resolves to null", "tx.to", to);
 	                    }
 	                    return address;
 	                }));
 	                // Prevent this error from causing an UnhandledPromiseException
 	                tx.to.catch((error) => { });
 	            }
-	            // Do not allow mixing pre-eip-1559 and eip-1559 proerties
+	            // Do not allow mixing pre-eip-1559 and eip-1559 properties
 	            const hasEip1559 = (tx.maxFeePerGas != null || tx.maxPriorityFeePerGas != null);
 	            if (tx.gasPrice != null && (tx.type === 2 || hasEip1559)) {
-	                logger$b.throwArgumentError("eip-1559 transaction do not support gasPrice", "transaction", transaction);
+	                logger$a.throwArgumentError("eip-1559 transaction do not support gasPrice", "transaction", transaction);
 	            }
 	            else if ((tx.type === 0 || tx.type === 1) && hasEip1559) {
-	                logger$b.throwArgumentError("pre-eip-1559 transaction do not support maxFeePerGas/maxPriorityFeePerGas", "transaction", transaction);
+	                logger$a.throwArgumentError("pre-eip-1559 transaction do not support maxFeePerGas/maxPriorityFeePerGas", "transaction", transaction);
 	            }
 	            if ((tx.type === 2 || tx.type == null) && (tx.maxFeePerGas != null && tx.maxPriorityFeePerGas != null)) {
 	                // Fully-formed EIP-1559 transaction (skip getFeeData)
@@ -8848,7 +9095,7 @@
 	                        // Network doesn't support EIP-1559...
 	                        // ...but they are trying to use EIP-1559 properties
 	                        if (hasEip1559) {
-	                            logger$b.throwError("network does not support EIP-1559", Logger.errors.UNSUPPORTED_OPERATION, {
+	                            logger$a.throwError("network does not support EIP-1559", Logger.errors.UNSUPPORTED_OPERATION, {
 	                                operation: "populateTransaction"
 	                            });
 	                        }
@@ -8861,7 +9108,7 @@
 	                    }
 	                    else {
 	                        // getFeeData has failed us.
-	                        logger$b.throwError("failed to get consistent fee data", Logger.errors.UNSUPPORTED_OPERATION, {
+	                        logger$a.throwError("failed to get consistent fee data", Logger.errors.UNSUPPORTED_OPERATION, {
 	                            operation: "signer.getFeeData"
 	                        });
 	                    }
@@ -8885,7 +9132,7 @@
 	                    if (forwardErrors.indexOf(error.code) >= 0) {
 	                        throw error;
 	                    }
-	                    return logger$b.throwError("cannot estimate gas; transaction may fail or may require manual gas limit", Logger.errors.UNPREDICTABLE_GAS_LIMIT, {
+	                    return logger$a.throwError("cannot estimate gas; transaction may fail or may require manual gas limit", Logger.errors.UNPREDICTABLE_GAS_LIMIT, {
 	                        error: error,
 	                        tx: tx
 	                    });
@@ -8900,7 +9147,7 @@
 	                    this.getChainId()
 	                ]).then((results) => {
 	                    if (results[1] !== 0 && results[0] !== results[1]) {
-	                        logger$b.throwArgumentError("chainId address mismatch", "transaction", transaction);
+	                        logger$a.throwArgumentError("chainId address mismatch", "transaction", transaction);
 	                    }
 	                    return results[0];
 	                });
@@ -8912,7 +9159,7 @@
 	    // Sub-classes SHOULD leave these alone
 	    _checkProvider(operation) {
 	        if (!this.provider) {
-	            logger$b.throwError("missing provider", Logger.errors.UNSUPPORTED_OPERATION, {
+	            logger$a.throwError("missing provider", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: (operation || "_checkProvider")
 	            });
 	        }
@@ -8923,7 +9170,7 @@
 	}
 	class VoidSigner extends Signer {
 	    constructor(address, provider) {
-	        logger$b.checkNew(new.target, VoidSigner);
+	        logger$a.checkNew(new.target, VoidSigner);
 	        super();
 	        defineReadOnly(this, "address", address);
 	        defineReadOnly(this, "provider", provider || null);
@@ -8933,7 +9180,7 @@
 	    }
 	    _fail(message, operation) {
 	        return Promise.resolve().then(() => {
-	            logger$b.throwError(message, Logger.errors.UNSUPPORTED_OPERATION, { operation: operation });
+	            logger$a.throwError(message, Logger.errors.UNSUPPORTED_OPERATION, { operation: operation });
 	        });
 	    }
 	    signMessage(message) {
@@ -9063,13 +9310,13 @@
 	}
 	var toArray_1 = toArray;
 
-	function toHex$1(msg) {
+	function toHex(msg) {
 	  var res = '';
 	  for (var i = 0; i < msg.length; i++)
 	    res += zero2(msg[i].toString(16));
 	  return res;
 	}
-	var toHex_1 = toHex$1;
+	var toHex_1 = toHex;
 
 	function htonl(w) {
 	  var res = (w >>> 24) |
@@ -12654,9 +12901,9 @@
 
 	var EC$1 = elliptic_1.ec;
 
-	const version$8 = "signing-key/5.4.0";
+	const version$7 = "signing-key/5.6.1";
 
-	const logger$a = new Logger(version$8);
+	const logger$9 = new Logger(version$7);
 	let _curve = null;
 	function getCurve() {
 	    if (!_curve) {
@@ -12668,6 +12915,9 @@
 	    constructor(privateKey) {
 	        defineReadOnly(this, "curve", "secp256k1");
 	        defineReadOnly(this, "privateKey", hexlify(privateKey));
+	        if (hexDataLength(this.privateKey) !== 32) {
+	            logger$9.throwArgumentError("invalid private key", "privateKey", "[[ REDACTED ]]");
+	        }
 	        const keyPair = getCurve().keyFromPrivate(arrayify(this.privateKey));
 	        defineReadOnly(this, "publicKey", "0x" + keyPair.getPublic(false, "hex"));
 	        defineReadOnly(this, "compressedPublicKey", "0x" + keyPair.getPublic(true, "hex"));
@@ -12682,7 +12932,7 @@
 	        const keyPair = getCurve().keyFromPrivate(arrayify(this.privateKey));
 	        const digestBytes = arrayify(digest);
 	        if (digestBytes.length !== 32) {
-	            logger$a.throwArgumentError("bad digest length", "digest", digest);
+	            logger$9.throwArgumentError("bad digest length", "digest", digest);
 	        }
 	        const signature = keyPair.sign(digestBytes, { canonical: true });
 	        return splitSignature({
@@ -12726,12 +12976,12 @@
 	        }
 	        return "0x" + getCurve().keyFromPublic(bytes).getPublic(true, "hex");
 	    }
-	    return logger$a.throwArgumentError("invalid public or private key", "key", "[REDACTED]");
+	    return logger$9.throwArgumentError("invalid public or private key", "key", "[REDACTED]");
 	}
 
-	const version$7 = "transactions/5.4.0";
+	const version$6 = "transactions/5.6.0";
 
-	const logger$9 = new Logger(version$7);
+	const logger$8 = new Logger(version$6);
 	var TransactionTypes;
 	(function (TransactionTypes) {
 	    TransactionTypes[TransactionTypes["legacy"] = 0] = "legacy";
@@ -12749,7 +12999,7 @@
 	    if (value === "0x") {
 	        return Zero$1;
 	    }
-	    return BigNumber$1.from(value);
+	    return BigNumber.from(value);
 	}
 	function computeAddress(key) {
 	    const publicKey = computePublicKey(key);
@@ -12759,9 +13009,9 @@
 	    return computeAddress(recoverPublicKey(arrayify(digest), signature));
 	}
 	function formatNumber(value, name) {
-	    const result = stripZeros(BigNumber$1.from(value).toHexString());
+	    const result = stripZeros(BigNumber.from(value).toHexString());
 	    if (result.length > 32) {
-	        logger$9.throwArgumentError("invalid length for " + name, ("transaction:" + name), value);
+	        logger$8.throwArgumentError("invalid length for " + name, ("transaction:" + name), value);
 	    }
 	    return result;
 	}
@@ -12770,7 +13020,7 @@
 	        address: getAddress(addr),
 	        storageKeys: (storageKeys || []).map((storageKey, index) => {
 	            if (hexDataLength(storageKey) !== 32) {
-	                logger$9.throwArgumentError("invalid access list storageKey", `accessList[${addr}:${index}]`, storageKey);
+	                logger$8.throwArgumentError("invalid access list storageKey", `accessList[${addr}:${index}]`, storageKey);
 	            }
 	            return storageKey.toLowerCase();
 	        })
@@ -12781,7 +13031,7 @@
 	        return value.map((set, index) => {
 	            if (Array.isArray(set)) {
 	                if (set.length > 2) {
-	                    logger$9.throwArgumentError("access list expected to be [ address, storageKeys[] ]", `value[${index}]`, set);
+	                    logger$8.throwArgumentError("access list expected to be [ address, storageKeys[] ]", `value[${index}]`, set);
 	                }
 	                return accessSetify(set[0], set[1]);
 	            }
@@ -12806,10 +13056,10 @@
 	    // EIP-1559 fees; otherwise they may not understand what they
 	    // think they are setting in terms of fee.
 	    if (transaction.gasPrice != null) {
-	        const gasPrice = BigNumber$1.from(transaction.gasPrice);
-	        const maxFeePerGas = BigNumber$1.from(transaction.maxFeePerGas || 0);
+	        const gasPrice = BigNumber.from(transaction.gasPrice);
+	        const maxFeePerGas = BigNumber.from(transaction.maxFeePerGas || 0);
 	        if (!gasPrice.eq(maxFeePerGas)) {
-	            logger$9.throwArgumentError("mismatch EIP-1559 gasPrice != maxFeePerGas", "tx", {
+	            logger$8.throwArgumentError("mismatch EIP-1559 gasPrice != maxFeePerGas", "tx", {
 	                gasPrice, maxFeePerGas
 	            });
 	        }
@@ -12861,7 +13111,7 @@
 	        tx.v = recid;
 	    }
 	    catch (error) {
-	        logger$9.throwArgumentError("invalid v for transaction type: 1", "v", fields[0]);
+	        logger$8.throwArgumentError("invalid v for transaction type: 1", "v", fields[0]);
 	    }
 	    tx.r = hexZeroPad(fields[1], 32);
 	    tx.s = hexZeroPad(fields[2], 32);
@@ -12874,9 +13124,9 @@
 	    }
 	}
 	function _parseEip1559(payload) {
-	    const transaction = decode$1(payload.slice(1));
+	    const transaction = decode$2(payload.slice(1));
 	    if (transaction.length !== 9 && transaction.length !== 12) {
-	        logger$9.throwArgumentError("invalid component count for transaction type: 2", "payload", hexlify(payload));
+	        logger$8.throwArgumentError("invalid component count for transaction type: 2", "payload", hexlify(payload));
 	    }
 	    const maxPriorityFeePerGas = handleNumber(transaction[2]);
 	    const maxFeePerGas = handleNumber(transaction[3]);
@@ -12902,9 +13152,9 @@
 	    return tx;
 	}
 	function _parseEip2930(payload) {
-	    const transaction = decode$1(payload.slice(1));
+	    const transaction = decode$2(payload.slice(1));
 	    if (transaction.length !== 8 && transaction.length !== 11) {
-	        logger$9.throwArgumentError("invalid component count for transaction type: 1", "payload", hexlify(payload));
+	        logger$8.throwArgumentError("invalid component count for transaction type: 1", "payload", hexlify(payload));
 	    }
 	    const tx = {
 	        type: 1,
@@ -12927,9 +13177,9 @@
 	}
 	// Legacy Transactions and EIP-155
 	function _parse(rawTransaction) {
-	    const transaction = decode$1(rawTransaction);
+	    const transaction = decode$2(rawTransaction);
 	    if (transaction.length !== 9 && transaction.length !== 6) {
-	        logger$9.throwArgumentError("invalid raw transaction", "rawTransaction", rawTransaction);
+	        logger$8.throwArgumentError("invalid raw transaction", "rawTransaction", rawTransaction);
 	    }
 	    const tx = {
 	        nonce: handleNumber(transaction[0]).toNumber(),
@@ -12945,7 +13195,7 @@
 	        return tx;
 	    }
 	    try {
-	        tx.v = BigNumber$1.from(transaction[6]).toNumber();
+	        tx.v = BigNumber.from(transaction[6]).toNumber();
 	    }
 	    catch (error) {
 	        console.log(error);
@@ -12953,13 +13203,13 @@
 	    }
 	    tx.r = hexZeroPad(transaction[7], 32);
 	    tx.s = hexZeroPad(transaction[8], 32);
-	    if (BigNumber$1.from(tx.r).isZero() && BigNumber$1.from(tx.s).isZero()) {
+	    if (BigNumber.from(tx.r).isZero() && BigNumber.from(tx.s).isZero()) {
 	        // EIP-155 unsigned transaction
 	        tx.chainId = tx.v;
 	        tx.v = 0;
 	    }
 	    else {
-	        // Signed Tranasaction
+	        // Signed Transaction
 	        tx.chainId = Math.floor((tx.v - 35) / 2);
 	        if (tx.chainId < 0) {
 	            tx.chainId = 0;
@@ -12997,13 +13247,13 @@
 	        case 2:
 	            return _parseEip1559(payload);
 	    }
-	    return logger$9.throwError(`unsupported transaction type: ${payload[0]}`, Logger.errors.UNSUPPORTED_OPERATION, {
+	    return logger$8.throwError(`unsupported transaction type: ${payload[0]}`, Logger.errors.UNSUPPORTED_OPERATION, {
 	        operation: "parseTransaction",
 	        transactionType: payload[0]
 	    });
 	}
 
-	const version$6 = "contracts/5.4.1";
+	const version$5 = "contracts/5.6.0";
 
 	var __awaiter$4 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -13014,23 +13264,26 @@
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	const logger$8 = new Logger(version$6);
+	const logger$7 = new Logger(version$5);
 	function resolveName(resolver, nameOrPromise) {
 	    return __awaiter$4(this, void 0, void 0, function* () {
 	        const name = yield nameOrPromise;
+	        if (typeof (name) !== "string") {
+	            logger$7.throwArgumentError("invalid address or ENS name", "name", name);
+	        }
 	        // If it is already an address, just use it (after adding checksum)
 	        try {
 	            return getAddress(name);
 	        }
 	        catch (error) { }
 	        if (!resolver) {
-	            logger$8.throwError("a provider or signer is needed to resolve ENS names", Logger.errors.UNSUPPORTED_OPERATION, {
+	            logger$7.throwError("a provider or signer is needed to resolve ENS names", Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "resolveName"
 	            });
 	        }
 	        const address = yield resolver.resolveName(name);
 	        if (address == null) {
-	            logger$8.throwArgumentError("resolver or addr is not configured for ENS name", "name", name);
+	            logger$7.throwArgumentError("resolver or addr is not configured for ENS name", "name", name);
 	        }
 	        return address;
 	    });
@@ -13051,7 +13304,10 @@
 	        }
 	        if (paramType.baseType === "array") {
 	            if (!Array.isArray(value)) {
-	                return Promise.reject(new Error("invalid value for array"));
+	                return Promise.reject(logger$7.makeError("invalid value for array", Logger.errors.INVALID_ARGUMENT, {
+	                    argument: "value",
+	                    value
+	                }));
 	            }
 	            return yield Promise.all(value.map((v) => resolveAddresses(resolver, v, paramType.arrayChildren)));
 	        }
@@ -13066,7 +13322,7 @@
 	            overrides = shallowCopy(args.pop());
 	        }
 	        // Make sure the parameter count matches
-	        logger$8.checkArgumentCount(args.length, fragment.inputs.length, "passed to contract");
+	        logger$7.checkArgumentCount(args.length, fragment.inputs.length, "passed to contract");
 	        // Populate "from" override (allow promises)
 	        if (contract.signer) {
 	            if (overrides.from) {
@@ -13077,7 +13333,7 @@
 	                    signer: contract.signer.getAddress()
 	                }).then((check) => __awaiter$4(this, void 0, void 0, function* () {
 	                    if (getAddress(check.signer) !== check.override) {
-	                        logger$8.throwError("Contract with a Signer cannot override from", Logger.errors.UNSUPPORTED_OPERATION, {
+	                        logger$7.throwError("Contract with a Signer cannot override from", Logger.errors.UNSUPPORTED_OPERATION, {
 	                            operation: "overrides.from"
 	                        });
 	                    }
@@ -13111,19 +13367,19 @@
 	        const ro = resolved.overrides;
 	        // Populate simple overrides
 	        if (ro.nonce != null) {
-	            tx.nonce = BigNumber$1.from(ro.nonce).toNumber();
+	            tx.nonce = BigNumber.from(ro.nonce).toNumber();
 	        }
 	        if (ro.gasLimit != null) {
-	            tx.gasLimit = BigNumber$1.from(ro.gasLimit);
+	            tx.gasLimit = BigNumber.from(ro.gasLimit);
 	        }
 	        if (ro.gasPrice != null) {
-	            tx.gasPrice = BigNumber$1.from(ro.gasPrice);
+	            tx.gasPrice = BigNumber.from(ro.gasPrice);
 	        }
 	        if (ro.maxFeePerGas != null) {
-	            tx.maxFeePerGas = BigNumber$1.from(ro.maxFeePerGas);
+	            tx.maxFeePerGas = BigNumber.from(ro.maxFeePerGas);
 	        }
 	        if (ro.maxPriorityFeePerGas != null) {
-	            tx.maxPriorityFeePerGas = BigNumber$1.from(ro.maxPriorityFeePerGas);
+	            tx.maxPriorityFeePerGas = BigNumber.from(ro.maxPriorityFeePerGas);
 	        }
 	        if (ro.from != null) {
 	            tx.from = ro.from;
@@ -13136,7 +13392,7 @@
 	        }
 	        // If there was no "gasLimit" override, but the ABI specifies a default, use it
 	        if (tx.gasLimit == null && fragment.gas != null) {
-	            // Conmpute the intrinisic gas cost for this transaction
+	            // Compute the intrinsic gas cost for this transaction
 	            // @TODO: This is based on the yellow paper as of Petersburg; this is something
 	            // we may wish to parameterize in v6 as part of the Network object. Since this
 	            // is always a non-nil to address, we can ignore G_create, but may wish to add
@@ -13149,20 +13405,26 @@
 	                    intrinsic += 64;
 	                }
 	            }
-	            tx.gasLimit = BigNumber$1.from(fragment.gas).add(intrinsic);
+	            tx.gasLimit = BigNumber.from(fragment.gas).add(intrinsic);
 	        }
 	        // Populate "value" override
 	        if (ro.value) {
-	            const roValue = BigNumber$1.from(ro.value);
+	            const roValue = BigNumber.from(ro.value);
 	            if (!roValue.isZero() && !fragment.payable) {
-	                logger$8.throwError("non-payable method cannot override value", Logger.errors.UNSUPPORTED_OPERATION, {
+	                logger$7.throwError("non-payable method cannot override value", Logger.errors.UNSUPPORTED_OPERATION, {
 	                    operation: "overrides.value",
 	                    value: overrides.value
 	                });
 	            }
 	            tx.value = roValue;
 	        }
-	        // Remvoe the overrides
+	        if (ro.customData) {
+	            tx.customData = shallowCopy(ro.customData);
+	        }
+	        if (ro.ccipReadEnabled) {
+	            tx.ccipReadEnabled = !!ro.ccipReadEnabled;
+	        }
+	        // Remove the overrides
 	        delete overrides.nonce;
 	        delete overrides.gasLimit;
 	        delete overrides.gasPrice;
@@ -13172,11 +13434,13 @@
 	        delete overrides.accessList;
 	        delete overrides.maxFeePerGas;
 	        delete overrides.maxPriorityFeePerGas;
+	        delete overrides.customData;
+	        delete overrides.ccipReadEnabled;
 	        // Make sure there are no stray overrides, which may indicate a
 	        // typo or using an unsupported key.
 	        const leftovers = Object.keys(overrides).filter((key) => (overrides[key] != null));
 	        if (leftovers.length) {
-	            logger$8.throwError(`cannot override ${leftovers.map((l) => JSON.stringify(l)).join(",")}`, Logger.errors.UNSUPPORTED_OPERATION, {
+	            logger$7.throwError(`cannot override ${leftovers.map((l) => JSON.stringify(l)).join(",")}`, Logger.errors.UNSUPPORTED_OPERATION, {
 	                operation: "overrides",
 	                overrides: leftovers
 	            });
@@ -13194,12 +13458,49 @@
 	    return function (...args) {
 	        return __awaiter$4(this, void 0, void 0, function* () {
 	            if (!signerOrProvider) {
-	                logger$8.throwError("estimate require a provider or signer", Logger.errors.UNSUPPORTED_OPERATION, {
+	                logger$7.throwError("estimate require a provider or signer", Logger.errors.UNSUPPORTED_OPERATION, {
 	                    operation: "estimateGas"
 	                });
 	            }
 	            const tx = yield populateTransaction(contract, fragment, args);
 	            return yield signerOrProvider.estimateGas(tx);
+	        });
+	    };
+	}
+	function addContractWait(contract, tx) {
+	    const wait = tx.wait.bind(tx);
+	    tx.wait = (confirmations) => {
+	        return wait(confirmations).then((receipt) => {
+	            receipt.events = receipt.logs.map((log) => {
+	                let event = deepCopy(log);
+	                let parsed = null;
+	                try {
+	                    parsed = contract.interface.parseLog(log);
+	                }
+	                catch (e) { }
+	                // Successfully parsed the event log; include it
+	                if (parsed) {
+	                    event.args = parsed.args;
+	                    event.decode = (data, topics) => {
+	                        return contract.interface.decodeEventLog(parsed.eventFragment, data, topics);
+	                    };
+	                    event.event = parsed.name;
+	                    event.eventSignature = parsed.signature;
+	                }
+	                // Useful operations
+	                event.removeListener = () => { return contract.provider; };
+	                event.getBlock = () => {
+	                    return contract.provider.getBlock(receipt.blockHash);
+	                };
+	                event.getTransaction = () => {
+	                    return contract.provider.getTransaction(receipt.transactionHash);
+	                };
+	                event.getTransactionReceipt = () => {
+	                    return Promise.resolve(receipt);
+	                };
+	                return event;
+	            });
+	            return receipt;
 	        });
 	    };
 	}
@@ -13246,52 +13547,18 @@
 	    return function (...args) {
 	        return __awaiter$4(this, void 0, void 0, function* () {
 	            if (!contract.signer) {
-	                logger$8.throwError("sending a transaction requires a signer", Logger.errors.UNSUPPORTED_OPERATION, {
+	                logger$7.throwError("sending a transaction requires a signer", Logger.errors.UNSUPPORTED_OPERATION, {
 	                    operation: "sendTransaction"
 	                });
 	            }
-	            // If the contract was just deployed, wait until it is minded
+	            // If the contract was just deployed, wait until it is mined
 	            if (contract.deployTransaction != null) {
 	                yield contract._deployed();
 	            }
 	            const txRequest = yield populateTransaction(contract, fragment, args);
 	            const tx = yield contract.signer.sendTransaction(txRequest);
-	            // Tweak the tw.wait so the receipt has extra properties
-	            const wait = tx.wait.bind(tx);
-	            tx.wait = (confirmations) => {
-	                return wait(confirmations).then((receipt) => {
-	                    receipt.events = receipt.logs.map((log) => {
-	                        let event = deepCopy(log);
-	                        let parsed = null;
-	                        try {
-	                            parsed = contract.interface.parseLog(log);
-	                        }
-	                        catch (e) { }
-	                        // Successfully parsed the event log; include it
-	                        if (parsed) {
-	                            event.args = parsed.args;
-	                            event.decode = (data, topics) => {
-	                                return contract.interface.decodeEventLog(parsed.eventFragment, data, topics);
-	                            };
-	                            event.event = parsed.name;
-	                            event.eventSignature = parsed.signature;
-	                        }
-	                        // Useful operations
-	                        event.removeListener = () => { return contract.provider; };
-	                        event.getBlock = () => {
-	                            return contract.provider.getBlock(receipt.blockHash);
-	                        };
-	                        event.getTransaction = () => {
-	                            return contract.provider.getTransaction(receipt.transactionHash);
-	                        };
-	                        event.getTransactionReceipt = () => {
-	                            return Promise.resolve(receipt);
-	                        };
-	                        return event;
-	                    });
-	                    return receipt;
-	                });
-	            };
+	            // Tweak the tx.wait so the receipt has extra properties
+	            addContractWait(contract, tx);
 	            return tx;
 	        });
 	    };
@@ -13370,7 +13637,7 @@
 	//       or have a common abstract super class, with enough constructor
 	//       options to configure both.
 	// A Fragment Event will populate all the properties that Wildcard
-	// will, and additioanlly dereference the arguments when emitting
+	// will, and additionally dereference the arguments when emitting
 	class FragmentRunningEvent extends RunningEvent {
 	    constructor(address, contractInterface, fragment, topics) {
 	        const filter = {
@@ -13379,7 +13646,7 @@
 	        let topic = contractInterface.getEventTopic(fragment);
 	        if (topics) {
 	            if (topic !== topics[0]) {
-	                logger$8.throwArgumentError("topic mismatch", "topics", topics);
+	                logger$7.throwArgumentError("topic mismatch", "topics", topics);
 	            }
 	            filter.topics = topics.slice();
 	        }
@@ -13416,7 +13683,7 @@
 	        return args;
 	    }
 	}
-	// A Wildard Event will attempt to populate:
+	// A Wildcard Event will attempt to populate:
 	//  - event            The name of the event name
 	//  - eventSignature   The full signature of the event
 	//  - decode           A function to decode data and topics
@@ -13445,10 +13712,10 @@
 	}
 	class BaseContract {
 	    constructor(addressOrName, contractInterface, signerOrProvider) {
-	        logger$8.checkNew(new.target, Contract);
+	        logger$7.checkNew(new.target, Contract);
 	        // @TODO: Maybe still check the addressOrName looks like a valid address or name?
 	        //address = getAddress(address);
-	        defineReadOnly(this, "interface", getStatic((new.target), "getInterface")(contractInterface));
+	        defineReadOnly(this, "interface", getStatic(new.target, "getInterface")(contractInterface));
 	        if (signerOrProvider == null) {
 	            defineReadOnly(this, "provider", null);
 	            defineReadOnly(this, "signer", null);
@@ -13462,7 +13729,7 @@
 	            defineReadOnly(this, "signer", null);
 	        }
 	        else {
-	            logger$8.throwArgumentError("invalid signer or provider", "signerOrProvider", signerOrProvider);
+	            logger$7.throwArgumentError("invalid signer or provider", "signerOrProvider", signerOrProvider);
 	        }
 	        defineReadOnly(this, "callStatic", {});
 	        defineReadOnly(this, "estimateGas", {});
@@ -13490,14 +13757,14 @@
 	                    defineReadOnly(this.filters, name, this.filters[filters[0]]);
 	                }
 	                else {
-	                    logger$8.warn(`Duplicate definition of ${name} (${filters.join(", ")})`);
+	                    logger$7.warn(`Duplicate definition of ${name} (${filters.join(", ")})`);
 	                }
 	            });
 	        }
 	        defineReadOnly(this, "_runningEvents", {});
 	        defineReadOnly(this, "_wrappedEmits", {});
 	        if (addressOrName == null) {
-	            logger$8.throwArgumentError("invalid contract address or ENS name", "addressOrName", addressOrName);
+	            logger$7.throwArgumentError("invalid contract address or ENS name", "addressOrName", addressOrName);
 	        }
 	        defineReadOnly(this, "address", addressOrName);
 	        if (this.provider) {
@@ -13509,11 +13776,13 @@
 	            }
 	            catch (error) {
 	                // Without a provider, we cannot use ENS names
-	                logger$8.throwError("provider is required to use ENS name as contract address", Logger.errors.UNSUPPORTED_OPERATION, {
+	                logger$7.throwError("provider is required to use ENS name as contract address", Logger.errors.UNSUPPORTED_OPERATION, {
 	                    operation: "new Contract"
 	                });
 	            }
 	        }
+	        // Swallow bad ENS names to prevent Unhandled Exceptions
+	        this.resolvedAddress.catch((e) => { });
 	        const uniqueNames = {};
 	        const uniqueSignatures = {};
 	        Object.keys(this.interface.functions).forEach((signature) => {
@@ -13521,7 +13790,7 @@
 	            // Check that the signature is unique; if not the ABI generation has
 	            // not been cleaned or may be incorrectly generated
 	            if (uniqueSignatures[signature]) {
-	                logger$8.warn(`Duplicate ABI entry for ${JSON.stringify(signature)}`);
+	                logger$7.warn(`Duplicate ABI entry for ${JSON.stringify(signature)}`);
 	                return;
 	            }
 	            uniqueSignatures[signature] = true;
@@ -13529,10 +13798,10 @@
 	            // are ambiguous
 	            {
 	                const name = fragment.name;
-	                if (!uniqueNames[name]) {
-	                    uniqueNames[name] = [];
+	                if (!uniqueNames[`%${name}`]) {
+	                    uniqueNames[`%${name}`] = [];
 	                }
-	                uniqueNames[name].push(signature);
+	                uniqueNames[`%${name}`].push(signature);
 	            }
 	            if (this[signature] == null) {
 	                defineReadOnly(this, signature, buildDefault(this, fragment, true));
@@ -13559,6 +13828,8 @@
 	            if (signatures.length > 1) {
 	                return;
 	            }
+	            // Strip off the leading "%" used for prototype protection
+	            name = name.substring(1);
 	            const signature = signatures[0];
 	            // If overwriting a member property that is null, swallow the error
 	            try {
@@ -13608,7 +13879,7 @@
 	                // Otherwise, poll for our code to be deployed
 	                this._deployedPromise = this.provider.getCode(this.address, blockTag).then((code) => {
 	                    if (code === "0x") {
-	                        logger$8.throwError("contract not deployed", Logger.errors.UNSUPPORTED_OPERATION, {
+	                        logger$7.throwError("contract not deployed", Logger.errors.UNSUPPORTED_OPERATION, {
 	                            contractAddress: this.address,
 	                            operation: "getDeployed"
 	                        });
@@ -13625,14 +13896,14 @@
 	    // estimateDeploy(bytecode: string, ...args): Promise<BigNumber>
 	    fallback(overrides) {
 	        if (!this.signer) {
-	            logger$8.throwError("sending a transactions require a signer", Logger.errors.UNSUPPORTED_OPERATION, { operation: "sendTransaction(fallback)" });
+	            logger$7.throwError("sending a transactions require a signer", Logger.errors.UNSUPPORTED_OPERATION, { operation: "sendTransaction(fallback)" });
 	        }
 	        const tx = shallowCopy(overrides || {});
 	        ["from", "to"].forEach(function (key) {
 	            if (tx[key] == null) {
 	                return;
 	            }
-	            logger$8.throwError("cannot override " + key, Logger.errors.UNSUPPORTED_OPERATION, { operation: key });
+	            logger$7.throwError("cannot override " + key, Logger.errors.UNSUPPORTED_OPERATION, { operation: key });
 	        });
 	        tx.to = this.resolvedAddress;
 	        return this.deployed().then(() => {
@@ -13735,7 +14006,7 @@
 	    }
 	    _addEventListener(runningEvent, listener, once) {
 	        if (!this.provider) {
-	            logger$8.throwError("events require a provider or a signer with a provider", Logger.errors.UNSUPPORTED_OPERATION, { operation: "once" });
+	            logger$7.throwError("events require a provider or a signer with a provider", Logger.errors.UNSUPPORTED_OPERATION, { operation: "once" });
 	        }
 	        runningEvent.addListener(listener, once);
 	        // Track this running event and its listeners (may already be there; but no hard in updating)
@@ -13775,7 +14046,7 @@
 	        const filter = shallowCopy(runningEvent.filter);
 	        if (typeof (fromBlockOrBlockhash) === "string" && isHexString(fromBlockOrBlockhash, 32)) {
 	            if (toBlock != null) {
-	                logger$8.throwArgumentError("cannot specify toBlock with blockhash", "toBlock", toBlock);
+	                logger$7.throwArgumentError("cannot specify toBlock with blockhash", "toBlock", toBlock);
 	            }
 	            filter.blockHash = fromBlockOrBlockhash;
 	        }
@@ -13863,286 +14134,6 @@
 	    }
 	}
 	class Contract extends BaseContract {
-	}
-
-	const version$5 = "bignumber/5.4.2";
-
-	var BN = bn.BN;
-	const logger$7 = new Logger(version$5);
-	const _constructorGuard$1 = {};
-	const MAX_SAFE = 0x1fffffffffffff;
-	// Only warn about passing 10 into radix once
-	let _warnedToStringRadix = false;
-	class BigNumber {
-	    constructor(constructorGuard, hex) {
-	        logger$7.checkNew(new.target, BigNumber);
-	        if (constructorGuard !== _constructorGuard$1) {
-	            logger$7.throwError("cannot call constructor directly; use BigNumber.from", Logger.errors.UNSUPPORTED_OPERATION, {
-	                operation: "new (BigNumber)"
-	            });
-	        }
-	        this._hex = hex;
-	        this._isBigNumber = true;
-	        Object.freeze(this);
-	    }
-	    fromTwos(value) {
-	        return toBigNumber(toBN(this).fromTwos(value));
-	    }
-	    toTwos(value) {
-	        return toBigNumber(toBN(this).toTwos(value));
-	    }
-	    abs() {
-	        if (this._hex[0] === "-") {
-	            return BigNumber.from(this._hex.substring(1));
-	        }
-	        return this;
-	    }
-	    add(other) {
-	        return toBigNumber(toBN(this).add(toBN(other)));
-	    }
-	    sub(other) {
-	        return toBigNumber(toBN(this).sub(toBN(other)));
-	    }
-	    div(other) {
-	        const o = BigNumber.from(other);
-	        if (o.isZero()) {
-	            throwFault("division by zero", "div");
-	        }
-	        return toBigNumber(toBN(this).div(toBN(other)));
-	    }
-	    mul(other) {
-	        return toBigNumber(toBN(this).mul(toBN(other)));
-	    }
-	    mod(other) {
-	        const value = toBN(other);
-	        if (value.isNeg()) {
-	            throwFault("cannot modulo negative values", "mod");
-	        }
-	        return toBigNumber(toBN(this).umod(value));
-	    }
-	    pow(other) {
-	        const value = toBN(other);
-	        if (value.isNeg()) {
-	            throwFault("cannot raise to negative values", "pow");
-	        }
-	        return toBigNumber(toBN(this).pow(value));
-	    }
-	    and(other) {
-	        const value = toBN(other);
-	        if (this.isNegative() || value.isNeg()) {
-	            throwFault("cannot 'and' negative values", "and");
-	        }
-	        return toBigNumber(toBN(this).and(value));
-	    }
-	    or(other) {
-	        const value = toBN(other);
-	        if (this.isNegative() || value.isNeg()) {
-	            throwFault("cannot 'or' negative values", "or");
-	        }
-	        return toBigNumber(toBN(this).or(value));
-	    }
-	    xor(other) {
-	        const value = toBN(other);
-	        if (this.isNegative() || value.isNeg()) {
-	            throwFault("cannot 'xor' negative values", "xor");
-	        }
-	        return toBigNumber(toBN(this).xor(value));
-	    }
-	    mask(value) {
-	        if (this.isNegative() || value < 0) {
-	            throwFault("cannot mask negative values", "mask");
-	        }
-	        return toBigNumber(toBN(this).maskn(value));
-	    }
-	    shl(value) {
-	        if (this.isNegative() || value < 0) {
-	            throwFault("cannot shift negative values", "shl");
-	        }
-	        return toBigNumber(toBN(this).shln(value));
-	    }
-	    shr(value) {
-	        if (this.isNegative() || value < 0) {
-	            throwFault("cannot shift negative values", "shr");
-	        }
-	        return toBigNumber(toBN(this).shrn(value));
-	    }
-	    eq(other) {
-	        return toBN(this).eq(toBN(other));
-	    }
-	    lt(other) {
-	        return toBN(this).lt(toBN(other));
-	    }
-	    lte(other) {
-	        return toBN(this).lte(toBN(other));
-	    }
-	    gt(other) {
-	        return toBN(this).gt(toBN(other));
-	    }
-	    gte(other) {
-	        return toBN(this).gte(toBN(other));
-	    }
-	    isNegative() {
-	        return (this._hex[0] === "-");
-	    }
-	    isZero() {
-	        return toBN(this).isZero();
-	    }
-	    toNumber() {
-	        try {
-	            return toBN(this).toNumber();
-	        }
-	        catch (error) {
-	            throwFault("overflow", "toNumber", this.toString());
-	        }
-	        return null;
-	    }
-	    toBigInt() {
-	        try {
-	            return BigInt(this.toString());
-	        }
-	        catch (e) { }
-	        return logger$7.throwError("this platform does not support BigInt", Logger.errors.UNSUPPORTED_OPERATION, {
-	            value: this.toString()
-	        });
-	    }
-	    toString() {
-	        // Lots of people expect this, which we do not support, so check (See: #889)
-	        if (arguments.length > 0) {
-	            if (arguments[0] === 10) {
-	                if (!_warnedToStringRadix) {
-	                    _warnedToStringRadix = true;
-	                    logger$7.warn("BigNumber.toString does not accept any parameters; base-10 is assumed");
-	                }
-	            }
-	            else if (arguments[0] === 16) {
-	                logger$7.throwError("BigNumber.toString does not accept any parameters; use bigNumber.toHexString()", Logger.errors.UNEXPECTED_ARGUMENT, {});
-	            }
-	            else {
-	                logger$7.throwError("BigNumber.toString does not accept parameters", Logger.errors.UNEXPECTED_ARGUMENT, {});
-	            }
-	        }
-	        return toBN(this).toString(10);
-	    }
-	    toHexString() {
-	        return this._hex;
-	    }
-	    toJSON(key) {
-	        return { type: "BigNumber", hex: this.toHexString() };
-	    }
-	    static from(value) {
-	        if (value instanceof BigNumber) {
-	            return value;
-	        }
-	        if (typeof (value) === "string") {
-	            if (value.match(/^-?0x[0-9a-f]+$/i)) {
-	                return new BigNumber(_constructorGuard$1, toHex(value));
-	            }
-	            if (value.match(/^-?[0-9]+$/)) {
-	                return new BigNumber(_constructorGuard$1, toHex(new BN(value)));
-	            }
-	            return logger$7.throwArgumentError("invalid BigNumber string", "value", value);
-	        }
-	        if (typeof (value) === "number") {
-	            if (value % 1) {
-	                throwFault("underflow", "BigNumber.from", value);
-	            }
-	            if (value >= MAX_SAFE || value <= -MAX_SAFE) {
-	                throwFault("overflow", "BigNumber.from", value);
-	            }
-	            return BigNumber.from(String(value));
-	        }
-	        const anyValue = value;
-	        if (typeof (anyValue) === "bigint") {
-	            return BigNumber.from(anyValue.toString());
-	        }
-	        if (isBytes(anyValue)) {
-	            return BigNumber.from(hexlify(anyValue));
-	        }
-	        if (anyValue) {
-	            // Hexable interface (takes piority)
-	            if (anyValue.toHexString) {
-	                const hex = anyValue.toHexString();
-	                if (typeof (hex) === "string") {
-	                    return BigNumber.from(hex);
-	                }
-	            }
-	            else {
-	                // For now, handle legacy JSON-ified values (goes away in v6)
-	                let hex = anyValue._hex;
-	                // New-form JSON
-	                if (hex == null && anyValue.type === "BigNumber") {
-	                    hex = anyValue.hex;
-	                }
-	                if (typeof (hex) === "string") {
-	                    if (isHexString(hex) || (hex[0] === "-" && isHexString(hex.substring(1)))) {
-	                        return BigNumber.from(hex);
-	                    }
-	                }
-	            }
-	        }
-	        return logger$7.throwArgumentError("invalid BigNumber value", "value", value);
-	    }
-	    static isBigNumber(value) {
-	        return !!(value && value._isBigNumber);
-	    }
-	}
-	// Normalize the hex string
-	function toHex(value) {
-	    // For BN, call on the hex string
-	    if (typeof (value) !== "string") {
-	        return toHex(value.toString(16));
-	    }
-	    // If negative, prepend the negative sign to the normalized positive value
-	    if (value[0] === "-") {
-	        // Strip off the negative sign
-	        value = value.substring(1);
-	        // Cannot have mulitple negative signs (e.g. "--0x04")
-	        if (value[0] === "-") {
-	            logger$7.throwArgumentError("invalid hex", "value", value);
-	        }
-	        // Call toHex on the positive component
-	        value = toHex(value);
-	        // Do not allow "-0x00"
-	        if (value === "0x00") {
-	            return value;
-	        }
-	        // Negate the value
-	        return "-" + value;
-	    }
-	    // Add a "0x" prefix if missing
-	    if (value.substring(0, 2) !== "0x") {
-	        value = "0x" + value;
-	    }
-	    // Normalize zero
-	    if (value === "0x") {
-	        return "0x00";
-	    }
-	    // Make the string even length
-	    if (value.length % 2) {
-	        value = "0x0" + value.substring(2);
-	    }
-	    // Trim to smallest even-length string
-	    while (value.length > 4 && value.substring(0, 4) === "0x00") {
-	        value = "0x" + value.substring(4);
-	    }
-	    return value;
-	}
-	function toBigNumber(value) {
-	    return BigNumber.from(toHex(value));
-	}
-	function toBN(value) {
-	    const hex = BigNumber.from(value).toHexString();
-	    if (hex[0] === "-") {
-	        return (new BN("-" + hex.substring(3), 16));
-	    }
-	    return new BN(hex.substring(2), 16);
-	}
-	function throwFault(fault, operation, value) {
-	    const params = { fault: fault, operation: operation };
-	    if (value != null) {
-	        params.value = value;
-	    }
-	    return logger$7.throwError(fault, Logger.errors.NUMERIC_FAULT, params);
 	}
 
 	/**
@@ -14261,14 +14252,14 @@
 	//console.log(Base58.decode("Qmd2V777o5XvJbYMeMb8k2nU5f8d3ciUQ5YpYuWhzv8iDj"))
 	//console.log(Base58.encode(Base58.decode("Qmd2V777o5XvJbYMeMb8k2nU5f8d3ciUQ5YpYuWhzv8iDj")))
 
-	const version$4 = "sha2/5.4.0";
+	const version$4 = "sha2/5.6.0";
 
 	new Logger(version$4);
 	function sha256(data) {
 	    return "0x" + (hash.sha256().update(arrayify(data)).digest("hex"));
 	}
 
-	const version$3 = "networks/5.4.2";
+	const version$3 = "networks/5.6.2";
 
 	const logger$6 = new Logger(version$3);
 	function isRenetworkable(value) {
@@ -14280,41 +14271,47 @@
 	            options = {};
 	        }
 	        const providerList = [];
-	        if (providers.InfuraProvider) {
+	        if (providers.InfuraProvider && options.infura !== "-") {
 	            try {
 	                providerList.push(new providers.InfuraProvider(network, options.infura));
 	            }
 	            catch (error) { }
 	        }
-	        if (providers.EtherscanProvider) {
+	        if (providers.EtherscanProvider && options.etherscan !== "-") {
 	            try {
 	                providerList.push(new providers.EtherscanProvider(network, options.etherscan));
 	            }
 	            catch (error) { }
 	        }
-	        if (providers.AlchemyProvider) {
+	        if (providers.AlchemyProvider && options.alchemy !== "-") {
 	            try {
 	                providerList.push(new providers.AlchemyProvider(network, options.alchemy));
 	            }
 	            catch (error) { }
 	        }
-	        if (providers.PocketProvider) {
+	        if (providers.PocketProvider && options.pocket !== "-") {
 	            // These networks are currently faulty on Pocket as their
 	            // network does not handle the Berlin hardfork, which is
 	            // live on these ones.
 	            // @TODO: This goes away once Pocket has upgraded their nodes
 	            const skip = ["goerli", "ropsten", "rinkeby"];
 	            try {
-	                const provider = new providers.PocketProvider(network);
+	                const provider = new providers.PocketProvider(network, options.pocket);
 	                if (provider.network && skip.indexOf(provider.network.name) === -1) {
 	                    providerList.push(provider);
 	                }
 	            }
 	            catch (error) { }
 	        }
-	        if (providers.CloudflareProvider) {
+	        if (providers.CloudflareProvider && options.cloudflare !== "-") {
 	            try {
 	                providerList.push(new providers.CloudflareProvider(network));
+	            }
+	            catch (error) { }
+	        }
+	        if (providers.AnkrProvider && options.ankr !== "-") {
+	            try {
+	                providerList.push(new providers.AnkrProvider(network, options.ankr));
 	            }
 	            catch (error) { }
 	        }
@@ -14367,6 +14364,7 @@
 	    name: "classicMordor",
 	    _defaultProvider: etcDefaultProvider("https://www.ethercluster.com/mordor", "classicMordor")
 	};
+	// See: https://chainlist.org
 	const networks = {
 	    unspecified: { chainId: 0, name: "unspecified" },
 	    homestead: homestead,
@@ -14391,6 +14389,7 @@
 	        name: "goerli",
 	        _defaultProvider: ethDefaultProvider("goerli")
 	    },
+	    kintsugi: { chainId: 1337702, name: "kintsugi" },
 	    // ETC (See: #351)
 	    classic: {
 	        chainId: 61,
@@ -14408,6 +14407,11 @@
 	    xdai: { chainId: 100, name: "xdai" },
 	    matic: { chainId: 137, name: "matic" },
 	    maticmum: { chainId: 80001, name: "maticmum" },
+	    optimism: { chainId: 10, name: "optimism" },
+	    "optimism-kovan": { chainId: 69, name: "optimism-kovan" },
+	    "optimism-goerli": { chainId: 420, name: "optimism-goerli" },
+	    arbitrum: { chainId: 42161, name: "arbitrum" },
+	    "arbitrum-rinkeby": { chainId: 421611, name: "arbitrum-rinkeby" },
 	    bnb: { chainId: 56, name: "bnb" },
 	    bnbt: { chainId: 97, name: "bnbt" },
 	};
@@ -14483,6 +14487,14 @@
 	    };
 	}
 
+	function decode$1(textData) {
+	    textData = atob(textData);
+	    const data = [];
+	    for (let i = 0; i < textData.length; i++) {
+	        data.push(textData.charCodeAt(i));
+	    }
+	    return arrayify(data);
+	}
 	function encode$1(data) {
 	    data = arrayify(data);
 	    let textData = "";
@@ -14492,7 +14504,7 @@
 	    return btoa(textData);
 	}
 
-	const version$2 = "web/5.4.0";
+	const version$2 = "web/5.6.0";
 
 	var __awaiter$3 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -14512,12 +14524,14 @@
 	            method: (options.method || "GET"),
 	            headers: (options.headers || {}),
 	            body: (options.body || undefined),
-	            mode: "cors",
-	            cache: "no-cache",
-	            credentials: "same-origin",
-	            redirect: "follow",
-	            referrer: "client", // no-referrer, *client
 	        };
+	        if (options.skipFetchSetup !== true) {
+	            request.mode = "cors"; // no-cors, cors, *same-origin
+	            request.cache = "no-cache"; // *default, no-cache, reload, force-cache, only-if-cached
+	            request.credentials = "same-origin"; // include, *same-origin, omit
+	            request.redirect = "follow"; // manual, *follow, error
+	            request.referrer = "client"; // no-referrer, *client
+	        }
 	        const response = yield fetch(href, request);
 	        const body = yield response.arrayBuffer();
 	        const headers = {};
@@ -14586,6 +14600,7 @@
 	    const throttleCallback = ((typeof (connection) === "object") ? connection.throttleCallback : null);
 	    const throttleSlotInterval = ((typeof (connection) === "object" && typeof (connection.throttleSlotInterval) === "number") ? connection.throttleSlotInterval : 100);
 	    logger$5.assertArgument((throttleSlotInterval > 0 && (throttleSlotInterval % 1) === 0), "invalid connection throttle slot interval", "connection.throttleSlotInterval", throttleSlotInterval);
+	    const errorPassThrough = ((typeof (connection) === "object") ? !!(connection.errorPassThrough) : false);
 	    const headers = {};
 	    let url = null;
 	    // @TODO: Allow ConnectionInfo to override some of these values
@@ -14623,6 +14638,35 @@
 	                key: "Authorization",
 	                value: "Basic " + encode$1(toUtf8Bytes(authorization))
 	            };
+	        }
+	        if (connection.skipFetchSetup != null) {
+	            options.skipFetchSetup = !!connection.skipFetchSetup;
+	        }
+	    }
+	    const reData = new RegExp("^data:([a-z0-9-]+/[a-z0-9-]+);base64,(.*)$", "i");
+	    const dataMatch = ((url) ? url.match(reData) : null);
+	    if (dataMatch) {
+	        try {
+	            const response = {
+	                statusCode: 200,
+	                statusMessage: "OK",
+	                headers: { "content-type": dataMatch[1] },
+	                body: decode$1(dataMatch[2])
+	            };
+	            let result = response.body;
+	            if (processFunc) {
+	                result = processFunc(response.body, response);
+	            }
+	            return Promise.resolve(result);
+	        }
+	        catch (error) {
+	            logger$5.throwError("processing response error", Logger.errors.SERVER_ERROR, {
+	                body: bodyify(dataMatch[1], dataMatch[2]),
+	                error: error,
+	                requestBody: null,
+	                requestMethod: "GET",
+	                url: url
+	            });
 	        }
 	    }
 	    if (body) {
@@ -14674,24 +14718,34 @@
 	                let response = null;
 	                try {
 	                    response = yield getUrl(url, options);
-	                    // Exponential back-off throttling
-	                    if (response.statusCode === 429 && attempt < attemptLimit) {
-	                        let tryAgain = true;
-	                        if (throttleCallback) {
-	                            tryAgain = yield throttleCallback(attempt, url);
+	                    if (attempt < attemptLimit) {
+	                        if (response.statusCode === 301 || response.statusCode === 302) {
+	                            // Redirection; for now we only support absolute locataions
+	                            const location = response.headers.location || "";
+	                            if (options.method === "GET" && location.match(/^https:/)) {
+	                                url = response.headers.location;
+	                                continue;
+	                            }
 	                        }
-	                        if (tryAgain) {
-	                            let stall = 0;
-	                            const retryAfter = response.headers["retry-after"];
-	                            if (typeof (retryAfter) === "string" && retryAfter.match(/^[1-9][0-9]*$/)) {
-	                                stall = parseInt(retryAfter) * 1000;
+	                        else if (response.statusCode === 429) {
+	                            // Exponential back-off throttling
+	                            let tryAgain = true;
+	                            if (throttleCallback) {
+	                                tryAgain = yield throttleCallback(attempt, url);
 	                            }
-	                            else {
-	                                stall = throttleSlotInterval * parseInt(String(Math.random() * Math.pow(2, attempt)));
+	                            if (tryAgain) {
+	                                let stall = 0;
+	                                const retryAfter = response.headers["retry-after"];
+	                                if (typeof (retryAfter) === "string" && retryAfter.match(/^[1-9][0-9]*$/)) {
+	                                    stall = parseInt(retryAfter) * 1000;
+	                                }
+	                                else {
+	                                    stall = throttleSlotInterval * parseInt(String(Math.random() * Math.pow(2, attempt)));
+	                                }
+	                                //console.log("Stalling 429");
+	                                yield staller(stall);
+	                                continue;
 	                            }
-	                            //console.log("Stalling 429");
-	                            yield staller(stall);
-	                            continue;
 	                        }
 	                    }
 	                }
@@ -14711,7 +14765,7 @@
 	                if (allow304 && response.statusCode === 304) {
 	                    body = null;
 	                }
-	                else if (response.statusCode < 200 || response.statusCode >= 300) {
+	                else if (!errorPassThrough && (response.statusCode < 200 || response.statusCode >= 300)) {
 	                    runningTimeout.cancel();
 	                    logger$5.throwError("bad response", Logger.errors.SERVER_ERROR, {
 	                        status: response.statusCode,
@@ -14753,7 +14807,7 @@
 	                    }
 	                }
 	                runningTimeout.cancel();
-	                // If we had a processFunc, it eitehr returned a T or threw above.
+	                // If we had a processFunc, it either returned a T or threw above.
 	                // The "body" is now a Uint8Array.
 	                return body;
 	            }
@@ -15069,7 +15123,7 @@
 	  fromWords: fromWords
 	};
 
-	const version$1 = "providers/5.4.5";
+	const version$1 = "providers/5.6.5";
 
 	const logger$4 = new Logger(version$1);
 	class Formatter {
@@ -15156,7 +15210,7 @@
 	            type: type
 	        };
 	        formats.block = {
-	            hash: hash,
+	            hash: Formatter.allowNull(hash),
 	            parentHash: hash,
 	            number: number,
 	            timestamp: number,
@@ -15164,7 +15218,7 @@
 	            difficulty: this.difficulty.bind(this),
 	            gasLimit: bigNumber,
 	            gasUsed: bigNumber,
-	            miner: address,
+	            miner: Formatter.allowNull(address),
 	            extraData: data,
 	            transactions: Formatter.allowNull(Formatter.arrayOf(hash)),
 	            baseFeePerGas: Formatter.allowNull(bigNumber)
@@ -15200,17 +15254,17 @@
 	        if (number === "0x") {
 	            return 0;
 	        }
-	        return BigNumber$1.from(number).toNumber();
+	        return BigNumber.from(number).toNumber();
 	    }
 	    type(number) {
 	        if (number === "0x" || number == null) {
 	            return 0;
 	        }
-	        return BigNumber$1.from(number).toNumber();
+	        return BigNumber.from(number).toNumber();
 	    }
 	    // Strict! Used on input.
 	    bigNumber(value) {
-	        return BigNumber$1.from(value);
+	        return BigNumber.from(value);
 	    }
 	    // Requires a boolean, "true" or  "false"; returns a boolean
 	    boolean(value) {
@@ -15290,7 +15344,7 @@
 	        if (value == null) {
 	            return null;
 	        }
-	        const v = BigNumber$1.from(value);
+	        const v = BigNumber.from(value);
 	        try {
 	            return v.toNumber();
 	        }
@@ -15307,7 +15361,11 @@
 	        if (value.author != null && value.miner == null) {
 	            value.miner = value.author;
 	        }
-	        return Formatter.check(format, value);
+	        // The difficulty may need to come from _difficulty in recursed blocks
+	        const difficulty = (value._difficulty != null) ? value._difficulty : value.difficulty;
+	        const result = Formatter.check(format, value);
+	        result._difficulty = ((difficulty == null) ? null : BigNumber.from(difficulty));
+	        return result;
 	    }
 	    block(value) {
 	        return this._block(value, this.formats.block);
@@ -15326,7 +15384,7 @@
 	        }
 	        // Some clients (TestRPC) do strange things like return 0x0 for the
 	        // 0 address; correct this to be a real address
-	        if (transaction.to && BigNumber$1.from(transaction.to).isZero()) {
+	        if (transaction.to && BigNumber.from(transaction.to).isZero()) {
 	            transaction.to = "0x0000000000000000000000000000000000000000";
 	        }
 	        // Rename input to data
@@ -15344,7 +15402,7 @@
 	        if (transaction.chainId != null) {
 	            let chainId = transaction.chainId;
 	            if (isHexString(chainId)) {
-	                chainId = BigNumber$1.from(chainId).toNumber();
+	                chainId = BigNumber.from(chainId).toNumber();
 	            }
 	            result.chainId = chainId;
 	        }
@@ -15355,7 +15413,7 @@
 	                chainId = transaction.chainId;
 	            }
 	            if (isHexString(chainId)) {
-	                chainId = BigNumber$1.from(chainId).toNumber();
+	                chainId = BigNumber.from(chainId).toNumber();
 	            }
 	            if (typeof (chainId) !== "number" && result.v != null) {
 	                chainId = (result.v - 35) / 2;
@@ -15387,7 +15445,7 @@
 	        if (result.root != null) {
 	            if (result.root.length <= 4) {
 	                // Could be 0x00, 0x0, 0x01 or 0x1
-	                const value = BigNumber$1.from(result.root).toNumber();
+	                const value = BigNumber.from(result.root).toNumber();
 	                if (value === 0 || value === 1) {
 	                    // Make sure if both are specified, they match
 	                    if (result.status != null && (result.status !== value)) {
@@ -15485,6 +15543,7 @@
 	    });
 	};
 	const logger$3 = new Logger(version$1);
+	const MAX_CCIP_REDIRECTS = 10;
 	//////////////////////////////
 	// Event Serializeing
 	function checkTopic(topic) {
@@ -15585,6 +15644,8 @@
 	        defineReadOnly(this, "tag", tag);
 	        defineReadOnly(this, "listener", listener);
 	        defineReadOnly(this, "once", once);
+	        this._lastBlockNumber = -2;
+	        this._inflight = false;
 	    }
 	    get event() {
 	        switch (this.type) {
@@ -15635,40 +15696,153 @@
 	    "700": { symbol: "xdai", ilk: "eth" },
 	};
 	function bytes32ify(value) {
-	    return hexZeroPad(BigNumber$1.from(value).toHexString(), 32);
+	    return hexZeroPad(BigNumber.from(value).toHexString(), 32);
 	}
 	// Compute the Base58Check encoded data (checksum is first 4 bytes of sha256d)
 	function base58Encode(data) {
 	    return Base58.encode(concat([data, hexDataSlice(sha256(sha256(data)), 0, 4)]));
 	}
+	const matcherIpfs = new RegExp("^(ipfs):/\/(.*)$", "i");
+	const matchers = [
+	    new RegExp("^(https):/\/(.*)$", "i"),
+	    new RegExp("^(data):(.*)$", "i"),
+	    matcherIpfs,
+	    new RegExp("^eip155:[0-9]+/(erc[0-9]+):(.*)$", "i"),
+	];
+	function _parseString(result, start) {
+	    try {
+	        return toUtf8String(_parseBytes(result, start));
+	    }
+	    catch (error) { }
+	    return null;
+	}
+	function _parseBytes(result, start) {
+	    if (result === "0x") {
+	        return null;
+	    }
+	    const offset = BigNumber.from(hexDataSlice(result, start, start + 32)).toNumber();
+	    const length = BigNumber.from(hexDataSlice(result, offset, offset + 32)).toNumber();
+	    return hexDataSlice(result, offset + 32, offset + 32 + length);
+	}
+	// Trim off the ipfs:// prefix and return the default gateway URL
+	function getIpfsLink(link) {
+	    if (link.match(/^ipfs:\/\/ipfs\//i)) {
+	        link = link.substring(12);
+	    }
+	    else if (link.match(/^ipfs:\/\//i)) {
+	        link = link.substring(7);
+	    }
+	    else {
+	        logger$3.throwArgumentError("unsupported IPFS format", "link", link);
+	    }
+	    return `https:/\/gateway.ipfs.io/ipfs/${link}`;
+	}
+	function numPad(value) {
+	    const result = arrayify(value);
+	    if (result.length > 32) {
+	        throw new Error("internal; should not happen");
+	    }
+	    const padded = new Uint8Array(32);
+	    padded.set(result, 32 - result.length);
+	    return padded;
+	}
+	function bytesPad(value) {
+	    if ((value.length % 32) === 0) {
+	        return value;
+	    }
+	    const result = new Uint8Array(Math.ceil(value.length / 32) * 32);
+	    result.set(value);
+	    return result;
+	}
+	// ABI Encodes a series of (bytes, bytes, ...)
+	function encodeBytes(datas) {
+	    const result = [];
+	    let byteCount = 0;
+	    // Add place-holders for pointers as we add items
+	    for (let i = 0; i < datas.length; i++) {
+	        result.push(null);
+	        byteCount += 32;
+	    }
+	    for (let i = 0; i < datas.length; i++) {
+	        const data = arrayify(datas[i]);
+	        // Update the bytes offset
+	        result[i] = numPad(byteCount);
+	        // The length and padded value of data
+	        result.push(numPad(data.length));
+	        result.push(bytesPad(data));
+	        byteCount += 32 + Math.ceil(data.length / 32) * 32;
+	    }
+	    return hexConcat(result);
+	}
 	class Resolver {
-	    constructor(provider, address, name) {
+	    // The resolvedAddress is only for creating a ReverseLookup resolver
+	    constructor(provider, address, name, resolvedAddress) {
 	        defineReadOnly(this, "provider", provider);
 	        defineReadOnly(this, "name", name);
 	        defineReadOnly(this, "address", provider.formatter.address(address));
+	        defineReadOnly(this, "_resolvedAddress", resolvedAddress);
 	    }
-	    _fetchBytes(selector, parameters) {
-	        return __awaiter$1(this, void 0, void 0, function* () {
-	            // keccak256("addr(bytes32,uint256)")
-	            const transaction = {
+	    supportsWildcard() {
+	        if (!this._supportsEip2544) {
+	            // supportsInterface(bytes4 = selector("resolve(bytes,bytes)"))
+	            this._supportsEip2544 = this.provider.call({
 	                to: this.address,
+	                data: "0x01ffc9a79061b92300000000000000000000000000000000000000000000000000000000"
+	            }).then((result) => {
+	                return BigNumber.from(result).eq(1);
+	            }).catch((error) => {
+	                if (error.code === Logger.errors.CALL_EXCEPTION) {
+	                    return false;
+	                }
+	                // Rethrow the error: link is down, etc. Let future attempts retry.
+	                this._supportsEip2544 = null;
+	                throw error;
+	            });
+	        }
+	        return this._supportsEip2544;
+	    }
+	    _fetch(selector, parameters) {
+	        return __awaiter$1(this, void 0, void 0, function* () {
+	            // e.g. keccak256("addr(bytes32,uint256)")
+	            const tx = {
+	                to: this.address,
+	                ccipReadEnabled: true,
 	                data: hexConcat([selector, namehash(this.name), (parameters || "0x")])
 	            };
+	            // Wildcard support; use EIP-2544 to resolve the request
+	            let parseBytes = false;
+	            if (yield this.supportsWildcard()) {
+	                parseBytes = true;
+	                // selector("resolve(bytes,bytes)")
+	                tx.data = hexConcat(["0x9061b923", encodeBytes([dnsEncode(this.name), tx.data])]);
+	            }
 	            try {
-	                const result = yield this.provider.call(transaction);
-	                if (result === "0x") {
-	                    return null;
+	                let result = yield this.provider.call(tx);
+	                if ((arrayify(result).length % 32) === 4) {
+	                    logger$3.throwError("resolver threw error", Logger.errors.CALL_EXCEPTION, {
+	                        transaction: tx, data: result
+	                    });
 	                }
-	                const offset = BigNumber$1.from(hexDataSlice(result, 0, 32)).toNumber();
-	                const length = BigNumber$1.from(hexDataSlice(result, offset, offset + 32)).toNumber();
-	                return hexDataSlice(result, offset + 32, offset + 32 + length);
+	                if (parseBytes) {
+	                    result = _parseBytes(result, 0);
+	                }
+	                return result;
 	            }
 	            catch (error) {
 	                if (error.code === Logger.errors.CALL_EXCEPTION) {
 	                    return null;
 	                }
-	                return null;
+	                throw error;
 	            }
+	        });
+	    }
+	    _fetchBytes(selector, parameters) {
+	        return __awaiter$1(this, void 0, void 0, function* () {
+	            const result = yield this._fetch(selector, parameters);
+	            if (result != null) {
+	                return _parseBytes(result, 0);
+	            }
+	            return null;
 	        });
 	    }
 	    _getAddress(coinType, hexBytes) {
@@ -15732,16 +15906,12 @@
 	            if (coinType === 60) {
 	                try {
 	                    // keccak256("addr(bytes32)")
-	                    const transaction = {
-	                        to: this.address,
-	                        data: ("0x3b3b57de" + namehash(this.name).substring(2))
-	                    };
-	                    const hexBytes = yield this.provider.call(transaction);
+	                    const result = yield this._fetch("0x3b3b57de");
 	                    // No address
-	                    if (hexBytes === "0x" || hexBytes === HashZero) {
+	                    if (result === "0x" || result === HashZero) {
 	                        return null;
 	                    }
-	                    return this.provider.formatter.callAddress(hexBytes);
+	                    return this.provider.formatter.callAddress(result);
 	                }
 	                catch (error) {
 	                    if (error.code === Logger.errors.CALL_EXCEPTION) {
@@ -15768,6 +15938,119 @@
 	            return address;
 	        });
 	    }
+	    getAvatar() {
+	        return __awaiter$1(this, void 0, void 0, function* () {
+	            const linkage = [{ type: "name", content: this.name }];
+	            try {
+	                // test data for ricmoo.eth
+	                //const avatar = "eip155:1/erc721:0x265385c7f4132228A0d54EB1A9e7460b91c0cC68/29233";
+	                const avatar = yield this.getText("avatar");
+	                if (avatar == null) {
+	                    return null;
+	                }
+	                for (let i = 0; i < matchers.length; i++) {
+	                    const match = avatar.match(matchers[i]);
+	                    if (match == null) {
+	                        continue;
+	                    }
+	                    const scheme = match[1].toLowerCase();
+	                    switch (scheme) {
+	                        case "https":
+	                            linkage.push({ type: "url", content: avatar });
+	                            return { linkage, url: avatar };
+	                        case "data":
+	                            linkage.push({ type: "data", content: avatar });
+	                            return { linkage, url: avatar };
+	                        case "ipfs":
+	                            linkage.push({ type: "ipfs", content: avatar });
+	                            return { linkage, url: getIpfsLink(avatar) };
+	                        case "erc721":
+	                        case "erc1155": {
+	                            // Depending on the ERC type, use tokenURI(uint256) or url(uint256)
+	                            const selector = (scheme === "erc721") ? "0xc87b56dd" : "0x0e89341c";
+	                            linkage.push({ type: scheme, content: avatar });
+	                            // The owner of this name
+	                            const owner = (this._resolvedAddress || (yield this.getAddress()));
+	                            const comps = (match[2] || "").split("/");
+	                            if (comps.length !== 2) {
+	                                return null;
+	                            }
+	                            const addr = yield this.provider.formatter.address(comps[0]);
+	                            const tokenId = hexZeroPad(BigNumber.from(comps[1]).toHexString(), 32);
+	                            // Check that this account owns the token
+	                            if (scheme === "erc721") {
+	                                // ownerOf(uint256 tokenId)
+	                                const tokenOwner = this.provider.formatter.callAddress(yield this.provider.call({
+	                                    to: addr, data: hexConcat(["0x6352211e", tokenId])
+	                                }));
+	                                if (owner !== tokenOwner) {
+	                                    return null;
+	                                }
+	                                linkage.push({ type: "owner", content: tokenOwner });
+	                            }
+	                            else if (scheme === "erc1155") {
+	                                // balanceOf(address owner, uint256 tokenId)
+	                                const balance = BigNumber.from(yield this.provider.call({
+	                                    to: addr, data: hexConcat(["0x00fdd58e", hexZeroPad(owner, 32), tokenId])
+	                                }));
+	                                if (balance.isZero()) {
+	                                    return null;
+	                                }
+	                                linkage.push({ type: "balance", content: balance.toString() });
+	                            }
+	                            // Call the token contract for the metadata URL
+	                            const tx = {
+	                                to: this.provider.formatter.address(comps[0]),
+	                                data: hexConcat([selector, tokenId])
+	                            };
+	                            let metadataUrl = _parseString(yield this.provider.call(tx), 0);
+	                            if (metadataUrl == null) {
+	                                return null;
+	                            }
+	                            linkage.push({ type: "metadata-url-base", content: metadataUrl });
+	                            // ERC-1155 allows a generic {id} in the URL
+	                            if (scheme === "erc1155") {
+	                                metadataUrl = metadataUrl.replace("{id}", tokenId.substring(2));
+	                                linkage.push({ type: "metadata-url-expanded", content: metadataUrl });
+	                            }
+	                            // Transform IPFS metadata links
+	                            if (metadataUrl.match(/^ipfs:/i)) {
+	                                metadataUrl = getIpfsLink(metadataUrl);
+	                            }
+	                            linkage.push({ type: "metadata-url", content: metadataUrl });
+	                            // Get the token metadata
+	                            const metadata = yield fetchJson(metadataUrl);
+	                            if (!metadata) {
+	                                return null;
+	                            }
+	                            linkage.push({ type: "metadata", content: JSON.stringify(metadata) });
+	                            // Pull the image URL out
+	                            let imageUrl = metadata.image;
+	                            if (typeof (imageUrl) !== "string") {
+	                                return null;
+	                            }
+	                            if (imageUrl.match(/^(https:\/\/|data:)/i)) {
+	                                // Allow
+	                            }
+	                            else {
+	                                // Transform IPFS link to gateway
+	                                const ipfs = imageUrl.match(matcherIpfs);
+	                                if (ipfs == null) {
+	                                    return null;
+	                                }
+	                                linkage.push({ type: "url-ipfs", content: imageUrl });
+	                                imageUrl = getIpfsLink(imageUrl);
+	                            }
+	                            linkage.push({ type: "url", content: imageUrl });
+	                            return { linkage, url: imageUrl };
+	                        }
+	                    }
+	                }
+	            }
+	            catch (error) { }
+	            return null;
+	        });
+	    }
 	    getContentHash() {
 	        return __awaiter$1(this, void 0, void 0, function* () {
 	            // keccak256("contenthash()")
@@ -15782,6 +16065,14 @@
 	                const length = parseInt(ipfs[3], 16);
 	                if (ipfs[4].length === length * 2) {
 	                    return "ipfs:/\/" + Base58.encode("0x" + ipfs[1]);
+	                }
+	            }
+	            // IPNS (CID: 1, Type: libp2p-key)
+	            const ipns = hexBytes.match(/^0xe5010172(([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f]*))$/);
+	            if (ipns) {
+	                const length = parseInt(ipns[3], 16);
+	                if (ipns[4].length === length * 2) {
+	                    return "ipns:/\/" + Base58.encode("0x" + ipns[1]);
 	                }
 	            }
 	            // Swarm (CID: 1, Type: swarm-manifest; hash/length hard-coded to keccak256/32)
@@ -15834,6 +16125,7 @@
 	        // Events being listened to
 	        this._events = [];
 	        this._emitted = { block: -2 };
+	        this.disableCcipRead = false;
 	        this.formatter = new.target.getFormatter();
 	        // If network is any, this Provider allows the underlying
 	        // network to change dynamically, and we auto-detect the
@@ -15850,7 +16142,7 @@
 	            this._ready().catch((error) => { });
 	        }
 	        else {
-	            const knownNetwork = getStatic((new.target), "getNetwork")(network);
+	            const knownNetwork = getStatic(new.target, "getNetwork")(network);
 	            if (knownNetwork) {
 	                defineReadOnly(this, "_network", knownNetwork);
 	                this.emit("network", knownNetwork, null);
@@ -15861,6 +16153,7 @@
 	        }
 	        this._maxInternalBlockNumber = -1024;
 	        this._lastBlockNumber = -2;
+	        this._maxFilterBlockRange = 10;
 	        this._pollingInterval = 4000;
 	        this._fastQueryDate = 0;
 	    }
@@ -15899,7 +16192,7 @@
 	    }
 	    // This will always return the most recently established network.
 	    // For "any", this can change (a "network" event is emitted before
-	    // any change is refelcted); otherwise this cannot change
+	    // any change is reflected); otherwise this cannot change
 	    get ready() {
 	        return poll(() => {
 	            return this._ready().then((network) => {
@@ -15923,6 +16216,40 @@
 	    // @TODO: Remove this and just use getNetwork
 	    static getNetwork(network) {
 	        return getNetwork((network == null) ? "homestead" : network);
+	    }
+	    ccipReadFetch(tx, calldata, urls) {
+	        return __awaiter$1(this, void 0, void 0, function* () {
+	            if (this.disableCcipRead || urls.length === 0) {
+	                return null;
+	            }
+	            const sender = tx.to.toLowerCase();
+	            const data = calldata.toLowerCase();
+	            const errorMessages = [];
+	            for (let i = 0; i < urls.length; i++) {
+	                const url = urls[i];
+	                // URL expansion
+	                const href = url.replace("{sender}", sender).replace("{data}", data);
+	                // If no {data} is present, use POST; otherwise GET
+	                const json = (url.indexOf("{data}") >= 0) ? null : JSON.stringify({ data, sender });
+	                const result = yield fetchJson({ url: href, errorPassThrough: true }, json, (value, response) => {
+	                    value.status = response.statusCode;
+	                    return value;
+	                });
+	                if (result.data) {
+	                    return result.data;
+	                }
+	                const errorMessage = (result.message || "unknown error");
+	                // 4xx indicates the result is not present; stop
+	                if (result.status >= 400 && result.status < 500) {
+	                    return logger$3.throwError(`response not found during CCIP fetch: ${errorMessage}`, Logger.errors.SERVER_ERROR, { url, errorMessage });
+	                }
+	                // 5xx indicates server issue; try the next url
+	                errorMessages.push(errorMessage);
+	            }
+	            return logger$3.throwError(`error encountered during CCIP fetch: ${errorMessages.map((m) => JSON.stringify(m)).join(", ")}`, Logger.errors.SERVER_ERROR, {
+	                urls, errorMessages
+	            });
+	        });
 	    }
 	    // Fetches the blockNumber, but will reuse any result that is less
 	    // than maxAge old or has been requested since the last request
@@ -15968,7 +16295,7 @@
 	                    throw networkError;
 	                }
 	                const respTime = getTime();
-	                blockNumber = BigNumber$1.from(blockNumber).toNumber();
+	                blockNumber = BigNumber.from(blockNumber).toNumber();
 	                if (blockNumber < this._maxInternalBlockNumber) {
 	                    blockNumber = this._maxInternalBlockNumber;
 	                }
@@ -16071,20 +16398,44 @@
 	                        break;
 	                    }
 	                    case "filter": {
-	                        const filter = event.filter;
-	                        filter.fromBlock = this._lastBlockNumber + 1;
-	                        filter.toBlock = blockNumber;
-	                        const runner = this.getLogs(filter).then((logs) => {
-	                            if (logs.length === 0) {
-	                                return;
+	                        // We only allow a single getLogs to be in-flight at a time
+	                        if (!event._inflight) {
+	                            event._inflight = true;
+	                            // Filter from the last known event; due to load-balancing
+	                            // and some nodes returning updated block numbers before
+	                            // indexing events, a logs result with 0 entries cannot be
+	                            // trusted and we must retry a range which includes it again
+	                            const filter = event.filter;
+	                            filter.fromBlock = event._lastBlockNumber + 1;
+	                            filter.toBlock = blockNumber;
+	                            // Prevent fitler ranges from growing too wild
+	                            if (filter.toBlock - this._maxFilterBlockRange > filter.fromBlock) {
+	                                filter.fromBlock = filter.toBlock - this._maxFilterBlockRange;
 	                            }
-	                            logs.forEach((log) => {
-	                                this._emitted["b:" + log.blockHash] = log.blockNumber;
-	                                this._emitted["t:" + log.transactionHash] = log.blockNumber;
-	                                this.emit(filter, log);
+	                            const runner = this.getLogs(filter).then((logs) => {
+	                                // Allow the next getLogs
+	                                event._inflight = false;
+	                                if (logs.length === 0) {
+	                                    return;
+	                                }
+	                                logs.forEach((log) => {
+	                                    // Only when we get an event for a given block number
+	                                    // can we trust the events are indexed
+	                                    if (log.blockNumber > event._lastBlockNumber) {
+	                                        event._lastBlockNumber = log.blockNumber;
+	                                    }
+	                                    // Make sure we stall requests to fetch blocks and txs
+	                                    this._emitted["b:" + log.blockHash] = log.blockNumber;
+	                                    this._emitted["t:" + log.transactionHash] = log.blockNumber;
+	                                    this.emit(filter, log);
+	                                });
+	                            }).catch((error) => {
+	                                this.emit("error", error);
+	                                // Allow another getLogs (the range was not updated)
+	                                event._inflight = false;
 	                            });
-	                        }).catch((error) => { this.emit("error", error); });
-	                        runners.push(runner);
+	                            runners.push(runner);
+	                        }
 	                        break;
 	                    }
 	                }
@@ -16387,7 +16738,7 @@
 	            yield this.getNetwork();
 	            const result = yield this.perform("getGasPrice", {});
 	            try {
-	                return BigNumber$1.from(result);
+	                return BigNumber.from(result);
 	            }
 	            catch (error) {
 	                return logger$3.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
@@ -16406,7 +16757,7 @@
 	            });
 	            const result = yield this.perform("getBalance", params);
 	            try {
-	                return BigNumber$1.from(result);
+	                return BigNumber.from(result);
 	            }
 	            catch (error) {
 	                return logger$3.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
@@ -16425,7 +16776,7 @@
 	            });
 	            const result = yield this.perform("getTransactionCount", params);
 	            try {
-	                return BigNumber$1.from(result).toNumber();
+	                return BigNumber.from(result).toNumber();
 	            }
 	            catch (error) {
 	                return logger$3.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
@@ -16554,7 +16905,7 @@
 	                if (values[key] == null) {
 	                    return;
 	                }
-	                tx[key] = Promise.resolve(values[key]).then((v) => (v ? BigNumber$1.from(v) : null));
+	                tx[key] = Promise.resolve(values[key]).then((v) => (v ? BigNumber.from(v) : null));
 	            });
 	            ["type"].forEach((key) => {
 	                if (values[key] == null) {
@@ -16596,23 +16947,97 @@
 	            return this.formatter.filter(yield resolveProperties(result));
 	        });
 	    }
-	    call(transaction, blockTag) {
+	    _call(transaction, blockTag, attempt) {
 	        return __awaiter$1(this, void 0, void 0, function* () {
-	            yield this.getNetwork();
-	            const params = yield resolveProperties({
-	                transaction: this._getTransactionRequest(transaction),
-	                blockTag: this._getBlockTag(blockTag)
-	            });
-	            const result = yield this.perform("call", params);
+	            if (attempt >= MAX_CCIP_REDIRECTS) {
+	                logger$3.throwError("CCIP read exceeded maximum redirections", Logger.errors.SERVER_ERROR, {
+	                    redirects: attempt, transaction
+	                });
+	            }
+	            const txSender = transaction.to;
+	            const result = yield this.perform("call", { transaction, blockTag });
+	            // CCIP Read request via OffchainLookup(address,string[],bytes,bytes4,bytes)
+	            if (attempt >= 0 && blockTag === "latest" && txSender != null && result.substring(0, 10) === "0x556f1830" && (hexDataLength(result) % 32 === 4)) {
+	                try {
+	                    const data = hexDataSlice(result, 4);
+	                    // Check the sender of the OffchainLookup matches the transaction
+	                    const sender = hexDataSlice(data, 0, 32);
+	                    if (!BigNumber.from(sender).eq(txSender)) {
+	                        logger$3.throwError("CCIP Read sender did not match", Logger.errors.CALL_EXCEPTION, {
+	                            name: "OffchainLookup",
+	                            signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+	                            transaction, data: result
+	                        });
+	                    }
+	                    // Read the URLs from the response
+	                    const urls = [];
+	                    const urlsOffset = BigNumber.from(hexDataSlice(data, 32, 64)).toNumber();
+	                    const urlsLength = BigNumber.from(hexDataSlice(data, urlsOffset, urlsOffset + 32)).toNumber();
+	                    const urlsData = hexDataSlice(data, urlsOffset + 32);
+	                    for (let u = 0; u < urlsLength; u++) {
+	                        const url = _parseString(urlsData, u * 32);
+	                        if (url == null) {
+	                            logger$3.throwError("CCIP Read contained corrupt URL string", Logger.errors.CALL_EXCEPTION, {
+	                                name: "OffchainLookup",
+	                                signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+	                                transaction, data: result
+	                            });
+	                        }
+	                        urls.push(url);
+	                    }
+	                    // Get the CCIP calldata to forward
+	                    const calldata = _parseBytes(data, 64);
+	                    // Get the callbackSelector (bytes4)
+	                    if (!BigNumber.from(hexDataSlice(data, 100, 128)).isZero()) {
+	                        logger$3.throwError("CCIP Read callback selector included junk", Logger.errors.CALL_EXCEPTION, {
+	                            name: "OffchainLookup",
+	                            signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+	                            transaction, data: result
+	                        });
+	                    }
+	                    const callbackSelector = hexDataSlice(data, 96, 100);
+	                    // Get the extra data to send back to the contract as context
+	                    const extraData = _parseBytes(data, 128);
+	                    const ccipResult = yield this.ccipReadFetch(transaction, calldata, urls);
+	                    if (ccipResult == null) {
+	                        logger$3.throwError("CCIP Read disabled or provided no URLs", Logger.errors.CALL_EXCEPTION, {
+	                            name: "OffchainLookup",
+	                            signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+	                            transaction, data: result
+	                        });
+	                    }
+	                    const tx = {
+	                        to: txSender,
+	                        data: hexConcat([callbackSelector, encodeBytes([ccipResult, extraData])])
+	                    };
+	                    return this._call(tx, blockTag, attempt + 1);
+	                }
+	                catch (error) {
+	                    if (error.code === Logger.errors.SERVER_ERROR) {
+	                        throw error;
+	                    }
+	                }
+	            }
 	            try {
 	                return hexlify(result);
 	            }
 	            catch (error) {
 	                return logger$3.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
 	                    method: "call",
-	                    params, result, error
+	                    params: { transaction, blockTag }, result, error
 	                });
 	            }
+	        });
+	    }
+	    call(transaction, blockTag) {
+	        return __awaiter$1(this, void 0, void 0, function* () {
+	            yield this.getNetwork();
+	            const resolved = yield resolveProperties({
+	                transaction: this._getTransactionRequest(transaction),
+	                blockTag: this._getBlockTag(blockTag),
+	                ccipReadEnabled: Promise.resolve(transaction.ccipReadEnabled)
+	            });
+	            return this._call(resolved.transaction, resolved.blockTag, resolved.ccipReadEnabled ? 0 : -1);
 	        });
 	    }
 	    estimateGas(transaction) {
@@ -16623,7 +17048,7 @@
 	            });
 	            const result = yield this.perform("estimateGas", params);
 	            try {
-	                return BigNumber$1.from(result);
+	                return BigNumber.from(result);
 	            }
 	            catch (error) {
 	                return logger$3.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
@@ -16635,6 +17060,10 @@
 	    }
 	    _getAddress(addressOrName) {
 	        return __awaiter$1(this, void 0, void 0, function* () {
+	            addressOrName = yield addressOrName;
+	            if (typeof (addressOrName) !== "string") {
+	                logger$3.throwArgumentError("invalid address or ENS name", "name", addressOrName);
+	            }
 	            const address = yield this.resolveName(addressOrName);
 	            if (address == null) {
 	                logger$3.throwError("ENS name not configured", Logger.errors.UNSUPPORTED_OPERATION, {
@@ -16658,7 +17087,7 @@
 	            }
 	            else {
 	                try {
-	                    params.blockTag = this.formatter.blockTag(yield this._getBlockTag(blockHashOrBlockTag));
+	                    params.blockTag = yield this._getBlockTag(blockHashOrBlockTag);
 	                    if (isHexString(params.blockTag)) {
 	                        blockNumber = parseInt(params.blockTag.substring(2), 16);
 	                    }
@@ -16824,43 +17253,54 @@
 	    }
 	    getResolver(name) {
 	        return __awaiter$1(this, void 0, void 0, function* () {
-	            try {
-	                const address = yield this._getResolver(name);
-	                if (address == null) {
+	            let currentName = name;
+	            while (true) {
+	                if (currentName === "" || currentName === ".") {
 	                    return null;
 	                }
-	                return new Resolver(this, address, name);
-	            }
-	            catch (error) {
-	                if (error.code === Logger.errors.CALL_EXCEPTION) {
+	                // Optimization since the eth node cannot change and does
+	                // not have a wildcard resolver
+	                if (name !== "eth" && currentName === "eth") {
 	                    return null;
 	                }
-	                return null;
+	                // Check the current node for a resolver
+	                const addr = yield this._getResolver(currentName, "getResolver");
+	                // Found a resolver!
+	                if (addr != null) {
+	                    const resolver = new Resolver(this, addr, name);
+	                    // Legacy resolver found, using EIP-2544 so it isn't safe to use
+	                    if (currentName !== name && !(yield resolver.supportsWildcard())) {
+	                        return null;
+	                    }
+	                    return resolver;
+	                }
+	                // Get the parent node
+	                currentName = currentName.split(".").slice(1).join(".");
 	            }
 	        });
 	    }
-	    _getResolver(name) {
+	    _getResolver(name, operation) {
 	        return __awaiter$1(this, void 0, void 0, function* () {
-	            // Get the resolver from the blockchain
+	            if (operation == null) {
+	                operation = "ENS";
+	            }
 	            const network = yield this.getNetwork();
 	            // No ENS...
 	            if (!network.ensAddress) {
-	                logger$3.throwError("network does not support ENS", Logger.errors.UNSUPPORTED_OPERATION, { operation: "ENS", network: network.name });
+	                logger$3.throwError("network does not support ENS", Logger.errors.UNSUPPORTED_OPERATION, { operation, network: network.name });
 	            }
-	            // keccak256("resolver(bytes32)")
-	            const transaction = {
-	                to: network.ensAddress,
-	                data: ("0x0178b8bf" + namehash(name).substring(2))
-	            };
 	            try {
-	                return this.formatter.callAddress(yield this.call(transaction));
+	                // keccak256("resolver(bytes32)")
+	                const addrData = yield this.call({
+	                    to: network.ensAddress,
+	                    data: ("0x0178b8bf" + namehash(name).substring(2))
+	                });
+	                return this.formatter.callAddress(addrData);
 	            }
 	            catch (error) {
-	                if (error.code === Logger.errors.CALL_EXCEPTION) {
-	                    return null;
-	                }
-	                throw error;
+	                // ENS registry cannot throw errors on resolver(bytes32)
 	            }
+	            return null;
 	        });
 	    }
 	    resolveName(name) {
@@ -16879,7 +17319,7 @@
 	            if (typeof (name) !== "string") {
 	                logger$3.throwArgumentError("invalid ENS name", "name", name);
 	            }
-	            // Get the addr from the resovler
+	            // Get the addr from the resolver
 	            const resolver = yield this.getResolver(name);
 	            if (!resolver) {
 	                return null;
@@ -16891,39 +17331,75 @@
 	        return __awaiter$1(this, void 0, void 0, function* () {
 	            address = yield address;
 	            address = this.formatter.address(address);
-	            const reverseName = address.substring(2).toLowerCase() + ".addr.reverse";
-	            const resolverAddress = yield this._getResolver(reverseName);
-	            if (!resolverAddress) {
+	            const node = address.substring(2).toLowerCase() + ".addr.reverse";
+	            const resolverAddr = yield this._getResolver(node, "lookupAddress");
+	            if (resolverAddr == null) {
 	                return null;
 	            }
 	            // keccak("name(bytes32)")
-	            let bytes = arrayify(yield this.call({
-	                to: resolverAddress,
-	                data: ("0x691f3431" + namehash(reverseName).substring(2))
-	            }));
-	            // Strip off the dynamic string pointer (0x20)
-	            if (bytes.length < 32 || !BigNumber$1.from(bytes.slice(0, 32)).eq(32)) {
-	                return null;
-	            }
-	            bytes = bytes.slice(32);
-	            // Not a length-prefixed string
-	            if (bytes.length < 32) {
-	                return null;
-	            }
-	            // Get the length of the string (from the length-prefix)
-	            const length = BigNumber$1.from(bytes.slice(0, 32)).toNumber();
-	            bytes = bytes.slice(32);
-	            // Length longer than available data
-	            if (length > bytes.length) {
-	                return null;
-	            }
-	            const name = toUtf8String(bytes.slice(0, length));
-	            // Make sure the reverse record matches the foward record
+	            const name = _parseString(yield this.call({
+	                to: resolverAddr,
+	                data: ("0x691f3431" + namehash(node).substring(2))
+	            }), 0);
 	            const addr = yield this.resolveName(name);
 	            if (addr != address) {
 	                return null;
 	            }
 	            return name;
+	        });
+	    }
+	    getAvatar(nameOrAddress) {
+	        return __awaiter$1(this, void 0, void 0, function* () {
+	            let resolver = null;
+	            if (isHexString(nameOrAddress)) {
+	                // Address; reverse lookup
+	                const address = this.formatter.address(nameOrAddress);
+	                const node = address.substring(2).toLowerCase() + ".addr.reverse";
+	                const resolverAddress = yield this._getResolver(node, "getAvatar");
+	                if (!resolverAddress) {
+	                    return null;
+	                }
+	                // Try resolving the avatar against the addr.reverse resolver
+	                resolver = new Resolver(this, resolverAddress, node);
+	                try {
+	                    const avatar = yield resolver.getAvatar();
+	                    if (avatar) {
+	                        return avatar.url;
+	                    }
+	                }
+	                catch (error) {
+	                    if (error.code !== Logger.errors.CALL_EXCEPTION) {
+	                        throw error;
+	                    }
+	                }
+	                // Try getting the name and performing forward lookup; allowing wildcards
+	                try {
+	                    // keccak("name(bytes32)")
+	                    const name = _parseString(yield this.call({
+	                        to: resolverAddress,
+	                        data: ("0x691f3431" + namehash(node).substring(2))
+	                    }), 0);
+	                    resolver = yield this.getResolver(name);
+	                }
+	                catch (error) {
+	                    if (error.code !== Logger.errors.CALL_EXCEPTION) {
+	                        throw error;
+	                    }
+	                    return null;
+	                }
+	            }
+	            else {
+	                // ENS name; forward lookup with wildcard
+	                resolver = yield this.getResolver(nameOrAddress);
+	                if (!resolver) {
+	                    return null;
+	                }
+	            }
+	            const avatar = yield resolver.getAvatar();
+	            if (avatar == null) {
+	                return null;
+	            }
+	            return avatar.url;
 	        });
 	    }
 	    perform(method, params) {
@@ -17039,18 +17515,46 @@
 	};
 	const logger$2 = new Logger(version$1);
 	const errorGas = ["call", "estimateGas"];
+	function spelunk(value) {
+	    if (value == null) {
+	        return null;
+	    }
+	    // These *are* the droids we're looking for.
+	    if (typeof (value.message) === "string" && value.message.match("reverted") && isHexString(value.data)) {
+	        return { message: value.message, data: value.data };
+	    }
+	    // Spelunk further...
+	    if (typeof (value) === "object") {
+	        for (const key in value) {
+	            const result = spelunk(value[key]);
+	            if (result) {
+	                return result;
+	            }
+	        }
+	        return null;
+	    }
+	    // Might be a JSON string we can further descend...
+	    if (typeof (value) === "string") {
+	        try {
+	            return spelunk(JSON.parse(value));
+	        }
+	        catch (error) { }
+	    }
+	    return null;
+	}
 	function checkError(method, error, params) {
 	    // Undo the "convenience" some nodes are attempting to prevent backwards
 	    // incompatibility; maybe for v6 consider forwarding reverts as errors
-	    if (method === "call" && error.code === Logger.errors.SERVER_ERROR) {
-	        const e = error.error;
-	        if (e && e.message.match("reverted") && isHexString(e.data)) {
-	            return e.data;
+	    if (method === "call") {
+	        const result = spelunk(error);
+	        if (result) {
+	            return result.data;
 	        }
-	        logger$2.throwError("missing revert data in call exception", Logger.errors.CALL_EXCEPTION, {
+	        logger$2.throwError("missing revert data in call exception; Transaction reverted without a reason string", Logger.errors.CALL_EXCEPTION, {
 	            error, data: "0x"
 	        });
 	    }
+	    // @TODO: Should we spelunk for message too?
 	    let message = error.message;
 	    if (error.code === Logger.errors.SERVER_ERROR && error.error && typeof (error.error.message) === "string") {
 	        message = error.error.message;
@@ -17064,25 +17568,25 @@
 	    message = (message || "").toLowerCase();
 	    const transaction = params.transaction || params.signedTransaction;
 	    // "insufficient funds for gas * price + value + cost(data)"
-	    if (message.match(/insufficient funds|base fee exceeds gas limit/)) {
+	    if (message.match(/insufficient funds|base fee exceeds gas limit/i)) {
 	        logger$2.throwError("insufficient funds for intrinsic transaction cost", Logger.errors.INSUFFICIENT_FUNDS, {
 	            error, method, transaction
 	        });
 	    }
 	    // "nonce too low"
-	    if (message.match(/nonce too low/)) {
+	    if (message.match(/nonce (is )?too low/i)) {
 	        logger$2.throwError("nonce has already been used", Logger.errors.NONCE_EXPIRED, {
 	            error, method, transaction
 	        });
 	    }
 	    // "replacement transaction underpriced"
-	    if (message.match(/replacement transaction underpriced/)) {
+	    if (message.match(/replacement transaction underpriced|transaction gas price.*too low/i)) {
 	        logger$2.throwError("replacement fee too low", Logger.errors.REPLACEMENT_UNDERPRICED, {
 	            error, method, transaction
 	        });
 	    }
 	    // "replacement transaction underpriced"
-	    if (message.match(/only replay-protected/)) {
+	    if (message.match(/only replay-protected/i)) {
 	        logger$2.throwError("legacy pre-eip-155 transactions not supported", Logger.errors.UNSUPPORTED_OPERATION, {
 	            error, method, transaction
 	        });
@@ -17241,6 +17745,13 @@
 	        return __awaiter(this, void 0, void 0, function* () {
 	            const data = ((typeof (message) === "string") ? toUtf8Bytes(message) : message);
 	            const address = yield this.getAddress();
+	            return yield this.provider.send("personal_sign", [hexlify(data), address.toLowerCase()]);
+	        });
+	    }
+	    _legacySignMessage(message) {
+	        return __awaiter(this, void 0, void 0, function* () {
+	            const data = ((typeof (message) === "string") ? toUtf8Bytes(message) : message);
+	            const address = yield this.getAddress();
 	            // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
 	            return yield this.provider.send("eth_sign", [address.toLowerCase(), hexlify(data)]);
 	        });
@@ -17355,7 +17866,7 @@
 	            if (chainId != null) {
 	                const getNetwork = getStatic(this.constructor, "getNetwork");
 	                try {
-	                    return getNetwork(BigNumber$1.from(chainId).toNumber());
+	                    return getNetwork(BigNumber.from(chainId).toNumber());
 	                }
 	                catch (error) {
 	                    return logger$2.throwError("could not detect network", Logger.errors.NETWORK_ERROR, {
@@ -17475,8 +17986,8 @@
 	            // is fair), so we delete type if it is 0 and a non-EIP-1559 network
 	            if (method === "call" || method === "estimateGas") {
 	                const tx = params.transaction;
-	                if (tx && tx.type != null && BigNumber$1.from(tx.type).isZero()) {
-	                    // If there are no EIP-1559 properties, it might be non-EIP-a559
+	                if (tx && tx.type != null && BigNumber.from(tx.type).isZero()) {
+	                    // If there are no EIP-1559 properties, it might be non-EIP-1559
 	                    if (tx.maxFeePerGas == null && tx.maxPriorityFeePerGas == null) {
 	                        const feeData = yield this.getFeeData();
 	                        if (feeData.maxFeePerGas == null && feeData.maxPriorityFeePerGas == null) {
@@ -17573,12 +18084,12 @@
 	        }
 	        checkProperties(transaction, allowed);
 	        const result = {};
-	        // Some nodes (INFURA ropsten; INFURA mainnet is fine) do not like leading zeros.
-	        ["gasLimit", "gasPrice", "type", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "value"].forEach(function (key) {
+	        // JSON-RPC now requires numeric values to be "quantity" values
+	        ["chainId", "gasLimit", "gasPrice", "type", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "value"].forEach(function (key) {
 	            if (transaction[key] == null) {
 	                return;
 	            }
-	            const value = hexValue(transaction[key]);
+	            const value = hexValue(BigNumber.from(transaction[key]));
 	            if (key === "gasLimit") {
 	                key = "gas";
 	            }
@@ -17602,12 +18113,6 @@
 	function buildWeb3LegacyFetcher(provider, sendFunc) {
 	    const fetcher = "Web3LegacyFetcher";
 	    return function (method, params) {
-	        // Metamask complains about eth_sign (and on some versions hangs)
-	        if (method == "eth_sign" && (provider.isMetaMask || provider.isStatus)) {
-	            // https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_sign
-	            method = "personal_sign";
-	            params = [params[1], params[0]];
-	        }
 	        const request = {
 	            method: method,
 	            params: params,
@@ -17654,12 +18159,6 @@
 	    return function (method, params) {
 	        if (params == null) {
 	            params = [];
-	        }
-	        // Metamask complains about eth_sign (and on some versions hangs)
-	        if (method == "eth_sign" && (provider.isMetaMask || provider.isStatus)) {
-	            // https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_sign
-	            method = "personal_sign";
-	            params = [params[1], params[0]];
 	        }
 	        const request = { method, params };
 	        this.emit("debug", {
@@ -17736,7 +18235,7 @@
 	    }
 	}
 
-	const version = "units/5.4.0";
+	const version = "units/5.6.0";
 
 	const logger = new Logger(version);
 	const names = [
@@ -17922,7 +18421,7 @@
 	  static __initStatic() {this.info = {
 	    name: 'Web3 Wallet',
 	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 446.42 376.77'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23828487;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M408.69,171.4H473.4V107.77a46.55,46.55,0,0,0-46.55-46.55H73.53A46.55,46.55,0,0,0,27,107.77v65.09H62.7L89.56,146a9.46,9.46,0,0,1,5.73-2.73h0l.41,0h78.59a47.2,47.2,0,1,1,82.63,39.56q-1.41,1.71-3,3.31t-3.31,3a47.21,47.21,0,0,1-76.31-26.9H100.21L73.34,189.07a9.43,9.43,0,0,1-5.73,2.73h0l-.41,0h-.07l-.48,0H27v74H55.83l18.25-18.24a9.39,9.39,0,0,1,5.73-2.74h0l.41,0h29.9a47.16,47.16,0,1,1,0,19H84.72L66.48,282.11a9.42,9.42,0,0,1-5.72,2.74h0l-.39,0H27V319H83.29a4,4,0,0,1,.49,0h.06l.41,0h0A9.41,9.41,0,0,1,90,321.78l28,28h57.66a47.2,47.2,0,1,1,81.48,40.9c-.6.67-1.22,1.32-1.86,2s-1.3,1.26-2,1.86a47.22,47.22,0,0,1-77.65-25.73H114.09a9.5,9.5,0,0,1-3.09-.52l-.08,0-.29-.11-.17-.07-.19-.08-.27-.12-.08,0a9.38,9.38,0,0,1-2.55-1.81l-28-28H27v53.46A46.55,46.55,0,0,0,73.53,438H426.86a46.55,46.55,0,0,0,46.54-46.55V327.82H408.69a78.22,78.22,0,0,1-78.21-78.21h0A78.22,78.22,0,0,1,408.69,171.4Z' transform='translate(-26.98 -61.22)'/%3E%3Cpath class='cls-1' d='M247.91,359.29a26,26,0,1,0-26,26A26,26,0,0,0,247.91,359.29Z' transform='translate(-26.98 -61.22)'/%3E%3Cpath class='cls-1' d='M246.55,152.71a26,26,0,1,0-26,26A26,26,0,0,0,246.55,152.71Z' transform='translate(-26.98 -61.22)'/%3E%3Ccircle class='cls-1' cx='129.39' cy='193.15' r='25.99'/%3E%3Cpath class='cls-1' d='M409.17,190h-.48a59.57,59.57,0,0,0-59.57,59.57h0a59.57,59.57,0,0,0,59.57,59.57h.48a59.58,59.58,0,0,0,59.58-59.57h0A59.58,59.58,0,0,0,409.17,190Zm14.45,90.61h-31l8.88-32.53a15.5,15.5,0,1,1,13.29,0Z' transform='translate(-26.98 -61.22)'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc']
+	    blockchains: ['ethereum', 'bsc', 'polygon']
 	  };}
 	  
 	  constructor () {
@@ -18063,7 +18562,7 @@
 	  static __initStatic() {this.info = {
 	    name: 'Coinbase',
 	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 488.96 488.96'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:url(%23linear-gradient);%7D.cls-2%7Bfill:%234361ad;%7D%3C/style%3E%3ClinearGradient id='linear-gradient' x1='250' y1='7.35' x2='250' y2='496.32' gradientTransform='matrix(1, 0, 0, -1, 0, 502)' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%233d5ba9'/%3E%3Cstop offset='1' stop-color='%234868b1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath class='cls-1' d='M250,5.68C114.87,5.68,5.52,115,5.52,250.17S114.87,494.65,250,494.65,494.48,385.29,494.48,250.17,385.13,5.68,250,5.68Zm0,387.54A143.06,143.06,0,1,1,393.05,250.17,143.11,143.11,0,0,1,250,393.22Z' transform='translate(-5.52 -5.68)'/%3E%3Cpath class='cls-2' d='M284.69,296.09H215.31a11,11,0,0,1-10.9-10.9V215.48a11,11,0,0,1,10.9-10.91H285a11,11,0,0,1,10.9,10.91v69.71A11.07,11.07,0,0,1,284.69,296.09Z' transform='translate(-5.52 -5.68)'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc'],
+	    blockchains: ['ethereum', 'bsc', 'polygon'],
 	    install: 'https://wallet.coinbase.com'
 	  };}
 	} Coinbase.__initStatic();
@@ -18073,7 +18572,7 @@
 	  static __initStatic() {this.info = {
 	    name: 'MetaMask',
 	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 485.93 450.56'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23828487;%7D.cls-2%7Bfill:%23e27726;stroke:%23e27726;%7D.cls-10,.cls-11,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8,.cls-9%7Bstroke-linecap:round;stroke-linejoin:round;%7D.cls-3%7Bfill:%23e37725;stroke:%23e37725;%7D.cls-4%7Bfill:%23d6c0b3;stroke:%23d6c0b3;%7D.cls-5%7Bfill:%23243447;stroke:%23243447;%7D.cls-6%7Bfill:%23cd6328;stroke:%23cd6328;%7D.cls-7%7Bfill:%23e37525;stroke:%23e37525;%7D.cls-8%7Bfill:%23f6851f;stroke:%23f6851f;%7D.cls-9%7Bfill:%23c1ae9e;stroke:%23c1ae9e;%7D.cls-10%7Bfill:%23171717;stroke:%23171717;%7D.cls-11%7Bfill:%23763e1a;stroke:%23763e1a;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M247.91,356.29a26,26,0,1,0-26,26A26,26,0,0,0,247.91,356.29Z' transform='translate(-7.97 -21.33)'/%3E%3Cpath class='cls-1' d='M246.55,149.71a26,26,0,1,0-26,26A26,26,0,0,0,246.55,149.71Z' transform='translate(-7.97 -21.33)'/%3E%3Ccircle class='cls-1' cx='148.4' cy='230.05' r='25.99'/%3E%3Cpolygon class='cls-2' points='461.28 0.5 272.06 141.03 307.05 58.12 461.28 0.5'/%3E%3Cpolygon class='cls-3' points='24.46 0.5 212.16 142.37 178.88 58.12 24.46 0.5'/%3E%3Cpolygon class='cls-3' points='393.2 326.26 342.81 403.47 450.63 433.14 481.63 327.97 393.2 326.26'/%3E%3Cpolygon class='cls-3' points='4.49 327.97 35.3 433.14 143.13 403.47 92.73 326.26 4.49 327.97'/%3E%3Cpolygon class='cls-3' points='137.04 195.8 107 241.25 214.06 246.01 210.26 130.96 137.04 195.8'/%3E%3Cpolygon class='cls-3' points='348.7 195.8 274.53 129.63 272.06 246.01 378.94 241.25 348.7 195.8'/%3E%3Cpolygon class='cls-3' points='143.13 403.47 207.41 372.09 151.88 328.73 143.13 403.47'/%3E%3Cpolygon class='cls-3' points='278.34 372.09 342.81 403.47 333.87 328.73 278.34 372.09'/%3E%3Cpolygon class='cls-4' points='342.81 403.47 278.34 372.09 283.47 414.12 282.9 431.81 342.81 403.47'/%3E%3Cpolygon class='cls-4' points='143.13 403.47 203.03 431.81 202.65 414.12 207.41 372.09 143.13 403.47'/%3E%3Cpolygon class='cls-5' points='203.98 300.97 150.35 285.18 188.2 267.88 203.98 300.97'/%3E%3Cpolygon class='cls-5' points='281.76 300.97 297.55 267.88 335.58 285.18 281.76 300.97'/%3E%3Cpolygon class='cls-6' points='143.13 403.47 152.25 326.26 92.73 327.97 143.13 403.47'/%3E%3Cpolygon class='cls-6' points='333.68 326.26 342.81 403.47 393.2 327.97 333.68 326.26'/%3E%3Cpolygon class='cls-6' points='378.94 241.25 272.06 246.01 281.95 300.97 297.74 267.88 335.77 285.18 378.94 241.25'/%3E%3Cpolygon class='cls-6' points='150.35 285.18 188.39 267.88 203.98 300.97 214.06 246.01 107 241.25 150.35 285.18'/%3E%3Cpolygon class='cls-7' points='107 241.25 151.88 328.73 150.35 285.18 107 241.25'/%3E%3Cpolygon class='cls-7' points='335.77 285.18 333.87 328.73 378.94 241.25 335.77 285.18'/%3E%3Cpolygon class='cls-7' points='214.06 246.01 203.98 300.97 216.53 365.82 219.38 280.43 214.06 246.01'/%3E%3Cpolygon class='cls-7' points='272.06 246.01 266.93 280.24 269.21 365.82 281.95 300.97 272.06 246.01'/%3E%3Cpolygon class='cls-8' points='281.95 300.97 269.21 365.82 278.34 372.09 333.87 328.73 335.77 285.18 281.95 300.97'/%3E%3Cpolygon class='cls-8' points='150.35 285.18 151.88 328.73 207.41 372.09 216.53 365.82 203.98 300.97 150.35 285.18'/%3E%3Cpolygon class='cls-9' points='282.9 431.81 283.47 414.12 278.72 409.94 207.02 409.94 202.65 414.12 203.03 431.81 143.13 403.47 164.05 420.58 206.45 450.06 279.29 450.06 321.89 420.58 342.81 403.47 282.9 431.81'/%3E%3Cpolygon class='cls-10' points='278.34 372.09 269.21 365.82 216.53 365.82 207.41 372.09 202.65 414.12 207.02 409.94 278.72 409.94 283.47 414.12 278.34 372.09'/%3E%3Cpolygon class='cls-11' points='469.27 150.16 485.43 72.57 461.28 0.5 278.34 136.28 348.7 195.8 448.16 224.9 470.22 199.23 460.71 192.38 475.92 178.5 464.13 169.37 479.35 157.77 469.27 150.16'/%3E%3Cpolygon class='cls-11' points='0.5 72.57 16.66 150.16 6.39 157.77 21.61 169.37 10.01 178.5 25.22 192.38 15.71 199.23 37.58 224.9 137.04 195.8 207.41 136.28 24.46 0.5 0.5 72.57'/%3E%3Cpolygon class='cls-8' points='448.16 224.9 348.7 195.8 378.94 241.25 333.87 328.73 393.2 327.97 481.63 327.97 448.16 224.9'/%3E%3Cpolygon class='cls-8' points='137.04 195.8 37.58 224.9 4.49 327.97 92.73 327.97 151.88 328.73 107 241.25 137.04 195.8'/%3E%3Cpolygon class='cls-8' points='272.06 246.01 278.34 136.28 307.24 58.12 178.88 58.12 207.41 136.28 214.06 246.01 216.34 280.62 216.53 365.82 269.21 365.82 269.59 280.62 272.06 246.01'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc'],
+	    blockchains: ['ethereum', 'bsc', 'polygon'],
 	    install: 'https://metamask.io/download.html'
 	  };}
 	} MetaMask.__initStatic();
@@ -18205,7 +18704,7 @@
 	  static __initStatic() {this.info = {
 	    name: 'WalletConnect',
 	    logo: "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 500 500' style='enable-background:new 0 0 500 500;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%235991CD;%7D%0A%3C/style%3E%3Cg id='Page-1'%3E%3Cg id='walletconnect-logo-alt'%3E%3Cpath id='WalletConnect' class='st0' d='M102.7,162c81.5-79.8,213.6-79.8,295.1,0l9.8,9.6c4.1,4,4.1,10.5,0,14.4L374,218.9 c-2,2-5.3,2-7.4,0l-13.5-13.2c-56.8-55.7-149-55.7-205.8,0l-14.5,14.1c-2,2-5.3,2-7.4,0L91.9,187c-4.1-4-4.1-10.5,0-14.4 L102.7,162z M467.1,229.9l29.9,29.2c4.1,4,4.1,10.5,0,14.4L362.3,405.4c-4.1,4-10.7,4-14.8,0c0,0,0,0,0,0L252,311.9 c-1-1-2.7-1-3.7,0h0l-95.5,93.5c-4.1,4-10.7,4-14.8,0c0,0,0,0,0,0L3.4,273.6c-4.1-4-4.1-10.5,0-14.4l29.9-29.2 c4.1-4,10.7-4,14.8,0l95.5,93.5c1,1,2.7,1,3.7,0c0,0,0,0,0,0l95.5-93.5c4.1-4,10.7-4,14.8,0c0,0,0,0,0,0l95.5,93.5 c1,1,2.7,1,3.7,0l95.5-93.5C456.4,225.9,463,225.9,467.1,229.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A",
-	    blockchains: ['ethereum', 'bsc']
+	    blockchains: ['ethereum', 'bsc', 'polygon']
 	  };}
 	  
 	  constructor() {
@@ -18468,7 +18967,7 @@
 	  static __initStatic() {this.info = {
 	    name: 'Coinbase',
 	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 488.96 488.96'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:url(%23linear-gradient);%7D.cls-2%7Bfill:%234361ad;%7D%3C/style%3E%3ClinearGradient id='linear-gradient' x1='250' y1='7.35' x2='250' y2='496.32' gradientTransform='matrix(1, 0, 0, -1, 0, 502)' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%233d5ba9'/%3E%3Cstop offset='1' stop-color='%234868b1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath class='cls-1' d='M250,5.68C114.87,5.68,5.52,115,5.52,250.17S114.87,494.65,250,494.65,494.48,385.29,494.48,250.17,385.13,5.68,250,5.68Zm0,387.54A143.06,143.06,0,1,1,393.05,250.17,143.11,143.11,0,0,1,250,393.22Z' transform='translate(-5.52 -5.68)'/%3E%3Cpath class='cls-2' d='M284.69,296.09H215.31a11,11,0,0,1-10.9-10.9V215.48a11,11,0,0,1,10.9-10.91H285a11,11,0,0,1,10.9,10.91v69.71A11.07,11.07,0,0,1,284.69,296.09Z' transform='translate(-5.52 -5.68)'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc'],
+	    blockchains: ['ethereum', 'bsc', 'polygon'],
 	    install: 'https://www.coinbase.com/wallet'
 	  };}
 	  

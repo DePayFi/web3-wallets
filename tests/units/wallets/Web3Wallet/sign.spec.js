@@ -3,9 +3,9 @@ import { Blockchain } from '@depay/web3-blockchains'
 import { getWallet, wallets } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
-describe('Ethereum generic Web3 Wallet', () => {
+describe('Generic Web3 Wallet', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

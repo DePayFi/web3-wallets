@@ -3,7 +3,7 @@ import { mock, resetMocks, trigger } from '@depay/web3-mock'
 
 describe('MetaMask', () => {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -77,7 +77,7 @@ describe('MetaMask', () => {
       })
 
       it('provides the blockchains that are supported by the wallet', () => {
-        expect(getWallet().blockchains).toEqual(['ethereum', 'bsc']);
+        expect(getWallet().blockchains).toEqual(['ethereum', 'bsc', 'polygon']);
       });
 
       it('provides a link to install the wallet', () => {
