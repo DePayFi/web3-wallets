@@ -1,5 +1,4 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { estimate } from './WalletConnect/estimate'
 import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnect/transaction'
 import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
@@ -27,12 +26,6 @@ class WalletConnect {
     this.connector = WalletConnect.instance || this.newWalletConnectInstance()
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
-        wallet: this,
-        transaction
-      })
-    }
-    this.estimate = (transaction)=> {
-      return estimate({
         wallet: this,
         transaction
       })

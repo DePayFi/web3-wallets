@@ -318,37 +318,6 @@ Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `con
 
 `failure: Promise`: Returns a promise that resolves once the transaction fails.
 
-### Estimations
-
-Allows you to estimate transactions before they happen to determine if they are possible and how much they will cost:
-
-```javascript
-let cost = await wallet.estimate({
-  blockchain: 'ethereum',
-  to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
-  method: 'route',
-  api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
-  params: {
-    path: ['0x1cBb83EbcD552D5EBf8131eF8c9CD9d9BAB342bC'],
-    amounts: ['160000000000000000', '160000000000000000', '1626096776'],
-    addresses: ['0x4e260bB2b25EC6F3A59B478fCDe5eD5B8D783B02'],
-    plugins: ['0x99F3F4685a7178F26EB4F4Ca8B75a1724F1577B9'],
-    data: []
-  },
-  value: 0
-}) // 22111100000
-```
-
-Returns the cost of the estimate, otherwise rejects if transaction is not executable.
-
-Rejects with 
-
-```javascript
-{ code: 'WRONG_NETWORK' }
-```
-
-in case wallet is connected to the wrong network.
-
 ### Signatures
 
 #### sign message

@@ -1,7 +1,7 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { ethers } from 'ethers'
-import { provider } from '@depay/web3-client'
+import { CONSTANTS } from '@depay/web3-constants'
 import { Transaction } from '../../Transaction'
+import { estimate, provider } from '@depay/web3-client'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
@@ -71,17 +71,12 @@ const executeSubmit = ({ transaction, wallet }) => {
 }
 
 const submitContractInteraction = async ({ transaction, wallet })=>{
-  let contract = new ethers.Contract(transaction.to, transaction.api)
-
-  let populatedTransaction = await contract.populateTransaction[transaction.method].apply(
-    null, transaction.getContractArguments({ contract })
-  )
-
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
     value: transaction.value?.toString(),
-    data: populatedTransaction.data
+    data: await transaction.getData(),
+    gas: (await estimate(transaction)).toString()
   })
 }
 
@@ -89,7 +84,8 @@ const submitSimpleTransfer = ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: transaction.value?.toString()
+    value: transaction.value?.toString(),
+    gas: CONSTANTS[transaction.blockchain].TRANSFER_GAS
   })
 }
 

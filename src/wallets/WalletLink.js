@@ -1,6 +1,5 @@
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk'
 import { Blockchain } from '@depay/web3-blockchains'
-import { estimate } from './WalletLink/estimate'
 import { ethers } from 'ethers'
 import { sendTransaction } from './WalletLink/transaction'
 
@@ -28,12 +27,6 @@ class WalletLink {
     this.connector = WalletLink.instance || this.newWalletLinkInstance()
     this.sendTransaction = (transaction)=>{
       return sendTransaction({
-        wallet: this,
-        transaction
-      })
-    }
-    this.estimate = (transaction)=> {
-      return estimate({
         wallet: this,
         transaction
       })

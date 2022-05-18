@@ -3,19 +3,23 @@ import { CONSTANTS } from '@depay/web3-constants'
 
 class Transaction {
 
-  constructor({ blockchain, from, nonce, to, api, method, params, value, sent, confirmed, failed }) {
+  constructor({ blockchain, from, to, value, api, method, params, sent, confirmed, failed }) {
 
+    // required
     this.blockchain = blockchain
     this.from = from
-    this.nonce = nonce
     this.to = to
+    this.value = Transaction.bigNumberify(value, blockchain)?.toString()
+
+    // optional
     this.api = api
     this.method = method
     this.params = params
-    this.value = Transaction.bigNumberify(value, blockchain)?.toString()
     this.sent = sent
     this.confirmed = confirmed
     this.failed = failed
+
+    // internal
     this._confirmed = false
     this._failed = false
   }
@@ -34,8 +38,8 @@ class Transaction {
     }
   }
 
-  getContractArguments ({ contract }) {
-    let fragment = contract.interface.fragments.find((fragment) => {
+  getContractArguments() {
+    let fragment = this.getContract().interface.fragments.find((fragment) => {
       return fragment.name == this.method
     })
 
@@ -48,6 +52,17 @@ class Transaction {
     } else {
       throw 'Contract params have wrong type!'
     }
+  }
+
+  getContract() {
+    return new ethers.Contract(this.to, this.api)
+  }
+
+  async getData() {
+    let populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
+      null, this.getContractArguments()
+    )
+    return populatedTransaction.data
   }
 
   confirmation() {

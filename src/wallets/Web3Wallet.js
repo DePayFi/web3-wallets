@@ -1,5 +1,4 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { estimate } from './Web3Wallet/estimate'
 import { ethers } from 'ethers'
 import { sendTransaction } from './Web3Wallet/transaction'
 
@@ -18,12 +17,6 @@ export default class Web3Wallet {
     this.install = this.constructor.info.install
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
-        wallet: this,
-        transaction
-      })
-    }
-    this.estimate = (transaction)=> {
-      return estimate({
         wallet: this,
         transaction
       })
