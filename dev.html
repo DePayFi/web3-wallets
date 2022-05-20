@@ -226,6 +226,33 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send simple BNB transfer into smart contract bsc</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Should have elavated gas limit.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleTransferBscIntoContract = async ()=> {
+                    console.log('sendSimpleTransferBscIntoContract')
+                    Web3Wallets.getWallet().sendTransaction({ 
+                      blockchain: "bsc",
+                      to: "0xb6c3ea7940bb9d99bc968d41e6fa06e07402ed43",
+                      from: await Web3Wallets.getWallet().account(),
+                      value: "1000000000000000"
+                    })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleTransferBscIntoContract()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Send BUSD token transfer bsc</h5>
               </div>
               <div class="px-4 pt-3">

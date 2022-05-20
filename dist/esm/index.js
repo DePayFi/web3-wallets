@@ -18649,12 +18649,12 @@ const submitContractInteraction$1 = async ({ transaction, wallet })=>{
   })
 };
 
-const submitSimpleTransfer$1 = ({ transaction, wallet })=>{
+const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
     value: _optionalChain$1([transaction, 'access', _4 => _4.value, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]),
-    gas: CONSTANTS[transaction.blockchain].TRANSFER_GAS
+    gas: (await estimate(transaction)).toString()
   })
 };
 

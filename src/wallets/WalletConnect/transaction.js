@@ -1,5 +1,4 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { CONSTANTS } from '@depay/web3-constants'
 import { Transaction } from '../../Transaction'
 import { estimate, provider } from '@depay/web3-client'
 
@@ -80,12 +79,12 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
   })
 }
 
-const submitSimpleTransfer = ({ transaction, wallet })=>{
+const submitSimpleTransfer = async ({ transaction, wallet })=>{
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
     value: transaction.value?.toString(),
-    gas: CONSTANTS[transaction.blockchain].TRANSFER_GAS
+    gas: (await estimate(transaction)).toString()
   })
 }
 
