@@ -77,6 +77,8 @@ class WalletConnect {
 
   async connect(options) {
     try {
+      window.localStorage.removeItem('walletconnect') // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
+
       if(this.connector == undefined){
         this.connector = this.newWalletConnectInstance()
       }
