@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { getWallet, wallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { provider } from '@depay/web3-client'
+import { provider, resetCache } from '@depay/web3-client'
 
 describe('sendTransaction with wallet connect', () => {
 
@@ -10,6 +10,7 @@ describe('sendTransaction with wallet connect', () => {
     describe(blockchain, ()=> {
 
       const accounts = ['0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045']
+      beforeEach(resetCache)
       afterEach(resetMocks)
       beforeEach(async ()=>{
         resetMocks()
