@@ -3,12 +3,12 @@ import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { sendTransaction } from './WalletLink/transaction'
 
-const setConnectedInstance = (value)=>{
-  window._connectedWalletLinkInstance = value
-}
-
 const getConnectedInstance = ()=>{
   return window._connectedWalletLinkInstance
+}
+
+const setConnectedInstance = (value)=>{
+  window._connectedWalletLinkInstance = value
 }
 
 class WalletLink {
@@ -19,7 +19,7 @@ class WalletLink {
     blockchains: ['ethereum', 'bsc', 'polygon'],
     install: 'https://www.coinbase.com/wallet'
   }
-  
+
   constructor() {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
@@ -159,8 +159,7 @@ class WalletLink {
   }
 }
 
-export {
-  WalletLink,
-  getConnectedInstance,
-  setConnectedInstance
-}
+WalletLink.getConnectedInstance = getConnectedInstance
+WalletLink.setConnectedInstance = setConnectedInstance
+
+export default WalletLink

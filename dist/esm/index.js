@@ -21938,13 +21938,14 @@ const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
 };
 
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+const getConnectedInstance$1 = ()=>{
+  return window._connectedWalletConnectInstance
+};
+
 const setConnectedInstance$1 = (value)=>{
   window._connectedWalletConnectInstance = value;
 };
 
-const getConnectedInstance$1 = ()=>{
-  return window._connectedWalletConnectInstance
-};
 
 class WalletConnect {
 
@@ -21953,7 +21954,7 @@ class WalletConnect {
     logo: "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 500 500' style='enable-background:new 0 0 500 500;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%235991CD;%7D%0A%3C/style%3E%3Cg id='Page-1'%3E%3Cg id='walletconnect-logo-alt'%3E%3Cpath id='WalletConnect' class='st0' d='M102.7,162c81.5-79.8,213.6-79.8,295.1,0l9.8,9.6c4.1,4,4.1,10.5,0,14.4L374,218.9 c-2,2-5.3,2-7.4,0l-13.5-13.2c-56.8-55.7-149-55.7-205.8,0l-14.5,14.1c-2,2-5.3,2-7.4,0L91.9,187c-4.1-4-4.1-10.5,0-14.4 L102.7,162z M467.1,229.9l29.9,29.2c4.1,4,4.1,10.5,0,14.4L362.3,405.4c-4.1,4-10.7,4-14.8,0c0,0,0,0,0,0L252,311.9 c-1-1-2.7-1-3.7,0h0l-95.5,93.5c-4.1,4-10.7,4-14.8,0c0,0,0,0,0,0L3.4,273.6c-4.1-4-4.1-10.5,0-14.4l29.9-29.2 c4.1-4,10.7-4,14.8,0l95.5,93.5c1,1,2.7,1,3.7,0c0,0,0,0,0,0l95.5-93.5c4.1-4,10.7-4,14.8,0c0,0,0,0,0,0l95.5,93.5 c1,1,2.7,1,3.7,0l95.5-93.5C456.4,225.9,463,225.9,467.1,229.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A",
     blockchains: ['ethereum', 'bsc', 'polygon']
   };}
-  
+
   constructor() {
     this.name = this.constructor.info.name;
     this.logo = this.constructor.info.logo;
@@ -22119,6 +22120,9 @@ class WalletConnect {
   }
 } WalletConnect.__initStatic();
 
+WalletConnect.getConnectedInstance = getConnectedInstance$1;
+WalletConnect.setConnectedInstance = setConnectedInstance$1;
+
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
@@ -22185,12 +22189,12 @@ const submitSimpleTransfer = ({ transaction, signer })=>{
   })
 };
 
-const setConnectedInstance = (value)=>{
-  window._connectedWalletLinkInstance = value;
-};
-
 const getConnectedInstance = ()=>{
   return window._connectedWalletLinkInstance
+};
+
+const setConnectedInstance = (value)=>{
+  window._connectedWalletLinkInstance = value;
 };
 
 class WalletLink {
@@ -22201,7 +22205,7 @@ class WalletLink {
     blockchains: ['ethereum', 'bsc', 'polygon'],
     install: 'https://www.coinbase.com/wallet'
   };}
-  
+
   constructor() {
     this.name = this.constructor.info.name;
     this.logo = this.constructor.info.logo;
@@ -22341,7 +22345,10 @@ class WalletLink {
   }
 } WalletLink.__initStatic();
 
-const wallets = {
+WalletLink.getConnectedInstance = getConnectedInstance;
+WalletLink.setConnectedInstance = setConnectedInstance;
+
+var wallets = {
   MetaMask,
   Coinbase,
   WindowEthereum,
@@ -22352,9 +22359,9 @@ const wallets = {
 const instances = {};
 
 const getWalletClass = function(){
-  if(getConnectedInstance$1()) {
+  if(wallets.WalletConnect.getConnectedInstance()) {
     return wallets.WalletConnect
-  } else if(getConnectedInstance()) {
+  } else if(wallets.WalletLink.getConnectedInstance()) {
     return wallets.WalletLink
   } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
     return wallets.MetaMask
@@ -22369,10 +22376,10 @@ const getWallet = function () {
   const walletClass = getWalletClass();
   const existingInstance = instances[walletClass];
 
-  if(getConnectedInstance$1()) {
-    return getConnectedInstance$1()
-  } else if(getConnectedInstance()) {
-    return getConnectedInstance()
+  if(wallets.WalletConnect.getConnectedInstance()) {
+    return wallets.WalletConnect.getConnectedInstance()
+  } else if(wallets.WalletLink.getConnectedInstance()) {
+    return wallets.WalletLink.getConnectedInstance()
   } else if(existingInstance) {
     return existingInstance
   } else if(walletClass) {

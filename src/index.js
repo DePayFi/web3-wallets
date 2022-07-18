@@ -1,48 +1,5 @@
-import Coinbase from './wallets/Coinbase'
-import MetaMask from './wallets/MetaMask'
-import WindowEthereum from './wallets/WindowEthereum'
-import { WalletConnect, getConnectedInstance as getConnectedWalletConnectInstance } from './wallets/WalletConnect'
-import { WalletLink, getConnectedInstance as getConnectedWalletLinkInstance } from './wallets/WalletLink'
-
-const wallets = {
-  MetaMask,
-  Coinbase,
-  WindowEthereum,
-  WalletConnect,
-  WalletLink
-}
-
-const instances = {}
-
-const getWalletClass = function(){
-  if(getConnectedWalletConnectInstance()) {
-    return wallets.WalletConnect
-  } else if(getConnectedWalletLinkInstance()) {
-    return wallets.WalletLink
-  } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
-    return wallets.MetaMask
-  } else if (typeof window.ethereum === 'object' && (window.ethereum.isCoinbaseWallet || window.ethereum.isWalletLink)) {
-    return wallets.Coinbase
-  } else if (typeof window.ethereum !== 'undefined') {
-    return wallets.WindowEthereum
-  }
-}
-
-const getWallet = function () {
-  const walletClass = getWalletClass()
-  const existingInstance = instances[walletClass]
-
-  if(getConnectedWalletConnectInstance()) {
-    return getConnectedWalletConnectInstance()
-  } else if(getConnectedWalletLinkInstance()) {
-    return getConnectedWalletLinkInstance()
-  } else if(existingInstance) {
-    return existingInstance
-  } else if(walletClass) {
-    instances[walletClass] = new walletClass()
-    return instances[walletClass]
-  }
-}
+import getWallet from './getWallet'
+import wallets from './wallets'
 
 const supported = [
   wallets.MetaMask,

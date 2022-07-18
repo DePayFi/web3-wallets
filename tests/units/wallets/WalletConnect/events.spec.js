@@ -1,5 +1,5 @@
 import { getWallet, wallets, supported } from 'src'
-import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletConnect'
+import WalletConnect from 'src/wallets/WalletConnect'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
@@ -15,10 +15,7 @@ describe('WalletConnect', () => {
         beforeEach(resetMocks)
         beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
         beforeEach(async ()=>{
-          if(connectedInstance) {
-            connectedInstance.connectedAccounts = []
-          }
-          setConnectedInstance(undefined)
+          WalletConnect.setConnectedInstance(undefined)
           mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect })
           await new wallets.WalletConnect().connect()
           expect(getWallet().name).toEqual('WalletConnect')
