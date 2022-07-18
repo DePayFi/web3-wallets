@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="https://depay.fi/favicon.png"/>
+    <title>Development</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5/dist/css/bootstrap.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" type="application/javascript"></script>
+    <script crossorigin src="https://unpkg.com/@depay/solana-web3.js@1"></script>
+    <script crossorigin src="https://unpkg.com/@depay/web3-blockchains@5"></script>
+    <script crossorigin src="https://unpkg.com/@depay/web3-constants@6"></script>
+    <script crossorigin src="https://unpkg.com/@depay/web3-client@9"></script>
+    <script crossorigin src="https://unpkg.com/@depay/walletconnect-v1@1"></script>
+    <script crossorigin src="https://unpkg.com/@depay/coinbase-wallet-sdk@1"></script>
+    <script src="dist/umd/index.js"></script>
+    <style>
+      .btn-primary {
+        color: #fff;
+        background-color: #ea357a !important;
+        border: 1px solid #ea357a !important;
+        padding: 0.35rem 1.2rem !important;
+        box-shadow: none;
+        outline: none;
+      }
+      .btn-primary:hover {
+        background-color: #db3071 !important;
+      }
+    </style>
+  </head>
+  <body style="background-color: #FAFAFA;">
+    <div class="container py-4">
+      
+      <div class="py-2 pb-3 text-center">
+        <a href="https://depay.fi" target="_blank">
+          <img alt="DePay Logo" class="navbar-logo shadow-sm" src="https://depay.fi/logo.svg" style="height: 50px; width: 50px; border-radius: 999px;"/>
+        </a>
+      </div>
+      
+      <div class="row px-2">
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Wallet Name</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Retrieves the name of the available wallet.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='alert(Web3Wallets.getWallet().name)'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Connect Wallet</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Connects to the available wallet.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.connectWallet = async function(){
+                    alert(await Web3Wallets.getWallet().connect() + " connected")
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.connectWallet()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Account changed event</h5>
+                <div class="px-4">
+                  <div class="text-secondary">Executes callback function in case account changes.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.setupAccountChanged = async function(){
+                    Web3Wallets.getWallet().on('account', (newAccount)=>{
+                      alert(newAccount)
+                    })
+                    alert('Now change the wallet account!')
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.setupAccountChanged()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Network changed event</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Executes callback function in case network changes.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.setupNetworkChanged = async function(){
+                    Web3Wallets.getWallet().on('network', (newNetwork)=>{
+                      alert(newNetwork)
+                    })
+                    alert('Now change the wallet network!')
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.setupNetworkChanged()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Disconnect event</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Executes callback function in case wallet disconnects.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.setupDisconnected = async function(){
+                    Web3Wallets.getWallet().on('disconnect', ()=>{
+                      alert('Disconnected')
+                    })
+                    alert('Now disconnect the wallet!')
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.setupDisconnected()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Wallet Debug</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Yields the entire window.ethereum.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='alert(Object.keys(window.ethereum))'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">WalletConnect connect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting WalletConnect.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='new Web3Wallets.wallets.WalletConnect().connect()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Coinbase WalletLink connect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting Coinbase WalletLink.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='new Web3Wallets.wallets.WalletLink().connect()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send simple BNB transfer bsc</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleTransferBsc = async ()=> {
+                    console.log('sendSimpleTransferBsc')
+                    Web3Wallets.getWallet().sendTransaction({ 
+                      blockchain: "bsc",
+                      to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
+                      from: await Web3Wallets.getWallet().account(),
+                      value: "1000000000000000",
+                      sent: function(transaction){ console.log("sent callack", transaction) },
+                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
+                      failed: function(transaction){ console.log("failed callack", transaction) } 
+                    })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleTransferBsc()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send simple BNB transfer into smart contract bsc</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Should have elavated gas limit.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleTransferBscIntoContract = async ()=> {
+                    console.log('sendSimpleTransferBscIntoContract')
+                    Web3Wallets.getWallet().sendTransaction({ 
+                      blockchain: "bsc",
+                      to: "0xb6c3ea7940bb9d99bc968d41e6fa06e07402ed43",
+                      from: await Web3Wallets.getWallet().account(),
+                      value: "1000000000000000"
+                    })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleTransferBscIntoContract()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send BUSD token transfer bsc</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendContractTransactionBsc = async ()=> {
+                    console.log('sendContractTransactionBsc')
+                    await Web3Wallets.getWallet().sendTransaction({ 
+                      blockchain: "bsc", 
+                      from: await Web3Wallets.getWallet().account(), 
+                      to: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", 
+                      method: "transfer", 
+                      params: ["0x317D875cA3B9f8d14f960486C0d1D1913be74e90", "1000000000000000000" ],
+                      api: [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}],
+                    })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendContractTransactionBsc()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Sign message</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test signing a msg through the connected wallet.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sign("This is a test message\n\n And a new line").then((signature)=>{console.log(signature)})'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>
