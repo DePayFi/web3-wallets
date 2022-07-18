@@ -1,6 +1,6 @@
-import Web3Wallet from './Web3Wallet'
+import WindowEthereum from './WindowEthereum'
 
-export default class Coinbase extends Web3Wallet {
+export default class Coinbase extends WindowEthereum {
 
   static info = {
     name: 'Coinbase',

@@ -1,6 +1,6 @@
-import Web3Wallet from './Web3Wallet'
+import WindowEthereum from './WindowEthereum'
 
-export default class MetaMask extends Web3Wallet {
+export default class MetaMask extends WindowEthereum {
 
   static info = {
     name: 'MetaMask',

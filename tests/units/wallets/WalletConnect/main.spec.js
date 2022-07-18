@@ -1,10 +1,11 @@
-import { getWallet, wallets, supported } from 'src'
 import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletConnect'
+import { getWallet, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('WalletConnect', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

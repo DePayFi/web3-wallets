@@ -1,13 +1,13 @@
 import Coinbase from './wallets/Coinbase'
 import MetaMask from './wallets/MetaMask'
-import Web3Wallet from './wallets/Web3Wallet'
+import WindowEthereum from './wallets/WindowEthereum'
 import { WalletConnect, getConnectedInstance as getConnectedWalletConnectInstance } from './wallets/WalletConnect'
 import { WalletLink, getConnectedInstance as getConnectedWalletLinkInstance } from './wallets/WalletLink'
 
 const wallets = {
   MetaMask,
   Coinbase,
-  Web3Wallet,
+  WindowEthereum,
   WalletConnect,
   WalletLink
 }
@@ -24,7 +24,7 @@ const getWalletClass = function(){
   } else if (typeof window.ethereum === 'object' && (window.ethereum.isCoinbaseWallet || window.ethereum.isWalletLink)) {
     return wallets.Coinbase
   } else if (typeof window.ethereum !== 'undefined') {
-    return wallets.Web3Wallet
+    return wallets.WindowEthereum
   }
 }
 
