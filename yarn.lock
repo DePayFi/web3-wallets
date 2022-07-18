@@ -975,6 +975,11 @@
   dependencies:
     "@coinbase/wallet-sdk" "^3.0.5"
 
+"@depay/solana-web3.js@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.9.0.tgz#5293164771da96baccc427683c4a7eba87b6deee"
+  integrity sha512-PCPpG4u8fG5AHcCyMPLUIt+909HqjeZvwEXJukqBVy/mYj/2raNeivH1o3uGyajJ9t1ayDlrviFNxNX8rrnVnA==
+
 "@depay/walletconnect-v1@^1.7.8":
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/@depay/walletconnect-v1/-/walletconnect-v1-1.7.8.tgz#87e33697ac143303c46675aa650f97a004a62579"
@@ -983,20 +988,20 @@
     "@walletconnect/client" "^1.7.8"
     "@walletconnect/qrcode-modal" "^1.7.8"
 
-"@depay/web3-blockchains@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-5.0.1.tgz#f0821b32fb5dedfa5d3707c862e71fc15dbad6a3"
-  integrity sha512-VP+i78HyAZamDxnrBUXAJAyubusbgDruDGKXKa0OnMQ+/1FT2gYn/DsTw+o/KFC/Vrc7JLk0FyUjygggm9S02Q==
+"@depay/web3-blockchains@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-5.0.2.tgz#d83ec94a781fa536b515d9776ef191c3681646df"
+  integrity sha512-rziOmQNjcENroas13cSn+/eoBDXfIu8gGV9+dpPUNIbhyLJ9wNr/hv7w1hLEXVfa1fVvhc4ORnO71uv+sZfk1A==
 
-"@depay/web3-client@^8.5.0":
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-8.5.0.tgz#b3f803d565818a20625a8e26bf1300a43ed254b7"
-  integrity sha512-9zKNmbxPZjDcF2UvHqREvDu4AbZyKGgcCC1kdqLbHvUSu37PQPI0ktPB5FqiX+Kd8T6/FIKmUHvOu6jntvZRxA==
+"@depay/web3-client@^9.1.1":
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-9.1.1.tgz#4571135b1ef0274aba7a02732c37ed781adff2d6"
+  integrity sha512-1jw7VBSanTAA8HI5XOtWaVP+AAt3YmnEvgBCaltaGb/Cbx/OIiknWAy0rLgMMzO7HeLJEpHE2OPiKF4wWvz7bg==
 
-"@depay/web3-constants@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.0.0.tgz#78d1eb5c1fc97a8b67f769a6b471a31cdb852db1"
-  integrity sha512-BlXhlSRbwUsPypyw7+Mndep6flnQNXLUdqpirrH0OCRRBRUS3l2Ta/XwIVaDpcgj8qmPtRQhEC1piTgni4zEpg==
+"@depay/web3-constants@^6.1.2":
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.1.2.tgz#93372170bb7617481bafe52985dea813a8b879b1"
+  integrity sha512-3UyDS3PwbdRY0+D4R76kK8mHY1pJ9e+iny80IBLSuBwcsAKFrVCXOOgSwa8hmUUaQm1JmLKcIpRB5FmRMIWvXg==
 
 "@depay/web3-mock@^11.11.0":
   version "11.11.0"
