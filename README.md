@@ -11,10 +11,13 @@ npm install --save @depay/web3-wallets
 ```
 
 ```javascript
-import { getWallet } from '@depay/web3-wallets'
+import { getWallets } from '@depay/web3-wallets'
 
-let wallet = getWallet()
+let wallets = getWallets()
+let wallet = wallets[0]
+
 wallet.name // MetaMask
+wallet.connect()
 ```
 
 ## Demo
@@ -55,22 +58,6 @@ This library supports the following wallets:
 
 ## Functionalities
 
-### getWallet
-
-`getWallet`: Returns either the currently already connected wallet or the one wallet the user has available.
-
-This returns `undefined` if the user has no or multiple wallets available. Use `getWallets` and ask the user which one to connect in this case.
-
-```javascript
-let wallet = getWallet();
-// <Wallet name='MetaMask'>
-```
-
-```javascript
-let wallet = getWallet();
-// `undefined` no wallets or multiple wallets detected.
-```
-
 ### getWallets
 
 `getWallets`: Returns an array of available/connectable wallets.
@@ -86,21 +73,21 @@ let wallets = getWallets();
 ```
 
 ```javascript
-{ getWallet, getWallets, wallets } from "@depay/web3-wallets"
+{ getWallets, wallets } from "@depay/web3-wallets"
 
-let wallet = getWallet()
+let foundWallets = getWallets()
 
-if(!wallet) {
-  let wallets = getWallets()
-
-  if(wallets.length > 1) {
-    let index = prompt('Which wallet do you want to connect?')
-    wallet = wallets[parseInt(index, 10)]
-  } else {
-    // Let the user choose:
-    // you can still try to connect via wallets.WalletConnect.connect()
-    // or wallets.WalletLink.connect()
-  }
+let wallet
+if(foundWallets.length == 1) {
+  wallet = foundWallets[0]
+} else if(foundWallets.length > 1) {
+  let index = prompt('Which wallet do you want to connect?')
+  wallet = foundWallets[parseInt(index, 10)]
+} else {
+  // Let the user choose:
+  // you can still try to connect via wallets.WalletConnect.connect()
+  // or wallets.WalletLink.connect()
+  wallet = wallets.WalletLink
 }
 ```
 
@@ -128,20 +115,12 @@ wallet.logo // 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl
 await wallet.account() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 ```
 
-### Get connected accounts
-
-`async accounts():array`: Gets all conncetd accounts (without prompting a connect screen). Returns `[]` if no account is connected.
-
-```javascript
-await wallet.accounts() // ['0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B']
-```
-
 ### Connect an account
 
 `async connect():array`: Connects accounts. Potentially opens wallet connect screen. Provides connected accounts in async return. If wallet fails to connect, also returns an empty array `[]`.
 
 ```javascript
-await wallet.connect() // ['0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B']
+await wallet.connect() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 ```
 
 ### Supported Blockchains
@@ -180,12 +159,6 @@ wallet.on('account', (newAccount)=>{
 #### Events
 
 `on('account', (newAccount)=>{})`: Triggers when user changes the connected/active wallet account.
-
-`on('accounts', (newAccounts)=>{})`: Triggers when user changes any connected wallet account.
-
-`on('network', (newNetwork)=>{})`: Triggers when user changes network of the connected wallet.
-
-`on('disconnect', ()=>{})`: Triggers when user disconnects wallet.
 
 #### Deregister wallet events
 
@@ -327,7 +300,7 @@ Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `con
 
 `params: object or array`: Params the transaction is passing to the contract method.
 
-`value: BigNumber`: Amount/value of the native token the transaction is forwarding as part of the interaction.
+`value: string`: Amount/value of the native token the transaction is forwarding as part of the interaction.
 
 `confirmation: Promise`: Returns a promise that resolves once the transaction confirms.
 

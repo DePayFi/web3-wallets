@@ -1,11 +1,13 @@
 import Coinbase from './wallets/Coinbase'
 import MetaMask from './wallets/MetaMask'
-import WindowEthereum from './wallets/WindowEthereum'
+import Phantom from './wallets/Phantom'
 import WalletConnect from './wallets/WalletConnect'
 import WalletLink from './wallets/WalletLink'
+import WindowEthereum from './wallets/WindowEthereum'
 
 export default {
   MetaMask,
+  Phantom,
   Coinbase,
   WindowEthereum,
   WalletConnect,

@@ -21,65 +21,6 @@ describe('WalletConnect', () => {
           expect(getWallet().name).toEqual('WalletConnect')
         })
 
-        it('register an event to be called back if walletConnect disconnects', async()=> {
-          let disconnectCalled
-          getWallet().on('disconnect', ()=>{
-            disconnectCalled = true
-          })
-          trigger('disconnect')
-          expect(disconnectCalled).toEqual(true)
-        })
-
-        it('allows to deregister an event to be called back if walletConnect disconnects', async()=> {
-          let disconnectCalled
-          let callback = getWallet().on('disconnect', ()=>{
-            disconnectCalled = true
-          })
-          getWallet().off('disconnect', callback)
-          trigger('disconnect')
-          expect(disconnectCalled).toEqual(undefined)
-        })
-
-        it('register an event to be called back if network changes', async()=> {
-          let newNetworkName
-          getWallet().on('network', (networkName)=>{
-            newNetworkName = networkName
-          })
-          trigger('session_update', [null, { params: [{ chainId: 1 }] }])
-          expect(newNetworkName).toEqual('ethereum')
-          trigger('session_update', [null, { params: [{ chainId: 56 }] }])
-          expect(newNetworkName).toEqual('bsc')
-        })
-
-        it('allows to deregister an event to be called back if network changes', async()=> {
-          let newNetworkName
-          let callback = getWallet().on('network', (networkName)=>{
-            newNetworkName = networkName
-          })
-          getWallet().off('network', callback)
-          trigger('session_update', [null, { params: [{ chainId: 1 }] }])
-          expect(newNetworkName).toEqual(undefined)
-        })
-
-        it('register an event to be called back if accounts change', async()=> {
-          let newAccounts
-          getWallet().on('accounts', (accounts)=>{
-            newAccounts = accounts
-          })
-          trigger('session_update', [null, { params: [{ accounts }] }])
-          expect(newAccounts).toEqual(accounts)
-        })
-
-        it('allows to deregister an event to be called back if accounts change', async()=> {
-          let newAccounts
-          let callback = getWallet().on('accounts', (accounts)=>{
-            newAccounts = accounts
-          })
-          getWallet().off('accounts', callback)
-          trigger('session_update', [null, { params: [{ accounts }] }])
-          expect(newAccounts).toEqual(undefined)
-        })
-
         it('register an event to be called back if account change', async()=> {
           let newAccount
           getWallet().on('account', (account)=>{

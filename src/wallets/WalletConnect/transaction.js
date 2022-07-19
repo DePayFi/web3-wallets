@@ -8,7 +8,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     throw({ code: 'WRONG_NETWORK' })
   }
-  await executeSubmit({ transaction, wallet }).then(async (tx)=>{
+  await submit({ transaction, wallet }).then(async (tx)=>{
     if (tx) {
       let blockchain = Blockchain.findByName(transaction.blockchain)
       transaction.id = tx
@@ -61,7 +61,7 @@ const retrieveTransaction = async (tx, blockchain)=>{
   return sentTransaction
 }
 
-const executeSubmit = ({ transaction, wallet }) => {
+const submit = ({ transaction, wallet }) => {
   if(transaction.method) {
     return submitContractInteraction({ transaction, wallet })
   } else {

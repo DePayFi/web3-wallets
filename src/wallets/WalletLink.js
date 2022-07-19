@@ -20,6 +20,8 @@ class WalletLink {
     install: 'https://www.coinbase.com/wallet'
   }
 
+  static isAvailable = ()=>{ return getConnectedInstance() != undefined }
+
   constructor() {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
@@ -43,11 +45,6 @@ class WalletLink {
     return this.connectedAccounts[0]
   }
 
-  async accounts() {
-    if(this.connectedAccounts == undefined) { return [] }
-    return this.connectedAccounts
-  }
-
   async connect(options) {
     let relay = await this.connector._relayProvider()
     relay.setConnectDisabled(false)
@@ -57,7 +54,7 @@ class WalletLink {
     }
     this.connectedAccounts = accounts
     this.connectedChainId = await this.connector.getChainId()
-    return accounts
+    return accounts[0]
   }
 
   async connectedTo(input) {
@@ -116,18 +113,6 @@ class WalletLink {
         internalCallback = (accounts) => callback(accounts[0])
         this.connector.on('accountsChanged', internalCallback)
         break
-      case 'accounts':
-        internalCallback = (accounts) => callback(accounts)
-        this.connector.on('accountsChanged', internalCallback)
-        break
-      case 'network':
-        internalCallback = (chainId) => callback(Blockchain.findById(chainId).name)
-        this.connector.on('chainChanged', internalCallback)
-        break
-      case 'disconnect':
-        internalCallback = callback
-        this.connector.on('disconnect', internalCallback)
-        break
     }
     return internalCallback
   }
@@ -136,15 +121,6 @@ class WalletLink {
     switch (event) {
       case 'account':
         this.connector.removeListener('accountsChanged', internalCallback)
-        break
-      case 'accounts':
-        this.connector.removeListener('accountsChanged', internalCallback)
-        break
-      case 'network':
-        this.connector.removeListener('chainChanged', internalCallback)
-        break
-      case 'disconnect':
-        this.connector.removeListener('disconnect', internalCallback)
         break
     }
     return internalCallback
