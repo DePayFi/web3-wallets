@@ -47,15 +47,15 @@ const sendTransaction = async ({ transaction, wallet })=> {
 }
 
 const submit = ({ transaction, wallet })=> {
-  if(transaction.method) {
-
+  if(transaction.instructions) {
+    return submitInstructions({ transaction, wallet })
   } else {
     return submitSimpleTransfer({ transaction, wallet })
   }
 }
 
 const submitSimpleTransfer = async ({ transaction, wallet })=> {
-  let fromPubkey = new PublicKey(transaction.from)
+  let fromPubkey = new PublicKey(await wallet.account())
   let toPubkey = new PublicKey(transaction.to)
   let recentBlockhash = (await provider(transaction.blockchain).getLatestBlockhash()).blockhash
   let transferTransaction = new SolanaTransaction({
@@ -69,6 +69,20 @@ const submitSimpleTransfer = async ({ transaction, wallet })=> {
       lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
     })
   )
+  return window.solana.signAndSendTransaction(transferTransaction)
+}
+
+const submitInstructions = async ({ transaction, wallet })=> {
+  let fromPubkey = new PublicKey(await wallet.account())
+  let recentBlockhash = (await provider(transaction.blockchain).getLatestBlockhash()).blockhash
+  let transferTransaction = new SolanaTransaction({
+    recentBlockhash,
+    feePayer: fromPubkey
+  })
+  transaction.instructions.forEach((instruction)=>{
+    transferTransaction.add(instruction)
+  })
+
   return window.solana.signAndSendTransaction(transferTransaction)
 }
 

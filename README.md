@@ -279,12 +279,6 @@ Available arguments for Solana blockchains:
 
 `blockchain: String`: Name of the blockchain e.g. 'solana'.
 
-`to String`: Address of the receiver.
-
-`value: Number or BigNumber as String`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
-
-`instructions: Array`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
-
 `sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
 
 `confirmed: Function (transaction)=>{}`: Callback to be executed if transaction has been confirmed once by the network.
@@ -294,6 +288,10 @@ Available arguments for Solana blockchains:
 ##### Solana: Simple value transfer
 
 e.g. send 0.01 SOL on Solana:
+
+`to String`: Address of the receiver.
+
+`value: Number or BigNumber as String`: Value of the transaction (only needed for simple SOL transfers).
 
 ```javascript
 
@@ -309,7 +307,26 @@ let sentTransaction = await wallet.sendTransaction({
 
 ##### Solana: Sign and send instructions
 
-TODO ....
+`instructions Array`: A set of TransactionInstructions
+
+e.g. Send 1 USDC:
+
+```javascript
+import { Token } from '@depay/web3-tokens'
+
+let sentTransaction = await wallet.sendTransaction({
+  blockchain: 'solana',
+  instructions: Token.solana.createTransferInstructions({
+    token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
+    amount: '1000000',
+    from: await wallet.account(),
+    to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxas'
+  }),
+  sent: function(transaction){},
+  confirmed: function(transaction){},
+  failed: function(transaction, error){}
+})
+```
 
 #### value
 

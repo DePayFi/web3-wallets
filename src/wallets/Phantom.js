@@ -1,8 +1,8 @@
 import { Blockchain } from '@depay/web3-blockchains'
+import { PublicKey } from '@depay/solana-web3.js'
 import { sendTransaction } from './Phantom/transaction'
 import { supported } from '../blockchains'
 
-let connectedAccountPubKey
 
 export default class Phantom {
 
@@ -29,15 +29,14 @@ export default class Phantom {
   }
 
   async account() {
-    if(connectedAccountPubKey) { return connectedAccountPubKey.toString() }
+    if(window.solana.publicKey) {return window.solana.publicKey.toString() }
     let { publicKey } = await window.solana.connect({ onlyIfTrusted: true })
-    return publicKey.toString()
+    if(publicKey){ return publicKey.toString() }
   }
 
   async connect() {
     if(!window?.solana) { return undefined }
     let { publicKey } = await window.solana.connect()
-    connectedAccountPubKey = publicKey
     return publicKey.toString()
   }
 

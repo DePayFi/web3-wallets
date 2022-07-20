@@ -13,6 +13,7 @@
     <script crossorigin src="https://unpkg.com/@depay/web3-client@9"></script>
     <script crossorigin src="https://unpkg.com/@depay/walletconnect-v1@1"></script>
     <script crossorigin src="https://unpkg.com/@depay/coinbase-wallet-sdk@1"></script>
+    <script crossorigin src="https://unpkg.com/@depay/web3-tokens@9"></script>
     <script src="tmp/index.dev.js"></script>
     <style>
       .btn-primary {
@@ -199,25 +200,30 @@
               <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Send Solana instruction(s)</h5>
                 <div class="px-4">
-                  <div class="text-secondary ">Here transfer 1 USDC</div>
+                  <div class="text-secondary ">e.g. transfer 1 USDC</div>
                 </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.sendSimpleSOLTransfer = async ()=> {
-                    console.log('sendSimpleSOLTransfer')
+                  window.sendUSDCSolana = async ()=> {
+                    console.log('sendUSDCSolana')
+                    let from = await window.wallet.account()
                     window.wallet.sendTransaction({
                       blockchain: "solana",
-                      to: "5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa",
-                      from: await window.wallet.account(),
-                      value: 0.01,
+                      from,
+                      instructions: await Web3Tokens.Token.solana.createTransferInstructions({
+                        token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
+                        amount: '1000000',
+                        from,
+                        to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
+                      }),
                       sent: function(transaction){ console.log("sent callback", transaction) },
                       confirmed: function(transaction){ console.log("confirmed callack", transaction) },
                       failed: function(transaction){ console.log("failed callack", transaction) } 
                     })
                   }
                 </script>
-                <button class='btn btn-primary' onClick='window.sendSimpleSOLTransfer()'>Try it</button>
+                <button class='btn btn-primary' onClick='window.sendUSDCSolana()'>Try it</button>
               </div>
             </div>
           </div>
@@ -236,7 +242,6 @@
                     Web3Wallets.getWallet().sendTransaction({ 
                       blockchain: "bsc",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
-                      from: await Web3Wallets.getWallet().account(),
                       value: "1000000000000000",
                       sent: function(transaction){ console.log("sent callack", transaction) },
                       confirmed: function(transaction){ console.log("confirmed callack", transaction) },
