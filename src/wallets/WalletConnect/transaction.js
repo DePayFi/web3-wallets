@@ -75,7 +75,8 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
     to: transaction.to,
     value: transaction.value?.toString(),
     data: await transaction.getData(),
-    gas: (await estimate(transaction)).toString()
+    gas: (await estimate(transaction)).toString(),
+    gasPrice: (await provider(transaction.blockchain).getGasPrice()).toString()
   })
 }
 
@@ -84,7 +85,8 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
     from: transaction.from,
     to: transaction.to,
     value: transaction.value?.toString(),
-    gas: (await estimate(transaction)).toString()
+    gas: (await estimate(transaction)).toString(),
+    gasPrice: (await provider(transaction.blockchain).getGasPrice()).toString()
   })
 }
 

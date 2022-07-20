@@ -21920,7 +21920,8 @@ const submitContractInteraction$1 = async ({ transaction, wallet })=>{
     to: transaction.to,
     value: _optionalChain$1([transaction, 'access', _ => _.value, 'optionalAccess', _2 => _2.toString, 'call', _3 => _3()]),
     data: await transaction.getData(),
-    gas: (await estimate(transaction)).toString()
+    gas: (await estimate(transaction)).toString(),
+    gasPrice: (await provider(transaction.blockchain).getGasPrice()).toString()
   })
 };
 
@@ -21929,7 +21930,8 @@ const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
     from: transaction.from,
     to: transaction.to,
     value: _optionalChain$1([transaction, 'access', _4 => _4.value, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]),
-    gas: (await estimate(transaction)).toString()
+    gas: (await estimate(transaction)).toString(),
+    gasPrice: (await provider(transaction.blockchain).getGasPrice()).toString()
   })
 };
 

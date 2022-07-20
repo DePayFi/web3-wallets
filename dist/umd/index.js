@@ -21923,7 +21923,8 @@
 	    to: transaction.to,
 	    value: _optionalChain$1([transaction, 'access', _ => _.value, 'optionalAccess', _2 => _2.toString, 'call', _3 => _3()]),
 	    data: await transaction.getData(),
-	    gas: (await web3Client.estimate(transaction)).toString()
+	    gas: (await web3Client.estimate(transaction)).toString(),
+	    gasPrice: (await web3Client.provider(transaction.blockchain).getGasPrice()).toString()
 	  })
 	};
 
@@ -21932,7 +21933,8 @@
 	    from: transaction.from,
 	    to: transaction.to,
 	    value: _optionalChain$1([transaction, 'access', _4 => _4.value, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]),
-	    gas: (await web3Client.estimate(transaction)).toString()
+	    gas: (await web3Client.estimate(transaction)).toString(),
+	    gasPrice: (await web3Client.provider(transaction.blockchain).getGasPrice()).toString()
 	  })
 	};
 
