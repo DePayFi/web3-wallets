@@ -2,10 +2,11 @@ import fetchMock from 'fetch-mock'
 import { Blockchain } from '@depay/web3-blockchains'
 import { getWallet, wallets } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('Generic Web3 Wallet', () => {
+describe('Generic Wallet', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -14,15 +15,15 @@ describe('Generic Web3 Wallet', () => {
         beforeEach(resetMocks)
 
         it('provides an accounts function that returns empty list of accounts', async () => {
-          expect(await new wallets.Web3Wallet().accounts()).toStrictEqual([])
+          expect(await new wallets.WindowEthereum().accounts()).toStrictEqual([])
         })
 
         it('provides an account function that returns undefined', async () => {
-          expect(await new wallets.Web3Wallet().account()).toStrictEqual(undefined)
+          expect(await new wallets.WindowEthereum().account()).toStrictEqual(undefined)
         })
 
         it('provides an connect function that returns empty list of accounts', async () => {
-          expect(await new wallets.Web3Wallet().connect()).toStrictEqual([])
+          expect(await new wallets.WindowEthereum().connect()).toStrictEqual([])
         })
       })
 
@@ -34,7 +35,7 @@ describe('Generic Web3 Wallet', () => {
 
         it('should detect any generic wallet integration that integrates window.ethereum', () => {
           mock(blockchain)
-          expect(getWallet().name).toBe('Web3 Wallet');
+          expect(getWallet().name).toBe('Wallet');
         });
 
         it('provides a connect function', async () => {

@@ -4,7 +4,7 @@ import { getWallet, wallets } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('WalletLink events', () => {
+describe('Generic Wallet', () => {
 
   supportedBlockchains.evm.forEach((blockchain)=>{
 
@@ -17,7 +17,7 @@ describe('WalletLink events', () => {
         beforeEach(()=>{
           resetMocks()
         })
-        beforeEach(()=>mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink }))
+        beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
         it('registers a callback and informs about wallet account change', async () => {
           let walletChangedTo;
@@ -48,7 +48,6 @@ describe('WalletLink events', () => {
 
           expect(walletChangedTo).toEqual(undefined)
         })
-
       })
     })
   })

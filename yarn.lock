@@ -975,6 +975,11 @@
   dependencies:
     "@coinbase/wallet-sdk" "^3.0.5"
 
+"@depay/solana-web3.js@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.13.0.tgz#78630d87a54b535f588ae94c0740b24188d9200c"
+  integrity sha512-x4hT4sEubmUV/Y4/RKCBxdVGdARvJ3Ij2RhW0wXiS/PmTiDSem8wSBAoQml7JufftjSCQeZWs8CIJx4wksGdFQ==
+
 "@depay/walletconnect-v1@^1.7.8":
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/@depay/walletconnect-v1/-/walletconnect-v1-1.7.8.tgz#87e33697ac143303c46675aa650f97a004a62579"
@@ -983,25 +988,30 @@
     "@walletconnect/client" "^1.7.8"
     "@walletconnect/qrcode-modal" "^1.7.8"
 
-"@depay/web3-blockchains@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-5.0.1.tgz#f0821b32fb5dedfa5d3707c862e71fc15dbad6a3"
-  integrity sha512-VP+i78HyAZamDxnrBUXAJAyubusbgDruDGKXKa0OnMQ+/1FT2gYn/DsTw+o/KFC/Vrc7JLk0FyUjygggm9S02Q==
+"@depay/web3-blockchains@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-5.0.2.tgz#d83ec94a781fa536b515d9776ef191c3681646df"
+  integrity sha512-rziOmQNjcENroas13cSn+/eoBDXfIu8gGV9+dpPUNIbhyLJ9wNr/hv7w1hLEXVfa1fVvhc4ORnO71uv+sZfk1A==
 
-"@depay/web3-client@^8.5.0":
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-8.5.0.tgz#b3f803d565818a20625a8e26bf1300a43ed254b7"
-  integrity sha512-9zKNmbxPZjDcF2UvHqREvDu4AbZyKGgcCC1kdqLbHvUSu37PQPI0ktPB5FqiX+Kd8T6/FIKmUHvOu6jntvZRxA==
+"@depay/web3-client@^9.2.0":
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-9.2.0.tgz#ed26ed582c7d53bd89331ee9ab07df813454e629"
+  integrity sha512-0PEt48Ukk1z6mvR90Lfy6r+Ts7FBQuHJCTfm6FjTIn4IWgvshDnDR9oadrUP/85vL3sDcAqGtF8H2AP4sNPHRg==
 
-"@depay/web3-constants@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.0.0.tgz#78d1eb5c1fc97a8b67f769a6b471a31cdb852db1"
-  integrity sha512-BlXhlSRbwUsPypyw7+Mndep6flnQNXLUdqpirrH0OCRRBRUS3l2Ta/XwIVaDpcgj8qmPtRQhEC1piTgni4zEpg==
+"@depay/web3-constants@^6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.2.1.tgz#32d1662d3febb4bc2edc297b26f581ebad7d1887"
+  integrity sha512-r1fTy1P4JQWdo+1UE1JmOjt4p7BFQSzTOE4Voqoo5asddJb8NUjNEc6pjB1TDaurp7yBJ3Jpsf+P18Mno3xZvg==
 
-"@depay/web3-mock@^11.11.0":
-  version "11.11.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-11.11.0.tgz#bca1f2600da6cecc7138a0acb6a61d475eb8d171"
-  integrity sha512-Ngaf2/sRiypqlW4WXzH4hVuFCTb2IhgxAb430/UfcmOFnmAEdGznd6aa9HgSAJ8HfIAW5isLvGyyQ1M+dmqgfA==
+"@depay/web3-mock@^13.6.5":
+  version "13.6.5"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.6.5.tgz#972679b5b10833c39a21943ba75dc2fcec64d5f7"
+  integrity sha512-50Zy+z1zQqcd0jg9DuZAE56vwjYo0V5l0Zz8wtBVL4WmKZgjQHn3xFEl9nBJBGusfBHev9ENal4GnZlsX4wGiw==
+
+"@depay/web3-tokens@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.2.1.tgz#7f76eb0623da7c6aa2417bdbe4ce77960a80e566"
+  integrity sha512-Ocjs0Wsh/gSEECqT0KiH+fpa9BgC/8u9Tkd+3MHT4pdr6npwQOL/+91ED25yhcd40/rKdgngc3UglzZZqVO7Yw==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -5226,17 +5236,17 @@ rollup-plugin-delete@^2.0.0:
   dependencies:
     del "^5.1.0"
 
-rollup-plugin-livereload@^2.0.0:
+rollup-plugin-livereload@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/rollup-plugin-livereload/-/rollup-plugin-livereload-2.0.5.tgz#4747fa292a2cceb0c972c573d71b3d66b4252b37"
   integrity sha512-vqQZ/UQowTW7VoiKEM5ouNW90wE5/GZLfdWuR0ELxyKOJUIaj+uismPZZaICU4DnWPVjnpCDDxEqwU7pcKY/PA==
   dependencies:
     livereload "^0.9.1"
 
-rollup-plugin-serve@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-1.1.0.tgz#0654a57021a21b903340c69940f7463706e8288d"
-  integrity sha512-pYkSsuA0/psKqhhictkJw1c2klya5b+LlCvipWqI9OE1aG2M97mRumZCbBlry5CMEOzYBBgSDgd1694sNbmyIw==
+rollup-plugin-serve@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-2.0.0.tgz#f5ac0d9740f8c30e8be353a780303838fa1dac0e"
+  integrity sha512-adII2hdsHyNftFhg4bx55B6ogZWmySEGtdqcqxwZQi3BryAnfzQ+xRb1/BLe3DR1lX9QxnpwtHbBCSULyXbMwA==
   dependencies:
     mime ">=2.4.6"
     opener "1"

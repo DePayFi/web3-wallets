@@ -1,10 +1,11 @@
 import { ethers } from 'ethers'
 import { getWallet } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail, replace } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('calls "confirmed" and "failed" even for replaced transactions', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

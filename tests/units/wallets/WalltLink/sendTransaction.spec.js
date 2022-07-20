@@ -2,10 +2,11 @@ import { ethers } from 'ethers'
 import { getWallet, wallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
 import { provider } from '@depay/web3-client'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('sendTransaction with wallet connect', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

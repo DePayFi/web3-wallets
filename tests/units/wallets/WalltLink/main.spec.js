@@ -1,11 +1,12 @@
-import { getWallet, wallets, supported } from 'src'
+import WalletLink from 'src/wallets/WalletLink'
 import { Blockchain } from '@depay/web3-blockchains'
-import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletLink'
+import { getWallet, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('Coinbase WalletLink', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -13,10 +14,7 @@ describe('Coinbase WalletLink', () => {
         
         beforeEach(resetMocks)
         beforeEach(async()=>{
-          if(connectedInstance) {
-            connectedInstance.connectedAccounts = []
-          }
-          setConnectedInstance(undefined)
+          WalletLink.setConnectedInstance(undefined)
           mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
         })
 

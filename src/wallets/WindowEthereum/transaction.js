@@ -10,7 +10,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   await transaction.prepare({ wallet })
   let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
   let signer = provider.getSigner(0)
-  await executeSubmit({ transaction, provider, signer }).then((sentTransaction)=>{
+  await submit({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash
       transaction.nonce = sentTransaction.nonce
@@ -44,7 +44,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   return transaction
 }
 
-const executeSubmit = ({ transaction, provider, signer }) => {
+const submit = ({ transaction, provider, signer }) => {
   if(transaction.method) {
     return submitContractInteraction({ transaction, signer, provider })
   } else {
