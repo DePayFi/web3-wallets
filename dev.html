@@ -170,7 +170,7 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Send simple SOL transfer on solana</h5>
+                <h5 class="px-4">Send simple SOL transfer on Solana</h5>
               </div>
               <div class="px-4 pt-3">
                 <script>
@@ -180,7 +180,37 @@
                       blockchain: "solana",
                       to: "5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa",
                       from: await window.wallet.account(),
-                      value: "1000000",
+                      value: 0.01,
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
+                      failed: function(transaction){ console.log("failed callack", transaction) } 
+                    })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleSOLTransfer()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send Solana instruction(s)</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Here transfer 1 USDC</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleSOLTransfer = async ()=> {
+                    console.log('sendSimpleSOLTransfer')
+                    window.wallet.sendTransaction({
+                      blockchain: "solana",
+                      to: "5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa",
+                      from: await window.wallet.account(),
+                      value: 0.01,
                       sent: function(transaction){ console.log("sent callback", transaction) },
                       confirmed: function(transaction){ console.log("confirmed callack", transaction) },
                       failed: function(transaction){ console.log("failed callack", transaction) } 

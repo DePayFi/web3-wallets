@@ -81,8 +81,7 @@ let wallet
 if(foundWallets.length == 1) {
   wallet = foundWallets[0]
 } else if(foundWallets.length > 1) {
-  let index = prompt('Which wallet do you want to connect?')
-  wallet = foundWallets[parseInt(index, 10)]
+  wallet = foundWallets[parseInt(prompt('Which wallet do you want to connect?'), 10)]
 } else {
   // Let the user choose:
   // you can still try to connect via wallets.WalletConnect.connect()
@@ -182,14 +181,79 @@ wallet.off('account', callback) // removes listener
 await wallet.switchTo('bsc')
 ```
 
-### Transactions
+### Transaction
 
-#### sendTransaction
+#### EVM: Transaction
 
-Sign and send a transaction through the connected wallet:
+Instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `confirmed` or `failed` callback) have the following format for EVM blockchains:
+
+`blockchain: string`: Blockchain the transaction belongs to.
+
+`id: string`: Unique identifier of the transaction, also known as transaction hash/signature, only populated if transaction has been submitted to the network.
+
+`url: string`: A url to display the transaction status in a browser on a blockchain explorer.
+
+`from: string`: Address the transaction is sent from.
+
+`nonce: Number`: The number of the sent transactions (from the given address).
+
+`to: string`: Address the transaction is interacting with.
+
+`api: array`: Api of a contract the transaction is interacting with.
+
+`method: string`: The method name of the contract the transaction is interacting with.
+
+`params: object or array`: Params the transaction is passing to the contract method.
+
+`value: string`: Amount/value of the native token the transaction is forwarding as part of the interaction.
+
+`confirmation: Promise`: Returns a promise that resolves once the transaction confirms.
+
+`failure: Promise`: Returns a promise that resolves once the transaction fails.
+
+### sendTransaction
+
+#### EVM: sendTransaction
+
+Available arguments for EVM blockchains:
+
+`blockchain: String`: Name of the blockchain e.g. 'ethereum'.
+
+`to String`: Address of the contract to be transacted with.
+
+`api: Array`: Api of the contract (e.g. abi for Ethereum).
+
+`method: String`: Name of the contract method to be called.
+
+`params: Object or Array`: Parameters passed to the method.
+
+`value: Number or BigNumber as String`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
+
+`sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
+
+`confirmed: Function (transaction)=>{}`: Callback to be executed if transaction has been confirmed once by the network.
+
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed to confirm on the network (aka reverted).
+
+##### EVM: Simple value transfer
+
+e.g. sending 0.01 ETH on Ethereum:
 
 ```javascript
 
+let sentTransaction = await wallet.sendTransaction({
+  blockchain: 'ethereum',
+  to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+  value: 0.01,
+  sent: function(transaction){},
+  confirmed: function(transaction){},
+  failed: function(transaction, error){}
+})
+```
+
+##### EVM: Smart contract interaction
+
+```javascript
 let sentTransaction = await wallet.sendTransaction({
   blockchain: 'ethereum',
   to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
@@ -205,44 +269,47 @@ let sentTransaction = await wallet.sendTransaction({
   value: "0",
   sent: function(transaction){},
   confirmed: function(transaction){},
-  failed: function(transaction){}
+  failed: function(transaction, error){}
 })
-
 ```
 
-or a simple value transfer:
+#### Solana: sendTransaction
+
+Available arguments for Solana blockchains:
+
+`blockchain: String`: Name of the blockchain e.g. 'solana'.
+
+`to String`: Address of the receiver.
+
+`value: Number or BigNumber as String`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
+
+`instructions: Array`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
+
+`sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
+
+`confirmed: Function (transaction)=>{}`: Callback to be executed if transaction has been confirmed once by the network.
+
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed to confirm on the network (aka reverted).
+
+##### Solana: Simple value transfer
+
+e.g. send 0.01 SOL on Solana:
 
 ```javascript
 
 let sentTransaction = await wallet.sendTransaction({
-  blockchain: 'ethereum',
-  to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
-  value: "1000000000000000",
+  blockchain: 'solana',
+  to: '2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1',
+  value: 0.01,
   sent: function(transaction){},
   confirmed: function(transaction){},
-  failed: function(transaction){}
+  failed: function(transaction, error){}
 })
-
-Arguments for `sendTransaction`:
-
 ```
-`blockchain: String`: Name of the blockchain e.g. 'ethereum'.
 
-`to String`: Address of the contract to be transacted with.
+##### Solana: Sign and send instructions
 
-`api: Array`: Api of the contract (e.g. abi for Ethereum).
-
-`method: String`: Name of the contract method to be called.
-
-`params: Object or Array`: Parameters passed to the method.
-
-`value: BigNumber`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
-
-`sent: Function`: Callback to be executed if transaction has been sent to the network.
-
-`confirmed: Function`: Callback to be executed if transaction has been confirmed once by the network.
-
-`failed: Function`: Callback to be executed if transaction failed to confirm on the network (aka reverted).
+TODO ....
 
 #### value
 
@@ -278,39 +345,7 @@ transaction.value // '1000000000000000000'
 
 in case wallet is connected to the wrong network and network cant be switched automatically.
 
-#### Transaction
-
-Returned instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `confirmed` or `failed` callback) have the following format:
-
-`blockchain: string`: Blockchain the transaction belongs to.
-
-`id: string`: Unique identifier of the transaction, also known as transaction hash, only populated if transaction has been submitted to the network.
-
-`url: string`: A url to display the transaction status in a browser on a blockchain explorer.
-
-`from: string`: Address the transaction is sent from.
-
-`nonce: Number`: The number of the sent transactions (from the given address).
-
-`to: string`: Address the transaction is interacting with.
-
-`api: array`: Api of a contract the transaction is interacting with.
-
-`method: string`: The method name of the contract the transaction is interacting with.
-
-`params: object or array`: Params the transaction is passing to the contract method.
-
-`value: string`: Amount/value of the native token the transaction is forwarding as part of the interaction.
-
-`confirmation: Promise`: Returns a promise that resolves once the transaction confirms.
-
-`failure: Promise`: Returns a promise that resolves once the transaction fails.
-
-### Signatures
-
-#### sign message
-
-`web3-wallets` allows you to sign a personal message:
+### Sign messages
 
 ```javascript
 let signature = await wallet.sign("This is a message to be signed")

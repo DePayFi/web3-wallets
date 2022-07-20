@@ -1,5 +1,5 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { Connection, Transaction as SolanaTransaction, SystemProgram, PublicKey } from '@depay/solana-web3.js'
+import { Transaction as SolanaTransaction, SystemProgram, PublicKey } from '@depay/solana-web3.js'
 import { provider } from '@depay/web3-client'
 import { Transaction } from '../../Transaction'
 
@@ -66,7 +66,7 @@ const submitSimpleTransfer = async ({ transaction, wallet })=> {
     SystemProgram.transfer({
       fromPubkey,
       toPubkey,
-      lamports: parseInt(transaction.value, 10)
+      lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
     })
   )
   return window.solana.signAndSendTransaction(transferTransaction)
