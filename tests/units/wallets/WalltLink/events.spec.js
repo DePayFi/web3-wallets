@@ -1,50 +1,54 @@
 import fetchMock from 'fetch-mock'
 import { Blockchain } from '@depay/web3-blockchains'
-import { getWallet, wallets } from 'src'
+import { getWallets, wallets } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('WalletLink events', () => {
+describe('WalletLink: events', () => {
 
   supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
+      let wallet
 
       describe('with supported wallet connected', ()=>{
 
-        const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-        beforeEach(()=>{
-          resetMocks()
+        const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
+        beforeEach(()=>resetMocks())
+        beforeEach(async ()=>{
+          mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink, accounts: { return: [account] }})
+          await new wallets.WalletLink().connect()
+          wallet = getWallets()[0]
+          expect(wallet.name).toEqual('Coinbase')
         })
-        beforeEach(()=>mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink }))
 
         it('registers a callback and informs about wallet account change', async () => {
-          let walletChangedTo;
+          let walletChangedTo
 
           mock(blockchain)
 
-          getWallet().on('account', (newAccount)=>{
-            walletChangedTo = newAccount;
+          wallet.on('account', (newAccount)=>{
+            walletChangedTo = newAccount
           })
 
-          trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
+          trigger('accountsChanged', [account])
 
-          expect(walletChangedTo).toEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045')
+          expect(walletChangedTo).toEqual(account)
         })
 
         it('allows to deregisters account change event', async () => {
-          let walletChangedTo;
+          let walletChangedTo
 
           mock(blockchain)
 
-          let callback = getWallet().on('account', (newAccount)=>{
-            walletChangedTo = newAccount;
+          let callback = wallet.on('account', (newAccount)=>{
+            walletChangedTo = newAccount
           })
 
-          getWallet().off('account', callback)
+          wallet.off('account', callback)
 
-          trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
+          trigger('accountsChanged', [account])
 
           expect(walletChangedTo).toEqual(undefined)
         })

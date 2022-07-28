@@ -1,80 +1,15 @@
+import WindowSolana from './WindowSolana'
 import { Blockchain } from '@depay/web3-blockchains'
 import { PublicKey } from '@depay/solana-web3.js'
-import { sendTransaction } from './Phantom/transaction'
 import { supported } from '../blockchains'
 
-
-export default class Phantom {
+export default class Phantom extends WindowSolana {
 
   static info = {
     name: 'Phantom',
-    logo: '<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="64" cy="64" r="64" fill="url(#paint0_linear)"/><path d="M110.584 64.9142H99.142C99.142 41.7651 80.173 23 56.7724 23C33.6612 23 14.8716 41.3057 14.4118 64.0583C13.936 87.577 36.241 108 60.0186 108H63.0094C83.9723 108 112.069 91.7667 116.459 71.9874C117.27 68.3413 114.358 64.9142 110.584 64.9142ZM39.7689 65.9454C39.7689 69.0411 37.2095 71.5729 34.0802 71.5729C30.9509 71.5729 28.3916 69.0399 28.3916 65.9454V56.8414C28.3916 53.7457 30.9509 51.2139 34.0802 51.2139C37.2095 51.2139 39.7689 53.7457 39.7689 56.8414V65.9454ZM59.5224 65.9454C59.5224 69.0411 56.9631 71.5729 53.8338 71.5729C50.7045 71.5729 48.1451 69.0399 48.1451 65.9454V56.8414C48.1451 53.7457 50.7056 51.2139 53.8338 51.2139C56.9631 51.2139 59.5224 53.7457 59.5224 56.8414V65.9454Z" fill="url(#paint1_linear)"/><defs><linearGradient id="paint0_linear" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse"><stop stop-color="#534BB1"/><stop offset="1" stop-color="#551BF9"/></linearGradient><linearGradient id="paint1_linear" x1="65.4998" y1="23" x2="65.4998" y2="108" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0.82"/></linearGradient></defs></svg>',
+    logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iNjQiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz48cGF0aCBkPSJNMTEwLjU4NCA2NC45MTQySDk5LjE0MkM5OS4xNDIgNDEuNzY1MSA4MC4xNzMgMjMgNTYuNzcyNCAyM0MzMy42NjEyIDIzIDE0Ljg3MTYgNDEuMzA1NyAxNC40MTE4IDY0LjA1ODNDMTMuOTM2IDg3LjU3NyAzNi4yNDEgMTA4IDYwLjAxODYgMTA4SDYzLjAwOTRDODMuOTcyMyAxMDggMTEyLjA2OSA5MS43NjY3IDExNi40NTkgNzEuOTg3NEMxMTcuMjcgNjguMzQxMyAxMTQuMzU4IDY0LjkxNDIgMTEwLjU4NCA2NC45MTQyWk0zOS43Njg5IDY1Ljk0NTRDMzkuNzY4OSA2OS4wNDExIDM3LjIwOTUgNzEuNTcyOSAzNC4wODAyIDcxLjU3MjlDMzAuOTUwOSA3MS41NzI5IDI4LjM5MTYgNjkuMDM5OSAyOC4zOTE2IDY1Ljk0NTRWNTYuODQxNEMyOC4zOTE2IDUzLjc0NTcgMzAuOTUwOSA1MS4yMTM5IDM0LjA4MDIgNTEuMjEzOUMzNy4yMDk1IDUxLjIxMzkgMzkuNzY4OSA1My43NDU3IDM5Ljc2ODkgNTYuODQxNFY2NS45NDU0Wk01OS41MjI0IDY1Ljk0NTRDNTkuNTIyNCA2OS4wNDExIDU2Ljk2MzEgNzEuNTcyOSA1My44MzM4IDcxLjU3MjlDNTAuNzA0NSA3MS41NzI5IDQ4LjE0NTEgNjkuMDM5OSA0OC4xNDUxIDY1Ljk0NTRWNTYuODQxNEM0OC4xNDUxIDUzLjc0NTcgNTAuNzA1NiA1MS4yMTM5IDUzLjgzMzggNTEuMjEzOUM1Ni45NjMxIDUxLjIxMzkgNTkuNTIyNCA1My43NDU3IDU5LjUyMjQgNTYuODQxNFY2NS45NDU0WiIgZmlsbD0idXJsKCNwYWludDFfbGluZWFyKSIvPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQwX2xpbmVhciIgeDE9IjY0IiB5MT0iMCIgeDI9IjY0IiB5Mj0iMTI4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzUzNEJCMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzU1MUJGOSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJwYWludDFfbGluZWFyIiB4MT0iNjUuNDk5OCIgeTE9IjIzIiB4Mj0iNjUuNDk5OCIgeTI9IjEwOCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IndoaXRlIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSJ3aGl0ZSIgc3RvcC1vcGFjaXR5PSIwLjgyIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+Cg=',
     blockchains: supported.solana
   }
 
-  static isAvailable = ()=>{ 
-    return window?.solana?.isPhantom
-  }
-  
-  constructor () {
-    this.name = this.constructor.info.name
-    this.logo = this.constructor.info.logo
-    this.blockchains = this.constructor.info.blockchains
-    this.sendTransaction = (transaction)=>{ 
-      return sendTransaction({
-        wallet: this,
-        transaction
-      })
-    }
-  }
-
-  async account() {
-    if(window.solana.publicKey) {return window.solana.publicKey.toString() }
-    let { publicKey } = await window.solana.connect({ onlyIfTrusted: true })
-    if(publicKey){ return publicKey.toString() }
-  }
-
-  async connect() {
-    if(!window?.solana) { return undefined }
-    let { publicKey } = await window.solana.connect()
-    return publicKey.toString()
-  }
-
-  on(event, callback) {
-    let internalCallback
-    switch (event) {
-      case 'account':
-        internalCallback = (publicKey) => callback(publicKey?.toString())
-        window.solana.on('accountChanged', internalCallback)
-        break
-    }
-    return internalCallback
-  }
-
-  off(event, internalCallback) {
-    switch (event) {
-      case 'account':
-        window.solana.off('accountChanged', internalCallback)
-        break
-    }
-    return internalCallback
-  }
-
-  async connectedTo(input) {
-    return input == 'solana'
-  }
-
-  addNetwork(blockchainName) {
-    return Promise.reject('Adding networks is not supported by Phantom!')
-  }
-
-  switchTo(blockchainName) {
-    return Promise.reject('Switching networks is not supported by Phantom!')
-  }
-
-  async sign(message) {
-    const encodedMessage = new TextEncoder().encode(message)
-    const signedMessage = await window.solana.signMessage(encodedMessage, "utf8")
-    return JSON.stringify(signedMessage.signature)
-  }
+  static isAvailable = ()=>{ return window?.solana?.isPhantom }
 }

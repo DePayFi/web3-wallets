@@ -17,8 +17,8 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
       sentTransaction.wait(1).then(() => {
-        transaction._confirmed = true
-        if (transaction.confirmed) transaction.confirmed(transaction)
+        transaction._succeeded = true
+        if (transaction.succeeded) transaction.succeeded(transaction)
       }).catch((error)=>{
         if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
           if(error.replacement && error.replacement.hash) {
@@ -26,8 +26,8 @@ const sendTransaction = async ({ transaction, wallet })=> {
             transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
           }
           if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
-            transaction._confirmed = true
-            if (transaction.confirmed) transaction.confirmed(transaction)
+            transaction._succeeded = true
+            if (transaction.succeeded) transaction.succeeded(transaction)
           } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
             transaction._failed = true
             if(transaction.failed) transaction.failed(transaction, error)  

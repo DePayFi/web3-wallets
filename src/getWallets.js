@@ -9,7 +9,11 @@ const getWallets = ()=>{
     let wallet = wallets[key]
     if(wallet.isAvailable()) {
       if(!instances[wallet]) {
-        instances[wallet] = new wallet
+        if(wallet.getConnectedInstance && wallet.getConnectedInstance()) {
+          instances[wallet] = wallet.getConnectedInstance()
+        } else {
+          instances[wallet] = new wallet
+        }
       }
       availableWallets.push(instances[wallet])
     }

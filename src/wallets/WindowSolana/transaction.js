@@ -7,36 +7,35 @@ const POLL_SPEED = 500 // 0.5 seconds
 const MAX_POLLS = 240 // 120 seconds
 
 const sendTransaction = async ({ transaction, wallet })=> {
+  transaction = new Transaction(transaction)
+  await transaction.prepare({ wallet })
   await submit({ transaction, wallet }).then(({ signature })=>{
     if(signature) {
       transaction.id = signature
       transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
-      console.log('transaction.url', transaction.url)
       if (transaction.sent) transaction.sent(transaction)
 
       let count = 0
       const interval = setInterval(async ()=> {
         count++
-        if(count >= MAX_POLLS) { 
-          return clearInterval(interval) 
-        }
+        if(count >= MAX_POLLS) { return clearInterval(interval) }
 
         const { value } = await provider(transaction.blockchain).getSignatureStatus(signature)
         const confirmationStatus = value?.confirmationStatus
         if(confirmationStatus) {
-          const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
+          const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized'
           if (hasReachedSufficientCommitment) {
-            transaction._confirmed = true
-            if (transaction.confirmed) transaction.confirmed(transaction)
+            if(value.err) {
+              transaction._failed = true
+              const confirmedTransaction = await provider(transaction.blockchain).getConfirmedTransaction(signature)
+              const failedReason = confirmedTransaction?.meta?.logMessages ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null
+              if(transaction.failed) transaction.failed(transaction, failedReason)
+            } else {
+              transaction._succeeded = true
+              if (transaction.succeeded) transaction.succeeded(transaction)
+            }
             return clearInterval(interval)
           }
-        }
-
-        const confirmedTransaction = await provider(transaction.blockchain).getConfirmedTransaction(signature)
-        if(confirmedTransaction?.meta?.err) {
-          transaction._failed = true
-          if(transaction.failed) transaction.failed(transaction, confirmedTransaction?.meta?.logMessages?.findLast(()=>true))
-          return clearInterval(interval)
         }
       }, POLL_SPEED)
     } else {

@@ -185,7 +185,7 @@ await wallet.switchTo('bsc')
 
 #### EVM: Transaction
 
-Instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `confirmed` or `failed` callback) have the following format for EVM blockchains:
+Instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `succeeded` or `failed` callback) have the following format for EVM blockchains:
 
 `blockchain: string`: Blockchain the transaction belongs to.
 
@@ -231,9 +231,9 @@ Available arguments for EVM blockchains:
 
 `sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
 
-`confirmed: Function (transaction)=>{}`: Callback to be executed if transaction has been confirmed once by the network.
+`succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
 
-`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed to confirm on the network (aka reverted).
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
 
 ##### EVM: Simple value transfer
 
@@ -246,7 +246,7 @@ let sentTransaction = await wallet.sendTransaction({
   to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
   value: 0.01,
   sent: function(transaction){},
-  confirmed: function(transaction){},
+  succeeded: function(transaction){},
   failed: function(transaction, error){}
 })
 ```
@@ -268,7 +268,7 @@ let sentTransaction = await wallet.sendTransaction({
   },
   value: "0",
   sent: function(transaction){},
-  confirmed: function(transaction){},
+  succeeded: function(transaction){},
   failed: function(transaction, error){}
 })
 ```
@@ -281,9 +281,9 @@ Available arguments for Solana blockchains:
 
 `sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
 
-`confirmed: Function (transaction)=>{}`: Callback to be executed if transaction has been confirmed once by the network.
+`succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
 
-`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed to confirm on the network (aka reverted).
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
 
 ##### Solana: Simple value transfer
 
@@ -300,7 +300,7 @@ let sentTransaction = await wallet.sendTransaction({
   to: '2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1',
   value: 0.01,
   sent: function(transaction){},
-  confirmed: function(transaction){},
+  succeeded: function(transaction){},
   failed: function(transaction, error){}
 })
 ```
@@ -323,7 +323,7 @@ let sentTransaction = await wallet.sendTransaction({
     to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxas'
   }),
   sent: function(transaction){},
-  confirmed: function(transaction){},
+  succeeded: function(transaction){},
   failed: function(transaction, error){}
 })
 ```
@@ -367,6 +367,12 @@ in case wallet is connected to the wrong network and network cant be switched au
 ```javascript
 let signature = await wallet.sign("This is a message to be signed")
 ```
+
+## Logos
+
+### Conversion
+
+Use https://codebeautify.org
 
 ## Development
 
