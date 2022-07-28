@@ -4,7 +4,7 @@ import { getWallets, wallets } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('WalletLink: events', () => {
+describe('window.ethereum wallet events', () => {
 
   supportedBlockchains.evm.forEach((blockchain)=>{
 
@@ -16,43 +16,40 @@ describe('WalletLink: events', () => {
 
         const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
         beforeEach(()=>resetMocks())
-        beforeEach(async ()=>{
-          mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink, accounts: { return: [account] }})
-          await new wallets.WalletLink().connect()
+        beforeEach(()=>{
+          mock({ blockchain, accounts: { return: [account] } })
           wallet = getWallets()[0]
-          expect(wallet.name).toEqual('Coinbase')
         })
 
         it('registers a callback and informs about wallet account change', async () => {
-          let walletChangedTo
+          let walletChangedTo;
 
           mock(blockchain)
 
           wallet.on('account', (newAccount)=>{
-            walletChangedTo = newAccount
+            walletChangedTo = newAccount;
           })
 
-          trigger('accountsChanged', [account])
+          trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
 
-          expect(walletChangedTo).toEqual(account)
+          expect(walletChangedTo).toEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045')
         })
 
         it('allows to deregisters account change event', async () => {
-          let walletChangedTo
+          let walletChangedTo;
 
           mock(blockchain)
 
           let callback = wallet.on('account', (newAccount)=>{
-            walletChangedTo = newAccount
+            walletChangedTo = newAccount;
           })
 
           wallet.off('account', callback)
 
-          trigger('accountsChanged', [account])
+          trigger('accountsChanged', ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
 
           expect(walletChangedTo).toEqual(undefined)
         })
-
       })
     })
   })

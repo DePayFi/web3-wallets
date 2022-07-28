@@ -13,8 +13,7 @@
     <script crossorigin src="https://unpkg.com/@depay/web3-client@9"></script>
     <script crossorigin src="https://unpkg.com/@depay/walletconnect-v1@1"></script>
     <script crossorigin src="https://unpkg.com/@depay/coinbase-wallet-sdk@1"></script>
-    <script crossorigin src="https://unpkg.com/@depay/web3-tokens@9"></script>
-    <script src="tmp/index.dev.js"></script>
+    <script src="dist/umd/index.js"></script>
     <style>
       .btn-primary {
         color: #fff;
@@ -44,14 +43,13 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">getWallets()</h5>
+                <h5 class="px-4">Wallet Name</h5>
                 <div class="px-4">
-                  <div class="text-secondary ">Retrieve all available wallets.</div>
-                  <div class="text-secondary ">(check console.log)</div>
+                  <div class="text-secondary ">Retrieves the name of the available wallet.</div>
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='console.log(Web3Wallets.getWallets())'>Try it</button>
+                <button class='btn btn-primary' onClick='alert(Web3Wallets.getWallet().name)'>Try it</button>
               </div>
             </div>
           </div>
@@ -61,95 +59,18 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">wallet.connect()</h5>
+                <h5 class="px-4">Connect Wallet</h5>
                 <div class="px-4">
-                  <div class="text-secondary pb-2">Connect detected wallet and yield connected account.</div>
-                  <select id="connectWallet">
-                  </select>
-                  <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                      let select = document.getElementById('connectWallet')
-                      Web3Wallets.getWallets().forEach((wallet, index)=>{
-                        let option = document.createElement("option")
-                        option.setAttribute('value', index)
-                        option.innerHTML = wallet.name
-                        select.append(option)
-                      })
-                    })
-                    window.connectWalletViaSelect = async ()=> {
-                      let wallet = Web3Wallets.getWallets()[parseInt(document.getElementById("connectWallet").value, 10)]
-                      let accounts = await wallet.connect()
-                      window.wallet = wallet
-                      console.log(accounts)
-                    }
-                  </script>
-                </div>
-              </div>
-              <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='connectWalletViaSelect()'>Try it</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
-          <div class="px-0 py-4 rounded-lg bg-white border">
-            <div class="col px-0">
-              <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">WalletConnect connect</h5>
-                <div class="px-4">
-                  <div class="text-secondary ">Test connecting WalletConnect.</div>
+                  <div class="text-secondary ">Connects to the available wallet.</div>
                 </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.connectWalletConnect = ()=>{
-                    wallet = new Web3Wallets.wallets.WalletConnect()
-                    wallet.connect()
+                  window.connectWallet = async function(){
+                    alert(await Web3Wallets.getWallet().connect() + " connected")
                   }
                 </script>
-                <button class='btn btn-primary' onClick='connectWalletConnect()'>Try it</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
-          <div class="px-0 py-4 rounded-lg bg-white border">
-            <div class="col px-0">
-              <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Coinbase WalletLink connect</h5>
-                <div class="px-4">
-                  <div class="text-secondary ">Test connecting Coinbase WalletLink.</div>
-                </div>
-              </div>
-              <div class="px-4 pt-3">
-                <script>
-                  window.connectWalletLink = ()=> {
-                    wallet = new Web3Wallets.wallets.WalletLink()
-                    wallet.connect()
-                  }
-                </script>
-                <button class='btn btn-primary' onClick='connectWalletLink()'>Try it</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
-          <div class="px-0 py-4 rounded-lg bg-white border">
-            <div class="col px-0">
-              <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Connected account</h5>
-                <div class="px-4">
-                  <div class="text-secondary">Provides connected account via wallet</div>
-                </div>
-              </div>
-              <div class="px-4 pt-3">
-                <script>
-                  window.account = async()=>{ console.log(await window.wallet.account()) }
-                </script>
-                <button class='btn btn-primary' onClick='window.account()'>Try it</button>
+                <button class='btn btn-primary' onClick='window.connectWallet()'>Try it</button>
               </div>
             </div>
           </div>
@@ -167,7 +88,7 @@
               <div class="px-4 pt-3">
                 <script>
                   window.setupAccountChanged = async function(){
-                    window.wallet.on('account', (newAccount)=>{
+                    Web3Wallets.getWallet().on('account', (newAccount)=>{
                       alert(newAccount)
                     })
                     alert('Now change the wallet account!')
@@ -183,24 +104,21 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Send simple SOL transfer on Solana</h5>
+                <h5 class="px-4">Network changed event</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Executes callback function in case network changes.</div>
+                </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.sendSimpleSOLTransfer = async ()=> {
-                    console.log('sendSimpleSOLTransfer')
-                    window.wallet.sendTransaction({
-                      blockchain: "solana",
-                      to: "5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa",
-                      from: await window.wallet.account(),
-                      value: 0.01,
-                      sent: function(transaction){ console.log("sent callback", transaction) },
-                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
+                  window.setupNetworkChanged = async function(){
+                    Web3Wallets.getWallet().on('network', (newNetwork)=>{
+                      alert(newNetwork)
                     })
+                    alert('Now change the wallet network!')
                   }
                 </script>
-                <button class='btn btn-primary' onClick='window.sendSimpleSOLTransfer()'>Try it</button>
+                <button class='btn btn-primary' onClick='window.setupNetworkChanged()'>Try it</button>
               </div>
             </div>
           </div>
@@ -210,32 +128,69 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Send Solana instruction(s)</h5>
+                <h5 class="px-4">Disconnect event</h5>
                 <div class="px-4">
-                  <div class="text-secondary ">e.g. transfer 1 USDC</div>
+                  <div class="text-secondary ">Executes callback function in case wallet disconnects.</div>
                 </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.sendUSDCSolana = async ()=> {
-                    console.log('sendUSDCSolana')
-                    let from = await window.wallet.account()
-                    window.wallet.sendTransaction({
-                      blockchain: "solana",
-                      from,
-                      instructions: await Web3Tokens.Token.solana.createTransferInstructions({
-                        token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
-                        amount: '1000000',
-                        from,
-                        to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
-                      }),
-                      sent: function(transaction){ console.log("sent callback", transaction) },
-                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
+                  window.setupDisconnected = async function(){
+                    Web3Wallets.getWallet().on('disconnect', ()=>{
+                      alert('Disconnected')
                     })
+                    alert('Now disconnect the wallet!')
                   }
                 </script>
-                <button class='btn btn-primary' onClick='window.sendUSDCSolana()'>Try it</button>
+                <button class='btn btn-primary' onClick='window.setupDisconnected()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Wallet Debug</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Yields the entire window.ethereum.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='alert(Object.keys(window.ethereum))'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">WalletConnect connect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting WalletConnect.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='new Web3Wallets.wallets.WalletConnect().connect()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Coinbase WalletLink connect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting Coinbase WalletLink.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='new Web3Wallets.wallets.WalletLink().connect()'>Try it</button>
               </div>
             </div>
           </div>
@@ -251,9 +206,10 @@
                 <script>
                   window.sendSimpleTransferBsc = async ()=> {
                     console.log('sendSimpleTransferBsc')
-                    wallet.sendTransaction({ 
+                    Web3Wallets.getWallet().sendTransaction({ 
                       blockchain: "bsc",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
+                      from: await Web3Wallets.getWallet().account(),
                       value: "1000000000000000",
                       sent: function(transaction){ console.log("sent callack", transaction) },
                       confirmed: function(transaction){ console.log("confirmed callack", transaction) },
@@ -280,10 +236,10 @@
                 <script>
                   window.sendSimpleTransferBscIntoContract = async ()=> {
                     console.log('sendSimpleTransferBscIntoContract')
-                    wallet.sendTransaction({ 
+                    Web3Wallets.getWallet().sendTransaction({ 
                       blockchain: "bsc",
                       to: "0xb6c3ea7940bb9d99bc968d41e6fa06e07402ed43",
-                      from: await wallet.account(),
+                      from: await Web3Wallets.getWallet().account(),
                       value: "1000000000000000"
                     })
                   }
@@ -304,9 +260,9 @@
                 <script>
                   window.sendContractTransactionBsc = async ()=> {
                     console.log('sendContractTransactionBsc')
-                    await wallet.sendTransaction({ 
+                    await Web3Wallets.getWallet().sendTransaction({ 
                       blockchain: "bsc", 
-                      from: await wallet.account(), 
+                      from: await Web3Wallets.getWallet().account(), 
                       to: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", 
                       method: "transfer", 
                       params: ["0x317D875cA3B9f8d14f960486C0d1D1913be74e90", "1000000000000000000" ],
@@ -330,7 +286,7 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='window.wallet.sign("This is a test message\n\n And a new line").then((signature)=>{console.log(signature)})'>Try it</button>
+                <button class='btn btn-primary' onClick='Web3Wallets.getWallet().sign("This is a test message\n\n And a new line").then((signature)=>{console.log(signature)})'>Try it</button>
               </div>
             </div>
           </div>

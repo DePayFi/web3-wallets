@@ -1,27 +1,23 @@
-import { getWallet, wallets, supported } from 'src'
+import WalletLink from 'src/wallets/WalletLink'
 import { Blockchain } from '@depay/web3-blockchains'
-import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletLink'
+import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('Coinbase WalletLink', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
+
+      let wallet
 
       describe('with no supported wallet connected', ()=>{
         
         beforeEach(resetMocks)
         beforeEach(async()=>{
-          if(connectedInstance) {
-            connectedInstance.connectedAccounts = []
-          }
-          setConnectedInstance(undefined)
+          WalletLink.setConnectedInstance(undefined)
           mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
-        })
-
-        it('provides an accounts function that returns empty list of accounts', async () => {
-          expect(await new wallets.WalletLink().accounts()).toStrictEqual([])
         })
 
         it('provides an account function that returns undefined', async () => {
@@ -31,48 +27,43 @@ describe('Coinbase WalletLink', () => {
 
       describe('with supported wallet connected', ()=>{
 
-        const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-        beforeEach(()=>{
-          resetMocks()
-        })
+        const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
+        beforeEach(resetMocks)
         beforeEach(async()=>{
-          mock({ blockchain, accounts: { return: accounts } })
-          mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
+          mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink, accounts: { return: [account] } })
           await new wallets.WalletLink().connect()
+          wallet = getWallets()[0]
+          expect(wallet.name).toEqual('Coinbase')
         })
 
         it('requires to be connected first', async()=> {
-          let accounts = getWallet().connect()
+          let accounts = wallet.connect()
           expect(accounts).toEqual(accounts)
         });
 
         it('provides a wallet name', async()=> {
-          expect(getWallet().name).toEqual('Coinbase')
+          expect(wallet.name).toEqual('Coinbase')
         })
 
         it('provides a wallet logo', async()=> {
-          expect(getWallet().logo).toEqual("data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 488.96 488.96'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:url(%23linear-gradient);%7D.cls-2%7Bfill:%234361ad;%7D%3C/style%3E%3ClinearGradient id='linear-gradient' x1='250' y1='7.35' x2='250' y2='496.32' gradientTransform='matrix(1, 0, 0, -1, 0, 502)' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%233d5ba9'/%3E%3Cstop offset='1' stop-color='%234868b1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath class='cls-1' d='M250,5.68C114.87,5.68,5.52,115,5.52,250.17S114.87,494.65,250,494.65,494.48,385.29,494.48,250.17,385.13,5.68,250,5.68Zm0,387.54A143.06,143.06,0,1,1,393.05,250.17,143.11,143.11,0,0,1,250,393.22Z' transform='translate(-5.52 -5.68)'/%3E%3Cpath class='cls-2' d='M284.69,296.09H215.31a11,11,0,0,1-10.9-10.9V215.48a11,11,0,0,1,10.9-10.91H285a11,11,0,0,1,10.9,10.91v69.71A11.07,11.07,0,0,1,284.69,296.09Z' transform='translate(-5.52 -5.68)'/%3E%3C/svg%3E")
+          expect(wallet.logo).toEqual("data:image/svg+xml;base64,PHN2ZyBpZD0nTGF5ZXJfMScgZGF0YS1uYW1lPSdMYXllciAxJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgNDg4Ljk2IDQ4OC45Nic+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTt9LmNscy0ye2ZpbGw6IzQzNjFhZDt9PC9zdHlsZT48bGluZWFyR3JhZGllbnQgaWQ9J2xpbmVhci1ncmFkaWVudCcgeDE9JzI1MCcgeTE9JzcuMzUnIHgyPScyNTAnIHkyPSc0OTYuMzInIGdyYWRpZW50VHJhbnNmb3JtPSdtYXRyaXgoMSwgMCwgMCwgLTEsIDAsIDUwMiknIGdyYWRpZW50VW5pdHM9J3VzZXJTcGFjZU9uVXNlJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyMzZDViYTknLz48c3RvcCBvZmZzZXQ9JzEnIHN0b3AtY29sb3I9JyM0ODY4YjEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBjbGFzcz0nY2xzLTEnIGQ9J00yNTAsNS42OEMxMTQuODcsNS42OCw1LjUyLDExNSw1LjUyLDI1MC4xN1MxMTQuODcsNDk0LjY1LDI1MCw0OTQuNjUsNDk0LjQ4LDM4NS4yOSw0OTQuNDgsMjUwLjE3LDM4NS4xMyw1LjY4LDI1MCw1LjY4Wm0wLDM4Ny41NEExNDMuMDYsMTQzLjA2LDAsMSwxLDM5My4wNSwyNTAuMTcsMTQzLjExLDE0My4xMSwwLDAsMSwyNTAsMzkzLjIyWicgdHJhbnNmb3JtPSd0cmFuc2xhdGUoLTUuNTIgLTUuNjgpJy8+PHBhdGggY2xhc3M9J2Nscy0yJyBkPSdNMjg0LjY5LDI5Ni4wOUgyMTUuMzFhMTEsMTEsMCwwLDEtMTAuOS0xMC45VjIxNS40OGExMSwxMSwwLDAsMSwxMC45LTEwLjkxSDI4NWExMSwxMSwwLDAsMSwxMC45LDEwLjkxdjY5LjcxQTExLjA3LDExLjA3LDAsMCwxLDI4NC42OSwyOTYuMDlaJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgtNS41MiAtNS42OCknLz48L3N2Zz4=")
         })
 
         it('provides currently connected main account', async()=> {
-          expect(await getWallet().account()).toEqual(accounts[0])
-        })
-
-        it('provides currently connected accounts', async()=> {
-          expect(await getWallet().accounts()).toEqual(accounts)
+          expect(await wallet.account()).toEqual(account)
         })
 
         it('provides the walletLink wallet uppon requesting getWallet if there is a connected instance', async()=> {
-          expect(getWallet().name).toEqual('Coinbase')
+          expect(wallet.name).toEqual('Coinbase')
         })
 
         it('receives supported blockchains', async()=> {
-          expect(getWallet().blockchains).toEqual(['ethereum', 'bsc', 'polygon'])
+          expect(wallet.blockchains).toEqual(['ethereum', 'bsc', 'polygon'])
         })
 
         it('receives connected blockchain', async()=> {
-          expect(await getWallet().connectedTo(blockchain)).toEqual(true)
-          expect(await getWallet().connectedTo()).toEqual(blockchain)
+          expect(await wallet.connectedTo(blockchain)).toEqual(true)
+          expect(await wallet.connectedTo()).toEqual(blockchain)
         })
 
         it('allows to switch network', async ()=>{
@@ -80,8 +71,7 @@ describe('Coinbase WalletLink', () => {
             blockchain: 'ethereum',
             network: { switchTo: 'bsc' }
           })
-          let wallet = getWallet()
-          await getWallet().switchTo('bsc')
+          await wallet.switchTo('bsc')
           expect(switchMock).toHaveBeenCalled()
         })
 
@@ -121,7 +111,6 @@ describe('Coinbase WalletLink', () => {
             }
           })
           
-          let wallet = getWallet()
           await wallet.switchTo('bsc')
 
           expect(switchMock).toHaveBeenCalled()

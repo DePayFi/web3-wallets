@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('@depay/web3-constants'), require('buffer'), require('util'), require('@depay/web3-client'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', '@depay/web3-constants', 'buffer', 'util', '@depay/web3-client', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.Web3Client, global.WalletConnect, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Blockchains, web3Constants, require$$0, require$$0$1, web3Client, walletconnectV1, coinbaseWalletSdk) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('@depay/web3-constants'), require('buffer'), require('util'), require('@depay/solana-web3.js'), require('@depay/web3-client'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', '@depay/web3-constants', 'buffer', 'util', '@depay/solana-web3.js', '@depay/web3-client', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.Web3Constants, global.require$$0, global.require$$0$1, global.SolanaWeb3js, global.Web3Client, global.WalletConnect, global.CoinbaseWalletSdk));
+}(this, (function (exports, web3Blockchains, web3Constants, require$$0, require$$0$1, solanaWeb3_js, web3Client, walletconnectV1, coinbaseWalletSdk) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -21535,27 +21535,28 @@
 	    return parseFixed(value, (unitName != null) ? unitName : 18);
 	}
 
-	function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 	class Transaction {
 
-	  constructor({ blockchain, from, to, value, api, method, params, sent, confirmed, failed }) {
+	  constructor({ blockchain, from, to, value, api, method, params, instructions, sent, succeeded, failed }) {
 
 	    // required
 	    this.blockchain = blockchain;
 	    this.from = from;
 	    this.to = to;
-	    this.value = _optionalChain$3([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
 
 	    // optional
+	    this.value = _optionalChain$8([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
 	    this.api = api;
 	    this.method = method;
 	    this.params = params;
 	    this.sent = sent;
-	    this.confirmed = confirmed;
+	    this.succeeded = succeeded;
 	    this.failed = failed;
+	    this.instructions = instructions;
 
 	    // internal
-	    this._confirmed = false;
+	    this._succeeded = false;
 	    this._failed = false;
 	  }
 
@@ -21600,15 +21601,15 @@
 	    return populatedTransaction.data
 	  }
 
-	  confirmation() {
-	    if (this._confirmed) {
+	  success() {
+	    if (this._succeeded) {
 	      return Promise.resolve(this)
 	    }
 	    return new Promise((resolve, reject) => {
-	      let originalConfirmed = this.confirmed;
-	      this.confirmed = () => {
-	        if (originalConfirmed) originalConfirmed(this);
-	        resolve(this);
+	      let originalSucceeded = this.succeeded;
+	      this.succeeded = (transaction) => {
+	        if (originalSucceeded) originalSucceeded(transaction);
+	        resolve(transaction);
 	      };
 	    })
 	  }
@@ -21619,15 +21620,15 @@
 	    }
 	    return new Promise((resolve, reject) => {
 	      let originalFailed = this.failed;
-	      this.failed = () => {
-	        if (originalFailed) originalFailed(this);
-	        resolve(this);
+	      this.failed = (transaction, reason) => {
+	        if (originalFailed) originalFailed(transaction, reason);
+	        resolve(transaction, reason);
 	      };
 	    })
 	  }
 	}
 
-	const sendTransaction$2 = async ({ transaction, wallet })=> {
+	const sendTransaction$3 = async ({ transaction, wallet })=> {
 	  transaction = new Transaction(transaction);
 	  if((await wallet.connectedTo(transaction.blockchain)) == false) {
 	    await wallet.switchTo(transaction.blockchain);
@@ -21635,15 +21636,15 @@
 	  await transaction.prepare({ wallet });
 	  let provider = new Web3Provider(window.ethereum, 'any');
 	  let signer = provider.getSigner(0);
-	  await executeSubmit$2({ transaction, provider, signer }).then((sentTransaction)=>{
+	  await submit$3({ transaction, provider, signer }).then((sentTransaction)=>{
 	    if (sentTransaction) {
 	      transaction.id = sentTransaction.hash;
 	      transaction.nonce = sentTransaction.nonce;
 	      transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
 	      if (transaction.sent) transaction.sent(transaction);
 	      sentTransaction.wait(1).then(() => {
-	        transaction._confirmed = true;
-	        if (transaction.confirmed) transaction.confirmed(transaction);
+	        transaction._succeeded = true;
+	        if (transaction.succeeded) transaction.succeeded(transaction);
 	      }).catch((error)=>{
 	        if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
 	          if(error.replacement && error.replacement.hash) {
@@ -21651,8 +21652,8 @@
 	            transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
 	          }
 	          if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
-	            transaction._confirmed = true;
-	            if (transaction.confirmed) transaction.confirmed(transaction);
+	            transaction._succeeded = true;
+	            if (transaction.succeeded) transaction.succeeded(transaction);
 	          } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
 	            transaction._failed = true;
 	            if(transaction.failed) transaction.failed(transaction, error);  
@@ -21669,11 +21670,11 @@
 	  return transaction
 	};
 
-	const executeSubmit$2 = ({ transaction, provider, signer }) => {
+	const submit$3 = ({ transaction, provider, signer }) => {
 	  if(transaction.method) {
 	    return submitContractInteraction$2({ transaction, signer, provider })
 	  } else {
-	    return submitSimpleTransfer$2({ transaction, signer })
+	    return submitSimpleTransfer$3({ transaction, signer })
 	  }
 	};
 
@@ -21686,29 +21687,40 @@
 	    })
 	};
 
-	const submitSimpleTransfer$2 = ({ transaction, signer })=>{
+	const submitSimpleTransfer$3 = ({ transaction, signer })=>{
 	  return signer.sendTransaction({
 	    to: transaction.to,
 	    value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
 	  })
 	};
 
-	function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-	class Web3Wallet {
+	let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana'];
+	supported$1.evm = ['ethereum', 'bsc', 'polygon'];
+	supported$1.solana = ['solana'];
+
+	function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	class WindowEthereum {
 
 	  static __initStatic() {this.info = {
-	    name: 'Web3 Wallet',
-	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 446.42 376.77'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23828487;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M408.69,171.4H473.4V107.77a46.55,46.55,0,0,0-46.55-46.55H73.53A46.55,46.55,0,0,0,27,107.77v65.09H62.7L89.56,146a9.46,9.46,0,0,1,5.73-2.73h0l.41,0h78.59a47.2,47.2,0,1,1,82.63,39.56q-1.41,1.71-3,3.31t-3.31,3a47.21,47.21,0,0,1-76.31-26.9H100.21L73.34,189.07a9.43,9.43,0,0,1-5.73,2.73h0l-.41,0h-.07l-.48,0H27v74H55.83l18.25-18.24a9.39,9.39,0,0,1,5.73-2.74h0l.41,0h29.9a47.16,47.16,0,1,1,0,19H84.72L66.48,282.11a9.42,9.42,0,0,1-5.72,2.74h0l-.39,0H27V319H83.29a4,4,0,0,1,.49,0h.06l.41,0h0A9.41,9.41,0,0,1,90,321.78l28,28h57.66a47.2,47.2,0,1,1,81.48,40.9c-.6.67-1.22,1.32-1.86,2s-1.3,1.26-2,1.86a47.22,47.22,0,0,1-77.65-25.73H114.09a9.5,9.5,0,0,1-3.09-.52l-.08,0-.29-.11-.17-.07-.19-.08-.27-.12-.08,0a9.38,9.38,0,0,1-2.55-1.81l-28-28H27v53.46A46.55,46.55,0,0,0,73.53,438H426.86a46.55,46.55,0,0,0,46.54-46.55V327.82H408.69a78.22,78.22,0,0,1-78.21-78.21h0A78.22,78.22,0,0,1,408.69,171.4Z' transform='translate(-26.98 -61.22)'/%3E%3Cpath class='cls-1' d='M247.91,359.29a26,26,0,1,0-26,26A26,26,0,0,0,247.91,359.29Z' transform='translate(-26.98 -61.22)'/%3E%3Cpath class='cls-1' d='M246.55,152.71a26,26,0,1,0-26,26A26,26,0,0,0,246.55,152.71Z' transform='translate(-26.98 -61.22)'/%3E%3Ccircle class='cls-1' cx='129.39' cy='193.15' r='25.99'/%3E%3Cpath class='cls-1' d='M409.17,190h-.48a59.57,59.57,0,0,0-59.57,59.57h0a59.57,59.57,0,0,0,59.57,59.57h.48a59.58,59.58,0,0,0,59.58-59.57h0A59.58,59.58,0,0,0,409.17,190Zm14.45,90.61h-31l8.88-32.53a15.5,15.5,0,1,1,13.29,0Z' transform='translate(-26.98 -61.22)'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc', 'polygon']
+	    name: 'Wallet (Ethereum)',
+	    logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjAuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0NDYuNCAzNzYuOCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ2LjQgMzc2Ljg7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojODI4NDg3O30KCS5zdDF7ZmlsbDojMzQzNDM0O30KCS5zdDJ7ZmlsbDojOEM4QzhDO30KCS5zdDN7ZmlsbDojM0MzQzNCO30KCS5zdDR7ZmlsbDojMTQxNDE0O30KCS5zdDV7ZmlsbDojMzkzOTM5O30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTM4MS43LDExMC4yaDY0LjdWNDYuNWMwLTI1LjctMjAuOC00Ni41LTQ2LjUtNDYuNUg0Ni41QzIwLjgsMCwwLDIwLjgsMCw0Ni41djY1LjFoMzUuN2wyNi45LTI2LjkKCWMxLjUtMS41LDMuNi0yLjUsNS43LTIuN2wwLDBoMC40aDc4LjZjNS4zLTI1LjUsMzAuMi00Miw1NS43LTM2LjdjMjUuNSw1LjMsNDIsMzAuMiwzNi43LDU1LjdjLTEuNiw3LjUtNC45LDE0LjYtOS44LDIwLjUKCWMtMC45LDEuMS0xLjksMi4yLTMsMy4zYy0xLjEsMS4xLTIuMiwyLjEtMy4zLDNjLTIwLjEsMTYuNi00OS45LDEzLjgtNjYuNS02LjNjLTQuOS01LjktOC4zLTEzLTkuOC0yMC42SDczLjJsLTI2LjksMjYuOAoJYy0xLjUsMS41LTMuNiwyLjUtNS43LDIuN2wwLDBoLTAuNGgtMC4xaC0wLjVIMHY3NGgyOC44bDE4LjItMTguMmMxLjUtMS42LDMuNi0yLjUsNS43LTIuN2wwLDBoMC40aDI5LjkKCWM1LjItMjUuNSwzMC4yLTQxLjksNTUuNy0zNi43czQxLjksMzAuMiwzNi43LDU1LjdzLTMwLjIsNDEuOS01NS43LDM2LjdjLTE4LjUtMy44LTMyLjktMTguMi0zNi43LTM2LjdINTcuN2wtMTguMiwxOC4zCgljLTEuNSwxLjUtMy42LDIuNS01LjcsMi43bDAsMGgtMC40SDB2MzQuMmg1Ni4zYzAuMiwwLDAuMywwLDAuNSwwaDAuMWgwLjRsMCwwYzIuMiwwLjIsNC4yLDEuMiw1LjgsMi44bDI4LDI4aDU3LjcKCWM1LjMtMjUuNSwzMC4yLTQyLDU1LjctMzYuN3M0MiwzMC4yLDM2LjcsNTUuN2MtMS43LDguMS01LjUsMTUuNy0xMSwyMS45Yy0wLjYsMC43LTEuMiwxLjMtMS45LDJzLTEuMywxLjMtMiwxLjkKCWMtMTkuNSwxNy4zLTQ5LjMsMTUuNi02Ni43LTMuOWMtNS41LTYuMi05LjMtMTMuNy0xMS0yMS45SDg3LjFjLTEuMSwwLTIuMS0wLjItMy4xLTAuNWgtMC4xbC0wLjMtMC4xbC0wLjItMC4xbC0wLjItMC4xbC0wLjMtMC4xCgloLTAuMWMtMC45LTAuNS0xLjgtMS4xLTIuNi0xLjhsLTI4LTI4SDB2NTMuNWMwLjEsMjUuNywyMC45LDQ2LjQsNDYuNSw0Ni40aDM1My4zYzI1LjcsMCw0Ni41LTIwLjgsNDYuNS00Ni41di02My42aC02NC43CgljLTQzLjIsMC03OC4yLTM1LTc4LjItNzguMmwwLDBDMzAzLjUsMTQ1LjIsMzM4LjUsMTEwLjIsMzgxLjcsMTEwLjJ6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMjAuOSwyOTguMWMwLTE0LjQtMTEuNi0yNi0yNi0yNnMtMjYsMTEuNi0yNiwyNnMxMS42LDI2LDI2LDI2UzIyMC45LDMxMi40LDIyMC45LDI5OC4xTDIyMC45LDI5OC4xeiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjE5LjYsOTEuNWMwLTE0LjQtMTEuNi0yNi0yNi0yNnMtMjYsMTEuNi0yNiwyNnMxMS42LDI2LDI2LDI2UzIxOS42LDEwNS44LDIxOS42LDkxLjV6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zODIuMiwxMjguOGgtMC41Yy0zMi45LDAtNTkuNiwyNi43LTU5LjYsNTkuNmwwLDBsMCwwYzAsMzIuOSwyNi43LDU5LjYsNTkuNiw1OS42bDAsMGgwLjUKCWMzMi45LDAsNTkuNi0yNi43LDU5LjYtNTkuNmwwLDBDNDQxLjgsMTU1LjQsNDE1LjEsMTI4LjgsMzgyLjIsMTI4Ljh6IE0zOTYuNiwyMTkuNGgtMzFsOC45LTMyLjVjLTcuNy0zLjctMTEtMTIuOS03LjQtMjAuNgoJYzMuNy03LjcsMTIuOS0xMSwyMC42LTcuNGM3LjcsMy43LDExLDEyLjksNy40LDIwLjZjLTEuNSwzLjItNC4xLDUuOC03LjQsNy40TDM5Ni42LDIxOS40eiIvPgo8ZyBpZD0iTGF5ZXJfeDAwMjBfMSI+Cgk8ZyBpZD0iXzE0MjEzOTQzNDI0MDAiPgoJCTxnPgoJCQk8cG9seWdvbiBjbGFzcz0ic3QxIiBwb2ludHM9IjEyOSwxNjYuMiAxMjguNywxNjcuMyAxMjguNywyMDEuNCAxMjksMjAxLjcgMTQ0LjgsMTkyLjQgCQkJIi8+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDIiIHBvaW50cz0iMTI5LDE2Ni4yIDExMy4yLDE5Mi40IDEyOSwyMDEuNyAxMjksMTg1LjIgCQkJIi8+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDMiIHBvaW50cz0iMTI5LDIwNC43IDEyOC44LDIwNC45IDEyOC44LDIxNyAxMjksMjE3LjYgMTQ0LjgsMTk1LjQgCQkJIi8+CgkJCTxwb2x5Z29uIGNsYXNzPSJzdDIiIHBvaW50cz0iMTI5LDIxNy42IDEyOSwyMDQuNyAxMTMuMiwxOTUuNCAJCQkiLz4KCQkJPHBvbHlnb24gY2xhc3M9InN0NCIgcG9pbnRzPSIxMjksMjAxLjcgMTQ0LjgsMTkyLjQgMTI5LDE4NS4yIAkJCSIvPgoJCQk8cG9seWdvbiBjbGFzcz0ic3Q1IiBwb2ludHM9IjExMy4yLDE5Mi40IDEyOSwyMDEuNyAxMjksMTg1LjIgCQkJIi8+CgkJPC9nPgoJPC9nPgo8L2c+Cjwvc3ZnPgo=",
+	    blockchains: supported$1.evm
+	  };}
+
+	  static __initStatic2() {this.isAvailable = ()=>{ 
+	    return (
+	      _optionalChain$7([window, 'optionalAccess', _8 => _8.ethereum]) &&
+	      !_optionalChain$7([window, 'optionalAccess', _9 => _9.ethereum, 'optionalAccess', _10 => _10.isMetaMask]) &&
+	      !(_optionalChain$7([window, 'optionalAccess', _11 => _11.ethereum, 'optionalAccess', _12 => _12.isCoinbaseWallet]) || _optionalChain$7([window, 'optionalAccess', _13 => _13.ethereum, 'optionalAccess', _14 => _14.isWalletLink]))
+	    )
 	  };}
 	  
 	  constructor () {
 	    this.name = this.constructor.info.name;
 	    this.logo = this.constructor.info.logo;
 	    this.blockchains = this.constructor.info.blockchains;
-	    this.install = this.constructor.info.install;
 	    this.sendTransaction = (transaction)=>{ 
-	      return sendTransaction$2({
+	      return sendTransaction$3({
 	        wallet: this,
 	        transaction
 	      })
@@ -21716,19 +21728,15 @@
 	  }
 
 	  async account() {
-	    return (await this.accounts())[0]
-	  }
-
-	  async accounts() {
-	    if(!_optionalChain$2([window, 'optionalAccess', _ => _.ethereum])) { return [] }
+	    if(!_optionalChain$7([window, 'optionalAccess', _15 => _15.ethereum])) { return undefined }
 	    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-	    return accounts
+	    return accounts[0]
 	  }
 
 	  async connect() {
-	    if(!_optionalChain$2([window, 'optionalAccess', _2 => _2.ethereum])) { return [] }
+	    if(!_optionalChain$7([window, 'optionalAccess', _16 => _16.ethereum])) { return undefined }
 	    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-	    return accounts
+	    return accounts[0]
 	  }
 
 	  on(event, callback) {
@@ -21738,18 +21746,6 @@
 	        internalCallback = (accounts) => callback(accounts[0]);
 	        window.ethereum.on('accountsChanged', internalCallback);
 	        break
-	      case 'accounts':
-	        internalCallback = (accounts) => callback(accounts);
-	        window.ethereum.on('accountsChanged', internalCallback);
-	        break
-	      case 'network':
-	        internalCallback = (chainId) => callback(web3Blockchains.Blockchain.findById(chainId).name);
-	        window.ethereum.on('chainChanged', internalCallback);
-	        break
-	      case 'disconnect':
-	        internalCallback = callback;
-	        window.ethereum.on('disconnect', internalCallback);
-	        break
 	    }
 	    return internalCallback
 	  }
@@ -21758,15 +21754,6 @@
 	    switch (event) {
 	      case 'account':
 	        window.ethereum.removeListener('accountsChanged', internalCallback);
-	        break
-	      case 'accounts':
-	        window.ethereum.removeListener('accountsChanged', internalCallback);
-	        break
-	      case 'network':
-	        window.ethereum.removeListener('chainChanged', internalCallback);
-	        break
-	      case 'disconnect':
-	        window.ethereum.removeListener('disconnect', internalCallback);
 	        break
 	    }
 	    return internalCallback
@@ -21827,27 +21814,211 @@
 	    let signature = await signer.signMessage(message);
 	    return signature
 	  }
-	} Web3Wallet.__initStatic();
+	} WindowEthereum.__initStatic(); WindowEthereum.__initStatic2();
 
-	class Coinbase extends Web3Wallet {
+	function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	class Coinbase extends WindowEthereum {
 
 	  static __initStatic() {this.info = {
 	    name: 'Coinbase',
-	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 488.96 488.96'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:url(%23linear-gradient);%7D.cls-2%7Bfill:%234361ad;%7D%3C/style%3E%3ClinearGradient id='linear-gradient' x1='250' y1='7.35' x2='250' y2='496.32' gradientTransform='matrix(1, 0, 0, -1, 0, 502)' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%233d5ba9'/%3E%3Cstop offset='1' stop-color='%234868b1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath class='cls-1' d='M250,5.68C114.87,5.68,5.52,115,5.52,250.17S114.87,494.65,250,494.65,494.48,385.29,494.48,250.17,385.13,5.68,250,5.68Zm0,387.54A143.06,143.06,0,1,1,393.05,250.17,143.11,143.11,0,0,1,250,393.22Z' transform='translate(-5.52 -5.68)'/%3E%3Cpath class='cls-2' d='M284.69,296.09H215.31a11,11,0,0,1-10.9-10.9V215.48a11,11,0,0,1,10.9-10.91H285a11,11,0,0,1,10.9,10.91v69.71A11.07,11.07,0,0,1,284.69,296.09Z' transform='translate(-5.52 -5.68)'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc', 'polygon'],
-	    install: 'https://wallet.coinbase.com'
+	    logo: "data:image/svg+xml;base64,PHN2ZyBpZD0nTGF5ZXJfMScgZGF0YS1uYW1lPSdMYXllciAxJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgNDg4Ljk2IDQ4OC45Nic+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTt9LmNscy0ye2ZpbGw6IzQzNjFhZDt9PC9zdHlsZT48bGluZWFyR3JhZGllbnQgaWQ9J2xpbmVhci1ncmFkaWVudCcgeDE9JzI1MCcgeTE9JzcuMzUnIHgyPScyNTAnIHkyPSc0OTYuMzInIGdyYWRpZW50VHJhbnNmb3JtPSdtYXRyaXgoMSwgMCwgMCwgLTEsIDAsIDUwMiknIGdyYWRpZW50VW5pdHM9J3VzZXJTcGFjZU9uVXNlJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyMzZDViYTknLz48c3RvcCBvZmZzZXQ9JzEnIHN0b3AtY29sb3I9JyM0ODY4YjEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBjbGFzcz0nY2xzLTEnIGQ9J00yNTAsNS42OEMxMTQuODcsNS42OCw1LjUyLDExNSw1LjUyLDI1MC4xN1MxMTQuODcsNDk0LjY1LDI1MCw0OTQuNjUsNDk0LjQ4LDM4NS4yOSw0OTQuNDgsMjUwLjE3LDM4NS4xMyw1LjY4LDI1MCw1LjY4Wm0wLDM4Ny41NEExNDMuMDYsMTQzLjA2LDAsMSwxLDM5My4wNSwyNTAuMTcsMTQzLjExLDE0My4xMSwwLDAsMSwyNTAsMzkzLjIyWicgdHJhbnNmb3JtPSd0cmFuc2xhdGUoLTUuNTIgLTUuNjgpJy8+PHBhdGggY2xhc3M9J2Nscy0yJyBkPSdNMjg0LjY5LDI5Ni4wOUgyMTUuMzFhMTEsMTEsMCwwLDEtMTAuOS0xMC45VjIxNS40OGExMSwxMSwwLDAsMSwxMC45LTEwLjkxSDI4NWExMSwxMSwwLDAsMSwxMC45LDEwLjkxdjY5LjcxQTExLjA3LDExLjA3LDAsMCwxLDI4NC42OSwyOTYuMDlaJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgtNS41MiAtNS42OCknLz48L3N2Zz4=",
+	    blockchains: ['ethereum', 'bsc', 'polygon']
 	  };}
-	} Coinbase.__initStatic();
 
-	class MetaMask extends Web3Wallet {
+	  static __initStatic2() {this.isAvailable = ()=>{ return (_optionalChain$6([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isCoinbaseWallet]) || _optionalChain$6([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isWalletLink])) };}
+	} Coinbase.__initStatic(); Coinbase.__initStatic2();
+
+	function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	class MetaMask extends WindowEthereum {
 
 	  static __initStatic() {this.info = {
 	    name: 'MetaMask',
-	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 485.93 450.56'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23828487;%7D.cls-2%7Bfill:%23e27726;stroke:%23e27726;%7D.cls-10,.cls-11,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8,.cls-9%7Bstroke-linecap:round;stroke-linejoin:round;%7D.cls-3%7Bfill:%23e37725;stroke:%23e37725;%7D.cls-4%7Bfill:%23d6c0b3;stroke:%23d6c0b3;%7D.cls-5%7Bfill:%23243447;stroke:%23243447;%7D.cls-6%7Bfill:%23cd6328;stroke:%23cd6328;%7D.cls-7%7Bfill:%23e37525;stroke:%23e37525;%7D.cls-8%7Bfill:%23f6851f;stroke:%23f6851f;%7D.cls-9%7Bfill:%23c1ae9e;stroke:%23c1ae9e;%7D.cls-10%7Bfill:%23171717;stroke:%23171717;%7D.cls-11%7Bfill:%23763e1a;stroke:%23763e1a;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M247.91,356.29a26,26,0,1,0-26,26A26,26,0,0,0,247.91,356.29Z' transform='translate(-7.97 -21.33)'/%3E%3Cpath class='cls-1' d='M246.55,149.71a26,26,0,1,0-26,26A26,26,0,0,0,246.55,149.71Z' transform='translate(-7.97 -21.33)'/%3E%3Ccircle class='cls-1' cx='148.4' cy='230.05' r='25.99'/%3E%3Cpolygon class='cls-2' points='461.28 0.5 272.06 141.03 307.05 58.12 461.28 0.5'/%3E%3Cpolygon class='cls-3' points='24.46 0.5 212.16 142.37 178.88 58.12 24.46 0.5'/%3E%3Cpolygon class='cls-3' points='393.2 326.26 342.81 403.47 450.63 433.14 481.63 327.97 393.2 326.26'/%3E%3Cpolygon class='cls-3' points='4.49 327.97 35.3 433.14 143.13 403.47 92.73 326.26 4.49 327.97'/%3E%3Cpolygon class='cls-3' points='137.04 195.8 107 241.25 214.06 246.01 210.26 130.96 137.04 195.8'/%3E%3Cpolygon class='cls-3' points='348.7 195.8 274.53 129.63 272.06 246.01 378.94 241.25 348.7 195.8'/%3E%3Cpolygon class='cls-3' points='143.13 403.47 207.41 372.09 151.88 328.73 143.13 403.47'/%3E%3Cpolygon class='cls-3' points='278.34 372.09 342.81 403.47 333.87 328.73 278.34 372.09'/%3E%3Cpolygon class='cls-4' points='342.81 403.47 278.34 372.09 283.47 414.12 282.9 431.81 342.81 403.47'/%3E%3Cpolygon class='cls-4' points='143.13 403.47 203.03 431.81 202.65 414.12 207.41 372.09 143.13 403.47'/%3E%3Cpolygon class='cls-5' points='203.98 300.97 150.35 285.18 188.2 267.88 203.98 300.97'/%3E%3Cpolygon class='cls-5' points='281.76 300.97 297.55 267.88 335.58 285.18 281.76 300.97'/%3E%3Cpolygon class='cls-6' points='143.13 403.47 152.25 326.26 92.73 327.97 143.13 403.47'/%3E%3Cpolygon class='cls-6' points='333.68 326.26 342.81 403.47 393.2 327.97 333.68 326.26'/%3E%3Cpolygon class='cls-6' points='378.94 241.25 272.06 246.01 281.95 300.97 297.74 267.88 335.77 285.18 378.94 241.25'/%3E%3Cpolygon class='cls-6' points='150.35 285.18 188.39 267.88 203.98 300.97 214.06 246.01 107 241.25 150.35 285.18'/%3E%3Cpolygon class='cls-7' points='107 241.25 151.88 328.73 150.35 285.18 107 241.25'/%3E%3Cpolygon class='cls-7' points='335.77 285.18 333.87 328.73 378.94 241.25 335.77 285.18'/%3E%3Cpolygon class='cls-7' points='214.06 246.01 203.98 300.97 216.53 365.82 219.38 280.43 214.06 246.01'/%3E%3Cpolygon class='cls-7' points='272.06 246.01 266.93 280.24 269.21 365.82 281.95 300.97 272.06 246.01'/%3E%3Cpolygon class='cls-8' points='281.95 300.97 269.21 365.82 278.34 372.09 333.87 328.73 335.77 285.18 281.95 300.97'/%3E%3Cpolygon class='cls-8' points='150.35 285.18 151.88 328.73 207.41 372.09 216.53 365.82 203.98 300.97 150.35 285.18'/%3E%3Cpolygon class='cls-9' points='282.9 431.81 283.47 414.12 278.72 409.94 207.02 409.94 202.65 414.12 203.03 431.81 143.13 403.47 164.05 420.58 206.45 450.06 279.29 450.06 321.89 420.58 342.81 403.47 282.9 431.81'/%3E%3Cpolygon class='cls-10' points='278.34 372.09 269.21 365.82 216.53 365.82 207.41 372.09 202.65 414.12 207.02 409.94 278.72 409.94 283.47 414.12 278.34 372.09'/%3E%3Cpolygon class='cls-11' points='469.27 150.16 485.43 72.57 461.28 0.5 278.34 136.28 348.7 195.8 448.16 224.9 470.22 199.23 460.71 192.38 475.92 178.5 464.13 169.37 479.35 157.77 469.27 150.16'/%3E%3Cpolygon class='cls-11' points='0.5 72.57 16.66 150.16 6.39 157.77 21.61 169.37 10.01 178.5 25.22 192.38 15.71 199.23 37.58 224.9 137.04 195.8 207.41 136.28 24.46 0.5 0.5 72.57'/%3E%3Cpolygon class='cls-8' points='448.16 224.9 348.7 195.8 378.94 241.25 333.87 328.73 393.2 327.97 481.63 327.97 448.16 224.9'/%3E%3Cpolygon class='cls-8' points='137.04 195.8 37.58 224.9 4.49 327.97 92.73 327.97 151.88 328.73 107 241.25 137.04 195.8'/%3E%3Cpolygon class='cls-8' points='272.06 246.01 278.34 136.28 307.24 58.12 178.88 58.12 207.41 136.28 214.06 246.01 216.34 280.62 216.53 365.82 269.21 365.82 269.59 280.62 272.06 246.01'/%3E%3C/svg%3E",
-	    blockchains: ['ethereum', 'bsc', 'polygon'],
-	    install: 'https://metamask.io/download.html'
+	    logo: "data:image/svg+xml;base64,PHN2ZyBpZD0nTGF5ZXJfMScgZGF0YS1uYW1lPSdMYXllciAxJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0ODUuOTMgNDUwLjU2Jz48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzgyODQ4Nzt9LmNscy0ye2ZpbGw6I2UyNzcyNjtzdHJva2U6I2UyNzcyNjt9LmNscy0xMCwuY2xzLTExLC5jbHMtMiwuY2xzLTMsLmNscy00LC5jbHMtNSwuY2xzLTYsLmNscy03LC5jbHMtOCwuY2xzLTl7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO30uY2xzLTN7ZmlsbDojZTM3NzI1O3N0cm9rZTojZTM3NzI1O30uY2xzLTR7ZmlsbDojZDZjMGIzO3N0cm9rZTojZDZjMGIzO30uY2xzLTV7ZmlsbDojMjQzNDQ3O3N0cm9rZTojMjQzNDQ3O30uY2xzLTZ7ZmlsbDojY2Q2MzI4O3N0cm9rZTojY2Q2MzI4O30uY2xzLTd7ZmlsbDojZTM3NTI1O3N0cm9rZTojZTM3NTI1O30uY2xzLTh7ZmlsbDojZjY4NTFmO3N0cm9rZTojZjY4NTFmO30uY2xzLTl7ZmlsbDojYzFhZTllO3N0cm9rZTojYzFhZTllO30uY2xzLTEwe2ZpbGw6IzE3MTcxNztzdHJva2U6IzE3MTcxNzt9LmNscy0xMXtmaWxsOiM3NjNlMWE7c3Ryb2tlOiM3NjNlMWE7fTwvc3R5bGU+PC9kZWZzPjxwYXRoIGNsYXNzPSdjbHMtMScgZD0nTTI0Ny45MSwzNTYuMjlhMjYsMjYsMCwxLDAtMjYsMjZBMjYsMjYsMCwwLDAsMjQ3LjkxLDM1Ni4yOVonIHRyYW5zZm9ybT0ndHJhbnNsYXRlKC03Ljk3IC0yMS4zMyknLz48cGF0aCBjbGFzcz0nY2xzLTEnIGQ9J00yNDYuNTUsMTQ5LjcxYTI2LDI2LDAsMSwwLTI2LDI2QTI2LDI2LDAsMCwwLDI0Ni41NSwxNDkuNzFaJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgtNy45NyAtMjEuMzMpJy8+PGNpcmNsZSBjbGFzcz0nY2xzLTEnIGN4PScxNDguNCcgY3k9JzIzMC4wNScgcj0nMjUuOTknLz48cG9seWdvbiBjbGFzcz0nY2xzLTInIHBvaW50cz0nNDYxLjI4IDAuNSAyNzIuMDYgMTQxLjAzIDMwNy4wNSA1OC4xMiA0NjEuMjggMC41Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzI0LjQ2IDAuNSAyMTIuMTYgMTQyLjM3IDE3OC44OCA1OC4xMiAyNC40NiAwLjUnLz48cG9seWdvbiBjbGFzcz0nY2xzLTMnIHBvaW50cz0nMzkzLjIgMzI2LjI2IDM0Mi44MSA0MDMuNDcgNDUwLjYzIDQzMy4xNCA0ODEuNjMgMzI3Ljk3IDM5My4yIDMyNi4yNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMycgcG9pbnRzPSc0LjQ5IDMyNy45NyAzNS4zIDQzMy4xNCAxNDMuMTMgNDAzLjQ3IDkyLjczIDMyNi4yNiA0LjQ5IDMyNy45NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMycgcG9pbnRzPScxMzcuMDQgMTk1LjggMTA3IDI0MS4yNSAyMTQuMDYgMjQ2LjAxIDIxMC4yNiAxMzAuOTYgMTM3LjA0IDE5NS44Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzM0OC43IDE5NS44IDI3NC41MyAxMjkuNjMgMjcyLjA2IDI0Ni4wMSAzNzguOTQgMjQxLjI1IDM0OC43IDE5NS44Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzE0My4xMyA0MDMuNDcgMjA3LjQxIDM3Mi4wOSAxNTEuODggMzI4LjczIDE0My4xMyA0MDMuNDcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTMnIHBvaW50cz0nMjc4LjM0IDM3Mi4wOSAzNDIuODEgNDAzLjQ3IDMzMy44NyAzMjguNzMgMjc4LjM0IDM3Mi4wOScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNCcgcG9pbnRzPSczNDIuODEgNDAzLjQ3IDI3OC4zNCAzNzIuMDkgMjgzLjQ3IDQxNC4xMiAyODIuOSA0MzEuODEgMzQyLjgxIDQwMy40NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNCcgcG9pbnRzPScxNDMuMTMgNDAzLjQ3IDIwMy4wMyA0MzEuODEgMjAyLjY1IDQxNC4xMiAyMDcuNDEgMzcyLjA5IDE0My4xMyA0MDMuNDcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTUnIHBvaW50cz0nMjAzLjk4IDMwMC45NyAxNTAuMzUgMjg1LjE4IDE4OC4yIDI2Ny44OCAyMDMuOTggMzAwLjk3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy01JyBwb2ludHM9JzI4MS43NiAzMDAuOTcgMjk3LjU1IDI2Ny44OCAzMzUuNTggMjg1LjE4IDI4MS43NiAzMDAuOTcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTYnIHBvaW50cz0nMTQzLjEzIDQwMy40NyAxNTIuMjUgMzI2LjI2IDkyLjczIDMyNy45NyAxNDMuMTMgNDAzLjQ3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy02JyBwb2ludHM9JzMzMy42OCAzMjYuMjYgMzQyLjgxIDQwMy40NyAzOTMuMiAzMjcuOTcgMzMzLjY4IDMyNi4yNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNicgcG9pbnRzPSczNzguOTQgMjQxLjI1IDI3Mi4wNiAyNDYuMDEgMjgxLjk1IDMwMC45NyAyOTcuNzQgMjY3Ljg4IDMzNS43NyAyODUuMTggMzc4Ljk0IDI0MS4yNScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNicgcG9pbnRzPScxNTAuMzUgMjg1LjE4IDE4OC4zOSAyNjcuODggMjAzLjk4IDMwMC45NyAyMTQuMDYgMjQ2LjAxIDEwNyAyNDEuMjUgMTUwLjM1IDI4NS4xOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNycgcG9pbnRzPScxMDcgMjQxLjI1IDE1MS44OCAzMjguNzMgMTUwLjM1IDI4NS4xOCAxMDcgMjQxLjI1Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy03JyBwb2ludHM9JzMzNS43NyAyODUuMTggMzMzLjg3IDMyOC43MyAzNzguOTQgMjQxLjI1IDMzNS43NyAyODUuMTgnLz48cG9seWdvbiBjbGFzcz0nY2xzLTcnIHBvaW50cz0nMjE0LjA2IDI0Ni4wMSAyMDMuOTggMzAwLjk3IDIxNi41MyAzNjUuODIgMjE5LjM4IDI4MC40MyAyMTQuMDYgMjQ2LjAxJy8+PHBvbHlnb24gY2xhc3M9J2Nscy03JyBwb2ludHM9JzI3Mi4wNiAyNDYuMDEgMjY2LjkzIDI4MC4yNCAyNjkuMjEgMzY1LjgyIDI4MS45NSAzMDAuOTcgMjcyLjA2IDI0Ni4wMScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScyODEuOTUgMzAwLjk3IDI2OS4yMSAzNjUuODIgMjc4LjM0IDM3Mi4wOSAzMzMuODcgMzI4LjczIDMzNS43NyAyODUuMTggMjgxLjk1IDMwMC45NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScxNTAuMzUgMjg1LjE4IDE1MS44OCAzMjguNzMgMjA3LjQxIDM3Mi4wOSAyMTYuNTMgMzY1LjgyIDIwMy45OCAzMDAuOTcgMTUwLjM1IDI4NS4xOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOScgcG9pbnRzPScyODIuOSA0MzEuODEgMjgzLjQ3IDQxNC4xMiAyNzguNzIgNDA5Ljk0IDIwNy4wMiA0MDkuOTQgMjAyLjY1IDQxNC4xMiAyMDMuMDMgNDMxLjgxIDE0My4xMyA0MDMuNDcgMTY0LjA1IDQyMC41OCAyMDYuNDUgNDUwLjA2IDI3OS4yOSA0NTAuMDYgMzIxLjg5IDQyMC41OCAzNDIuODEgNDAzLjQ3IDI4Mi45IDQzMS44MScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMTAnIHBvaW50cz0nMjc4LjM0IDM3Mi4wOSAyNjkuMjEgMzY1LjgyIDIxNi41MyAzNjUuODIgMjA3LjQxIDM3Mi4wOSAyMDIuNjUgNDE0LjEyIDIwNy4wMiA0MDkuOTQgMjc4LjcyIDQwOS45NCAyODMuNDcgNDE0LjEyIDI3OC4zNCAzNzIuMDknLz48cG9seWdvbiBjbGFzcz0nY2xzLTExJyBwb2ludHM9JzQ2OS4yNyAxNTAuMTYgNDg1LjQzIDcyLjU3IDQ2MS4yOCAwLjUgMjc4LjM0IDEzNi4yOCAzNDguNyAxOTUuOCA0NDguMTYgMjI0LjkgNDcwLjIyIDE5OS4yMyA0NjAuNzEgMTkyLjM4IDQ3NS45MiAxNzguNSA0NjQuMTMgMTY5LjM3IDQ3OS4zNSAxNTcuNzcgNDY5LjI3IDE1MC4xNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMTEnIHBvaW50cz0nMC41IDcyLjU3IDE2LjY2IDE1MC4xNiA2LjM5IDE1Ny43NyAyMS42MSAxNjkuMzcgMTAuMDEgMTc4LjUgMjUuMjIgMTkyLjM4IDE1LjcxIDE5OS4yMyAzNy41OCAyMjQuOSAxMzcuMDQgMTk1LjggMjA3LjQxIDEzNi4yOCAyNC40NiAwLjUgMC41IDcyLjU3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy04JyBwb2ludHM9JzQ0OC4xNiAyMjQuOSAzNDguNyAxOTUuOCAzNzguOTQgMjQxLjI1IDMzMy44NyAzMjguNzMgMzkzLjIgMzI3Ljk3IDQ4MS42MyAzMjcuOTcgNDQ4LjE2IDIyNC45Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy04JyBwb2ludHM9JzEzNy4wNCAxOTUuOCAzNy41OCAyMjQuOSA0LjQ5IDMyNy45NyA5Mi43MyAzMjcuOTcgMTUxLjg4IDMyOC43MyAxMDcgMjQxLjI1IDEzNy4wNCAxOTUuOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScyNzIuMDYgMjQ2LjAxIDI3OC4zNCAxMzYuMjggMzA3LjI0IDU4LjEyIDE3OC44OCA1OC4xMiAyMDcuNDEgMTM2LjI4IDIxNC4wNiAyNDYuMDEgMjE2LjM0IDI4MC42MiAyMTYuNTMgMzY1LjgyIDI2OS4yMSAzNjUuODIgMjY5LjU5IDI4MC42MiAyNzIuMDYgMjQ2LjAxJy8+PC9zdmc+",
+	    blockchains: ['ethereum', 'bsc', 'polygon']
 	  };}
-	} MetaMask.__initStatic();
+
+	  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$5([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isMetaMask]) };}
+	} MetaMask.__initStatic(); MetaMask.__initStatic2();
+
+	function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	const POLL_SPEED = 500; // 0.5 seconds
+	const MAX_POLLS = 240; // 120 seconds
+
+	const sendTransaction$2 = async ({ transaction, wallet })=> {
+	  transaction = new Transaction(transaction);
+	  await transaction.prepare({ wallet });
+	  await submit$2({ transaction, wallet }).then(({ signature })=>{
+	    if(signature) {
+	      transaction.id = signature;
+	      transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+	      if (transaction.sent) transaction.sent(transaction);
+
+	      let count = 0;
+	      const interval = setInterval(async ()=> {
+	        count++;
+	        if(count >= MAX_POLLS) { return clearInterval(interval) }
+
+	        const { value } = await web3Client.provider(transaction.blockchain).getSignatureStatus(signature);
+	        const confirmationStatus = _optionalChain$4([value, 'optionalAccess', _ => _.confirmationStatus]);
+	        if(confirmationStatus) {
+	          const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
+	          if (hasReachedSufficientCommitment) {
+	            if(value.err) {
+	              transaction._failed = true;
+	              const confirmedTransaction = await web3Client.provider(transaction.blockchain).getConfirmedTransaction(signature);
+	              const failedReason = _optionalChain$4([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
+	              if(transaction.failed) transaction.failed(transaction, failedReason);
+	            } else {
+	              transaction._succeeded = true;
+	              if (transaction.succeeded) transaction.succeeded(transaction);
+	            }
+	            return clearInterval(interval)
+	          }
+	        }
+	      }, POLL_SPEED);
+	    } else {
+	      throw('Submitting transaction failed!')
+	    }
+	  });
+	  return transaction
+	};
+
+	const submit$2 = ({ transaction, wallet })=> {
+	  if(transaction.instructions) {
+	    return submitInstructions({ transaction, wallet })
+	  } else {
+	    return submitSimpleTransfer$2({ transaction, wallet })
+	  }
+	};
+
+	const submitSimpleTransfer$2 = async ({ transaction, wallet })=> {
+	  let fromPubkey = new solanaWeb3_js.PublicKey(await wallet.account());
+	  let toPubkey = new solanaWeb3_js.PublicKey(transaction.to);
+	  let recentBlockhash = (await web3Client.provider(transaction.blockchain).getLatestBlockhash()).blockhash;
+	  let transferTransaction = new solanaWeb3_js.Transaction({
+	    recentBlockhash,
+	    feePayer: fromPubkey
+	  });
+	  transferTransaction.add(
+	    solanaWeb3_js.SystemProgram.transfer({
+	      fromPubkey,
+	      toPubkey,
+	      lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
+	    })
+	  );
+	  return window.solana.signAndSendTransaction(transferTransaction)
+	};
+
+	const submitInstructions = async ({ transaction, wallet })=> {
+	  let fromPubkey = new solanaWeb3_js.PublicKey(await wallet.account());
+	  let recentBlockhash = (await web3Client.provider(transaction.blockchain).getLatestBlockhash()).blockhash;
+	  let transferTransaction = new solanaWeb3_js.Transaction({
+	    recentBlockhash,
+	    feePayer: fromPubkey
+	  });
+	  transaction.instructions.forEach((instruction)=>{
+	    transferTransaction.add(instruction);
+	  });
+
+	  return window.solana.signAndSendTransaction(transferTransaction)
+	};
+
+	function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	class WindowSolana {
+
+	  static __initStatic() {this.info = {
+	    name: 'Wallet (Solana)',
+	    logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjAuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0NDYuNCAzNzYuOCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ2LjQgMzc2Ljg7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojODI4NDg3O30KCS5zdDF7ZmlsbDp1cmwoI1NWR0lEXzFfKTt9Cgkuc3Qye2ZpbGw6dXJsKCNTVkdJRF8wMDAwMDE2NTIzNDE5NTQ5NTc2MDU4MDgwMDAwMDAwNjMwMzAwNDA2OTM1MjExODk1MV8pO30KCS5zdDN7ZmlsbDp1cmwoI1NWR0lEXzAwMDAwMDkyNDIyMzgxNjc5OTg1OTI5MTcwMDAwMDA2ODU0NzIyMTYxOTE4MTIzNjUzXyk7fQo8L3N0eWxlPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzgxLjcsMTEwLjJoNjQuN1Y0Ni41YzAtMjUuNy0yMC44LTQ2LjUtNDYuNS00Ni41SDQ2LjVDMjAuOCwwLDAsMjAuOCwwLDQ2LjV2NjUuMWgzNS43bDI2LjktMjYuOQoJYzEuNS0xLjUsMy42LTIuNSw1LjctMi43bDAsMGgwLjRoNzguNmM1LjMtMjUuNSwzMC4yLTQyLDU1LjctMzYuN2MyNS41LDUuMyw0MiwzMC4yLDM2LjcsNTUuN2MtMS42LDcuNS00LjksMTQuNi05LjgsMjAuNQoJYy0wLjksMS4xLTEuOSwyLjItMywzLjNjLTEuMSwxLjEtMi4yLDIuMS0zLjMsM2MtMjAuMSwxNi42LTQ5LjksMTMuOC02Ni41LTYuM2MtNC45LTUuOS04LjMtMTMtOS44LTIwLjZINzMuMmwtMjYuOSwyNi44CgljLTEuNSwxLjUtMy42LDIuNS01LjcsMi43bDAsMGgtMC40aC0wLjFoLTAuNUgwdjc0aDI4LjhsMTguMi0xOC4yYzEuNS0xLjYsMy42LTIuNSw1LjctMi43bDAsMGgwLjRoMjkuOQoJYzUuMi0yNS41LDMwLjItNDEuOSw1NS43LTM2LjdzNDEuOSwzMC4yLDM2LjcsNTUuN3MtMzAuMiw0MS45LTU1LjcsMzYuN2MtMTguNS0zLjgtMzIuOS0xOC4yLTM2LjctMzYuN0g1Ny43bC0xOC4yLDE4LjMKCWMtMS41LDEuNS0zLjYsMi41LTUuNywyLjdsMCwwaC0wLjRIMHYzNC4yaDU2LjNjMC4yLDAsMC4zLDAsMC41LDBoMC4xaDAuNGwwLDBjMi4yLDAuMiw0LjIsMS4yLDUuOCwyLjhsMjgsMjhoNTcuNwoJYzUuMy0yNS41LDMwLjItNDIsNTUuNy0zNi43czQyLDMwLjIsMzYuNyw1NS43Yy0xLjcsOC4xLTUuNSwxNS43LTExLDIxLjljLTAuNiwwLjctMS4yLDEuMy0xLjksMnMtMS4zLDEuMy0yLDEuOQoJYy0xOS41LDE3LjMtNDkuMywxNS42LTY2LjctMy45Yy01LjUtNi4yLTkuMy0xMy43LTExLTIxLjlIODcuMWMtMS4xLDAtMi4xLTAuMi0zLjEtMC41aC0wLjFsLTAuMy0wLjFsLTAuMi0wLjFsLTAuMi0wLjFsLTAuMy0wLjEKCWgtMC4xYy0wLjktMC41LTEuOC0xLjEtMi42LTEuOGwtMjgtMjhIMHY1My41YzAuMSwyNS43LDIwLjksNDYuNCw0Ni41LDQ2LjRoMzUzLjNjMjUuNywwLDQ2LjUtMjAuOCw0Ni41LTQ2LjV2LTYzLjZoLTY0LjcKCWMtNDMuMiwwLTc4LjItMzUtNzguMi03OC4ybDAsMEMzMDMuNSwxNDUuMiwzMzguNSwxMTAuMiwzODEuNywxMTAuMnoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyMC45LDI5OC4xYzAtMTQuNC0xMS42LTI2LTI2LTI2cy0yNiwxMS42LTI2LDI2czExLjYsMjYsMjYsMjZTMjIwLjksMzEyLjQsMjIwLjksMjk4LjFMMjIwLjksMjk4LjF6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMTkuNiw5MS41YzAtMTQuNC0xMS42LTI2LTI2LTI2cy0yNiwxMS42LTI2LDI2czExLjYsMjYsMjYsMjZTMjE5LjYsMTA1LjgsMjE5LjYsOTEuNXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTM4Mi4yLDEyOC44aC0wLjVjLTMyLjksMC01OS42LDI2LjctNTkuNiw1OS42bDAsMGwwLDBjMCwzMi45LDI2LjcsNTkuNiw1OS42LDU5LjZsMCwwaDAuNQoJYzMyLjksMCw1OS42LTI2LjcsNTkuNi01OS42bDAsMEM0NDEuOCwxNTUuNCw0MTUuMSwxMjguOCwzODIuMiwxMjguOHogTTM5Ni42LDIxOS40aC0zMWw4LjktMzIuNWMtNy43LTMuNy0xMS0xMi45LTcuNC0yMC42CgljMy43LTcuNywxMi45LTExLDIwLjYtNy40YzcuNywzLjcsMTEsMTIuOSw3LjQsMjAuNmMtMS41LDMuMi00LjEsNS44LTcuNCw3LjRMMzk2LjYsMjE5LjR6Ii8+CjxsaW5lYXJHcmFkaWVudCBpZD0iU1ZHSURfMV8iIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTQ5LjAwNzciIHkxPSIxMzkuMzA5MyIgeDI9IjEyMi4xMjMxIiB5Mj0iMTkwLjgwNDIiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgMSAwIDMwLjUzNTQpIj4KCTxzdG9wICBvZmZzZXQ9IjAiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMEZGQTMiLz4KCTxzdG9wICBvZmZzZXQ9IjEiIHN0eWxlPSJzdG9wLWNvbG9yOiNEQzFGRkYiLz4KPC9saW5lYXJHcmFkaWVudD4KPHBhdGggY2xhc3M9InN0MSIgZD0iTTExMi43LDIwMy41YzAuMy0wLjMsMC43LTAuNSwxLjEtMC41aDM4LjhjMC43LDAsMS4xLDAuOSwwLjYsMS40bC03LjcsNy43Yy0wLjMsMC4zLTAuNywwLjUtMS4xLDAuNWgtMzguOAoJYy0wLjcsMC0xLjEtMC45LTAuNi0xLjRMMTEyLjcsMjAzLjV6Ii8+CjxsaW5lYXJHcmFkaWVudCBpZD0iU1ZHSURfMDAwMDAxNzUzMTAwMjIwMDgyNTMzODQyNTAwMDAwMTEwOTY3OTQyODQ4NDUzNDEzNTVfIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjEzNy4yNTMzIiB5MT0iMTMzLjE3MjUiIHgyPSIxMTAuMzY4NyIgeTI9IjE4NC42Njc0IiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIDEgMCAzMC41MzU0KSI+Cgk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBGRkEzIi8+Cgk8c3RvcCAgb2Zmc2V0PSIxIiBzdHlsZT0ic3RvcC1jb2xvcjojREMxRkZGIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxwYXRoIHN0eWxlPSJmaWxsOnVybCgjU1ZHSURfMDAwMDAxNzUzMTAwMjIwMDgyNTMzODQyNTAwMDAwMTEwOTY3OTQyODQ4NDUzNDEzNTVfKTsiIGQ9Ik0xMTIuNywxNzQuOWMwLjMtMC4zLDAuNy0wLjUsMS4xLTAuNWgzOC44CgljMC43LDAsMS4xLDAuOSwwLjYsMS40bC03LjcsNy43Yy0wLjMsMC4zLTAuNywwLjUtMS4xLDAuNWgtMzguOGMtMC43LDAtMS4xLTAuOS0wLjYtMS40TDExMi43LDE3NC45eiIvPgo8bGluZWFyR3JhZGllbnQgaWQ9IlNWR0lEXzAwMDAwMDIyNTU3MTYwNTg5MTY1MTU3NTIwMDAwMDE1NDYyNjI0Mjk4Nzk4NTYzMjYxXyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIxNDMuMDkyOSIgeTE9IjEzNi4yMjEyIiB4Mj0iMTE2LjIwODIiIHkyPSIxODcuNzE2MiIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDAgMzAuNTM1NCkiPgoJPHN0b3AgIG9mZnNldD0iMCIgc3R5bGU9InN0b3AtY29sb3I6IzAwRkZBMyIvPgoJPHN0b3AgIG9mZnNldD0iMSIgc3R5bGU9InN0b3AtY29sb3I6I0RDMUZGRiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8cGF0aCBzdHlsZT0iZmlsbDp1cmwoI1NWR0lEXzAwMDAwMDIyNTU3MTYwNTg5MTY1MTU3NTIwMDAwMDE1NDYyNjI0Mjk4Nzk4NTYzMjYxXyk7IiBkPSJNMTQ1LjYsMTg5LjFjLTAuMy0wLjMtMC43LTAuNS0xLjEtMC41CgloLTM4LjhjLTAuNywwLTEuMSwwLjktMC42LDEuNGw3LjcsNy43YzAuMywwLjMsMC43LDAuNSwxLjEsMC41aDM4LjhjMC43LDAsMS4xLTAuOSwwLjYtMS40TDE0NS42LDE4OS4xeiIvPgo8L3N2Zz4K',
+	    blockchains: supported$1.solana
+	  };}
+
+	   static __initStatic2() {this.isAvailable = ()=>{ 
+	    return (
+	      _optionalChain$3([window, 'optionalAccess', _4 => _4.solana]) &&
+	      !_optionalChain$3([window, 'optionalAccess', _5 => _5.solana, 'optionalAccess', _6 => _6.isPhantom])
+	    )
+	  };}
+	  
+	  constructor () {
+	    this.name = this.constructor.info.name;
+	    this.logo = this.constructor.info.logo;
+	    this.blockchains = this.constructor.info.blockchains;
+	    this.sendTransaction = (transaction)=>{ 
+	      return sendTransaction$2({
+	        wallet: this,
+	        transaction
+	      })
+	    };
+	  }
+
+	  async account() {
+	    if(_optionalChain$3([window, 'optionalAccess', _7 => _7.solana, 'optionalAccess', _8 => _8.publicKey])) {return window.solana.publicKey.toString() }
+	    if(_optionalChain$3([window, 'optionalAccess', _9 => _9.solana]) == undefined){ return }
+	    let { publicKey } = await window.solana.connect({ onlyIfTrusted: true });
+	    if(publicKey){ return publicKey.toString() }
+	  }
+
+	  async connect() {
+	    if(!_optionalChain$3([window, 'optionalAccess', _10 => _10.solana])) { return undefined }
+	    let { publicKey } = await window.solana.connect();
+	    return publicKey.toString()
+	  }
+
+	  on(event, callback) {
+	    let internalCallback;
+	    switch (event) {
+	      case 'account':
+	        internalCallback = (publicKey) => callback(_optionalChain$3([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
+	        window.solana.on('accountChanged', internalCallback);
+	        break
+	    }
+	    return internalCallback
+	  }
+
+	  off(event, internalCallback) {
+	    switch (event) {
+	      case 'account':
+	        console.log('removeListener');
+	        window.solana.removeListener('accountChanged', internalCallback);
+	        break
+	    }
+	    return internalCallback
+	  }
+
+	  async connectedTo(input) {
+	    return input == 'solana'
+	  }
+
+	  switchTo(blockchainName) {
+	    return new Promise((resolve, reject)=>{
+	      reject({ code: 'NOT_SUPPORTED' });
+	    })
+	  }
+
+	  addNetwork(blockchainName) {
+	    return new Promise((resolve, reject)=>{
+	      reject({ code: 'NOT_SUPPORTED' });
+	    })
+	  }
+
+	  async sign(message) {
+	    const encodedMessage = new TextEncoder().encode(message);
+	    const signedMessage = await window.solana.signMessage(encodedMessage, "utf8");
+	    return JSON.stringify(signedMessage.signature)
+	  }
+	} WindowSolana.__initStatic(); WindowSolana.__initStatic2();
+
+	function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+	class Phantom extends WindowSolana {
+
+	  static __initStatic() {this.info = {
+	    name: 'Phantom',
+	    logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iNjQiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz48cGF0aCBkPSJNMTEwLjU4NCA2NC45MTQySDk5LjE0MkM5OS4xNDIgNDEuNzY1MSA4MC4xNzMgMjMgNTYuNzcyNCAyM0MzMy42NjEyIDIzIDE0Ljg3MTYgNDEuMzA1NyAxNC40MTE4IDY0LjA1ODNDMTMuOTM2IDg3LjU3NyAzNi4yNDEgMTA4IDYwLjAxODYgMTA4SDYzLjAwOTRDODMuOTcyMyAxMDggMTEyLjA2OSA5MS43NjY3IDExNi40NTkgNzEuOTg3NEMxMTcuMjcgNjguMzQxMyAxMTQuMzU4IDY0LjkxNDIgMTEwLjU4NCA2NC45MTQyWk0zOS43Njg5IDY1Ljk0NTRDMzkuNzY4OSA2OS4wNDExIDM3LjIwOTUgNzEuNTcyOSAzNC4wODAyIDcxLjU3MjlDMzAuOTUwOSA3MS41NzI5IDI4LjM5MTYgNjkuMDM5OSAyOC4zOTE2IDY1Ljk0NTRWNTYuODQxNEMyOC4zOTE2IDUzLjc0NTcgMzAuOTUwOSA1MS4yMTM5IDM0LjA4MDIgNTEuMjEzOUMzNy4yMDk1IDUxLjIxMzkgMzkuNzY4OSA1My43NDU3IDM5Ljc2ODkgNTYuODQxNFY2NS45NDU0Wk01OS41MjI0IDY1Ljk0NTRDNTkuNTIyNCA2OS4wNDExIDU2Ljk2MzEgNzEuNTcyOSA1My44MzM4IDcxLjU3MjlDNTAuNzA0NSA3MS41NzI5IDQ4LjE0NTEgNjkuMDM5OSA0OC4xNDUxIDY1Ljk0NTRWNTYuODQxNEM0OC4xNDUxIDUzLjc0NTcgNTAuNzA1NiA1MS4yMTM5IDUzLjgzMzggNTEuMjEzOUM1Ni45NjMxIDUxLjIxMzkgNTkuNTIyNCA1My43NDU3IDU5LjUyMjQgNTYuODQxNFY2NS45NDU0WiIgZmlsbD0idXJsKCNwYWludDFfbGluZWFyKSIvPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQwX2xpbmVhciIgeDE9IjY0IiB5MT0iMCIgeDI9IjY0IiB5Mj0iMTI4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzUzNEJCMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzU1MUJGOSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJwYWludDFfbGluZWFyIiB4MT0iNjUuNDk5OCIgeTE9IjIzIiB4Mj0iNjUuNDk5OCIgeTI9IjEwOCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IndoaXRlIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSJ3aGl0ZSIgc3RvcC1vcGFjaXR5PSIwLjgyIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+Cg=',
+	    blockchains: supported$1.solana
+	  };}
+
+	  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$2([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isPhantom]) };}
+	} Phantom.__initStatic(); Phantom.__initStatic2();
 
 	function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 	const sendTransaction$1 = async ({ transaction, wallet })=> {
@@ -21856,7 +22027,7 @@
 	  if((await wallet.connectedTo(transaction.blockchain)) == false) {
 	    throw({ code: 'WRONG_NETWORK' })
 	  }
-	  await executeSubmit$1({ transaction, wallet }).then(async (tx)=>{
+	  await submit$1({ transaction, wallet }).then(async (tx)=>{
 	    if (tx) {
 	      let blockchain = web3Blockchains.Blockchain.findByName(transaction.blockchain);
 	      transaction.id = tx;
@@ -21870,14 +22041,14 @@
 	        if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
 	      } else {
 	        sentTransaction.wait(1).then(() => {
-	          transaction._confirmed = true;
-	          if (transaction.confirmed) transaction.confirmed(transaction);
+	          transaction._succeeded = true;
+	          if (transaction.succeeded) transaction.succeeded(transaction);
 	        }).catch((error)=>{
 	          if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
 	            if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
 	              transaction.id = error.replacement.hash;
-	              transaction._confirmed = true;
-	              if (transaction.confirmed) transaction.confirmed(transaction);
+	              transaction._succeeded = true;
+	              if (transaction.succeeded) transaction.succeeded(transaction);
 	            } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
 	              transaction.id = error.replacement.hash;
 	              transaction._failed = true;
@@ -21909,7 +22080,7 @@
 	  return sentTransaction
 	};
 
-	const executeSubmit$1 = ({ transaction, wallet }) => {
+	const submit$1 = ({ transaction, wallet }) => {
 	  if(transaction.method) {
 	    return submitContractInteraction$1({ transaction, wallet })
 	  } else {
@@ -21939,22 +22110,26 @@
 	};
 
 	function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-	const setConnectedInstance$1 = (value)=>{
-	  window._connectedWalletConnectInstance = value;
-	};
-
 	const getConnectedInstance$1 = ()=>{
 	  return window._connectedWalletConnectInstance
+	};
+
+	const setConnectedInstance$1 = (value)=>{
+	  window._connectedWalletConnectInstance = value;
 	};
 
 	class WalletConnect {
 
 	  static __initStatic() {this.info = {
 	    name: 'WalletConnect',
-	    logo: "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 500 500' style='enable-background:new 0 0 500 500;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%235991CD;%7D%0A%3C/style%3E%3Cg id='Page-1'%3E%3Cg id='walletconnect-logo-alt'%3E%3Cpath id='WalletConnect' class='st0' d='M102.7,162c81.5-79.8,213.6-79.8,295.1,0l9.8,9.6c4.1,4,4.1,10.5,0,14.4L374,218.9 c-2,2-5.3,2-7.4,0l-13.5-13.2c-56.8-55.7-149-55.7-205.8,0l-14.5,14.1c-2,2-5.3,2-7.4,0L91.9,187c-4.1-4-4.1-10.5,0-14.4 L102.7,162z M467.1,229.9l29.9,29.2c4.1,4,4.1,10.5,0,14.4L362.3,405.4c-4.1,4-10.7,4-14.8,0c0,0,0,0,0,0L252,311.9 c-1-1-2.7-1-3.7,0h0l-95.5,93.5c-4.1,4-10.7,4-14.8,0c0,0,0,0,0,0L3.4,273.6c-4.1-4-4.1-10.5,0-14.4l29.9-29.2 c4.1-4,10.7-4,14.8,0l95.5,93.5c1,1,2.7,1,3.7,0c0,0,0,0,0,0l95.5-93.5c4.1-4,10.7-4,14.8,0c0,0,0,0,0,0l95.5,93.5 c1,1,2.7,1,3.7,0l95.5-93.5C456.4,225.9,463,225.9,467.1,229.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A",
+	    logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0ndXRmLTgnPz48IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjUuNC4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAtLT48c3ZnIHZlcnNpb249JzEuMScgaWQ9J0xheWVyXzEnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZycgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHg9JzBweCcgeT0nMHB4JyB2aWV3Qm94PScwIDAgNTAwIDUwMCcgc3R5bGU9J2VuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTAwIDUwMDsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxzdHlsZSB0eXBlPSd0ZXh0L2Nzcyc+IC5zdDB7ZmlsbDojNTk5MUNEO30KPC9zdHlsZT48ZyBpZD0nUGFnZS0xJz48ZyBpZD0nd2FsbGV0Y29ubmVjdC1sb2dvLWFsdCc+PHBhdGggaWQ9J1dhbGxldENvbm5lY3QnIGNsYXNzPSdzdDAnIGQ9J00xMDIuNywxNjJjODEuNS03OS44LDIxMy42LTc5LjgsMjk1LjEsMGw5LjgsOS42YzQuMSw0LDQuMSwxMC41LDAsMTQuNEwzNzQsMjE4LjkgYy0yLDItNS4zLDItNy40LDBsLTEzLjUtMTMuMmMtNTYuOC01NS43LTE0OS01NS43LTIwNS44LDBsLTE0LjUsMTQuMWMtMiwyLTUuMywyLTcuNCwwTDkxLjksMTg3Yy00LjEtNC00LjEtMTAuNSwwLTE0LjQgTDEwMi43LDE2MnogTTQ2Ny4xLDIyOS45bDI5LjksMjkuMmM0LjEsNCw0LjEsMTAuNSwwLDE0LjRMMzYyLjMsNDA1LjRjLTQuMSw0LTEwLjcsNC0xNC44LDBjMCwwLDAsMCwwLDBMMjUyLDMxMS45IGMtMS0xLTIuNy0xLTMuNywwaDBsLTk1LjUsOTMuNWMtNC4xLDQtMTAuNyw0LTE0LjgsMGMwLDAsMCwwLDAsMEwzLjQsMjczLjZjLTQuMS00LTQuMS0xMC41LDAtMTQuNGwyOS45LTI5LjIgYzQuMS00LDEwLjctNCwxNC44LDBsOTUuNSw5My41YzEsMSwyLjcsMSwzLjcsMGMwLDAsMCwwLDAsMGw5NS41LTkzLjVjNC4xLTQsMTAuNy00LDE0LjgsMGMwLDAsMCwwLDAsMGw5NS41LDkzLjUgYzEsMSwyLjcsMSwzLjcsMGw5NS41LTkzLjVDNDU2LjQsMjI1LjksNDYzLDIyNS45LDQ2Ny4xLDIyOS45eicvPjwvZz48L2c+PC9zdmc+Cg==",
 	    blockchains: ['ethereum', 'bsc', 'polygon']
 	  };}
-	  
+
+	  static __initStatic2() {this.isAvailable = ()=>{ 
+	    return getConnectedInstance$1() != undefined 
+	  };}
+
 	  constructor() {
 	    this.name = this.constructor.info.name;
 	    this.logo = this.constructor.info.logo;
@@ -22006,11 +22181,6 @@
 	    return this.connectedAccounts[0]
 	  }
 
-	  async accounts() {
-	    if(this.connectedAccounts == undefined) { return [] }
-	    return this.connectedAccounts
-	  }
-
 	  async connect(options) {
 	    try {
 	      window.localStorage.removeItem('walletconnect'); // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
@@ -22033,11 +22203,11 @@
 
 	      this.connectedAccounts = accounts;
 	      this.connectedChainId = chainId;
-	        
+
 	      return accounts
 	    } catch (error) {
 	      console.log('WALLETCONNECT ERROR', error);
-	      return []
+	      return undefined
 	    }
 	  }
 
@@ -22073,24 +22243,6 @@
 	        };
 	        this.connector.on("session_update", internalCallback);
 	        break
-	      case 'accounts':
-	        internalCallback = (error, payload) => {
-	          const { accounts } = payload.params[0];
-	          callback(accounts);
-	        };
-	        this.connector.on("session_update", internalCallback);
-	        break
-	      case 'network':
-	        internalCallback = (error, payload) => {
-	          const { chainId } = payload.params[0];
-	          if(chainId) { callback(web3Blockchains.Blockchain.findByNetworkId(chainId).name); }
-	        };
-	        this.connector.on("session_update", internalCallback);
-	        break
-	      case 'disconnect':
-	        internalCallback = callback;
-	        this.connector.on('disconnect', internalCallback);
-	        break
 	    }
 	    return internalCallback
 	  }
@@ -22099,15 +22251,6 @@
 	    switch (event) {
 	      case 'account':
 	        this.connector.off("session_update");
-	        break
-	      case 'accounts':
-	        this.connector.off("session_update");
-	        break
-	      case 'network':
-	        this.connector.off("session_update");
-	        break
-	      case 'disconnect':
-	        this.connector.off('disconnect');
 	        break
 	    }
 	  }
@@ -22118,7 +22261,10 @@
 	    let signature = await this.connector.signPersonalMessage(params);
 	    return signature
 	  }
-	} WalletConnect.__initStatic();
+	} WalletConnect.__initStatic(); WalletConnect.__initStatic2();
+
+	WalletConnect.getConnectedInstance = getConnectedInstance$1;
+	WalletConnect.setConnectedInstance = setConnectedInstance$1;
 
 	const sendTransaction = async ({ transaction, wallet })=> {
 	  transaction = new Transaction(transaction);
@@ -22128,15 +22274,15 @@
 	  await transaction.prepare({ wallet });
 	  let provider = new Web3Provider(wallet.connector, 'any');
 	  let signer = provider.getSigner(0);
-	  await executeSubmit({ transaction, provider, signer }).then((sentTransaction)=>{
+	  await submit({ transaction, provider, signer }).then((sentTransaction)=>{
 	    if (sentTransaction) {
 	      transaction.id = sentTransaction.hash;
 	      transaction.nonce = sentTransaction.nonce;
 	      transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
 	      if (transaction.sent) transaction.sent(transaction);
 	      sentTransaction.wait(1).then(() => {
-	        transaction._confirmed = true;
-	        if (transaction.confirmed) transaction.confirmed(transaction);
+	        transaction._succeeded = true;
+	        if (transaction.succeeded) transaction.succeeded(transaction);
 	      }).catch((error)=>{
 	        if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
 	          if(error.replacement && error.replacement.hash) {
@@ -22144,8 +22290,8 @@
 	            transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
 	          }
 	          if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
-	            transaction._confirmed = true;
-	            if (transaction.confirmed) transaction.confirmed(transaction);
+	            transaction._succeeded = true;
+	            if (transaction.succeeded) transaction.succeeded(transaction);
 	          } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
 	            transaction._failed = true;
 	            if(transaction.failed) transaction.failed(transaction, error);  
@@ -22162,7 +22308,7 @@
 	  return transaction
 	};
 
-	const executeSubmit = ({ transaction, provider, signer }) => {
+	const submit = ({ transaction, provider, signer }) => {
 	  if(transaction.method) {
 	    return submitContractInteraction({ transaction, signer, provider })
 	  } else {
@@ -22186,23 +22332,24 @@
 	  })
 	};
 
-	const setConnectedInstance = (value)=>{
-	  window._connectedWalletLinkInstance = value;
-	};
-
 	const getConnectedInstance = ()=>{
 	  return window._connectedWalletLinkInstance
+	};
+
+	const setConnectedInstance = (value)=>{
+	  window._connectedWalletLinkInstance = value;
 	};
 
 	class WalletLink {
 
 	  static __initStatic() {this.info = {
 	    name: 'Coinbase',
-	    logo: "data:image/svg+xml,%3Csvg id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 488.96 488.96'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:url(%23linear-gradient);%7D.cls-2%7Bfill:%234361ad;%7D%3C/style%3E%3ClinearGradient id='linear-gradient' x1='250' y1='7.35' x2='250' y2='496.32' gradientTransform='matrix(1, 0, 0, -1, 0, 502)' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%233d5ba9'/%3E%3Cstop offset='1' stop-color='%234868b1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath class='cls-1' d='M250,5.68C114.87,5.68,5.52,115,5.52,250.17S114.87,494.65,250,494.65,494.48,385.29,494.48,250.17,385.13,5.68,250,5.68Zm0,387.54A143.06,143.06,0,1,1,393.05,250.17,143.11,143.11,0,0,1,250,393.22Z' transform='translate(-5.52 -5.68)'/%3E%3Cpath class='cls-2' d='M284.69,296.09H215.31a11,11,0,0,1-10.9-10.9V215.48a11,11,0,0,1,10.9-10.91H285a11,11,0,0,1,10.9,10.91v69.71A11.07,11.07,0,0,1,284.69,296.09Z' transform='translate(-5.52 -5.68)'/%3E%3C/svg%3E",
+	    logo: Coinbase.info.logo,
 	    blockchains: ['ethereum', 'bsc', 'polygon'],
-	    install: 'https://www.coinbase.com/wallet'
 	  };}
-	  
+
+	  static __initStatic2() {this.isAvailable = ()=>{ return getConnectedInstance() != undefined };}
+
 	  constructor() {
 	    this.name = this.constructor.info.name;
 	    this.logo = this.constructor.info.logo;
@@ -22226,11 +22373,6 @@
 	    return this.connectedAccounts[0]
 	  }
 
-	  async accounts() {
-	    if(this.connectedAccounts == undefined) { return [] }
-	    return this.connectedAccounts
-	  }
-
 	  async connect(options) {
 	    let relay = await this.connector._relayProvider();
 	    relay.setConnectDisabled(false);
@@ -22240,7 +22382,7 @@
 	    }
 	    this.connectedAccounts = accounts;
 	    this.connectedChainId = await this.connector.getChainId();
-	    return accounts
+	    return accounts[0]
 	  }
 
 	  async connectedTo(input) {
@@ -22299,18 +22441,6 @@
 	        internalCallback = (accounts) => callback(accounts[0]);
 	        this.connector.on('accountsChanged', internalCallback);
 	        break
-	      case 'accounts':
-	        internalCallback = (accounts) => callback(accounts);
-	        this.connector.on('accountsChanged', internalCallback);
-	        break
-	      case 'network':
-	        internalCallback = (chainId) => callback(web3Blockchains.Blockchain.findById(chainId).name);
-	        this.connector.on('chainChanged', internalCallback);
-	        break
-	      case 'disconnect':
-	        internalCallback = callback;
-	        this.connector.on('disconnect', internalCallback);
-	        break
 	    }
 	    return internalCallback
 	  }
@@ -22319,15 +22449,6 @@
 	    switch (event) {
 	      case 'account':
 	        this.connector.removeListener('accountsChanged', internalCallback);
-	        break
-	      case 'accounts':
-	        this.connector.removeListener('accountsChanged', internalCallback);
-	        break
-	      case 'network':
-	        this.connector.removeListener('chainChanged', internalCallback);
-	        break
-	      case 'disconnect':
-	        this.connector.removeListener('disconnect', internalCallback);
 	        break
 	    }
 	    return internalCallback
@@ -22340,56 +22461,52 @@
 	    let signature = await signer.signMessage(message);
 	    return signature
 	  }
-	} WalletLink.__initStatic();
+	} WalletLink.__initStatic(); WalletLink.__initStatic2();
 
-	const wallets = {
+	WalletLink.getConnectedInstance = getConnectedInstance;
+	WalletLink.setConnectedInstance = setConnectedInstance;
+
+	var wallets = {
 	  MetaMask,
+	  Phantom,
 	  Coinbase,
-	  Web3Wallet,
+	  WindowEthereum,
+	  WindowSolana,
 	  WalletConnect,
 	  WalletLink
 	};
 
-	const instances = {};
+	let instances = {};
 
-	const getWalletClass = function(){
-	  if(getConnectedInstance$1()) {
-	    return wallets.WalletConnect
-	  } else if(getConnectedInstance()) {
-	    return wallets.WalletLink
-	  } else if (typeof window.ethereum === 'object' && window.ethereum.isMetaMask) {
-	    return wallets.MetaMask
-	  } else if (typeof window.ethereum === 'object' && (window.ethereum.isCoinbaseWallet || window.ethereum.isWalletLink)) {
-	    return wallets.Coinbase
-	  } else if (typeof window.ethereum !== 'undefined') {
-	    return wallets.Web3Wallet
-	  }
-	};
+	const getWallets = ()=>{
+	  let availableWallets = [];
 
-	const getWallet = function () {
-	  const walletClass = getWalletClass();
-	  const existingInstance = instances[walletClass];
+	  Object.keys(wallets).forEach((key)=>{
+	    let wallet = wallets[key];
+	    if(wallet.isAvailable()) {
+	      if(!instances[wallet]) {
+	        if(wallet.getConnectedInstance && wallet.getConnectedInstance()) {
+	          instances[wallet] = wallet.getConnectedInstance();
+	        } else {
+	          instances[wallet] = new wallet;
+	        }
+	      }
+	      availableWallets.push(instances[wallet]);
+	    }
+	  });
 
-	  if(getConnectedInstance$1()) {
-	    return getConnectedInstance$1()
-	  } else if(getConnectedInstance()) {
-	    return getConnectedInstance()
-	  } else if(existingInstance) {
-	    return existingInstance
-	  } else if(walletClass) {
-	    instances[walletClass] = new walletClass();
-	    return instances[walletClass]
-	  }
+	  return availableWallets
 	};
 
 	const supported = [
 	  wallets.MetaMask,
+	  wallets.Phantom,
 	  wallets.Coinbase,
 	  wallets.WalletConnect,
 	  wallets.WalletLink
 	];
 
-	exports.getWallet = getWallet;
+	exports.getWallets = getWallets;
 	exports.supported = supported;
 	exports.wallets = wallets;
 

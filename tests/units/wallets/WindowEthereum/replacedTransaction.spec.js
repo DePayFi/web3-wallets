@@ -1,19 +1,23 @@
 import { ethers } from 'ethers'
-import { getWallet } from 'src'
+import { getWallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail, replace } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('calls "confirmed" and "failed" even for replaced transactions', () => {
+describe('window.ethereum wallet replaced transactions', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
-
-      const accounts = ['0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045']
+      
       let wallet
+
+      const account = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
       beforeEach(resetMocks)
+      beforeEach(()=>{ 
+        mock({ blockchain, accounts: { return: [account] }})
+        wallet = getWallets()[0]
+      })
       afterEach(resetMocks)
-      beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
-      beforeEach(()=>{ wallet = getWallet() })
 
       let address = '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92';
       let api = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
@@ -36,7 +40,7 @@ describe('calls "confirmed" and "failed" even for replaced transactions', () => 
 
           transaction = {
             blockchain,
-            from: accounts[0],
+            from: account,
             to: address,
             api: api,
             method: method,
@@ -56,14 +60,14 @@ describe('calls "confirmed" and "failed" even for replaced transactions', () => 
         })
 
         it('calls the "confirmed" callback with the replacing transaction', async ()=> {
-          let confirmedTransaction
-          let submittedTransaction = await wallet.sendTransaction({... transaction, confirmed: (_confirmedTransaction)=>{
-            confirmedTransaction = _confirmedTransaction
+          let succededTransaction
+          let submittedTransaction = await wallet.sendTransaction({... transaction, succeeded: (_succededTransaction)=>{
+            succededTransaction = _succededTransaction
           }})
           replace(mockedTransaction, replacingTransactionMock)
           await new Promise((r) => setTimeout(r, 2000));
-          expect(confirmedTransaction.id).toEqual(replacingTransactionMock.transaction._id)
-          expect(confirmedTransaction.url).toMatch(replacingTransactionMock.transaction._id)
+          expect(succededTransaction.id).toEqual(replacingTransactionMock.transaction._id)
+          expect(succededTransaction.url).toMatch(replacingTransactionMock.transaction._id)
         })
       })
 
@@ -73,7 +77,7 @@ describe('calls "confirmed" and "failed" even for replaced transactions', () => 
 
           transaction = {
             blockchain,
-            from: accounts[0],
+            from: account,
             to: address,
             api: api,
             method: method,

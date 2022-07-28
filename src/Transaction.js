@@ -3,24 +3,25 @@ import { CONSTANTS } from '@depay/web3-constants'
 
 class Transaction {
 
-  constructor({ blockchain, from, to, value, api, method, params, sent, confirmed, failed }) {
+  constructor({ blockchain, from, to, value, api, method, params, instructions, sent, succeeded, failed }) {
 
     // required
     this.blockchain = blockchain
     this.from = from
     this.to = to
-    this.value = Transaction.bigNumberify(value, blockchain)?.toString()
 
     // optional
+    this.value = Transaction.bigNumberify(value, blockchain)?.toString()
     this.api = api
     this.method = method
     this.params = params
     this.sent = sent
-    this.confirmed = confirmed
+    this.succeeded = succeeded
     this.failed = failed
+    this.instructions = instructions
 
     // internal
-    this._confirmed = false
+    this._succeeded = false
     this._failed = false
   }
 
@@ -65,15 +66,15 @@ class Transaction {
     return populatedTransaction.data
   }
 
-  confirmation() {
-    if (this._confirmed) {
+  success() {
+    if (this._succeeded) {
       return Promise.resolve(this)
     }
     return new Promise((resolve, reject) => {
-      let originalConfirmed = this.confirmed
-      this.confirmed = () => {
-        if (originalConfirmed) originalConfirmed(this)
-        resolve(this)
+      let originalSucceeded = this.succeeded
+      this.succeeded = (transaction) => {
+        if (originalSucceeded) originalSucceeded(transaction)
+        resolve(transaction)
       }
     })
   }
@@ -84,9 +85,9 @@ class Transaction {
     }
     return new Promise((resolve, reject) => {
       let originalFailed = this.failed
-      this.failed = () => {
-        if (originalFailed) originalFailed(this)
-        resolve(this)
+      this.failed = (transaction, reason) => {
+        if (originalFailed) originalFailed(transaction, reason)
+        resolve(transaction, reason)
       }
     })
   }

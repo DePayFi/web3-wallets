@@ -8,7 +8,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     throw({ code: 'WRONG_NETWORK' })
   }
-  await executeSubmit({ transaction, wallet }).then(async (tx)=>{
+  await submit({ transaction, wallet }).then(async (tx)=>{
     if (tx) {
       let blockchain = Blockchain.findByName(transaction.blockchain)
       transaction.id = tx
@@ -22,14 +22,14 @@ const sendTransaction = async ({ transaction, wallet })=> {
         if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction')
       } else {
         sentTransaction.wait(1).then(() => {
-          transaction._confirmed = true
-          if (transaction.confirmed) transaction.confirmed(transaction)
+          transaction._succeeded = true
+          if (transaction.succeeded) transaction.succeeded(transaction)
         }).catch((error)=>{
           if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
             if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
               transaction.id = error.replacement.hash
-              transaction._confirmed = true
-              if (transaction.confirmed) transaction.confirmed(transaction)
+              transaction._succeeded = true
+              if (transaction.succeeded) transaction.succeeded(transaction)
             } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
               transaction.id = error.replacement.hash
               transaction._failed = true
@@ -61,7 +61,7 @@ const retrieveTransaction = async (tx, blockchain)=>{
   return sentTransaction
 }
 
-const executeSubmit = ({ transaction, wallet }) => {
+const submit = ({ transaction, wallet }) => {
   if(transaction.method) {
     return submitContractInteraction({ transaction, wallet })
   } else {

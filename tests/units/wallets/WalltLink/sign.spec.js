@@ -1,26 +1,26 @@
 import fetchMock from 'fetch-mock'
+import WalletLink from 'src/wallets/WalletLink'
 import { Blockchain } from '@depay/web3-blockchains'
-import { connectedInstance, setConnectedInstance } from 'src/wallets/WalletLink'
-import { getWallet, wallets, supported } from 'src'
+import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('Generic Web3 Wallet', () => {
+describe('WalletLink: sign', () => {
 
-  ['ethereum', 'bsc', 'polygon'].forEach((blockchain)=>{
+  supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
-      const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
+      let wallet
+
+      const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
       beforeEach(resetMocks)
-      beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
       beforeEach(async ()=>{
-        if(connectedInstance) {
-          connectedInstance.connectedAccounts = []
-        }
-        setConnectedInstance(undefined)
-        mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
+        WalletLink.setConnectedInstance(undefined)
+        mock({ accounts: { return: [account] }, blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
         await new wallets.WalletLink().connect()
-        expect(getWallet().name).toEqual('Coinbase')
+        wallet = getWallets()[0]
+        expect(wallet.name).toEqual('Coinbase')
       })
 
       it('allows to sign a personal message', async()=> {
@@ -28,14 +28,14 @@ describe('Generic Web3 Wallet', () => {
           blockchain: blockchain,
           signature: {
             params:[
-              accounts[0],
+              account,
               "0x546869732069732061206d65737361676520746f206265207369676e65640a0a416e642061206e6577206c696e65"
             ],
             return: "0x123456"
           }
         })
 
-        let signature = await getWallet().sign("This is a message to be signed\n\nAnd a new line")
+        let signature = await wallet.sign("This is a message to be signed\n\nAnd a new line")
 
         expect(signature).toEqual("0x123456")
       })
