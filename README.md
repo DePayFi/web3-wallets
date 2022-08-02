@@ -22,7 +22,7 @@ wallet.connect()
 
 ## Demo
 
-https://depayfi.github.io/web3-wallets/dev.html
+https://depayfi.github.io/web3-wallets/demo.html
 
 ## Support
 
