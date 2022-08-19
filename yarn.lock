@@ -975,10 +975,10 @@
   dependencies:
     "@coinbase/wallet-sdk" "^3.0.5"
 
-"@depay/solana-web3.js@^1.13.0":
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.13.0.tgz#78630d87a54b535f588ae94c0740b24188d9200c"
-  integrity sha512-x4hT4sEubmUV/Y4/RKCBxdVGdARvJ3Ij2RhW0wXiS/PmTiDSem8wSBAoQml7JufftjSCQeZWs8CIJx4wksGdFQ==
+"@depay/solana-web3.js@^1.17.3", "@depay/solana-web3.js@^1.17.5":
+  version "1.17.5"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.17.5.tgz#6a4d568919f02aef4e915cfebe1f57db587b48a0"
+  integrity sha512-ti9nGK/skBNWWC2q6Vd2SYQlebv/be1JjEI1JKL7y/S+enF04pCtDYhTrC3fI1pKx299CGPky/OU/EgCcRmhbA==
 
 "@depay/walletconnect-v1@^1.7.8":
   version "1.7.8"
@@ -988,36 +988,36 @@
     "@walletconnect/client" "^1.7.8"
     "@walletconnect/qrcode-modal" "^1.7.8"
 
-"@depay/web3-blockchains@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-5.0.2.tgz#d83ec94a781fa536b515d9776ef191c3681646df"
-  integrity sha512-rziOmQNjcENroas13cSn+/eoBDXfIu8gGV9+dpPUNIbhyLJ9wNr/hv7w1hLEXVfa1fVvhc4ORnO71uv+sZfk1A==
+"@depay/web3-blockchains@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-6.0.2.tgz#b6ad3c16977a3a961440512f24febce246320c3a"
+  integrity sha512-LriosugZfZ4ohc8K3ISPJ2RdvbIwG4OsbL5OtXWLteP6KhAST3IKP+GMoWaXIC9EuH5GlBBQizr4/NLS2ecxWQ==
 
-"@depay/web3-client@^9.2.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-9.2.0.tgz#ed26ed582c7d53bd89331ee9ab07df813454e629"
-  integrity sha512-0PEt48Ukk1z6mvR90Lfy6r+Ts7FBQuHJCTfm6FjTIn4IWgvshDnDR9oadrUP/85vL3sDcAqGtF8H2AP4sNPHRg==
+"@depay/web3-client@^9.3.2":
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-9.3.2.tgz#eb752600cb29cebfd1641e3b1dba3982a2592950"
+  integrity sha512-kmbQyKglM6B5JBD7VSFhlJi6MXXT3u/a5dO+wYhzU8e9bKvIWUoqXsfWehqIdJQPklUXy4MdH3XGn53NNJksmw==
 
-"@depay/web3-constants@^6.2.1":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.2.1.tgz#32d1662d3febb4bc2edc297b26f581ebad7d1887"
-  integrity sha512-r1fTy1P4JQWdo+1UE1JmOjt4p7BFQSzTOE4Voqoo5asddJb8NUjNEc6pjB1TDaurp7yBJ3Jpsf+P18Mno3xZvg==
+"@depay/web3-constants@^6.2.2":
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.2.2.tgz#8b7b4b234f5559477a2b1f6ca9aaa4b57dd37934"
+  integrity sha512-gIXMEOpJHbfV3feNJ1Cy3TyW9qRlV4YYZ1KKLe0i5q+uSKX6VHciQzZFtvbOi0owTf2Y+g2K8jeo+1lmSf2pSA==
 
-"@depay/web3-mock@^13.12.4":
-  version "13.12.4"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.12.4.tgz#2af6248fdb4f6dec7acdce84f04108bbcf1fe59d"
-  integrity sha512-5QBMq0bZAY0GAdHDYia8Zpi04uVzUr5aRzgbRiXP53kyzq/1092o9zxu4EHxq3D6cVeP0KCtw4L1rA4/53DMKA==
+"@depay/web3-mock@^13.13.1":
+  version "13.13.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.13.1.tgz#9df14a083c8958e340fc2a24d27f583409ce5f11"
+  integrity sha512-Z7ovo0XnvdVTbe7WjgVRJrFiTM6vBr45SKffuiN/kJofOiCaTWUtsV8Hl4oJGq1YJh0/qqYnFoKUB5yRzXhFVQ==
   dependencies:
-    "@depay/solana-web3.js" "^1.13.0"
-    "@depay/web3-blockchains" "^5.0.2"
-    "@depay/web3-constants" "^6.2.1"
+    "@depay/solana-web3.js" "^1.17.3"
+    "@depay/web3-blockchains" "^6.0.2"
+    "@depay/web3-constants" "^6.2.2"
     ethers "^5.6.8"
     xhr2 "^0.2.1"
 
-"@depay/web3-tokens@^9.2.1":
-  version "9.2.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.2.1.tgz#7f76eb0623da7c6aa2417bdbe4ce77960a80e566"
-  integrity sha512-Ocjs0Wsh/gSEECqT0KiH+fpa9BgC/8u9Tkd+3MHT4pdr6npwQOL/+91ED25yhcd40/rKdgngc3UglzZZqVO7Yw==
+"@depay/web3-tokens@^9.4.1":
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.4.1.tgz#c8fb7fde988e82b9bd606c5c6e0e1df4c1b7094a"
+  integrity sha512-IIHqJgFx6TDHIVFVa4Gcvbry/2YfCJL0W778EdMPM/RaDDD83PhpoZrzYaM+ElqX23677HbpLrI7Lo1q/U/biw==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
