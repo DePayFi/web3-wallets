@@ -183,34 +183,6 @@ await wallet.switchTo('bsc')
 
 ### Transaction
 
-#### EVM: Transaction
-
-Instances of `Transaction` (e.g. via `sendTransaction`, or `sent`, `succeeded` or `failed` callback) have the following format for EVM blockchains:
-
-`blockchain: string`: Blockchain the transaction belongs to.
-
-`id: string`: Unique identifier of the transaction, also known as transaction hash/signature, only populated if transaction has been submitted to the network.
-
-`url: string`: A url to display the transaction status in a browser on a blockchain explorer.
-
-`from: string`: Address the transaction is sent from.
-
-`nonce: Number`: The number of the sent transactions (from the given address).
-
-`to: string`: Address the transaction is interacting with.
-
-`api: array`: Api of a contract the transaction is interacting with.
-
-`method: string`: The method name of the contract the transaction is interacting with.
-
-`params: object or array`: Params the transaction is passing to the contract method.
-
-`value: string`: Amount/value of the native token the transaction is forwarding as part of the interaction.
-
-`confirmation: Promise`: Returns a promise that resolves once the transaction confirms.
-
-`failure: Promise`: Returns a promise that resolves once the transaction fails.
-
 ### sendTransaction
 
 #### EVM: sendTransaction
