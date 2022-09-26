@@ -223,12 +223,12 @@
                     window.wallet.sendTransaction({
                       blockchain: "solana",
                       from,
-                      instructions: await Web3Tokens.Token.solana.createTransferInstructions({
+                      instructions: [await Web3Tokens.Token.solana.createTransferInstruction({
                         token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
                         amount: '1000000',
                         from,
                         to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
-                      }),
+                      })],
                       sent: function(transaction){ console.log("sent callback", transaction) },
                       confirmed: function(transaction){ console.log("confirmed callack", transaction) },
                       failed: function(transaction){ console.log("failed callack", transaction) } 
