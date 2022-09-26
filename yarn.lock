@@ -988,7 +988,7 @@
     "@walletconnect/client" "^1.7.8"
     "@walletconnect/qrcode-modal" "^1.7.8"
 
-"@depay/web3-blockchains@^6.1.1":
+"@depay/web3-blockchains@^6.0.2", "@depay/web3-blockchains@^6.1.1":
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-6.1.1.tgz#f830a484df2c71047404497a0c4f75af66b573b5"
   integrity sha512-ZJPCv33LPMpAVSKdYP06ctgkcjiWc/H0SopFG237bYXdLqfzTu3YPlbH+oyqzrKdHqinlcd8NQ5xpN1FUmxRig==
@@ -998,15 +998,21 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-9.5.0.tgz#c601fa5591589cb2f021b105e321402e37022001"
   integrity sha512-r2iflfCo3pC7vQxrVQlKk7l/MhnScmROx3gg/x0xzG68rbcWe/yt7VpkCjz4VbiOg9r3lDX99Xeq7jfmNdUQxQ==
 
-"@depay/web3-constants@^6.2.3":
+"@depay/web3-constants@^6.2.2", "@depay/web3-constants@^6.2.3":
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.2.3.tgz#de7625510c0ed5516b2fca6298a0cc1e3e5fc268"
   integrity sha512-bxqOucHltHf8bTyYvtqExAW0g6xssY9fRv/RXZJiv+5UNtR7m7T9z5Zd2PX6ofDQ68Q+84PpZ7ri+teXfekl3g==
 
-"@depay/web3-mock@^12.1.0":
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-12.1.0.tgz#3b704ef2957242dfb69e043d351110719f3c2c77"
-  integrity sha512-+maC6nC5XuawrKUpv5AtCvb6Jf3b42gPT8etufCA8vwqRGXSLcOND2Gw/kXUlOMRte5AYKt6NN2UL490FncVVw==
+"@depay/web3-mock@^13.18.0":
+  version "13.18.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.18.0.tgz#73974577c183a58d8f264e323e645768fd18ddf6"
+  integrity sha512-BKHum3IytyWL8aE1ewRdt9GrtM3CYdHv17FeOHAnEns97BFwGM+rgXPnZhXLKjQv1engPfUxc8bIOqWVhhGiiA==
+  dependencies:
+    "@depay/solana-web3.js" "^1.18.0"
+    "@depay/web3-blockchains" "^6.0.2"
+    "@depay/web3-constants" "^6.2.2"
+    ethers "^5.6.8"
+    xhr2 "^0.2.1"
 
 "@depay/web3-tokens@^9.6.0":
   version "9.6.0"
@@ -6326,6 +6332,11 @@ ws@^8.2.3:
   version "8.6.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.6.0.tgz#e5e9f1d9e7ff88083d0c0dd8281ea662a42c9c23"
   integrity sha512-AzmM3aH3gk0aX7/rZLYvjdvZooofDu3fFOzGqcSnQ1tOcTWwhM/o+q++E8mAyVVIyUdajrkzWUGftaVSDLn1bw==
+
+xhr2@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/xhr2/-/xhr2-0.2.1.tgz#4e73adc4f9cfec9cbd2157f73efdce3a5f108a93"
+  integrity sha512-sID0rrVCqkVNUn8t6xuv9+6FViXjUVXq8H5rWOH2rz9fDNQEd4g0EA2XlcEdJXRz5BMEn4O1pJFdT+z4YHhoWw==
 
 xml-name-validator@^4.0.0:
   version "4.0.0"
