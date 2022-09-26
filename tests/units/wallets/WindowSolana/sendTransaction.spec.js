@@ -25,12 +25,14 @@ describe('window.solana wallet sendTransaction', () => {
 
       describe('complex contract transaction', ()=>{
         beforeEach(async ()=>{
-          let instructions = await Token.solana.createTransferInstructions({ 
-            token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
-            amount: '1000000',
-            from: account,
-            to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
-          })
+          let instructions = [
+            await Token.solana.createTransferInstruction({ 
+              token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
+              amount: '1000000',
+              from: account,
+              to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
+            })
+          ]
 
           transaction = {
             blockchain,

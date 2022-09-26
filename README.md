@@ -288,12 +288,14 @@ import { Token } from '@depay/web3-tokens'
 
 let sentTransaction = await wallet.sendTransaction({
   blockchain: 'solana',
-  instructions: Token.solana.createTransferInstructions({
-    token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
-    amount: '1000000',
-    from: await wallet.account(),
-    to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxas'
-  }),
+  instructions: [
+    await Token.solana.createTransferInstructions({
+      token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
+      amount: '1000000',
+      from: await wallet.account(),
+      to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxas'
+    })
+  ],
   sent: function(transaction){},
   succeeded: function(transaction){},
   failed: function(transaction, error){}
