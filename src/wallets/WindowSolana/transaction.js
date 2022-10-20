@@ -1,6 +1,6 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { Transaction as SolanaTransaction, SystemProgram, PublicKey } from '@depay/solana-web3.js'
-import { provider } from '@depay/web3-client'
+import { getProvider } from '@depay/web3-client'
 import { Transaction } from '../../Transaction'
 
 const POLL_SPEED = 500 // 0.5 seconds
@@ -20,14 +20,15 @@ const sendTransaction = async ({ transaction, wallet })=> {
         count++
         if(count >= MAX_POLLS) { return clearInterval(interval) }
 
-        const { value } = await provider(transaction.blockchain).getSignatureStatus(signature)
+        const provider = await getProvider(transaction.blockchain)
+        const { value } = await provider.getSignatureStatus(signature)
         const confirmationStatus = value?.confirmationStatus
         if(confirmationStatus) {
           const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized'
           if (hasReachedSufficientCommitment) {
             if(value.err) {
               transaction._failed = true
-              const confirmedTransaction = await provider(transaction.blockchain).getConfirmedTransaction(signature)
+              const confirmedTransaction = await provider.getConfirmedTransaction(signature)
               const failedReason = confirmedTransaction?.meta?.logMessages ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null
               if(transaction.failed) transaction.failed(transaction, failedReason)
             } else {
@@ -56,7 +57,8 @@ const submit = ({ transaction, wallet })=> {
 const submitSimpleTransfer = async ({ transaction, wallet })=> {
   let fromPubkey = new PublicKey(await wallet.account())
   let toPubkey = new PublicKey(transaction.to)
-  let recentBlockhash = (await provider(transaction.blockchain).getLatestBlockhash()).blockhash
+  const provider = await getProvider(transaction.blockchain)
+  let recentBlockhash = (await provider.getLatestBlockhash()).blockhash
   let transferTransaction = new SolanaTransaction({
     recentBlockhash,
     feePayer: fromPubkey
@@ -73,7 +75,8 @@ const submitSimpleTransfer = async ({ transaction, wallet })=> {
 
 const submitInstructions = async ({ transaction, wallet })=> {
   let fromPubkey = new PublicKey(await wallet.account())
-  let recentBlockhash = (await provider(transaction.blockchain).getLatestBlockhash()).blockhash
+  const provider = await getProvider(transaction.blockchain)
+  let recentBlockhash = (await provider.getLatestBlockhash()).blockhash
   let transferTransaction = new SolanaTransaction({
     recentBlockhash,
     feePayer: fromPubkey

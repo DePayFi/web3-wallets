@@ -17,7 +17,7 @@ class WalletLink {
   static info = {
     name: 'Coinbase',
     logo: Coinbase.info.logo,
-    blockchains: ['ethereum', 'bsc', 'polygon'],
+    blockchains: ['ethereum', 'bsc', 'polygon', 'velas'],
   }
 
   static isAvailable = ()=>{ return getConnectedInstance() != undefined }

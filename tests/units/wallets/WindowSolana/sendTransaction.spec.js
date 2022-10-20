@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { getWallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { provider, resetCache } from '@depay/web3-client'
+import { getProvider, resetCache } from '@depay/web3-client'
 import { supported as supportedBlockchains } from 'src/blockchains'
 import { SystemProgram, PublicKey, struct, u8, u32, u64 } from '@depay/solana-web3.js'
 import { Token } from '@depay/web3-tokens'
@@ -13,15 +13,15 @@ describe('window.solana wallet sendTransaction', () => {
     describe(blockchain, ()=> {
 
       const account = '2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1'
-      let wallet
-      let transaction
-      let mockedTransaction
+      let wallet, provider, transaction, mockedTransaction
 
-      beforeEach(resetCache)
-      beforeEach(resetMocks)
-      afterEach(resetMocks)
-      beforeEach(()=>mock({ blockchain, accounts: { return: [account] } }))
-      beforeEach(()=>{ wallet = getWallets()[0] })
+      beforeEach(async()=>{
+        resetCache()
+        resetMocks()
+        provider = await getProvider(blockchain)
+        mock({ blockchain, accounts: { return: [account] } })
+        wallet = getWallets()[0]
+      })
 
       describe('complex contract transaction', ()=>{
         beforeEach(async ()=>{
@@ -42,7 +42,7 @@ describe('window.solana wallet sendTransaction', () => {
 
           mockedTransaction = mock({
             blockchain,
-            provider: provider(blockchain),
+            provider,
             transaction: {
               from: account,
               instructions:[{
@@ -142,7 +142,7 @@ describe('window.solana wallet sendTransaction', () => {
 
           mockedTransaction = mock({
             blockchain,
-            provider: provider(blockchain),
+            provider,
             transaction: {
               from: account,
               instructions:[{
@@ -188,7 +188,7 @@ describe('window.solana wallet sendTransaction', () => {
 
           mockedTransaction = mock({
             blockchain,
-            provider: provider(blockchain),
+            provider,
             transaction: {
               from: account,
               instructions:[{
@@ -214,7 +214,7 @@ describe('window.solana wallet sendTransaction', () => {
         it('rejects sendTransaction if submitting simple value transfer transaction fails', async ()=> {
           mockedTransaction = mock({
             blockchain,
-            provider: provider(blockchain),
+            provider,
             transaction: {
               from: account,
               instructions:[{

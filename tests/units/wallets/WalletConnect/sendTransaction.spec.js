@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { getWallets, wallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { provider, resetCache } from '@depay/web3-client'
+import { getProvider, resetCache } from '@depay/web3-client'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('WalletConnect: sendTransaction', () => {
@@ -10,15 +10,15 @@ describe('WalletConnect: sendTransaction', () => {
 
     describe(blockchain, ()=> {
 
-      let wallet
-
+      let wallet, provider
       const account = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-      beforeEach(resetCache)
-      afterEach(resetMocks)
+
       beforeEach(async ()=>{
+        resetCache()
         resetMocks()
-        mock({ accounts: { return: [account] }, blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect })
-        mock({ provider: provider(blockchain), blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect })
+        provider = await getProvider(blockchain)
+        mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnect })
+        mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnect })
         await new wallets.WalletConnect().connect()
         wallet = getWallets()[0]
         expect(wallet.name).toEqual('WalletConnect')
@@ -127,7 +127,8 @@ describe('WalletConnect: sendTransaction', () => {
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
             'bsc': 'https://bscscan.com/tx/',
-            'polygon': 'https://polygonscan.com/tx/'
+            'polygon': 'https://polygonscan.com/tx/',
+            'velas': 'https://evmexplorer.velas.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -269,6 +270,7 @@ describe('WalletConnect: sendTransaction', () => {
             'ethereum': 'https://etherscan.io/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
+            'velas': 'https://evmexplorer.velas.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -339,7 +341,7 @@ describe('WalletConnect: sendTransaction', () => {
             value: 1
           }
 
-          mock({ blockchain: otherBlockchain, provider: provider(blockchain), accounts: { return: [account] } })
+          mock({ blockchain: otherBlockchain, provider, accounts: { return: [account] } })
         })
 
         it('rejects to switch network because it cant switch network automatically (user has to switch)', async ()=> {

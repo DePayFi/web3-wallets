@@ -1,8 +1,8 @@
 import fetchMock from 'fetch-mock'
 import { Blockchain } from '@depay/web3-blockchains'
-import { getWallets, wallets } from 'src'
+import { getWallets, wallets } from 'src/index.evm'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
-import { supported as supportedBlockchains } from 'src/blockchains'
+import { supported as supportedBlockchains } from 'src/blockchains.evm'
 
 describe('window.ethereum wallet', () => {
 
