@@ -1,6 +1,6 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { Transaction } from '../../Transaction'
-import { estimate, provider } from '@depay/web3-client'
+import { estimate, getProvider } from '@depay/web3-client'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
@@ -50,11 +50,12 @@ const sendTransaction = async ({ transaction, wallet })=> {
 
 const retrieveTransaction = async (tx, blockchain)=>{
   let sentTransaction
+  const provider = await getProvider(blockchain)
+  sentTransaction = await provider.getTransaction(tx)
   const maxRetries = 120
   let attempt = 1
-  sentTransaction = await provider(blockchain).getTransaction(tx)
   while (attempt <= maxRetries && !sentTransaction) {
-    sentTransaction = await provider(blockchain).getTransaction(tx)
+    sentTransaction = await provider.getTransaction(tx)
     await (new Promise((resolve)=>setTimeout(resolve, 5000)))
     attempt++;
   }
@@ -70,23 +71,25 @@ const submit = ({ transaction, wallet }) => {
 }
 
 const submitContractInteraction = async ({ transaction, wallet })=>{
+  const provider = await getProvider(transaction.blockchain)
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
     value: transaction.value?.toString(),
     data: await transaction.getData(),
     gas: (await estimate(transaction)).toString(),
-    gasPrice: (await provider(transaction.blockchain).getGasPrice()).toString()
+    gasPrice: (await provider.getGasPrice()).toString()
   })
 }
 
 const submitSimpleTransfer = async ({ transaction, wallet })=>{
+  const provider = await getProvider(transaction.blockchain)
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
     value: transaction.value?.toString(),
     gas: (await estimate(transaction)).toString(),
-    gasPrice: (await provider(transaction.blockchain).getGasPrice()).toString()
+    gasPrice: (await provider.getGasPrice()).toString()
   })
 }
 

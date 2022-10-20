@@ -62,7 +62,7 @@ describe('WalletConnect', () => {
         })
 
         it('receives supported blockchains', async()=> {
-          expect(wallet.blockchains).toEqual(['ethereum', 'bsc', 'polygon'])
+          expect(wallet.blockchains).toEqual(supportedBlockchains.evm)
         })
 
         it('receives connected blockchain', async()=> {

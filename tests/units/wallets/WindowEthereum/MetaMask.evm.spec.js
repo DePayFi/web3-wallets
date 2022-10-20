@@ -1,8 +1,8 @@
-import { getWallets } from 'src'
+import { getWallets } from 'src/index.evm'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
-import { supported as supportedBlockchains } from 'src/blockchains'
+import { supported as supportedBlockchains } from 'src/blockchains.evm'
 
-describe('MetaMask', () => {
+describe('MetaMask (evm)', () => {
 
   supportedBlockchains.evm.forEach((blockchain)=>{
 

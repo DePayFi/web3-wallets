@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { getWallets, wallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { provider } from '@depay/web3-client'
+import { getProvider, resetCache } from '@depay/web3-client'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('WalletLink: sendTransaction', () => {
@@ -10,14 +10,15 @@ describe('WalletLink: sendTransaction', () => {
 
     describe(blockchain, ()=> {
 
-      let wallet
+      let wallet, provider
 
       const account = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-      afterEach(resetMocks)
       beforeEach(async ()=>{
+        resetCache()
         resetMocks()
+        provider = await getProvider(blockchain)
         mock({ accounts: { return: [account] }, blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
-        mock({ provider: provider(blockchain),  blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
+        mock({ provider,  blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
         await new wallets.WalletLink().connect()
         wallet = getWallets()[0]
         expect(wallet.name).toEqual('Coinbase')
@@ -126,6 +127,7 @@ describe('WalletLink: sendTransaction', () => {
             'ethereum': 'https://etherscan.io/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
+            'velas': 'https://evmexplorer.velas.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -266,7 +268,8 @@ describe('WalletLink: sendTransaction', () => {
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
             'bsc': 'https://bscscan.com/tx/',
-            'polygon': 'https://polygonscan.com/tx/'
+            'polygon': 'https://polygonscan.com/tx/',
+            'velas': 'https://evmexplorer.velas.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
