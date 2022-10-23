@@ -1,6 +1,6 @@
 import Coinbase from './wallets/Coinbase'
 import MetaMask from './wallets/MetaMask'
-import WalletConnect from './wallets/WalletConnect'
+import WalletConnect from './wallets/WalletConnect.evm'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
 

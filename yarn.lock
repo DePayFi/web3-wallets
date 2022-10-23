@@ -993,10 +993,15 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-6.2.0.tgz#5ab856ad1ed6aa153e9f25a89c6acb64017367ce"
   integrity sha512-giZCoTFjRBoVDZ9WA1tlTtVtw7Pc81E8krjTrErCyoc94avuFUjFRVSf8k/oUdaQ3Yvt+yLQp3cAovlWD9Gnfg==
 
-"@depay/web3-client@^10.1.4":
-  version "10.1.4"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.1.4.tgz#ccc5bec6ce3c7d78d48f455cf8f528a7c6cd87bd"
-  integrity sha512-uatkwmZF5joQsk8vOfqH3QvalCGNJa90ImOH5geqyEToiUcJ/JGXC0+G3mSZYEdrQh+rsA759nIeYQny5nMhdw==
+"@depay/web3-client-evm@^10.1.6":
+  version "10.1.6"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-10.1.6.tgz#d259c783f6844eb96c838e2184909b59a276ca29"
+  integrity sha512-tkxLN6cAXODJkQeFaFyBTt31UlTkl13jOifXv2feKxLU9V3iw3b9CX2qZtqRDv5zU64av8Tzj7jVZAQhoiqGeA==
+
+"@depay/web3-client@^10.1.6":
+  version "10.1.6"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.1.6.tgz#1c1b622988e4c508ed9ae3a577c90ae544d28fe2"
+  integrity sha512-vHNHFhluKz28LoxuDcf3K09Qw+zbWL7+eJYaCmtP9yjjAYx/ThcM5pbP7cfJIhCNYK4XPAFld2t+3Ay3xbAZeA==
 
 "@depay/web3-constants@^6.3.1":
   version "6.3.1"
@@ -1013,10 +1018,15 @@
     ethers "^5.7.1"
     xhr2 "^0.2.1"
 
-"@depay/web3-tokens@^9.10.0":
-  version "9.10.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.10.0.tgz#4fccd872e87c56666bde00e7ded4b8436347c478"
-  integrity sha512-vWGW6t5bYNYKdRsF8Q8/0ReOpkzfL+6EZaptbYOS8eHyJ9RUex06316RHpOhfV64f0+mcumyTmuqC7O/jtfI1A==
+"@depay/web3-tokens-evm@^9.11.3":
+  version "9.11.3"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens-evm/-/web3-tokens-evm-9.11.3.tgz#2286e28fd1f5b7d3d97557a453c344da258ffd4c"
+  integrity sha512-Hr5hP+hfQjAS74qnkiH8kHnaXHlvGvgHxUIZteT7AbppUTjgCDlx5cN8MePA71ZBGY2kp1liaeH2X22v0WdCyQ==
+
+"@depay/web3-tokens@^9.11.3":
+  version "9.11.3"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.11.3.tgz#6bab6c48bbfe08145128cf865955858c96e76ecb"
+  integrity sha512-dIeYfZ3OoE4OAkJ4AhPDeN9ZK/Dl79xp698HGcSgsr4syFGMRjDAD48wULcTPjQEJFUarEmXuX5+He5WO4xRRA==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
