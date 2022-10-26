@@ -27,18 +27,18 @@ describe('Coinbase WalletLink', () => {
 
       describe('with supported wallet connected', ()=>{
 
-        const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
+        const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
         beforeEach(resetMocks)
         beforeEach(async()=>{
-          mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink, accounts: { return: [account] } })
+          mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink, accounts: { return: accounts } })
           await new wallets.WalletLink().connect()
           wallet = getWallets()[0]
           expect(wallet.name).toEqual('Coinbase')
         })
 
-        it('requires to be connected first', async()=> {
-          let accounts = wallet.connect()
-          expect(accounts).toEqual(accounts)
+        it.only('requires to be connected first', async()=> {
+          let account = await wallet.connect()
+          expect(account).toEqual(accounts[0])
         });
 
         it('provides a wallet name', async()=> {
@@ -50,7 +50,7 @@ describe('Coinbase WalletLink', () => {
         })
 
         it('provides currently connected main account', async()=> {
-          expect(await wallet.account()).toEqual(account)
+          expect(await wallet.account()).toEqual(accounts[0])
         })
 
         it('provides the walletLink wallet uppon requesting getWallet if there is a connected instance', async()=> {

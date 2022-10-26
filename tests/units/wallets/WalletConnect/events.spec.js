@@ -13,19 +13,20 @@ describe('WalletConnect: events', () => {
 
       describe('with supported wallet connected', ()=>{
 
-        const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
+        const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
         beforeEach(resetMocks)
         beforeEach(async ()=>{
           WalletConnect.setConnectedInstance(undefined)
           mock({
             blockchain, 
-            accounts: { return: [account] }, 
+            accounts: { return: accounts }, 
             wallet: 'walletconnect',
             connector: wallets.WalletConnect
           })
-          await new wallets.WalletConnect().connect()
+          let account = await new wallets.WalletConnect().connect()
           wallet = getWallets()[0]
           expect(wallet.name).toEqual('WalletConnect')
+          expect(account).toEqual(accounts[0])
         })
 
         it('register an event to be called back if account change', async()=> {
@@ -33,8 +34,8 @@ describe('WalletConnect: events', () => {
           wallet.on('account', (account)=>{
             newAccount = account
           })
-          trigger('session_update', [null, { params: [{ accounts: [account] }] }])
-          expect(newAccount).toEqual(account)
+          trigger('session_update', [null, { params: [{ accounts: accounts }] }])
+          expect(newAccount).toEqual(accounts[0])
         })
 
         it('allows to deregister an event to be called back if account change', async()=> {
@@ -43,7 +44,7 @@ describe('WalletConnect: events', () => {
             newAccount = account
           })
           wallet.off('account', callback)
-          trigger('session_update', [null, { params: [{ accounts: [account] }] }])
+          trigger('session_update', [null, { params: [{ accounts: accounts }] }])
           expect(newAccount).toEqual(undefined)
         })
       })

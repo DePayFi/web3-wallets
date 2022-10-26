@@ -17,7 +17,7 @@ let wallets = getWallets()
 let wallet = wallets[0]
 
 wallet.name // MetaMask
-wallet.connect()
+await wallet.connect() // 0x317D875cA3B9f8d14f960486C0d1D1913be74e90
 ```
 
 ## Demo
@@ -117,7 +117,7 @@ await wallet.account() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 
 ### Connect an account
 
-`async connect():array`: Connects accounts. Potentially opens wallet connect screen. Provides connected accounts in async return. If wallet fails to connect, also returns an empty array `[]`.
+`async connect():string`: Connects account. Potentially opens wallet connect screen. Provides connected account in async return. If wallet fails to connect, it returns `undefined`.
 
 ```javascript
 await wallet.connect() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'

@@ -41,8 +41,8 @@ describe('WalletConnect', () => {
         })
 
         it('requires to be connected first', async()=> {
-          let accounts = await wallet.connect()
-          expect(accounts).toEqual([account])
+          let account = await wallet.connect()
+          expect(account).toEqual(account)
         });
 
         it('provides a wallet name', async()=> {

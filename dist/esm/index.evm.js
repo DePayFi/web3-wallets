@@ -37778,7 +37778,7 @@ class WalletConnect {
       this.connectedAccounts = accounts;
       this.connectedChainId = chainId;
 
-      return accounts
+      return accounts[0]
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error);
       return undefined
