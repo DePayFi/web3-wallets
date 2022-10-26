@@ -57,6 +57,14 @@ This library supports the following wallets:
 - [Rainbow](https://rainbow.me/)
 - and more...
 
+## Platform specific packaging
+
+In case you want to use and package only specific platforms, use platform-specific packages:
+
+```javascript
+import { getWallets } from '@depay/web3-wallets-evm'
+```
+
 ## Functionalities
 
 ### getWallets
