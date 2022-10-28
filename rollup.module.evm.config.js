@@ -1,6 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs'
 import globals from './rollup.globals'
-import pkg from './package.json'
+import pkg from './package.evm.json'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import sucrase from '@rollup/plugin-sucrase'

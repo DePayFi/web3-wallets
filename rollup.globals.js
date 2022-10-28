@@ -5,5 +5,6 @@ export default {
   '@depay/web3-client': 'Web3Client',
   '@depay/web3-client-evm': 'Web3Client',
   '@depay/coinbase-wallet-sdk': 'CoinbaseWalletSdk',
-  '@depay/solana-web3.js': 'SolanaWeb3js'
+  '@depay/solana-web3.js': 'SolanaWeb3js',
+  'ethers': 'ethers'
 }
