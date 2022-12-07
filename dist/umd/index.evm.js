@@ -526,13 +526,40 @@
 
     switchTo(blockchainName) {
       return new Promise((resolve, reject)=>{
-        reject({ code: 'NOT_SUPPORTED' });
+        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        this.connector.sendCustomRequest({ 
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: blockchain.id }],
+        }).then(resolve).catch((error)=> {
+          if(error && typeof error.message == 'string' && error.message.match('wallet_addEthereumChain')){ // chain not yet added
+            this.addNetwork(blockchainName)
+              .then(()=>this.switchTo(blockchainName).then(resolve))
+              .catch(reject);
+          } else {
+            reject(error);
+          }
+        });
       })
     }
 
     addNetwork(blockchainName) {
       return new Promise((resolve, reject)=>{
-        reject({ code: 'NOT_SUPPORTED' });
+        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        this.connector.sendCustomRequest({ 
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: blockchain.id,
+            chainName: blockchain.fullName,
+            nativeCurrency: {
+              name: blockchain.currency.name,
+              symbol: blockchain.currency.symbol,
+              decimals: blockchain.currency.decimals
+            },
+            rpcUrls: [blockchain.rpc],
+            blockExplorerUrls: [blockchain.explorer],
+            iconUrls: [blockchain.logo]
+          }],
+        }).then(resolve).catch(reject);
       })
     }
 

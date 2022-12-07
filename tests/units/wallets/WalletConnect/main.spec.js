@@ -1,4 +1,5 @@
 import WalletConnect from 'src/wallets/WalletConnect'
+import { Blockchain } from '@depay/web3-blockchains'
 import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
@@ -70,16 +71,56 @@ describe('WalletConnect', () => {
           expect(await wallet.connectedTo()).toEqual(blockchain)
         })
 
-        it('rejects switchTo with NOT_SUPPORTED', async()=> {
-          await expect(
-            wallet.switchTo('bsc')
-          ).rejects.toEqual({ code: 'NOT_SUPPORTED' })
+        it('switches network', async()=> {
+          let switchMock = mock({
+            blockchain: 'ethereum',
+            network: { switchTo: 'bsc' }
+          })
+          await wallet.switchTo('bsc')
+          expect(switchMock).toHaveBeenCalled()
         })
 
-        it('rejects addNetwork with NOT_SUPPORTED', async()=> {
-          await expect(
-            wallet.addNetwork('bsc')
-          ).rejects.toEqual({ code: 'NOT_SUPPORTED' })
+        it('adds network', async()=> {
+          let switchMock
+          let blockchain = Blockchain.findByName('bsc')
+
+          mock({
+            blockchain: 'ethereum',
+            network: { 
+              switchTo: 'bsc',
+              error: ()=>{
+                switchMock = mock({
+                  blockchain: 'ethereum',
+                  network: { switchTo: 'bsc' }
+                })
+                return { message: '... wallet_addEthereumChain ...' }
+              }
+            }
+          })
+
+          let addMock = mock({
+            blockchain: 'ethereum',
+            network: {
+              add: {
+                chainId: blockchain.id,
+                chainName: blockchain.fullName,
+                nativeCurrency: {
+                  name: blockchain.currency.name,
+                  symbol: blockchain.currency.symbol,
+                  decimals: blockchain.currency.decimals
+                },
+                rpcUrls: [blockchain.rpc],
+                blockExplorerUrls: [blockchain.explorer],
+                iconUrls: [blockchain.logo]
+              }
+            }
+          })
+          
+          await wallet.switchTo('bsc')
+
+          expect(switchMock).toHaveBeenCalled()
+          expect(addMock).toHaveBeenCalled()
+          expect(await wallet.connectedTo('bsc')).toEqual(true)
         })
       })
     })

@@ -336,6 +336,28 @@
           </div>
         </div>
 
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Switch network</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test switching network.</div>
+                  <select id="switchingNetwork">
+                    <option value="ethereum">Ethereum</option>
+                    <option value="bsc">BSC</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="velas">Velas</option>
+                  </select>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='window.wallet.switchTo(document.getElementById("switchingNetwork").value)'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </body>
