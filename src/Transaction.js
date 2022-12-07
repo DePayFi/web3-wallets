@@ -50,8 +50,6 @@ class Transaction {
       return fragment.inputs.map((input) => {
         return this.params[input.name]
       })
-    } else {
-      throw 'Contract params have wrong type!'
     }
   }
 
@@ -60,9 +58,16 @@ class Transaction {
   }
 
   async getData() {
-    let populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
-      null, this.getContractArguments()
-    )
+    let contractArguments = this.getContractArguments()
+    let populatedTransaction
+    if(contractArguments) {
+      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
+        null, contractArguments
+      )
+    } else {
+      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(null)
+    }
+     
     return populatedTransaction.data
   }
 

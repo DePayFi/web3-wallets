@@ -54,11 +54,17 @@ const submit = ({ transaction, provider, signer }) => {
 
 const submitContractInteraction = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider)
-  return contract
-    .connect(signer)
-    [transaction.method](...transaction.getContractArguments({ contract }), {
+  let contractArguments = transaction.getContractArguments({ contract })
+  let method = contract.connect(signer)[transaction.method]
+  if(contractArguments) {
+    return method(...contractArguments, {
       value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
     })
+  } else {
+    return method({
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+    })
+  }
 }
 
 const submitSimpleTransfer = ({ transaction, signer })=>{

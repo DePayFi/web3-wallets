@@ -55,8 +55,6 @@ class Transaction {
       return fragment.inputs.map((input) => {
         return this.params[input.name]
       })
-    } else {
-      throw 'Contract params have wrong type!'
     }
   }
 
@@ -65,9 +63,16 @@ class Transaction {
   }
 
   async getData() {
-    let populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
-      null, this.getContractArguments()
-    );
+    let contractArguments = this.getContractArguments();
+    let populatedTransaction;
+    if(contractArguments) {
+      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
+        null, contractArguments
+      );
+    } else {
+      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(null);
+    }
+     
     return populatedTransaction.data
   }
 
@@ -150,11 +155,17 @@ const submit$2 = ({ transaction, provider, signer }) => {
 
 const submitContractInteraction$2 = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider);
-  return contract
-    .connect(signer)
-    [transaction.method](...transaction.getContractArguments({ contract }), {
+  let contractArguments = transaction.getContractArguments({ contract });
+  let method = contract.connect(signer)[transaction.method];
+  if(contractArguments) {
+    return method(...contractArguments, {
       value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
     })
+  } else {
+    return method({
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+    })
+  }
 };
 
 const submitSimpleTransfer$2 = ({ transaction, signer })=>{
@@ -611,11 +622,17 @@ const submit = ({ transaction, provider, signer }) => {
 
 const submitContractInteraction = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider);
-  return contract
-    .connect(signer)
-    [transaction.method](...transaction.getContractArguments({ contract }), {
+  let contractArguments = transaction.getContractArguments({ contract });
+  let method = contract.connect(signer)[transaction.method];
+  if(contractArguments) {
+    return method(...contractArguments, {
       value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
     })
+  } else {
+    return method({
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+    })
+  }
 };
 
 const submitSimpleTransfer = ({ transaction, signer })=>{

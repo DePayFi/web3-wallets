@@ -36,7 +36,7 @@ describe('Coinbase WalletLink', () => {
           expect(wallet.name).toEqual('Coinbase')
         })
 
-        it.only('requires to be connected first', async()=> {
+        it('requires to be connected first', async()=> {
           let account = await wallet.connect()
           expect(account).toEqual(accounts[0])
         });
