@@ -116,17 +116,35 @@ class WalletConnect {
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
+      let resolved, rejected
       const blockchain = Blockchain.findByName(blockchainName)
+      setTimeout(async()=>{
+        if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
+          reject({ code: 'NOT_SUPPORTED' })
+        } else {
+          resolve()
+        }
+      }, 3000)
       this.connector.sendCustomRequest({ 
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
-      }).then(resolve).catch((error)=> {
-        if(error && typeof error.message == 'string' && error.message.match('wallet_addEthereumChain')){ // chain not yet added
+      }).then(()=>{
+        resolved = true
+        resolve()
+      }).catch((error)=> {
+        if(error && typeof error.message == 'string' && error.message.match('addEthereumChain')){ // chain not yet added
           this.addNetwork(blockchainName)
-            .then(()=>this.switchTo(blockchainName).then(resolve))
-            .catch(reject)
+            .then(()=>this.switchTo(blockchainName).then(()=>{
+              resolved = true
+              resolve()
+            }))
+            .catch(()=>{
+              rejected = true
+              reject({ code: 'NOT_SUPPORTED' })
+            })
         } else {
-          reject(error)
+          rejected = true
+          reject({ code: 'NOT_SUPPORTED' })
         }
       })
     })
