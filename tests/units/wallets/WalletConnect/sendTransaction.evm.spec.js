@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
-import { getWallets, wallets } from 'src'
+import { getWallets, wallets } from 'src/index.evm'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { getProvider, resetCache } from '@depay/web3-client'
+import { getProvider, resetCache } from '@depay/web3-client-evm'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('WalletConnect: sendTransaction', () => {

@@ -39,6 +39,7 @@ describe('WalletConnect', () => {
           mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect, accounts: { return: [account] } })
           await new wallets.WalletConnect().connect()
           wallet = getWallets()[0]
+          expect(wallet.name).toEqual('WalletConnect')
         })
 
         it('requires to be connected first', async()=> {

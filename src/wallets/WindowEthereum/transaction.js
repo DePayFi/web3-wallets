@@ -7,6 +7,9 @@ const sendTransaction = async ({ transaction, wallet })=> {
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
   }
+  if((await wallet.connectedTo(transaction.blockchain)) == false) {
+    throw({ code: 'WRONG_NETWORK' })
+  }
   await transaction.prepare({ wallet })
   let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
   let signer = provider.getSigner(0)
