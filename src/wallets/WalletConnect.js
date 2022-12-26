@@ -45,14 +45,14 @@ class WalletConnect {
     instance.on("connect", (error, payload) => {
       if (error) { throw error }
       const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
       this.connectedChainId = chainId
     })
 
     instance.on("session_update", (error, payload) => {
       if (error) { throw error }
       const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
       this.connectedChainId = chainId
     })
 
@@ -88,12 +88,13 @@ class WalletConnect {
         this.connector = this.newWalletConnectInstance()
       }
 
-      const { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
+      let { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
 
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this)
       }
 
+      accounts = accounts.map((account)=>ethers.utils.getAddress(account))
       this.connectedAccounts = accounts
       this.connectedChainId = chainId
 
@@ -176,8 +177,10 @@ class WalletConnect {
     switch (event) {
       case 'account':
         internalCallback = (error, payload) => {
-          const { accounts } = payload.params[0]
-          if(accounts instanceof Array) { callback(accounts[0]) }
+          if(payload && payload.params && payload.params[0].accounts && payload.params[0].accounts instanceof Array) {
+            const accounts = payload.params[0].accounts.map((account)=>ethers.utils.getAddress(account))
+            callback(accounts[0])
+          }
         }
         this.connector.on("session_update", internalCallback)
         break

@@ -1,5 +1,6 @@
 import WalletLink from 'src/wallets/WalletLink'
 import { Blockchain } from '@depay/web3-blockchains'
+import { ethers } from 'ethers'
 import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
@@ -38,7 +39,7 @@ describe('Coinbase WalletLink', () => {
 
         it('requires to be connected first', async()=> {
           let account = await wallet.connect()
-          expect(account).toEqual(accounts[0])
+          expect(account).toEqual(ethers.utils.getAddress(accounts[0]))
         });
 
         it('provides a wallet name', async()=> {
@@ -50,7 +51,7 @@ describe('Coinbase WalletLink', () => {
         })
 
         it('provides currently connected main account', async()=> {
-          expect(await wallet.account()).toEqual(accounts[0])
+          expect(await wallet.account()).toEqual(ethers.utils.getAddress(accounts[0]))
         })
 
         it('provides the walletLink wallet uppon requesting getWallet if there is a connected instance', async()=> {

@@ -1,5 +1,6 @@
-import { getWallets, wallets, supported } from 'src'
 import WalletConnect from 'src/wallets/WalletConnect'
+import { ethers } from 'ethers'
+import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
@@ -26,7 +27,7 @@ describe('WalletConnect: events', () => {
           let account = await new wallets.WalletConnect().connect()
           wallet = getWallets()[0]
           expect(wallet.name).toEqual('WalletConnect')
-          expect(account).toEqual(accounts[0])
+          expect(account).toEqual(ethers.utils.getAddress(accounts[0]))
         })
 
         it('register an event to be called back if account change', async()=> {
@@ -35,7 +36,7 @@ describe('WalletConnect: events', () => {
             newAccount = account
           })
           trigger('session_update', [null, { params: [{ accounts: accounts }] }])
-          expect(newAccount).toEqual(accounts[0])
+          expect(newAccount).toEqual(ethers.utils.getAddress(accounts[0]))
         })
 
         it('allows to deregister an event to be called back if account change', async()=> {

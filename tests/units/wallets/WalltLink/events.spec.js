@@ -1,5 +1,6 @@
 import fetchMock from 'fetch-mock'
 import { Blockchain } from '@depay/web3-blockchains'
+import { ethers } from 'ethers'
 import { getWallets, wallets } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
@@ -34,7 +35,7 @@ describe('WalletLink: events', () => {
 
           trigger('accountsChanged', [account])
 
-          expect(walletChangedTo).toEqual(account)
+          expect(walletChangedTo).toEqual(ethers.utils.getAddress(account))
         })
 
         it('allows to deregisters account change event', async () => {

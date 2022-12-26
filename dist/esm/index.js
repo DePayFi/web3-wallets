@@ -13,8 +13,8 @@ class Transaction {
 
     // required
     this.blockchain = blockchain;
-    this.from = from;
-    this.to = to;
+    this.from = (from && from.match('0x')) ? ethers.utils.getAddress(from) : from;
+    this.to = (to && to.match('0x')) ? ethers.utils.getAddress(to) : to;
 
     // optional
     this.value = _optionalChain$8([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
@@ -214,13 +214,13 @@ class WindowEthereum {
 
   async account() {
     if(!_optionalChain$7([window, 'optionalAccess', _15 => _15.ethereum])) { return undefined }
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    const accounts = (await window.ethereum.request({ method: 'eth_accounts' })).map((address)=>ethers.utils.getAddress(address));
     return accounts[0]
   }
 
   async connect() {
     if(!_optionalChain$7([window, 'optionalAccess', _16 => _16.ethereum])) { return undefined }
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = (await window.ethereum.request({ method: 'eth_requestAccounts' })).map((address)=>ethers.utils.getAddress(address));
     return accounts[0]
   }
 
@@ -228,7 +228,7 @@ class WindowEthereum {
     let internalCallback;
     switch (event) {
       case 'account':
-        internalCallback = (accounts) => callback(accounts[0]);
+        internalCallback = (accounts) => callback(ethers.utils.getAddress(accounts[0]));
         window.ethereum.on('accountsChanged', internalCallback);
         break
     }
@@ -650,14 +650,14 @@ class WalletConnect {
     instance.on("connect", (error, payload) => {
       if (error) { throw error }
       const { accounts, chainId } = payload.params[0];
-      this.connectedAccounts = accounts;
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account));
       this.connectedChainId = chainId;
     });
 
     instance.on("session_update", (error, payload) => {
       if (error) { throw error }
       const { accounts, chainId } = payload.params[0];
-      this.connectedAccounts = accounts;
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account));
       this.connectedChainId = chainId;
     });
 
@@ -693,12 +693,13 @@ class WalletConnect {
         this.connector = this.newWalletConnectInstance();
       }
 
-      const { accounts, chainId } = await this.connector.connect({ chainId: _optionalChain([options, 'optionalAccess', _ => _.chainId]) });
+      let { accounts, chainId } = await this.connector.connect({ chainId: _optionalChain([options, 'optionalAccess', _ => _.chainId]) });
 
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance$1(this);
       }
 
+      accounts = accounts.map((account)=>ethers.utils.getAddress(account));
       this.connectedAccounts = accounts;
       this.connectedChainId = chainId;
 
@@ -781,8 +782,10 @@ class WalletConnect {
     switch (event) {
       case 'account':
         internalCallback = (error, payload) => {
-          const { accounts } = payload.params[0];
-          if(accounts instanceof Array) { callback(accounts[0]); }
+          if(payload && payload.params && payload.params[0].accounts && payload.params[0].accounts instanceof Array) {
+            const accounts = payload.params[0].accounts.map((account)=>ethers.utils.getAddress(account));
+            callback(accounts[0]);
+          }
         };
         this.connector.on("session_update", internalCallback);
         break
@@ -922,7 +925,7 @@ class WalletLink {
 
   async account() {
     if(this.connectedAccounts == undefined) { return }
-    return this.connectedAccounts[0]
+    return ethers.utils.getAddress(this.connectedAccounts[0])
   }
 
   async connect(options) {
@@ -932,6 +935,7 @@ class WalletLink {
     if(accounts instanceof Array && accounts.length) {
       setConnectedInstance(this);
     }
+    accounts = accounts.map((account)=>ethers.utils.getAddress(account));
     this.connectedAccounts = accounts;
     this.connectedChainId = await this.connector.getChainId();
     return accounts[0]
@@ -990,7 +994,7 @@ class WalletLink {
     let internalCallback;
     switch (event) {
       case 'account':
-        internalCallback = (accounts) => callback(accounts[0]);
+        internalCallback = (accounts) => callback(ethers.utils.getAddress(accounts[0]));
         this.connector.on('accountsChanged', internalCallback);
         break
     }

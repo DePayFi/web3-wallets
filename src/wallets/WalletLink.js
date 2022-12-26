@@ -42,7 +42,7 @@ class WalletLink {
 
   async account() {
     if(this.connectedAccounts == undefined) { return }
-    return this.connectedAccounts[0]
+    return ethers.utils.getAddress(this.connectedAccounts[0])
   }
 
   async connect(options) {
@@ -52,6 +52,7 @@ class WalletLink {
     if(accounts instanceof Array && accounts.length) {
       setConnectedInstance(this)
     }
+    accounts = accounts.map((account)=>ethers.utils.getAddress(account))
     this.connectedAccounts = accounts
     this.connectedChainId = await this.connector.getChainId()
     return accounts[0]
@@ -110,7 +111,7 @@ class WalletLink {
     let internalCallback
     switch (event) {
       case 'account':
-        internalCallback = (accounts) => callback(accounts[0])
+        internalCallback = (accounts) => callback(ethers.utils.getAddress(accounts[0]))
         this.connector.on('accountsChanged', internalCallback)
         break
     }

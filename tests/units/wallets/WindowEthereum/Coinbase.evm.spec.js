@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import { getWallets } from 'src/index.evm'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains.evm'
@@ -22,11 +23,11 @@ describe('Coinbase Wallet (evm)', () => {
       });
 
       it('provides a connect function', async () => {
-        expect(await wallet.connect()).toStrictEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045');
+        expect(await wallet.connect()).toStrictEqual(ethers.utils.getAddress('0xd8da6bf26964af9d7eed9e03e53415d37aa96045'))
       });
 
       it('provides an account function', async () => {
-        expect(await wallet.account()).toStrictEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045');
+        expect(await wallet.account()).toStrictEqual(ethers.utils.getAddress('0xd8da6bf26964af9d7eed9e03e53415d37aa96045'))
       });
 
       it('provides an logo', async () => {
@@ -42,7 +43,7 @@ describe('Coinbase Wallet (evm)', () => {
 
         trigger('accountsChanged', [account])
 
-        expect(accountChangedTo).toEqual(account)
+        expect(accountChangedTo).toEqual(ethers.utils.getAddress(account))
       })
 
       it('provides the blockchains that are supported by the wallet', () => {

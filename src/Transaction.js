@@ -7,8 +7,8 @@ class Transaction {
 
     // required
     this.blockchain = blockchain
-    this.from = from
-    this.to = to
+    this.from = (from && from.match('0x')) ? ethers.utils.getAddress(from) : from
+    this.to = (to && to.match('0x')) ? ethers.utils.getAddress(to) : to
 
     // optional
     this.value = Transaction.bigNumberify(value, blockchain)?.toString()

@@ -4,14 +4,14 @@ import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/
 import { getProvider, resetCache } from '@depay/web3-client-evm'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('WalletConnect: sendTransaction', () => {
+describe('WalletConnect: sendTransaction (evm)', () => {
 
   supportedBlockchains.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
       let wallet, provider
-      const account = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+      const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
 
       beforeEach(async ()=>{
         resetCache()
@@ -66,9 +66,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(submittedTransaction.id).toBeDefined()
           expect(submittedTransaction.url).toBeDefined()
           expect(submittedTransaction.blockchain).toEqual(blockchain)
-          expect(submittedTransaction.from).toEqual(account)
+          expect(submittedTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(submittedTransaction.nonce).toEqual(0)
-          expect(submittedTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(submittedTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(submittedTransaction.api).toEqual(api)
           expect(submittedTransaction.method).toEqual(method)
           expect(submittedTransaction.params).toEqual(params)
@@ -161,9 +161,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(sentCallbackTransaction.id).toBeDefined()
           expect(sentCallbackTransaction.url).toBeDefined()
           expect(sentCallbackTransaction.blockchain).toEqual(blockchain)
-          expect(sentCallbackTransaction.from).toEqual(account)
+          expect(sentCallbackTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(sentCallbackTransaction.nonce).toEqual(0)
-          expect(sentCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(sentCallbackTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(sentCallbackTransaction.api).toEqual(api)
           expect(sentCallbackTransaction.method).toEqual(method)
           expect(sentCallbackTransaction.params).toEqual(params)
@@ -178,9 +178,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(succeededCallbackTransaction.id).toBeDefined()
           expect(succeededCallbackTransaction.url).toBeDefined()
           expect(succeededCallbackTransaction.blockchain).toEqual(blockchain)
-          expect(succeededCallbackTransaction.from).toEqual(account)
+          expect(succeededCallbackTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(succeededCallbackTransaction.nonce).toEqual(0)
-          expect(succeededCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(succeededCallbackTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(succeededCallbackTransaction.api).toEqual(api)
           expect(succeededCallbackTransaction.method).toEqual(method)
           expect(succeededCallbackTransaction.params).toEqual(params)
@@ -195,9 +195,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(failedCallbackTransaction.id).toBeDefined()
           expect(failedCallbackTransaction.url).toBeDefined()
           expect(failedCallbackTransaction.blockchain).toEqual(blockchain)
-          expect(failedCallbackTransaction.from).toEqual(account)
+          expect(failedCallbackTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(failedCallbackTransaction.nonce).toEqual(0)
-          expect(failedCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(failedCallbackTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(failedCallbackTransaction.api).toEqual(api)
           expect(failedCallbackTransaction.method).toEqual(method)
           expect(failedCallbackTransaction.params).toEqual(params)
@@ -227,9 +227,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(submittedTransaction.id).toBeDefined()
           expect(submittedTransaction.url).toBeDefined()
           expect(submittedTransaction.blockchain).toEqual(blockchain)
-          expect(submittedTransaction.from).toEqual(account)
+          expect(submittedTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(submittedTransaction.nonce).toEqual(0)
-          expect(submittedTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(submittedTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(submittedTransaction.value.toString()).toEqual('1000000000000000000')
           expect(mockedTransaction).toHaveBeenCalled()
         })
@@ -250,7 +250,7 @@ describe('WalletConnect: sendTransaction', () => {
 
         it('sets the from address if transaction has been sent', async ()=>{
           let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(submittedTransaction.from).toEqual(account)
+          expect(submittedTransaction.from).toEqual(ethers.utils.getAddress(account))
         })
 
         it('sends transaction with value provided as number', async ()=> {
@@ -303,7 +303,7 @@ describe('WalletConnect: sendTransaction', () => {
           expect(sentCallbackTransaction.id).toBeDefined()
           expect(sentCallbackTransaction.url).toBeDefined()
           expect(sentCallbackTransaction.blockchain).toEqual(blockchain)
-          expect(sentCallbackTransaction.from).toEqual(account)
+          expect(sentCallbackTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(sentCallbackTransaction.nonce).toEqual(0)
           expect(sentCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
           expect(sentCallbackTransaction.value.toString()).toEqual('1000000000000000000')
@@ -318,9 +318,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(succeededCallbackTransaction.id).toBeDefined()
           expect(succeededCallbackTransaction.url).toBeDefined()
           expect(succeededCallbackTransaction.blockchain).toEqual(blockchain)
-          expect(succeededCallbackTransaction.from).toEqual(account)
+          expect(succeededCallbackTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(succeededCallbackTransaction.nonce).toEqual(0)
-          expect(succeededCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(succeededCallbackTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(succeededCallbackTransaction.value.toString()).toEqual('1000000000000000000')
         })
 
@@ -333,9 +333,9 @@ describe('WalletConnect: sendTransaction', () => {
           expect(failedCallbackTransaction.id).toBeDefined()
           expect(failedCallbackTransaction.url).toBeDefined()
           expect(failedCallbackTransaction.blockchain).toEqual(blockchain)
-          expect(failedCallbackTransaction.from).toEqual(account)
+          expect(failedCallbackTransaction.from).toEqual(ethers.utils.getAddress(account))
           expect(failedCallbackTransaction.nonce).toEqual(0)
-          expect(failedCallbackTransaction.to).toEqual('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+          expect(failedCallbackTransaction.to).toEqual(ethers.utils.getAddress('0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'))
           expect(failedCallbackTransaction.value.toString()).toEqual('1000000000000000000')
         })
       })

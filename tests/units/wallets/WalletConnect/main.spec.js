@@ -1,5 +1,6 @@
 import WalletConnect from 'src/wallets/WalletConnect'
 import { Blockchain } from '@depay/web3-blockchains'
+import { ethers } from 'ethers'
 import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
@@ -44,7 +45,7 @@ describe('WalletConnect', () => {
 
         it('requires to be connected first', async()=> {
           let account = await wallet.connect()
-          expect(account).toEqual(account)
+          expect(account).toEqual(ethers.utils.getAddress(account))
         });
 
         it('provides a wallet name', async()=> {
@@ -56,7 +57,7 @@ describe('WalletConnect', () => {
         })
 
         it('provides currently connected main account', async()=> {
-          expect(await wallet.account()).toEqual(account)
+          expect(await wallet.account()).toEqual(ethers.utils.getAddress(account))
         })
 
         it('provides the walletConnect wallet uppon requesting getWallet if there is a connected instance', async()=> {

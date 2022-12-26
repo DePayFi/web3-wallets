@@ -11,7 +11,7 @@ describe('window.ethereum wallet replaced transactions (evm)', () => {
       
       let wallet
 
-      const account = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
+      const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
       beforeEach(resetMocks)
       beforeEach(()=>{ 
         mock({ blockchain, accounts: { return: [account] }})

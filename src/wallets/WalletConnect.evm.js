@@ -45,14 +45,14 @@ class WalletConnect {
     instance.on("connect", (error, payload) => {
       if (error) { throw error }
       const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
       this.connectedChainId = chainId
     })
 
     instance.on("session_update", (error, payload) => {
       if (error) { throw error }
       const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
       this.connectedChainId = chainId
     })
 
@@ -88,12 +88,13 @@ class WalletConnect {
         this.connector = this.newWalletConnectInstance()
       }
 
-      const { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
+      let { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
 
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this)
       }
 
+      accounts = accounts.map((account)=>ethers.utils.getAddress(account))
       this.connectedAccounts = accounts
       this.connectedChainId = chainId
 
@@ -116,17 +117,35 @@ class WalletConnect {
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
+      let resolved, rejected
       const blockchain = Blockchain.findByName(blockchainName)
+      setTimeout(async()=>{
+        if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
+          reject({ code: 'NOT_SUPPORTED' })
+        } else {
+          resolve()
+        }
+      }, 3000)
       this.connector.sendCustomRequest({ 
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
-      }).then(resolve).catch((error)=> {
-        if(error && typeof error.message == 'string' && error.message.match('wallet_addEthereumChain')){ // chain not yet added
+      }).then(()=>{
+        resolved = true
+        resolve()
+      }).catch((error)=> {
+        if(error && typeof error.message == 'string' && error.message.match('addEthereumChain')){ // chain not yet added
           this.addNetwork(blockchainName)
-            .then(()=>this.switchTo(blockchainName).then(resolve))
-            .catch(reject)
+            .then(()=>this.switchTo(blockchainName).then(()=>{
+              resolved = true
+              resolve()
+            }))
+            .catch(()=>{
+              rejected = true
+              reject({ code: 'NOT_SUPPORTED' })
+            })
         } else {
-          reject(error)
+          rejected = true
+          reject({ code: 'NOT_SUPPORTED' })
         }
       })
     })
@@ -158,8 +177,10 @@ class WalletConnect {
     switch (event) {
       case 'account':
         internalCallback = (error, payload) => {
-          const { accounts } = payload.params[0]
-          if(accounts instanceof Array) { callback(accounts[0]) }
+          if(payload && payload.params && payload.params[0].accounts && payload.params[0].accounts instanceof Array) {
+            const accounts = payload.params[0].accounts.map((account)=>ethers.utils.getAddress(account))
+            callback(accounts[0])
+          }
         }
         this.connector.on("session_update", internalCallback)
         break

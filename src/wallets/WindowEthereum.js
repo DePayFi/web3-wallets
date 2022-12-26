@@ -33,13 +33,13 @@ export default class WindowEthereum {
 
   async account() {
     if(!window?.ethereum) { return undefined }
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+    const accounts = (await window.ethereum.request({ method: 'eth_accounts' })).map((address)=>ethers.utils.getAddress(address))
     return accounts[0]
   }
 
   async connect() {
     if(!window?.ethereum) { return undefined }
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+    const accounts = (await window.ethereum.request({ method: 'eth_requestAccounts' })).map((address)=>ethers.utils.getAddress(address))
     return accounts[0]
   }
 
@@ -47,7 +47,7 @@ export default class WindowEthereum {
     let internalCallback
     switch (event) {
       case 'account':
-        internalCallback = (accounts) => callback(accounts[0])
+        internalCallback = (accounts) => callback(ethers.utils.getAddress(accounts[0]))
         window.ethereum.on('accountsChanged', internalCallback)
         break
     }

@@ -1,5 +1,6 @@
 import fetchMock from 'fetch-mock'
 import { Blockchain } from '@depay/web3-blockchains'
+import { ethers } from 'ethers'
 import { getWallets, wallets } from 'src/index.evm'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains.evm'
@@ -41,12 +42,12 @@ describe('window.ethereum wallet', () => {
 
         it('provides a connect function', async () => {
           mock(blockchain)
-          expect(await wallet.connect()).toStrictEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045');
+          expect(await wallet.connect()).toStrictEqual(ethers.utils.getAddress('0xd8da6bf26964af9d7eed9e03e53415d37aa96045'))
         });
 
         it('provides an account function', async () => {
           mock(blockchain)
-          expect(await wallet.account()).toStrictEqual('0xd8da6bf26964af9d7eed9e03e53415d37aa96045');
+          expect(await wallet.account()).toStrictEqual(ethers.utils.getAddress('0xd8da6bf26964af9d7eed9e03e53415d37aa96045'))
         });
 
         it('provides a logo', async () => {
