@@ -69,15 +69,18 @@
                   <script>
                     document.addEventListener("DOMContentLoaded", function() {
                       let select = document.getElementById('connectWallet')
-                      Web3Wallets.getWallets().forEach((wallet, index)=>{
-                        let option = document.createElement("option")
-                        option.setAttribute('value', index)
-                        option.innerHTML = wallet.name
-                        select.append(option)
-                      })
+                      setTimeout(()=>{
+                        Web3Wallets.getWallets().forEach((wallet, index)=>{
+                          let option = document.createElement("option")
+                          option.setAttribute('value', index)
+                          option.innerHTML = wallet.name
+                          select.append(option)
+                        })
+                      }, 500)
                     })
                     window.connectWalletViaSelect = async ()=> {
                       let wallet = Web3Wallets.getWallets()[parseInt(document.getElementById("connectWallet").value, 10)]
+                      console.log(wallet)
                       let accounts = await wallet.connect()
                       window.wallet = wallet
                       console.log(accounts)
@@ -87,6 +90,28 @@
               </div>
               <div class="px-4 pt-3">
                 <button class='btn btn-primary' onClick='connectWalletViaSelect()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">getConnectedWallets()</h5>
+                <div class="px-4">
+                  <div class="text-secondary pb-2">Get all connected wallets.</div>
+                  <script>
+                    window.getConnectedWallets = async ()=> {
+                      let connectedWallets = await Web3Wallets.getConnectedWallets()
+                      console.log('connectedWallets', connectedWallets)
+                    }
+                  </script>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='getConnectedWallets()'>Try it</button>
               </div>
             </div>
           </div>

@@ -99,6 +99,15 @@ if(foundWallets.length == 1) {
 }
 ```
 
+### getConnectedWallets
+
+`getConnectedWallets`: Returns an array of currently connected wallets.
+
+```javascript
+let wallets = await getConnectedWallets();
+// [<Wallet name='MetaMask'>, <Wallet name='Phantom'>]
+```
+
 ### Name
 
 `name:string`: Returns the name of the wallet.

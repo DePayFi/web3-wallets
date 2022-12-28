@@ -864,6 +864,19 @@ const getWallets = ()=>{
   return availableWallets
 };
 
+const getConnectedWallets = async()=>{
+
+  let connectedWallets = (await Promise.all(
+    getWallets().map(async(wallet)=>{
+      if(await wallet.account()) {
+        return wallet
+      }
+    })
+  )).filter((value)=>!!value);
+
+  return connectedWallets
+};
+
 const supported = [
   wallets.MetaMask,
   wallets.Coinbase,
@@ -871,4 +884,4 @@ const supported = [
   wallets.WalletLink
 ];
 
-export { getWallets, supported, wallets };
+export { getConnectedWallets, getWallets, supported, wallets };

@@ -442,9 +442,10 @@
     }
 
     async account() {
-      if(_optionalChain$3([window, 'optionalAccess', _7 => _7.solana, 'optionalAccess', _8 => _8.publicKey])) {return window.solana.publicKey.toString() }
-      if(_optionalChain$3([window, 'optionalAccess', _9 => _9.solana]) == undefined){ return }
-      let { publicKey } = await window.solana.connect({ onlyIfTrusted: true });
+      if(_optionalChain$3([window, 'optionalAccess', _7 => _7.solana]) == undefined){ return }
+      if(_optionalChain$3([window, 'optionalAccess', _8 => _8.solana, 'optionalAccess', _9 => _9.publicKey])) { return window.solana.publicKey.toString() }
+      let publicKey;
+      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
       if(publicKey){ return publicKey.toString() }
     }
 
@@ -1052,6 +1053,19 @@
     return availableWallets
   };
 
+  const getConnectedWallets = async()=>{
+
+    let connectedWallets = (await Promise.all(
+      getWallets().map(async(wallet)=>{
+        if(await wallet.account()) {
+          return wallet
+        }
+      })
+    )).filter((value)=>!!value);
+
+    return connectedWallets
+  };
+
   const supported = [
     wallets.MetaMask,
     wallets.Phantom,
@@ -1060,6 +1074,7 @@
     wallets.WalletLink
   ];
 
+  exports.getConnectedWallets = getConnectedWallets;
   exports.getWallets = getWallets;
   exports.supported = supported;
   exports.wallets = wallets;

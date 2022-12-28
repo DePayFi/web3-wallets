@@ -1,3 +1,4 @@
+import getConnectedWallets from './getConnectedWallets'
 import getWallets from './getWallets'
 import wallets from './wallets'
 
@@ -11,6 +12,7 @@ const supported = [
 
 export { 
   getWallets,
+  getConnectedWallets,
   supported,
-  wallets
+  wallets,
 }
