@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import { getProvider } from '@depay/web3-client'
 import { getWallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'
@@ -9,11 +10,13 @@ describe('window.ethereum wallet sendTransaction', () => {
 
     describe(blockchain, ()=> {
 
-      let wallet
+      let wallet, provider
 
       const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
-      beforeEach(resetMocks)
-      beforeEach(()=>{
+      beforeEach(async()=>{
+        resetMocks()
+        provider = await getProvider(blockchain)
+        mock({ blockchain, provider })
         mock({ blockchain, accounts: { return: [account] } })
         wallet = getWallets()[0]
       })

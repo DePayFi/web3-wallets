@@ -450,6 +450,10 @@ let balance = ({ address, provider }) => {
   return provider.getBalance(address)
 };
 
+let transactionCount = ({ address, provider }) => {
+  return provider.getTransactionCount(address)
+};
+
 var requestEVM = async ({ blockchain, address, api, method, params, block }) => {
   const provider = await EVM.getProvider(blockchain);
   
@@ -459,6 +463,8 @@ var requestEVM = async ({ blockchain, address, api, method, params, block }) => 
     return provider.getBlockNumber()
   } else if (method === 'balance') {
     return balance({ address, provider })
+  } else if (method === 'transactionCount') {
+    return transactionCount({ address, provider })
   }
 };
 
@@ -480,7 +486,6 @@ let request = async function (url, options) {
 };
 
 const sendTransaction$3 = async ({ transaction, wallet })=> {
-  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
@@ -489,6 +494,7 @@ const sendTransaction$3 = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });
+  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction.nonce = transactionCount;
   let provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   let signer = provider.getSigner(0);
@@ -894,7 +900,6 @@ class Phantom extends WindowSolana {
 
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 const sendTransaction$1 = async ({ transaction, wallet })=> {
-  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
@@ -903,14 +908,13 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });
+  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction.nonce = transactionCount;
   await submit$1({ transaction, wallet }).then(async (tx)=>{
     if (tx) {
       let blockchain = Blockchain.findByName(transaction.blockchain);
       transaction.id = tx;
       transaction.url = blockchain.explorerUrlFor({ transaction });
-      console.log('transactionCount', transactionCount);
-      console.log('transaction.nonce', transaction.nonce);
       if (transaction.sent) transaction.sent(transaction);
       let sentTransaction = await retrieveTransaction(tx, transaction.blockchain);
       transaction.nonce = sentTransaction.nonce || transactionCount;

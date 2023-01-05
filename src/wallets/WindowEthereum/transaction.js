@@ -4,7 +4,6 @@ import { ethers } from 'ethers'
 import { request } from '@depay/web3-client-evm'
 
 const sendTransaction = async ({ transaction, wallet })=> {
-  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction = new Transaction(transaction)
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
@@ -13,6 +12,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet })
+  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction.nonce = transactionCount
   let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
   let signer = provider.getSigner(0)

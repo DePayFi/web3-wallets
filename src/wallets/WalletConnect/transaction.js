@@ -3,7 +3,6 @@ import { Transaction } from '../../Transaction'
 import { request, estimate, getProvider } from '@depay/web3-client'
 
 const sendTransaction = async ({ transaction, wallet })=> {
-  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction = new Transaction(transaction)
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
@@ -12,6 +11,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet })
+  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then(async (tx)=>{
     if (tx) {
