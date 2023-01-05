@@ -1,8 +1,10 @@
 import { Transaction } from '../../Transaction'
 import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
+import { request } from '@depay/web3-client-evm'
 
 const sendTransaction = async ({ transaction, wallet })=> {
+  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction = new Transaction(transaction)
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
@@ -16,7 +18,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   await submit({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash
-      transaction.nonce = sentTransaction.nonce
+      transaction.nonce = sentTransaction.nonce || transactionCount
       transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
       sentTransaction.wait(1).then(() => {

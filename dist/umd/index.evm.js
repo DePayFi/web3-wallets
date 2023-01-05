@@ -103,6 +103,7 @@
   }
 
   const sendTransaction$2 = async ({ transaction, wallet })=> {
+    let transactionCount = await web3ClientEvm.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
       await wallet.switchTo(transaction.blockchain);
@@ -116,7 +117,7 @@
     await submit$2({ transaction, provider, signer }).then((sentTransaction)=>{
       if (sentTransaction) {
         transaction.id = sentTransaction.hash;
-        transaction.nonce = sentTransaction.nonce;
+        transaction.nonce = sentTransaction.nonce || transactionCount;
         transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         sentTransaction.wait(1).then(() => {
@@ -325,6 +326,7 @@
 
   function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const sendTransaction$1 = async ({ transaction, wallet })=> {
+    let transactionCount = await web3ClientEvm.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
       await wallet.switchTo(transaction.blockchain);
@@ -340,7 +342,7 @@
         transaction.url = blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         let sentTransaction = await retrieveTransaction(tx, transaction.blockchain);
-        transaction.nonce = sentTransaction.nonce;
+        transaction.nonce = sentTransaction.nonce || transactionCount;
         if(!sentTransaction) {
           transaction._failed = true;
           console.log('Error retrieving transaction');

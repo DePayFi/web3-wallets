@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Constants, global.SolanaWeb3js, global.Web3Client, global.WalletConnect, global.CoinbaseWalletSdk));
 }(this, (function (exports, web3Blockchains, ethers, web3Constants, solanaWeb3_js, web3Client, walletconnectV1, coinbaseWalletSdk) { 'use strict';
 
-  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
     constructor({ blockchain, from, to, value, api, method, params, instructions, sent, succeeded, failed }) {
@@ -15,7 +15,7 @@
       this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
-      this.value = _optionalChain$8([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+      this.value = _optionalChain$9([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
       this.api = api;
       this.method = method;
       this.params = params;
@@ -102,7 +102,383 @@
     }
   }
 
+  let supported$3 = ['ethereum', 'bsc', 'polygon', 'velas'];
+  supported$3.evm = ['ethereum', 'bsc', 'polygon', 'velas'];
+  supported$3.solana = [];
+
+  const BATCH_INTERVAL = 10;
+  const CHUNK_SIZE = 99;
+
+  class StaticJsonRpcBatchProvider extends ethers.ethers.providers.JsonRpcProvider {
+
+    constructor(url, network, endpoints) {
+      super(url);
+      this._network = network;
+      this._endpoint = url;
+      this._endpoints = endpoints;
+    }
+
+    detectNetwork() {
+      return Promise.resolve(web3Blockchains.Blockchain.findByName(this._network).id)
+    }
+
+    requestChunk(chunk, endpoint) {
+      
+      const request = chunk.map((inflight) => inflight.request);
+
+      return ethers.ethers.utils.fetchJson(endpoint, JSON.stringify(request))
+        .then((result) => {
+          // For each result, feed it to the correct Promise, depending
+          // on whether it was a success or error
+          chunk.forEach((inflightRequest, index) => {
+            const payload = result[index];
+            if (payload.error) {
+              const error = new Error(payload.error.message);
+              error.code = payload.error.code;
+              error.data = payload.error.data;
+              inflightRequest.reject(error);
+            }
+            else {
+              inflightRequest.resolve(payload.result);
+            }
+          });
+        }).catch((error) => {
+          if(error && error.code == 'SERVER_ERROR') {
+            const index = this._endpoints.indexOf(this._endpoint)+1;
+            this._endpoint = index >= this._endpoints.length ? this._endpoints[0] : this._endpoints[index];
+            this.requestChunk(chunk, this._endpoint);
+          } else {
+            chunk.forEach((inflightRequest) => {
+              inflightRequest.reject(error);
+            });
+          }
+        })
+    }
+      
+    send(method, params) {
+
+      const request = {
+        method: method,
+        params: params,
+        id: (this._nextId++),
+        jsonrpc: "2.0"
+      };
+
+      if (this._pendingBatch == null) {
+        this._pendingBatch = [];
+      }
+
+      const inflightRequest = { request, resolve: null, reject: null };
+
+      const promise = new Promise((resolve, reject) => {
+        inflightRequest.resolve = resolve;
+        inflightRequest.reject = reject;
+      });
+
+      this._pendingBatch.push(inflightRequest);
+
+      if (!this._pendingBatchAggregator) {
+        // Schedule batch for next event loop + short duration
+        this._pendingBatchAggregator = setTimeout(() => {
+          // Get the current batch and clear it, so new requests
+          // go into the next batch
+          const batch = this._pendingBatch;
+          this._pendingBatch = null;
+          this._pendingBatchAggregator = null;
+          // Prepare Chunks of CHUNK_SIZE
+          const chunks = [];
+          for (let i = 0; i < Math.ceil(batch.length / CHUNK_SIZE); i++) {
+            chunks[i] = batch.slice(i*CHUNK_SIZE, (i+1)*CHUNK_SIZE);
+          }
+          chunks.forEach((chunk)=>{
+            // Get the request as an array of requests
+            chunk.map((inflight) => inflight.request);
+            return this.requestChunk(chunk, this._endpoint)
+          });
+        }, BATCH_INTERVAL);
+      }
+
+      return promise
+    }
+
+  }
+
+  let getWindow = () => {
+    if (typeof global == 'object') return global
+    return window
+  };
+
+  // MAKE SURE PROVIDER SUPPORT BATCH SIZE OF 99 BATCH REQUESTS!
+  const ENDPOINTS = {
+    ethereum: ['https://rpc.ankr.com/eth', 'https://eth-mainnet-public.unifra.io', 'https://ethereum.publicnode.com'],
+    bsc: ['https://bsc-dataseed.binance.org', 'https://bsc-dataseed1.ninicoin.io', 'https://bsc-dataseed3.defibit.io'],
+    polygon: ['https://polygon-rpc.com', 'https://poly-rpc.gateway.pokt.network', 'https://matic-mainnet.chainstacklabs.com'],
+    velas: ['https://mainnet.velas.com/rpc', 'https://evmexplorer.velas.com/rpc', 'https://explorer.velas.com/rpc'],
+  };
+
+  const getProviders = ()=> {
+    if(getWindow()._clientProviders == undefined) {
+      getWindow()._clientProviders = {};
+    }
+    return getWindow()._clientProviders
+  };
+
+  const setProvider$1 = (blockchain, provider)=> {
+    getProviders()[blockchain] = provider;
+  };
+
+  const setProviderEndpoints$1 = async (blockchain, endpoints)=> {
+    
+    let endpoint;
+    let window = getWindow();
+
+    if(
+      window.fetch == undefined ||
+      (typeof process != 'undefined' && process['env'] && process['env']['NODE_ENV'] == 'test') ||
+      (typeof window.cy != 'undefined')
+    ) {
+      endpoint = endpoints[0];
+    } else {
+      
+      let responseTimes = await Promise.all(endpoints.map((endpoint)=>{
+        return new Promise(async (resolve)=>{
+          let timeout = 900;
+          let before = new Date().getTime();
+          setTimeout(()=>resolve(timeout), timeout);
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ method: 'net_version', id: 1, jsonrpc: '2.0' })
+          });
+          if(!response.ok) { return resolve(999) }
+          let after = new Date().getTime();
+          resolve(after-before);
+        })
+      }));
+
+      const fastestResponse = Math.min(...responseTimes);
+      const fastestIndex = responseTimes.indexOf(fastestResponse);
+      endpoint = endpoints[fastestIndex];
+    }
+    
+    setProvider$1(
+      blockchain,
+      new StaticJsonRpcBatchProvider(endpoint, blockchain, endpoints)
+    );
+  };
+
+  const getProvider$1 = async (blockchain)=> {
+
+    let providers = getProviders();
+    if(providers && providers[blockchain]){ return providers[blockchain] }
+    
+    let window = getWindow();
+    if(window._getProviderPromise && window._getProviderPromise[blockchain]) { return await window._getProviderPromise[blockchain] }
+
+    if(!window._getProviderPromise){ window._getProviderPromise = {}; }
+    window._getProviderPromise[blockchain] = new Promise(async(resolve)=> {
+      await setProviderEndpoints$1(blockchain, ENDPOINTS[blockchain]);
+      resolve(getWindow()._clientProviders[blockchain]);
+    });
+
+    return await window._getProviderPromise[blockchain]
+  };
+
+  var EVM = {
+    getProvider: getProvider$1,
+    setProviderEndpoints: setProviderEndpoints$1,
+    setProvider: setProvider$1,
+  };
+
+  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  let getCacheStore = () => {
+    if (getWindow()._cacheStore == undefined) {
+      resetCache();
+    }
+    return getWindow()._cacheStore
+  };
+
+  let getPromiseStore = () => {
+    if (getWindow()._promiseStore == undefined) {
+      resetCache();
+    }
+    return getWindow()._promiseStore
+  };
+
+  let resetCache = () => {
+    getWindow()._cacheStore = {};
+    getWindow()._promiseStore = {};
+    getWindow()._clientProviders = {};
+  };
+
+  let set = function ({ key, value, expires }) {
+    getCacheStore()[key] = {
+      expiresAt: Date.now() + expires,
+      value,
+    };
+  };
+
+  let get = function ({ key, expires }) {
+    let cachedEntry = getCacheStore()[key];
+    if (_optionalChain$8([cachedEntry, 'optionalAccess', _ => _.expiresAt]) > Date.now()) {
+      return cachedEntry.value
+    }
+  };
+
+  let getPromise = function({ key }) {
+    return getPromiseStore()[key]
+  };
+
+  let setPromise = function({ key, promise }) {
+    getPromiseStore()[key] = promise;
+    return promise
+  };
+
+  let deletePromise = function({ key }) {
+    getPromiseStore()[key] = undefined; 
+  };
+
+  let cache = function ({ call, key, expires = 0 }) {
+    return new Promise((resolve, reject)=>{
+      let value;
+      key = JSON.stringify(key);
+      
+      // get existing promise (of a previous pending request asking for the exact same thing)
+      let existingPromise = getPromise({ key });
+      if(existingPromise) { 
+        return existingPromise
+          .then(resolve)
+          .catch(reject)
+      }
+
+      setPromise({ key, promise: new Promise((resolveQueue, rejectQueue)=>{
+        if (expires === 0) {
+          return call()
+            .then((value)=>{
+              resolve(value);
+              resolveQueue(value);
+            })
+            .catch((error)=>{
+              reject(error);
+              rejectQueue(error);
+            })
+        }
+        
+        // get cached value
+        value = get({ key, expires });
+        if (value) {
+          resolve(value);
+          resolveQueue(value);
+          return value
+        }
+
+        // set new cache value
+        call()
+          .then((value)=>{
+            if (value) {
+              set({ key, value, expires });
+            }
+            resolve(value);
+            resolveQueue(value);
+          })
+          .catch((error)=>{
+            reject(error);
+            rejectQueue(error);
+          });
+        })
+      }).then(()=>{
+        deletePromise({ key });
+      }).catch(()=>{
+        deletePromise({ key });
+      });
+    })
+  };
+
+  var parseUrl = (url) => {
+    if (typeof url == 'object') {
+      return url
+    }
+    let deconstructed = url.match(/(?<blockchain>\w+):\/\/(?<part1>[\w\d]+)(\/(?<part2>[\w\d]+)*)?/);
+
+    if(deconstructed.groups.part2 == undefined) {
+      if(deconstructed.groups.part1.match(/\d/)) {
+        return {
+          blockchain: deconstructed.groups.blockchain,
+          address: deconstructed.groups.part1
+        }
+      } else {
+        return {
+          blockchain: deconstructed.groups.blockchain,
+          method: deconstructed.groups.part1
+        }
+      }
+    } else {
+      return {
+        blockchain: deconstructed.groups.blockchain,
+        address: deconstructed.groups.part1,
+        method: deconstructed.groups.part2
+      }
+    }
+  };
+
+  let paramsToContractArgs = ({ contract, method, params }) => {
+    let fragment = contract.interface.fragments.find((fragment) => {
+      return fragment.name == method
+    });
+
+    return fragment.inputs.map((input, index) => {
+      if (Array.isArray(params)) {
+        return params[index]
+      } else {
+        return params[input.name]
+      }
+    })
+  };
+
+  let contractCall = ({ address, api, method, params, provider, block }) => {
+    let contract = new ethers.ethers.Contract(address, api, provider);
+    let args = paramsToContractArgs({ contract, method, params });
+    return contract[method](...args, { blockTag: block })
+  };
+
+  let balance = ({ address, provider }) => {
+    return provider.getBalance(address)
+  };
+
+  var requestEVM = async ({ blockchain, address, api, method, params, block }) => {
+    const provider = await EVM.getProvider(blockchain);
+    
+    if (api) {
+      return contractCall({ address, api, method, params, provider, block })
+    } else if (method === 'latestBlockNumber') {
+      return provider.getBlockNumber()
+    } else if (method === 'balance') {
+      return balance({ address, provider })
+    }
+  };
+
+  let request = async function (url, options) {
+    let { blockchain, address, method } = parseUrl(url);
+    let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
+
+    return await cache({
+      expires: cache$1 || 0,
+      key: [blockchain, address, method, params, block],
+      call: async()=>{
+        if(supported$3.evm.includes(blockchain)) {
+          return requestEVM({ blockchain, address, api, method, params, block })
+        } else {
+          throw 'Unknown blockchain: ' + blockchain
+        }  
+      }
+    })
+  };
+
   const sendTransaction$3 = async ({ transaction, wallet })=> {
+    let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
       await wallet.switchTo(transaction.blockchain);
@@ -116,7 +492,7 @@
     await submit$3({ transaction, provider, signer }).then((sentTransaction)=>{
       if (sentTransaction) {
         transaction.id = sentTransaction.hash;
-        transaction.nonce = sentTransaction.nonce;
+        transaction.nonce = sentTransaction.nonce || transactionCount;
         transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         sentTransaction.wait(1).then(() => {
@@ -515,6 +891,7 @@
 
   function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const sendTransaction$1 = async ({ transaction, wallet })=> {
+    let transactionCount = await web3Client.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
       await wallet.switchTo(transaction.blockchain);
@@ -530,7 +907,7 @@
         transaction.url = blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         let sentTransaction = await retrieveTransaction(tx, transaction.blockchain);
-        transaction.nonce = sentTransaction.nonce;
+        transaction.nonce = sentTransaction.nonce || transactionCount;
         if(!sentTransaction) {
           transaction._failed = true;
           console.log('Error retrieving transaction');

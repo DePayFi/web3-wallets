@@ -1,8 +1,9 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { Transaction } from '../../Transaction'
-import { estimate, getProvider } from '@depay/web3-client-evm'
+import { request, estimate, getProvider } from '@depay/web3-client-evm'
 
 const sendTransaction = async ({ transaction, wallet })=> {
+  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction = new Transaction(transaction)
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain)
@@ -18,7 +19,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.url = blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
       let sentTransaction = await retrieveTransaction(tx, transaction.blockchain)
-      transaction.nonce = sentTransaction.nonce
+      transaction.nonce = sentTransaction.nonce || transactionCount
       if(!sentTransaction) {
         transaction._failed = true
         console.log('Error retrieving transaction')
