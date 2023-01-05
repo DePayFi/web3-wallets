@@ -33,9 +33,11 @@ export default class WindowSolana {
   async account() {
     if(window?.solana == undefined){ return }
     if(window?.solana?.publicKey) { return window.solana.publicKey.toString() }
-    let publicKey
-    try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })) } catch {}
-    if(publicKey){ return publicKey.toString() }
+    if(window?.solana?.isBraveWallet != true) {
+      let publicKey
+      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })) } catch {}
+      if(publicKey){ return publicKey.toString() }
+    }
   }
 
   async connect() {

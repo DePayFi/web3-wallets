@@ -446,13 +446,15 @@ class WindowSolana {
   async account() {
     if(_optionalChain$3([window, 'optionalAccess', _7 => _7.solana]) == undefined){ return }
     if(_optionalChain$3([window, 'optionalAccess', _8 => _8.solana, 'optionalAccess', _9 => _9.publicKey])) { return window.solana.publicKey.toString() }
-    let publicKey;
-    try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
-    if(publicKey){ return publicKey.toString() }
+    if(_optionalChain$3([window, 'optionalAccess', _10 => _10.solana, 'optionalAccess', _11 => _11.isBraveWallet]) != true) {
+      let publicKey;
+      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
+      if(publicKey){ return publicKey.toString() }
+    }
   }
 
   async connect() {
-    if(!_optionalChain$3([window, 'optionalAccess', _10 => _10.solana])) { return undefined }
+    if(!_optionalChain$3([window, 'optionalAccess', _12 => _12.solana])) { return undefined }
     let { publicKey } = await window.solana.connect();
     return publicKey.toString()
   }
@@ -461,7 +463,7 @@ class WindowSolana {
     let internalCallback;
     switch (event) {
       case 'account':
-        internalCallback = (publicKey) => callback(_optionalChain$3([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
+        internalCallback = (publicKey) => callback(_optionalChain$3([publicKey, 'optionalAccess', _13 => _13.toString, 'call', _14 => _14()]));
         window.solana.on('accountChanged', internalCallback);
         break
     }
