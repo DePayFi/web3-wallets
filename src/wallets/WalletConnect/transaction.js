@@ -12,6 +12,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet })
+  transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then(async (tx)=>{
     if (tx) {
       let blockchain = Blockchain.findByName(transaction.blockchain)

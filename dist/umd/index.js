@@ -487,6 +487,7 @@
       throw({ code: 'WRONG_NETWORK' })
     }
     await transaction.prepare({ wallet });
+    transaction.nonce = transactionCount;
     let provider = new ethers.ethers.providers.Web3Provider(window.ethereum, 'any');
     let signer = provider.getSigner(0);
     await submit$3({ transaction, provider, signer }).then((sentTransaction)=>{
@@ -900,11 +901,14 @@
       throw({ code: 'WRONG_NETWORK' })
     }
     await transaction.prepare({ wallet });
+    transaction.nonce = transactionCount;
     await submit$1({ transaction, wallet }).then(async (tx)=>{
       if (tx) {
         let blockchain = web3Blockchains.Blockchain.findByName(transaction.blockchain);
         transaction.id = tx;
         transaction.url = blockchain.explorerUrlFor({ transaction });
+        console.log('transactionCount', transactionCount);
+        console.log('transaction.nonce', transaction.nonce);
         if (transaction.sent) transaction.sent(transaction);
         let sentTransaction = await retrieveTransaction(tx, transaction.blockchain);
         transaction.nonce = sentTransaction.nonce || transactionCount;

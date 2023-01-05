@@ -13,6 +13,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet })
+  transaction.nonce = transactionCount
   let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
   let signer = provider.getSigner(0)
   await submit({ transaction, provider, signer }).then((sentTransaction)=>{
