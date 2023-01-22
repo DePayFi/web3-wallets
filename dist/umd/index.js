@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-constants'), require('@depay/solana-web3.js'), require('@depay/web3-client'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-constants', '@depay/solana-web3.js', '@depay/web3-client', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Constants, global.SolanaWeb3js, global.Web3Client, global.WalletConnect, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Blockchains, ethers, web3Constants, solanaWeb3_js, web3Client, walletconnectV1, coinbaseWalletSdk) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-constants'), require('@depay/solana-web3.js'), require('@depay/web3-client'), require('@walletconnect/core'), require('@depay/coinbase-wallet-sdk')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-constants', '@depay/solana-web3.js', '@depay/web3-client', '@walletconnect/core', '@depay/coinbase-wallet-sdk'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Constants, global.SolanaWeb3js, global.Web3Client, global['@walletconnect/core'], global.CoinbaseWalletSdk));
+}(this, (function (exports, web3Blockchains, ethers, web3Constants, solanaWeb3_js, web3Client, core, coinbaseWalletSdk) { 'use strict';
 
   function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
@@ -994,12 +994,14 @@
   };
 
   function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  const KEY = '_DePayWeb3WalletsConnectedWalletConnectInstance';
+
   const getConnectedInstance$1 = ()=>{
-    return window._connectedWalletConnectInstance
+    return window[KEY]
   };
 
   const setConnectedInstance$1 = (value)=>{
-    window._connectedWalletConnectInstance = value;
+    window[KEY] = value;
   };
 
   class WalletConnect {
@@ -1018,7 +1020,9 @@
       this.name = this.constructor.info.name;
       this.logo = this.constructor.info.logo;
       this.blockchains = this.constructor.info.blockchains;
-      this.connector = WalletConnect.instance || this.newWalletConnectInstance();
+      this.core = new core.Core({ projectId: '5982b2b5380fe6a0df399f624e4efa79' });
+      this.metadata = {};
+      this.connector = WalletConnect.instance || this.newWalletConnectInstance(this.core);
       this.sendTransaction = (transaction)=>{ 
         return sendTransaction$1({
           wallet: this,
@@ -1027,37 +1031,37 @@
       };
     }
 
-    newWalletConnectInstance() {
-      let instance = new walletconnectV1.WalletConnectClient({
-        bridge: "https://bridge.walletconnect.org",
-        qrcodeModal: walletconnectV1.QRCodeModal
-      });
+    async newWalletConnectInstance(core) {
+      debugger
+      // const { topic, uri } = await sdkClient.core.pairing.create()
 
-      instance.on("connect", (error, payload) => {
-        if (error) { throw error }
-        const { accounts, chainId } = payload.params[0];
-        this.connectedAccounts = accounts.map((account)=>ethers.ethers.utils.getAddress(account));
-        this.connectedChainId = chainId;
-      });
+      // console.log('topic', topic)
+      // console.log('uri', uri)
+      // instance.on("connect", (error, payload) => {
+      //   if (error) { throw error }
+      //   const { accounts, chainId } = payload.params[0]
+      //   this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
+      //   this.connectedChainId = chainId
+      // })
 
-      instance.on("session_update", (error, payload) => {
-        if (error) { throw error }
-        const { accounts, chainId } = payload.params[0];
-        this.connectedAccounts = accounts.map((account)=>ethers.ethers.utils.getAddress(account));
-        this.connectedChainId = chainId;
-      });
+      // instance.on("session_update", (error, payload) => {
+      //   if (error) { throw error }
+      //   const { accounts, chainId } = payload.params[0]
+      //   this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
+      //   this.connectedChainId = chainId
+      // })
 
-      instance.on("disconnect", (error, payload) => {
-        setConnectedInstance$1(undefined);
-        if (error) { throw error }
-      });
+      // instance.on("disconnect", (error, payload) => {
+      //   setConnectedInstance(undefined)
+      //   if (error) { throw error }
+      // })
 
-      instance.on("modal_closed", ()=>{
-        setConnectedInstance$1(undefined);
-        this.connector = undefined;
-      });
+      // instance.on("modal_closed", ()=>{
+      //   setConnectedInstance(undefined)
+      //   this.connector = undefined
+      // })
 
-      return instance
+      // return instance
     }
 
     async account() {

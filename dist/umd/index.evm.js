@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-constants'), require('@depay/web3-client-evm'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
   typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-constants', '@depay/web3-client-evm', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Constants, global.Web3Client, global.WalletConnect, global.CoinbaseWalletSdk));
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Constants, global.Web3Client, global.walletconnectV1, global.CoinbaseWalletSdk));
 }(this, (function (exports, web3Blockchains, ethers, web3Constants, web3ClientEvm, walletconnectV1, coinbaseWalletSdk) { 'use strict';
 
   function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }

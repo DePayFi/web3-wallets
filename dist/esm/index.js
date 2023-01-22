@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { CONSTANTS } from '@depay/web3-constants';
 import { PublicKey, Transaction as Transaction$1, SystemProgram } from '@depay/solana-web3.js';
 import { getProvider, request as request$1, estimate } from '@depay/web3-client';
-import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1';
+import { Core } from '@walletconnect/core';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
 
 function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -996,12 +996,14 @@ const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
 };
 
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+const KEY = '_DePayWeb3WalletsConnectedWalletConnectInstance';
+
 const getConnectedInstance$1 = ()=>{
-  return window._connectedWalletConnectInstance
+  return window[KEY]
 };
 
 const setConnectedInstance$1 = (value)=>{
-  window._connectedWalletConnectInstance = value;
+  window[KEY] = value;
 };
 
 class WalletConnect {
@@ -1020,7 +1022,9 @@ class WalletConnect {
     this.name = this.constructor.info.name;
     this.logo = this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
-    this.connector = WalletConnect.instance || this.newWalletConnectInstance();
+    this.core = new Core({ projectId: '5982b2b5380fe6a0df399f624e4efa79' });
+    this.metadata = {};
+    this.connector = WalletConnect.instance || this.newWalletConnectInstance(this.core);
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction$1({
         wallet: this,
@@ -1029,37 +1033,37 @@ class WalletConnect {
     };
   }
 
-  newWalletConnectInstance() {
-    let instance = new WalletConnectClient({
-      bridge: "https://bridge.walletconnect.org",
-      qrcodeModal: QRCodeModal
-    });
+  async newWalletConnectInstance(core) {
+    debugger
+    // const { topic, uri } = await sdkClient.core.pairing.create()
 
-    instance.on("connect", (error, payload) => {
-      if (error) { throw error }
-      const { accounts, chainId } = payload.params[0];
-      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account));
-      this.connectedChainId = chainId;
-    });
+    // console.log('topic', topic)
+    // console.log('uri', uri)
+    // instance.on("connect", (error, payload) => {
+    //   if (error) { throw error }
+    //   const { accounts, chainId } = payload.params[0]
+    //   this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
+    //   this.connectedChainId = chainId
+    // })
 
-    instance.on("session_update", (error, payload) => {
-      if (error) { throw error }
-      const { accounts, chainId } = payload.params[0];
-      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account));
-      this.connectedChainId = chainId;
-    });
+    // instance.on("session_update", (error, payload) => {
+    //   if (error) { throw error }
+    //   const { accounts, chainId } = payload.params[0]
+    //   this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
+    //   this.connectedChainId = chainId
+    // })
 
-    instance.on("disconnect", (error, payload) => {
-      setConnectedInstance$1(undefined);
-      if (error) { throw error }
-    });
+    // instance.on("disconnect", (error, payload) => {
+    //   setConnectedInstance(undefined)
+    //   if (error) { throw error }
+    // })
 
-    instance.on("modal_closed", ()=>{
-      setConnectedInstance$1(undefined);
-      this.connector = undefined;
-    });
+    // instance.on("modal_closed", ()=>{
+    //   setConnectedInstance(undefined)
+    //   this.connector = undefined
+    // })
 
-    return instance
+    // return instance
   }
 
   async account() {

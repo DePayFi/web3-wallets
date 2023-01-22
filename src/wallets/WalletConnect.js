@@ -1,14 +1,17 @@
 import { Blockchain } from '@depay/web3-blockchains'
+import { Core } from "@walletconnect/core"
 import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnect/transaction'
-import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
+import SignClient from "@walletconnect/sign-client"
+
+const KEY = '_DePayWeb3WalletsConnectedWalletConnectInstance'
 
 const getConnectedInstance = ()=>{
-  return window._connectedWalletConnectInstance
+  return window[KEY]
 }
 
 const setConnectedInstance = (value)=>{
-  window._connectedWalletConnectInstance = value
+  window[KEY] = value
 }
 
 class WalletConnect {
@@ -36,37 +39,8 @@ class WalletConnect {
     }
   }
 
-  newWalletConnectInstance() {
-    let instance = new WalletConnectClient({
-      bridge: "https://bridge.walletconnect.org",
-      qrcodeModal: QRCodeModal
-    })
-
-    instance.on("connect", (error, payload) => {
-      if (error) { throw error }
-      const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
-      this.connectedChainId = chainId
-    })
-
-    instance.on("session_update", (error, payload) => {
-      if (error) { throw error }
-      const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
-      this.connectedChainId = chainId
-    })
-
-    instance.on("disconnect", (error, payload) => {
-      setConnectedInstance(undefined)
-      if (error) { throw error }
-    })
-
-    instance.on("modal_closed", ()=>{
-      setConnectedInstance(undefined)
-      this.connector = undefined
-    })
-
-    return instance
+  newWalletConnectInstance() { 
+    return new Core({ projectId: window._walletConnectProjectId })
   }
 
   async account() {
@@ -74,34 +48,50 @@ class WalletConnect {
     return this.connectedAccounts[0]
   }
 
-  async connect(options) {
+  async connect({ connect }) {
+    
+    if(!connect || typeof connect != 'function') { throw('Provided connect paremeters is not present or not a function!') }
+    
     try {
-      window.localStorage.removeItem('walletconnect') // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
-      if(this.connector == undefined){
-        this.connector = this.newWalletConnectInstance()
-      }
+      delete localStorage[`wc@2:core:${this.connector.pairing.version}//subscription`] // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
+      const signClient = await SignClient.init({ core: this.connector })
 
-      if(this.connector.connected) {
-        await this.connector.killSession()
-        setConnectedInstance(undefined)
-        this.connector = this.newWalletConnectInstance()
-      }
+      signClient.on("session_delete", () => {
+        console.log("DELETE SESSION")
+      });
 
-      let { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
+      signClient.on("session_event", ({ event }) => {
+        console.log("SESSION EVENT", event)
+      });
 
-      if(accounts instanceof Array && accounts.length) {
-        setConnectedInstance(this)
-      }
+      const { uri, approval } = await signClient.connect({
+        requiredNamespaces: {},
+      });
 
-      accounts = accounts.map((account)=>ethers.utils.getAddress(account))
-      this.connectedAccounts = accounts
-      this.connectedChainId = chainId
+      await connect({ uri })
+      const result = await approval()
 
-      return accounts[0]
+      console.log('APPROVED!', result)
+
+      // const result = await signClient.request({
+      //   topic,
+      //   chainId: "eip155:137",
+      //   request: {
+      //     id: 1,
+      //     jsonrpc: "2.0",
+      //     method: "personal_sign",
+      //     params: [
+      //       "0x1d85568eEAbad713fBB5293B45ea066e552A90De",
+      //       "0x7468697320697320612074657374206d65737361676520746f206265207369676e6564",
+      //     ],
+      //   },
+      // });
+      // console.log('RESULT', result)
+
+
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error)
-      return undefined
     }
   }
 
