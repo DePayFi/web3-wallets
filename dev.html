@@ -11,6 +11,7 @@
     <script crossorigin src="https://unpkg.com/@depay/web3-blockchains@6"></script>
     <script crossorigin src="https://unpkg.com/@depay/web3-constants@6"></script>
     <script crossorigin src="https://unpkg.com/@depay/web3-client@10"></script>
+    <script crossorigin src="https://unpkg.com/@depay/walletconnect-v1@1"></script>
     <script crossorigin src="https://unpkg.com/@walletconnect/core@2"></script>
     <script crossorigin src="https://unpkg.com/@walletconnect/sign-client@2"></script>
     <script crossorigin src="https://unpkg.com/@depay/coinbase-wallet-sdk@1"></script>
@@ -122,10 +123,32 @@
         <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
-              <div class="overflow-auto" style="min-height: 120px;">
-                <h5 class="px-4">WalletConnect connect</h5>
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">WalletConnect V1 connect</h5>
                 <div class="px-4">
-                  <div class="text-secondary ">Test connecting WalletConnect.</div>
+                  <div class="text-secondary ">Test connecting WalletConnect V1</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.connectWalletConnectV1 = ()=>{
+                    wallet = new Web3Wallets.wallets.WalletConnectV1()
+                    wallet.connect()
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='connectWalletConnectV1()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="min-height: 120px;">
+                <h5 class="px-4">WalletConnect V2 connect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting WalletConnect V2</div>
                   <div>
                     <input id="walletConnectProjectId" placeholder="projectId"/>
                   </div>
@@ -135,9 +158,9 @@
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.connectWalletConnect = async ()=>{
+                  window.connectWalletConnectV2 = async ()=>{
                     window._walletConnectProjectId = document.getElementById('walletConnectProjectId').value
-                    wallet = new Web3Wallets.wallets.WalletConnect()
+                    wallet = new Web3Wallets.wallets.WalletConnectV2()
                     await wallet.connect({
                       connect: ({ uri })=>{
                         const qrCode = new QRCodeStyling({
@@ -151,7 +174,7 @@
                     })
                   }
                 </script>
-                <button class='btn btn-primary' onClick='connectWalletConnect()'>Try it</button>
+                <button class='btn btn-primary' onClick='connectWalletConnectV2()'>Try it</button>
               </div>
             </div>
           </div>

@@ -3,7 +3,9 @@ import { ethers } from 'ethers';
 import { CONSTANTS } from '@depay/web3-constants';
 import { PublicKey, Transaction as Transaction$1, SystemProgram } from '@depay/solana-web3.js';
 import { getProvider, request as request$1, estimate } from '@depay/web3-client';
+import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1';
 import { Core } from '@walletconnect/core';
+import SignClient from '@walletconnect/sign-client';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
 
 function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -996,6 +998,210 @@ const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
 };
 
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+const getConnectedInstance$2 = ()=>{
+  return window._connectedWalletConnectInstance
+};
+
+const setConnectedInstance$2 = (value)=>{
+  window._connectedWalletConnectInstance = value;
+};
+
+class WalletConnect$1 {
+
+  static __initStatic() {this.info = {
+    name: 'WalletConnect',
+    logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0ndXRmLTgnPz48IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjUuNC4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAtLT48c3ZnIHZlcnNpb249JzEuMScgaWQ9J0xheWVyXzEnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZycgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHg9JzBweCcgeT0nMHB4JyB2aWV3Qm94PScwIDAgNTAwIDUwMCcgc3R5bGU9J2VuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTAwIDUwMDsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxzdHlsZSB0eXBlPSd0ZXh0L2Nzcyc+IC5zdDB7ZmlsbDojNTk5MUNEO30KPC9zdHlsZT48ZyBpZD0nUGFnZS0xJz48ZyBpZD0nd2FsbGV0Y29ubmVjdC1sb2dvLWFsdCc+PHBhdGggaWQ9J1dhbGxldENvbm5lY3QnIGNsYXNzPSdzdDAnIGQ9J00xMDIuNywxNjJjODEuNS03OS44LDIxMy42LTc5LjgsMjk1LjEsMGw5LjgsOS42YzQuMSw0LDQuMSwxMC41LDAsMTQuNEwzNzQsMjE4LjkgYy0yLDItNS4zLDItNy40LDBsLTEzLjUtMTMuMmMtNTYuOC01NS43LTE0OS01NS43LTIwNS44LDBsLTE0LjUsMTQuMWMtMiwyLTUuMywyLTcuNCwwTDkxLjksMTg3Yy00LjEtNC00LjEtMTAuNSwwLTE0LjQgTDEwMi43LDE2MnogTTQ2Ny4xLDIyOS45bDI5LjksMjkuMmM0LjEsNCw0LjEsMTAuNSwwLDE0LjRMMzYyLjMsNDA1LjRjLTQuMSw0LTEwLjcsNC0xNC44LDBjMCwwLDAsMCwwLDBMMjUyLDMxMS45IGMtMS0xLTIuNy0xLTMuNywwaDBsLTk1LjUsOTMuNWMtNC4xLDQtMTAuNyw0LTE0LjgsMGMwLDAsMCwwLDAsMEwzLjQsMjczLjZjLTQuMS00LTQuMS0xMC41LDAtMTQuNGwyOS45LTI5LjIgYzQuMS00LDEwLjctNCwxNC44LDBsOTUuNSw5My41YzEsMSwyLjcsMSwzLjcsMGMwLDAsMCwwLDAsMGw5NS41LTkzLjVjNC4xLTQsMTAuNy00LDE0LjgsMGMwLDAsMCwwLDAsMGw5NS41LDkzLjUgYzEsMSwyLjcsMSwzLjcsMGw5NS41LTkzLjVDNDU2LjQsMjI1LjksNDYzLDIyNS45LDQ2Ny4xLDIyOS45eicvPjwvZz48L2c+PC9zdmc+Cg==",
+    blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
+  };}
+
+  static __initStatic2() {this.isAvailable = ()=>{ 
+    return getConnectedInstance$2() != undefined 
+  };}
+
+  constructor() {
+    this.name = this.constructor.info.name;
+    this.logo = this.constructor.info.logo;
+    this.blockchains = this.constructor.info.blockchains;
+    this.connector = WalletConnect$1.instance || this.newWalletConnectInstance();
+    this.sendTransaction = (transaction)=>{ 
+      return sendTransaction$1({
+        wallet: this,
+        transaction
+      })
+    };
+  }
+
+  newWalletConnectInstance() {
+    let instance = new WalletConnectClient({
+      bridge: "https://bridge.walletconnect.org",
+      qrcodeModal: QRCodeModal
+    });
+
+    instance.on("connect", (error, payload) => {
+      if (error) { throw error }
+      const { accounts, chainId } = payload.params[0];
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account));
+      this.connectedChainId = chainId;
+    });
+
+    instance.on("session_update", (error, payload) => {
+      if (error) { throw error }
+      const { accounts, chainId } = payload.params[0];
+      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account));
+      this.connectedChainId = chainId;
+    });
+
+    instance.on("disconnect", (error, payload) => {
+      setConnectedInstance$2(undefined);
+      if (error) { throw error }
+    });
+
+    instance.on("modal_closed", ()=>{
+      setConnectedInstance$2(undefined);
+      this.connector = undefined;
+    });
+
+    return instance
+  }
+
+  async account() {
+    if(this.connectedAccounts == undefined) { return }
+    return this.connectedAccounts[0]
+  }
+
+  async connect(options) {
+    try {
+      window.localStorage.removeItem('walletconnect'); // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
+
+      if(this.connector == undefined){
+        this.connector = this.newWalletConnectInstance();
+      }
+
+      if(this.connector.connected) {
+        await this.connector.killSession();
+        setConnectedInstance$2(undefined);
+        this.connector = this.newWalletConnectInstance();
+      }
+
+      let { accounts, chainId } = await this.connector.connect({ chainId: _optionalChain([options, 'optionalAccess', _ => _.chainId]) });
+
+      if(accounts instanceof Array && accounts.length) {
+        setConnectedInstance$2(this);
+      }
+
+      accounts = accounts.map((account)=>ethers.utils.getAddress(account));
+      this.connectedAccounts = accounts;
+      this.connectedChainId = chainId;
+
+      return accounts[0]
+    } catch (error) {
+      console.log('WALLETCONNECT ERROR', error);
+      return undefined
+    }
+  }
+
+  async connectedTo(input) {
+    let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
+    const blockchain = Blockchain.findById(chainId);
+    if(input) {
+      return input === blockchain.name
+    } else {
+      return blockchain.name
+    }
+  }
+
+  switchTo(blockchainName) {
+    return new Promise((resolve, reject)=>{
+      let resolved, rejected;
+      const blockchain = Blockchain.findByName(blockchainName);
+      setTimeout(async()=>{
+        if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
+          reject({ code: 'NOT_SUPPORTED' });
+        } else {
+          resolve();
+        }
+      }, 3000);
+      this.connector.sendCustomRequest({ 
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: blockchain.id }],
+      }).then(()=>{
+        resolved = true;
+        resolve();
+      }).catch((error)=> {
+        if(error && typeof error.message == 'string' && error.message.match('addEthereumChain')){ // chain not yet added
+          this.addNetwork(blockchainName)
+            .then(()=>this.switchTo(blockchainName).then(()=>{
+              resolved = true;
+              resolve();
+            }))
+            .catch(()=>{
+              rejected = true;
+              reject({ code: 'NOT_SUPPORTED' });
+            });
+        } else {
+          rejected = true;
+          reject({ code: 'NOT_SUPPORTED' });
+        }
+      });
+    })
+  }
+
+  addNetwork(blockchainName) {
+    return new Promise((resolve, reject)=>{
+      const blockchain = Blockchain.findByName(blockchainName);
+      this.connector.sendCustomRequest({ 
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: blockchain.id,
+          chainName: blockchain.fullName,
+          nativeCurrency: {
+            name: blockchain.currency.name,
+            symbol: blockchain.currency.symbol,
+            decimals: blockchain.currency.decimals
+          },
+          rpcUrls: [blockchain.rpc],
+          blockExplorerUrls: [blockchain.explorer],
+          iconUrls: [blockchain.logo]
+        }],
+      }).then(resolve).catch(reject);
+    })
+  }
+
+  on(event, callback) {
+    let internalCallback;
+    switch (event) {
+      case 'account':
+        internalCallback = (error, payload) => {
+          if(payload && payload.params && payload.params[0].accounts && payload.params[0].accounts instanceof Array) {
+            const accounts = payload.params[0].accounts.map((account)=>ethers.utils.getAddress(account));
+            callback(accounts[0]);
+          }
+        };
+        this.connector.on("session_update", internalCallback);
+        break
+    }
+    return internalCallback
+  }
+
+  off(event, callback) {
+    switch (event) {
+      case 'account':
+        this.connector.off("session_update");
+        break
+    }
+  }
+
+  async sign(message) {
+    let address = await this.account();
+    var params = [ethers.utils.toUtf8Bytes(message), address];
+    let signature = await this.connector.signPersonalMessage(params);
+    return signature
+  }
+} WalletConnect$1.__initStatic(); WalletConnect$1.__initStatic2();
+
+WalletConnect$1.getConnectedInstance = getConnectedInstance$2;
+WalletConnect$1.setConnectedInstance = setConnectedInstance$2;
+
 const KEY = '_DePayWeb3WalletsConnectedWalletConnectInstance';
 
 const getConnectedInstance$1 = ()=>{
@@ -1022,9 +1228,7 @@ class WalletConnect {
     this.name = this.constructor.info.name;
     this.logo = this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
-    this.core = new Core({ projectId: '5982b2b5380fe6a0df399f624e4efa79' });
-    this.metadata = {};
-    this.connector = WalletConnect.instance || this.newWalletConnectInstance(this.core);
+    this.connector = WalletConnect.instance || this.newWalletConnectInstance();
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction$1({
         wallet: this,
@@ -1033,37 +1237,8 @@ class WalletConnect {
     };
   }
 
-  async newWalletConnectInstance(core) {
-    debugger
-    // const { topic, uri } = await sdkClient.core.pairing.create()
-
-    // console.log('topic', topic)
-    // console.log('uri', uri)
-    // instance.on("connect", (error, payload) => {
-    //   if (error) { throw error }
-    //   const { accounts, chainId } = payload.params[0]
-    //   this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
-    //   this.connectedChainId = chainId
-    // })
-
-    // instance.on("session_update", (error, payload) => {
-    //   if (error) { throw error }
-    //   const { accounts, chainId } = payload.params[0]
-    //   this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
-    //   this.connectedChainId = chainId
-    // })
-
-    // instance.on("disconnect", (error, payload) => {
-    //   setConnectedInstance(undefined)
-    //   if (error) { throw error }
-    // })
-
-    // instance.on("modal_closed", ()=>{
-    //   setConnectedInstance(undefined)
-    //   this.connector = undefined
-    // })
-
-    // return instance
+  newWalletConnectInstance() { 
+    return new Core({ projectId: window._walletConnectProjectId })
   }
 
   async account() {
@@ -1071,34 +1246,50 @@ class WalletConnect {
     return this.connectedAccounts[0]
   }
 
-  async connect(options) {
+  async connect({ connect }) {
+    
+    if(!connect || typeof connect != 'function') { throw('Provided connect paremeters is not present or not a function!') }
+    
     try {
-      window.localStorage.removeItem('walletconnect'); // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
-      if(this.connector == undefined){
-        this.connector = this.newWalletConnectInstance();
-      }
+      delete localStorage[`wc@2:core:${this.connector.pairing.version}//subscription`]; // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
+      const signClient = await SignClient.init({ core: this.connector });
 
-      if(this.connector.connected) {
-        await this.connector.killSession();
-        setConnectedInstance$1(undefined);
-        this.connector = this.newWalletConnectInstance();
-      }
+      signClient.on("session_delete", () => {
+        console.log("DELETE SESSION");
+      });
 
-      let { accounts, chainId } = await this.connector.connect({ chainId: _optionalChain([options, 'optionalAccess', _ => _.chainId]) });
+      signClient.on("session_event", ({ event }) => {
+        console.log("SESSION EVENT", event);
+      });
 
-      if(accounts instanceof Array && accounts.length) {
-        setConnectedInstance$1(this);
-      }
+      const { uri, approval } = await signClient.connect({
+        requiredNamespaces: {},
+      });
 
-      accounts = accounts.map((account)=>ethers.utils.getAddress(account));
-      this.connectedAccounts = accounts;
-      this.connectedChainId = chainId;
+      await connect({ uri });
+      const result = await approval();
 
-      return accounts[0]
+      console.log('APPROVED!', result);
+
+      // const result = await signClient.request({
+      //   topic,
+      //   chainId: "eip155:137",
+      //   request: {
+      //     id: 1,
+      //     jsonrpc: "2.0",
+      //     method: "personal_sign",
+      //     params: [
+      //       "0x1d85568eEAbad713fBB5293B45ea066e552A90De",
+      //       "0x7468697320697320612074657374206d65737361676520746f206265207369676e6564",
+      //     ],
+      //   },
+      // });
+      // console.log('RESULT', result)
+
+
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error);
-      return undefined
     }
   }
 
@@ -1420,7 +1611,8 @@ var wallets = {
   Coinbase,
   WindowEthereum,
   WindowSolana,
-  WalletConnect,
+  WalletConnectV1: WalletConnect$1,
+  WalletConnectV2: WalletConnect,
   WalletLink
 };
 

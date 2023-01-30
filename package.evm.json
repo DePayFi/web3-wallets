@@ -26,6 +26,7 @@
   "dependencies": {},
   "peerDependencies": {
     "@depay/coinbase-wallet-sdk": "^1.1.0",
+    "@depay/walletconnect-v1": "^1.7.10",
     "@walletconnect/core": "^2.2.1",
     "@depay/web3-blockchains": "^6.3.1",
     "@depay/web3-client-evm": "^10.3.0",
