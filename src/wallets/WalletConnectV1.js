@@ -1,19 +1,19 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
-import { sendTransaction } from './WalletConnect/transaction'
-import WalletC from '@depay/walletconnect-v1'
+import { sendTransaction } from './WalletConnectV1/transaction'
+import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
+
+const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance'
 
 const getConnectedInstance = ()=>{
-  return window._connectedWalletConnectInstance
+  return window[KEY]
 }
 
 const setConnectedInstance = (value)=>{
-  window._connectedWalletConnectInstance = value
+  window[KEY] = value
 }
 
-console.log('!!!', WalletC)
-
-class WalletConnect {
+class WalletConnectV1 {
 
   static info = {
     name: 'WalletConnect',
@@ -206,7 +206,7 @@ class WalletConnect {
   }
 }
 
-WalletConnect.getConnectedInstance = getConnectedInstance
-WalletConnect.setConnectedInstance = setConnectedInstance
+WalletConnectV1.getConnectedInstance = getConnectedInstance
+WalletConnectV1.setConnectedInstance = setConnectedInstance
 
-export default WalletConnect
+export default WalletConnectV1
