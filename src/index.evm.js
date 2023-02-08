@@ -5,7 +5,8 @@ import wallets from './wallets.evm'
 const supported = [
   wallets.MetaMask,
   wallets.Coinbase,
-  wallets.WalletConnect,
+  wallets.WalletConnectV1,
+  wallets.WalletConnectV2,
   wallets.WalletLink
 ]
 

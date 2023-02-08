@@ -1,4 +1,4 @@
-import WalletConnect from 'src/wallets/WalletConnect'
+import WalletConnectV1 from 'src/wallets/WalletConnectV1'
 import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getWallets, wallets, supported } from 'src'
@@ -17,16 +17,16 @@ describe('WalletConnect', () => {
         
         beforeEach(resetMocks)
         beforeEach(async()=>{
-          WalletConnect.setConnectedInstance(undefined)
-          mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect })
+          WalletConnectV1.setConnectedInstance(undefined)
+          mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
         })
 
         it('provides an account function that returns undefined', async () => {
-          expect(await new wallets.WalletConnect().account()).toStrictEqual(undefined)
+          expect(await new wallets.WalletConnectV1().account()).toStrictEqual(undefined)
         })
 
         it('provides an connect function that returns undefined', async () => {
-          expect(await new wallets.WalletConnect().connect()).toStrictEqual(undefined)
+          expect(await new wallets.WalletConnectV1().connect()).toStrictEqual(undefined)
         })
       })
 
@@ -37,8 +37,8 @@ describe('WalletConnect', () => {
           resetMocks()
         })
         beforeEach(async()=>{
-          mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnect, accounts: { return: [account] } })
-          await new wallets.WalletConnect().connect()
+          mock({ blockchain, wallet: 'walletconnect', connector: wallets.WalletConnectV1, accounts: { return: [account] } })
+          await new wallets.WalletConnectV1().connect()
           wallet = getWallets()[0]
           expect(wallet.name).toEqual('WalletConnect')
         })

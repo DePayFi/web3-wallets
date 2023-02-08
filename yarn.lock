@@ -995,6 +995,14 @@
     "@walletconnect/client" "^1.8.0"
     "@walletconnect/qrcode-modal" "^1.8.0"
 
+"@depay/walletconnect-v2@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@depay/walletconnect-v2/-/walletconnect-v2-2.3.3.tgz#cf47f9b6fdf2829a93a75b59d8cc23ae526329bf"
+  integrity sha512-ey4XUqc7leqMwM9B3/SmRKT2/9BLhhRNd+qtXtCRQ4iaJDnIX81+AMp4IDORPKSpgBE51sKl0TkCJXJv9s2XDw==
+  dependencies:
+    "@walletconnect/core" "^2.3.3"
+    "@walletconnect/sign-client" "^2.3.3"
+
 "@depay/web3-blockchains@^6.2.3":
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-6.2.3.tgz#8dbee9ec05e2d581dde0c1b7c4d1a64755e99cbf"

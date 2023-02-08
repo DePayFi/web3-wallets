@@ -29,7 +29,7 @@ class WalletConnectV1 {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
-    this.connector = WalletConnect.instance || this.newWalletConnectInstance()
+    this.connector = WalletConnectV1.instance || this.newWalletConnectInstance()
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
         wallet: this,
