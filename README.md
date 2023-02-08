@@ -82,7 +82,7 @@ let wallets = getWallets();
 ```
 
 ```javascript
-{ getWallets, wallets } from "@depay/web3-wallets"
+import { getWallets, wallets } from "@depay/web3-wallets"
 
 let foundWallets = getWallets()
 
@@ -106,6 +106,29 @@ if(foundWallets.length == 1) {
 ```javascript
 let wallets = await getConnectedWallets();
 // [<Wallet name='MetaMask'>, <Wallet name='Phantom'>]
+```
+
+### WalletConnectV2
+
+```javascript
+import { wallets } from "@depay/web3-wallets"
+import QRCodeStyling from "qr-code-styling"
+
+let wallet = new wallets.WalletConnectV2()
+
+await wallet.connect({
+  blockchain: 'ethereum',
+  connect: ({ uri })=>{
+    const qrCode = new QRCodeStyling({
+      width: 300,
+      height: 300,
+      type: "svg",
+      data: uri,
+    });
+    qrCode.append(document.getElementById("walletConnectQRCode"));
+  }
+})
+
 ```
 
 ### Name

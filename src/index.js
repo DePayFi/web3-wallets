@@ -6,7 +6,8 @@ const supported = [
   wallets.MetaMask,
   wallets.Phantom,
   wallets.Coinbase,
-  wallets.WalletConnect,
+  wallets.WalletConnectV1,
+  wallets.WalletConnectV2,
   wallets.WalletLink
 ]
 

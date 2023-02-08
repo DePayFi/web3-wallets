@@ -1,10 +1,10 @@
 import { ethers } from 'ethers'
-import { getWallets, wallets } from 'src'
+import { getWallets, wallets } from 'src/index.evm'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { getProvider, resetCache } from '@depay/web3-client'
+import { getProvider, resetCache } from '@depay/web3-client-evm'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
-describe('WalletConnect: sendTransaction', () => {
+describe('WalletConnect: sendTransaction (evm)', () => {
 
   supportedBlockchains.evm.forEach((blockchain)=>{
 
@@ -17,9 +17,9 @@ describe('WalletConnect: sendTransaction', () => {
         resetCache()
         resetMocks()
         provider = await getProvider(blockchain)
-        mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnect })
-        mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnect })
-        await new wallets.WalletConnect().connect()
+        mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
+        mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
+        await new wallets.WalletConnectV1().connect()
         wallet = getWallets()[0]
         expect(wallet.name).toEqual('WalletConnect')
       })
@@ -351,8 +351,8 @@ describe('WalletConnect: sendTransaction', () => {
           resetCache()
           resetMocks()
           provider = await getProvider(otherBlockchain)
-          mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnect })
-          mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnect })
+          mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
+          mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
 
           mockedTransaction = mock({
             blockchain: otherBlockchain,
