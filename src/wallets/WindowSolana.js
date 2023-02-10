@@ -14,7 +14,8 @@ export default class WindowSolana {
    static isAvailable = ()=>{ 
     return (
       window?.solana &&
-      !window?.solana?.isPhantom
+      !window?.solana?.isPhantom &&
+      !window.coin98
     )
   }
   

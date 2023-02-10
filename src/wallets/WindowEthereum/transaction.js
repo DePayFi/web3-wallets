@@ -14,7 +14,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   await transaction.prepare({ wallet })
   let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction.nonce = transactionCount
-  let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+  let provider = new ethers.providers.Web3Provider(wallet.getProvider(), 'any')
   let signer = provider.getSigner(0)
   await submit({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {

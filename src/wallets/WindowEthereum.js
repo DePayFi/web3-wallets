@@ -14,7 +14,10 @@ export default class WindowEthereum {
   static isAvailable = ()=>{ 
     return (
       window?.ethereum &&
-      !window?.ethereum?.isMetaMask &&
+      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length != 1 && // MetaMask
+      !window?.coin98 && // Coin98
+      !(window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) && // Trust Wallet
+      !window?.ethereum?.isDeficonnectProvider && // crypto.com
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
     )
   }
@@ -23,7 +26,7 @@ export default class WindowEthereum {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
-    this.sendTransaction = (transaction)=>{ 
+    this.sendTransaction = (transaction)=>{
       return sendTransaction({
         wallet: this,
         transaction
@@ -31,15 +34,17 @@ export default class WindowEthereum {
     }
   }
 
+  getProvider() { return window.ethereum }
+
   async account() {
-    if(!window?.ethereum) { return undefined }
-    const accounts = (await window.ethereum.request({ method: 'eth_accounts' })).map((address)=>ethers.utils.getAddress(address))
+    if(!this.getProvider()) { return undefined }
+    const accounts = (await this.getProvider().request({ method: 'eth_accounts' })).map((address)=>ethers.utils.getAddress(address))
     return accounts[0]
   }
 
   async connect() {
-    if(!window?.ethereum) { return undefined }
-    const accounts = (await window.ethereum.request({ method: 'eth_requestAccounts' })).map((address)=>ethers.utils.getAddress(address))
+    if(!this.getProvider()) { return undefined }
+    const accounts = (await this.getProvider().request({ method: 'eth_requestAccounts' })).map((address)=>ethers.utils.getAddress(address))
     return accounts[0]
   }
 
@@ -48,7 +53,7 @@ export default class WindowEthereum {
     switch (event) {
       case 'account':
         internalCallback = (accounts) => callback(ethers.utils.getAddress(accounts[0]))
-        window.ethereum.on('accountsChanged', internalCallback)
+        this.getProvider().on('accountsChanged', internalCallback)
         break
     }
     return internalCallback
@@ -57,14 +62,14 @@ export default class WindowEthereum {
   off(event, internalCallback) {
     switch (event) {
       case 'account':
-        window.ethereum.removeListener('accountsChanged', internalCallback)
+        this.getProvider().removeListener('accountsChanged', internalCallback)
         break
     }
     return internalCallback
   }
 
   async connectedTo(input) {
-    const blockchain = Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }))
+    const blockchain = Blockchain.findById(await this.getProvider().request({ method: 'eth_chainId' }))
     if(input) {
       return input === blockchain.name
     } else {
@@ -75,7 +80,7 @@ export default class WindowEthereum {
   addNetwork(blockchainName) {
     return new Promise((resolve, reject)=>{
       const blockchain = Blockchain.findByName(blockchainName)
-      window.ethereum.request({
+      this.getProvider().request({
         method: 'wallet_addEthereumChain',
         params: [{
           chainId: blockchain.id,
@@ -96,7 +101,7 @@ export default class WindowEthereum {
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
       const blockchain = Blockchain.findByName(blockchainName)
-      window.ethereum.request({
+      this.getProvider().request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
       }).then(resolve).catch((error)=> {
@@ -113,7 +118,7 @@ export default class WindowEthereum {
 
   async sign(message) {
     let address = await this.account()
-    let provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+    let provider = new ethers.providers.Web3Provider(this.getProvider(), 'any')
     let signer = provider.getSigner(0)
     let signature = await signer.signMessage(message)
     return signature
