@@ -29,7 +29,6 @@ class WalletConnectV1 {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
-    this.connector = WalletConnectV1.instance || this.newWalletConnectInstance()
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
         wallet: this,
@@ -38,10 +37,13 @@ class WalletConnectV1 {
     }
   }
 
-  newWalletConnectInstance() {
+  newWalletConnectInstance(connect) {
     let instance = new WalletConnectClient({
-      bridge: "https://bridge.walletconnect.org",
-      qrcodeModal: QRCodeModal
+      bridge: "https://walletconnect.depay.com",
+      qrcodeModal: { 
+        open: async(uri)=>connect({ uri }),
+        close: ()=>{},
+      }
     })
 
     instance.on("connect", (error, payload) => {
@@ -76,21 +78,21 @@ class WalletConnectV1 {
     return this.connectedAccounts[0]
   }
 
-  async connect(options) {
+  async connect({ connect }) {
     try {
       window.localStorage.removeItem('walletconnect') // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
       if(this.connector == undefined){
-        this.connector = this.newWalletConnectInstance()
+        this.connector = this.newWalletConnectInstance(connect)
       }
 
       if(this.connector.connected) {
         await this.connector.killSession()
         setConnectedInstance(undefined)
-        this.connector = this.newWalletConnectInstance()
+        this.connector = this.newWalletConnectInstance(connect)
       }
 
-      let { accounts, chainId } = await this.connector.connect({ chainId: options?.chainId })
+      let { accounts, chainId } = await this.connector.connect()
 
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this)

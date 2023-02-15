@@ -74,6 +74,8 @@ class WalletConnectV2 {
         methods: [
           "eth_sendTransaction",
           "personal_sign",
+          "eth_chainId",
+          "wallet_switchEthereumChain",
         ],
         chains: [`${blockchain.namespace}:${blockchain.networkId}`],
         events: [],
@@ -113,7 +115,28 @@ class WalletConnectV2 {
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
-      reject({ code: 'NOT_SUPPORTED' })
+      let resolved, rejected
+      const blockchain = Blockchain.findByName(blockchainName)
+      setTimeout(async()=>{
+        if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
+          reject({ code: 'NOT_SUPPORTED' })
+        } else {
+          resolve()
+        }
+      }, 4000)
+      this.connectedBlockchain = blockchain.name
+      this.signClient.request({
+        topic: this.session.topic,
+        chainId: this.session.chainId,
+        request:{
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: blockchain.id }],
+        }
+      }).then((result)=>{
+        console.log('RESULT ', result)
+        resolved = true
+        resolve()
+      })
     })
   }
 

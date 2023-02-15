@@ -1,6 +1,7 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { Transaction } from '../../Transaction'
+import { ethers } from 'ethers'
 import { request, estimate, getProvider } from '@depay/web3-client'
+import { Transaction } from '../../Transaction'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
@@ -77,26 +78,54 @@ const submit = ({ transaction, wallet }) => {
 
 const submitContractInteraction = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
+  const gasPrice = await provider.getGasPrice()
+  const gas = await estimate(transaction)
+  const data = await transaction.getData()
+  const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined
+  const nonce = ethers.utils.hexlify(transaction.nonce)
+  console.log({
+    from: transaction.from,
+    to: transaction.to,
+    value,
+    data,
+    gas: gas.toHexString(),
+    gasPrice: gasPrice.toHexString(),
+    nonce,
+  })
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: transaction.value?.toString(),
-    data: await transaction.getData(),
-    gas: (await estimate(transaction)).toString(),
-    gasPrice: (await provider.getGasPrice()).toString(),
-    nonce: transaction.nonce,
+    value,
+    data,
+    gas: gas.toHexString(),
+    gasPrice: gasPrice.toHexString(),
+    nonce,
   })
 }
 
 const submitSimpleTransfer = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
+  const gasPrice = await provider.getGasPrice()
+  const gas = await estimate(transaction)
+  const value = ethers.utils.hexlify(ethers.BigNumber.from(transaction.value))
+  const nonce = ethers.utils.hexlify(transaction.nonce)
+  console.log({
+    from: transaction.from,
+    to: transaction.to,
+    value,
+    data: '0x',
+    gas: gas.toHexString(),
+    gasPrice: gasPrice.toHexString(),
+    nonce,
+  })
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
-    value: transaction.value?.toString(),
-    gas: (await estimate(transaction)).toString(),
-    gasPrice: (await provider.getGasPrice()).toString(),
-    nonce: transaction.nonce,
+    value,
+    data: '0x',
+    gas: gas.toHexString(),
+    gasPrice: gasPrice.toHexString(),
+    nonce,
   })
 }
 

@@ -122,17 +122,29 @@
         <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
-              <div class="overflow-auto" style="height: 120px;">
+              <div>
                 <h5 class="px-4">WalletConnect V1 connect</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test connecting WalletConnect V1</div>
+                  <div id="walletConnectV1QRCode">
+                  </div>
                 </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.connectWalletConnectV1 = ()=>{
+                  window.connectWalletConnectV1 = async()=>{
                     wallet = new Web3Wallets.wallets.WalletConnectV1()
-                    wallet.connect()
+                    let account = await wallet.connect({
+                      connect: ({ uri })=>{
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("walletConnectV1QRCode"));
+                      }
+                    })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectWalletConnectV1()'>Try it</button>
@@ -157,7 +169,7 @@
                     </select>
                     <input id="walletConnectProjectId" placeholder="projectId"/>
                   </div>
-                  <div id="walletConnectQRCode">
+                  <div id="walletConnectV2QRCode">
                   </div>
                 </div>
               </div>
@@ -176,7 +188,7 @@
                           type: "svg",
                           data: uri,
                         });
-                        qrCode.append(document.getElementById("walletConnectQRCode"));
+                        qrCode.append(document.getElementById("walletConnectV2QRCode"));
                       }
                     })
                     console.log('account', account)
@@ -354,7 +366,7 @@
                     wallet.sendTransaction({ 
                       blockchain: "polygon",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
-                      value: "10000000000000",
+                      value: "1000000000000000",
                       sent: function(transaction){ console.log("sent callack", transaction) },
                       succeeded: function(transaction){ console.log("succeeded callack", transaction) },
                       failed: function(transaction){ console.log("failed callack", transaction) } 
