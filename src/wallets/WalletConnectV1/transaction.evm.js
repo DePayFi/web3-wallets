@@ -80,7 +80,7 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
   const gasPrice = await provider.getGasPrice()
   const gas = await estimate(transaction)
   const data = await transaction.getData()
-  const value = ethers.utils.hexlify(ethers.BigNumber.from(transaction.value))
+  const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined
   const nonce = ethers.utils.hexlify(transaction.nonce)
   console.log({
     from: transaction.from,

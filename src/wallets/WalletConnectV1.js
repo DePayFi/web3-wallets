@@ -83,6 +83,8 @@ class WalletConnectV1 {
     try {
       window.localStorage.removeItem('walletconnect') // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
+      this.connector = WalletConnectV1.instance
+
       if(this.connector == undefined){
         this.connector = this.newWalletConnectInstance(connect)
       }

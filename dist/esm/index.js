@@ -1063,7 +1063,7 @@ const submitContractInteraction$2 = async ({ transaction, wallet })=>{
   const gasPrice = await provider.getGasPrice();
   const gas = await estimate(transaction);
   const data = await transaction.getData();
-  const value = ethers.utils.hexlify(ethers.BigNumber.from(transaction.value));
+  const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined;
   const nonce = ethers.utils.hexlify(transaction.nonce);
   console.log({
     from: transaction.from,
@@ -1187,19 +1187,21 @@ class WalletConnectV1 {
   }
 
   async connect(options) {
-    (options && options.connect) ? options.connect : ({uri})=>{};
+    let connect = (options && options.connect) ? options.connect : ({uri})=>{};
     try {
       window.localStorage.removeItem('walletconnect'); // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
-      // if(this.connector == undefined){
-      //   this.connector = this.newWalletConnectInstance(connect)
-      // }
+      this.connector = WalletConnectV1.instance;
 
-      // if(this.connector.connected) {
-      //   await this.connector.killSession()
-      //   setConnectedInstance(undefined)
-      //   this.connector = this.newWalletConnectInstance(connect)
-      // }
+      if(this.connector == undefined){
+        this.connector = this.newWalletConnectInstance(connect);
+      }
+
+      if(this.connector.connected) {
+        await this.connector.killSession();
+        setConnectedInstance$2(undefined);
+        this.connector = this.newWalletConnectInstance(connect);
+      }
 
       let { accounts, chainId } = await this.connector.connect();
 
