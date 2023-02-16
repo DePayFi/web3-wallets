@@ -1210,13 +1210,14 @@ class WalletConnectV1 {
 
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance$2(this);
+        accounts = accounts.map((account)=>ethers.utils.getAddress(account));
+        this.connectedAccounts = accounts;
+        this.connectedChainId = chainId;
+
+        return accounts[0]
+      } else {
+        return
       }
-
-      accounts = accounts.map((account)=>ethers.utils.getAddress(account));
-      this.connectedAccounts = accounts;
-      this.connectedChainId = chainId;
-
-      return accounts[0]
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error);
       return undefined
@@ -1842,22 +1843,19 @@ var wallets = {
   WalletLink
 };
 
-let instances = {};
-
 const getWallets = ()=>{
   let availableWallets = [];
 
   Object.keys(wallets).forEach((key)=>{
     let wallet = wallets[key];
     if(wallet.isAvailable()) {
-      if(!instances[wallet]) {
-        if(wallet.getConnectedInstance && wallet.getConnectedInstance()) {
-          instances[wallet] = wallet.getConnectedInstance();
-        } else {
-          instances[wallet] = new wallet;
-        }
+      let instance;
+      if(wallet.getConnectedInstance && wallet.getConnectedInstance()) {
+        instance = wallet.getConnectedInstance();
+      } else {
+        instance = new wallet;
       }
-      availableWallets.push(instances[wallet]);
+      availableWallets.push(instance);
     }
   });
 

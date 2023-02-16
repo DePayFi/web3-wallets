@@ -101,13 +101,14 @@ class WalletConnectV1 {
 
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this)
+        accounts = accounts.map((account)=>ethers.utils.getAddress(account))
+        this.connectedAccounts = accounts
+        this.connectedChainId = chainId
+
+        return accounts[0]
+      } else {
+        return
       }
-
-      accounts = accounts.map((account)=>ethers.utils.getAddress(account))
-      this.connectedAccounts = accounts
-      this.connectedChainId = chainId
-
-      return accounts[0]
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error)
       return undefined
