@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnectV1/transaction.evm'
 import { WalletConnectClient, QRCodeModal } from '@depay/walletconnect-v1'
 
+
 const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance'
 
 const getConnectedInstance = ()=>{
@@ -78,9 +79,14 @@ class WalletConnectV1 {
     return this.connectedAccounts[0]
   }
 
-  async connect({ connect }) {
+  async connect(options) {
+    let connect = (options && options.connect) ? options.connect : ({uri})=>{}
+    if(options?.name) { this.name = options.name }
+    if(options?.logo) { this.logo = options.logo }
     try {
       window.localStorage.removeItem('walletconnect') // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
+
+      this.connector = WalletConnectV1.instance
 
       if(this.connector == undefined){
         this.connector = this.newWalletConnectInstance(connect)

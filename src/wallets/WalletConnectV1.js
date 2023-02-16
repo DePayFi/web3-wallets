@@ -80,6 +80,8 @@ class WalletConnectV1 {
 
   async connect(options) {
     let connect = (options && options.connect) ? options.connect : ({uri})=>{}
+    if(options?.name) { this.name = options.name }
+    if(options?.logo) { this.logo = options.logo }
     try {
       window.localStorage.removeItem('walletconnect') // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
