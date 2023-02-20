@@ -59903,6 +59903,12 @@ class Argent {
   }
 }
 
+const blockchainNames = {
+  'ethereum': 'mainnet',
+  'bsc': 'bsc',
+  'polygon': 'polygon',
+};
+
 class Safe {
 
   constructor ({ address, blockchain }) {
@@ -59921,7 +59927,7 @@ class Safe {
 
   async retrieveTransaction({ blockchain, tx }) {
     const provider = await getProvider(blockchain);
-    let jsonResult = await fetch(`https://safe-transaction-${blockchain}.safe.global/api/v1/multisig-transactions/${tx}/`)
+    let jsonResult = await fetch(`https://safe-transaction-${blockchainNames[blockchain]}.safe.global/api/v1/multisig-transactions/${tx}/`)
       .then((response) => response.json())
       .catch((error) => { console.error('Error:', error); });
     if(jsonResult && jsonResult.isExecuted && jsonResult.transactionHash) {

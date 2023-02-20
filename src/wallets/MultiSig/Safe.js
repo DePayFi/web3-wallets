@@ -1,5 +1,11 @@
 import { request, getProvider } from '@depay/web3-client'
 
+const blockchainNames = {
+  'ethereum': 'mainnet',
+  'bsc': 'bsc',
+  'polygon': 'polygon',
+}
+
 export default class Safe {
 
   constructor ({ address, blockchain }) {
@@ -18,7 +24,7 @@ export default class Safe {
 
   async retrieveTransaction({ blockchain, tx }) {
     const provider = await getProvider(blockchain)
-    let jsonResult = await fetch(`https://safe-transaction-${blockchain}.safe.global/api/v1/multisig-transactions/${tx}/`)
+    let jsonResult = await fetch(`https://safe-transaction-${blockchainNames[blockchain]}.safe.global/api/v1/multisig-transactions/${tx}/`)
       .then((response) => response.json())
       .catch((error) => { console.error('Error:', error) })
     if(jsonResult && jsonResult.isExecuted && jsonResult.transactionHash) {
