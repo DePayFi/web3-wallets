@@ -22,6 +22,7 @@ describe('WalletConnect: sendTransaction (evm)', () => {
         await new wallets.WalletConnectV1().connect()
         wallet = getWallets()[0]
         expect(wallet.name).toEqual('WalletConnect')
+        mock({ blockchain, code: { for: account, return: '0x' }})
       })
 
       let address = '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92';
@@ -353,6 +354,7 @@ describe('WalletConnect: sendTransaction (evm)', () => {
           provider = await getProvider(otherBlockchain)
           mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
           mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
+          mock({ blockchain: otherBlockchain, code: { for: account, return: '0x' }})
 
           mockedTransaction = mock({
             blockchain: otherBlockchain,

@@ -59993,7 +59993,7 @@
         transaction.url = blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         let sentTransaction = await retrieveTransaction$1({ blockchain: transaction.blockchain, tx, smartContractWallet });
-        transaction.id = sentTransaction.id;
+        transaction.id = sentTransaction.hash || transaction.id;
         transaction.url = blockchain.explorerUrlFor({ transaction });
         transaction.nonce = sentTransaction.nonce || transactionCount;
         sentTransaction.wait(1).then(() => {
