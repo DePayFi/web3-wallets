@@ -985,6 +985,91 @@ class Trust extends WindowEthereum {
   static __initStatic2() {this.isAvailable = ()=>{ return (_optionalChain$3([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$3([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) };}
 } Trust.__initStatic(); Trust.__initStatic2();
 
+class Argent {
+
+  constructor ({ address, blockchain }) {
+    this.address = address;
+    this.blockchain = blockchain;
+  }
+
+  async transactionCount() {
+    return 1 // irrelevant as proxy address/relayer actually sending the transaction is not known yet (but needs to be something)
+  }
+}
+
+class Safe {
+
+  constructor ({ address, blockchain }) {
+    this.address = address;
+    this.blockchain = blockchain;
+  }
+
+  async transactionCount() {
+    return parseInt((await request$1({
+      blockchain: this.blockchain,
+      address: this.address,
+      api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+      method: 'nonce',
+    })).toString(), 10)
+  }
+
+  async retrieveTransaction({ blockchain, tx }) {
+    const provider = await getProvider(blockchain);
+    let jsonResult = await fetch(`https://safe-transaction-${blockchain}.safe.global/api/v1/multisig-transactions/${tx}/`)
+      .then((response) => response.json())
+      .catch((error) => { console.error('Error:', error); });
+    if(jsonResult && jsonResult.isExecuted && jsonResult.transactionHash) {
+      return await provider.getTransaction(jsonResult.transactionHash)
+    } else {
+      return undefined
+    }
+  }
+}
+
+const isSmartContractWallet = async(blockchain, address)=>{
+  const provider = await getProvider(blockchain);
+  const code = await provider.getCode(address);
+  return (code != '0x')
+};
+
+const identifySmartContractWallet = async (blockchain, address)=>{
+  let name; 
+  try {
+    name = await request$1({
+      blockchain,
+      address,
+      api: [{ "constant": true, "inputs": [], "name": "NAME", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function"}],
+      method: 'NAME'
+    });
+  } catch (e) {}
+  if(name == 'Default Callback Handler') { return 'Safe' }
+  
+  let executor; 
+  try {
+    executor = await request$1({
+      blockchain,
+      address,
+      api: [{ "constant": true, "inputs": [], "name": "staticCallExecutor", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function"}],
+      method: 'staticCallExecutor'
+    });
+  } catch (e2) {}
+  if(executor) { return 'Argent' }
+  
+};
+
+const getSmartContractWallet = async(blockchain, address)=> {
+  if(!await isSmartContractWallet(blockchain, address)){ return }
+
+  const type = await identifySmartContractWallet(blockchain, address);
+  if(type == 'Safe') {
+    return new Safe({ blockchain, address })
+  } else if(type == 'Argent') {
+    return new Argent({ blockchain, address })
+  } else {
+    throw('Unrecognized smart contract wallet not supported!')
+  }
+};
+
 const sendTransaction$2 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
@@ -994,7 +1079,8 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });
-  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+  const smartContractWallet = await getSmartContractWallet(transaction.blockchain, transaction.from);
+  const transactionCount = smartContractWallet ? await smartContractWallet.transactionCount() : await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction.nonce = transactionCount;
   await submit$2({ transaction, wallet }).then(async (tx)=>{
     if (tx) {
@@ -1002,33 +1088,29 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
       transaction.id = tx;
       transaction.url = blockchain.explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
-      let sentTransaction = await retrieveTransaction$1(tx, transaction.blockchain);
+      let sentTransaction = await retrieveTransaction$1({ blockchain: transaction.blockchain, tx, smartContractWallet });
+      transaction.id = sentTransaction.id;
+      transaction.url = blockchain.explorerUrlFor({ transaction });
       transaction.nonce = sentTransaction.nonce || transactionCount;
-      if(!sentTransaction) {
-        transaction._failed = true;
-        console.log('Error retrieving transaction');
-        if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
-      } else {
-        sentTransaction.wait(1).then(() => {
-          transaction._succeeded = true;
-          if (transaction.succeeded) transaction.succeeded(transaction);
-        }).catch((error)=>{
-          if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
-            if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
-              transaction.id = error.replacement.hash;
-              transaction._succeeded = true;
-              if (transaction.succeeded) transaction.succeeded(transaction);
-            } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
-              transaction.id = error.replacement.hash;
-              transaction._failed = true;
-              if(transaction.failed) transaction.failed(transaction, error);  
-            }
-          } else {
+      sentTransaction.wait(1).then(() => {
+        transaction._succeeded = true;
+        if (transaction.succeeded) transaction.succeeded(transaction);
+      }).catch((error)=>{
+        if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
+          if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
+            transaction.id = error.replacement.hash;
+            transaction._succeeded = true;
+            if (transaction.succeeded) transaction.succeeded(transaction);
+          } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
+            transaction.id = error.replacement.hash;
             transaction._failed = true;
-            if(transaction.failed) transaction.failed(transaction, error);
+            if(transaction.failed) transaction.failed(transaction, error);  
           }
-        });
-      }
+        } else {
+          transaction._failed = true;
+          if(transaction.failed) transaction.failed(transaction, error);
+        }
+      });
     } else {
       throw('Submitting transaction failed!')
     }
@@ -1036,16 +1118,23 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
   return transaction
 };
 
-const retrieveTransaction$1 = async (tx, blockchain)=>{
-  let sentTransaction;
+const retrieveTransaction$1 = async ({ blockchain, tx, smartContractWallet })=>{
   const provider = await getProvider(blockchain);
-  sentTransaction = await provider.getTransaction(tx);
-  const maxRetries = 120;
-  let attempt = 1;
-  while (attempt <= maxRetries && !sentTransaction) {
-    sentTransaction = await provider.getTransaction(tx);
-    await (new Promise((resolve)=>setTimeout(resolve, 5000)));
-    attempt++;
+  let retrieve = async()=>{
+    try {
+      if(smartContractWallet && smartContractWallet.retrieveTransaction) {
+        return await smartContractWallet.retrieveTransaction({ blockchain, tx })
+      } else {
+        return await provider.getTransaction(tx)
+      }
+    } catch (e) {}
+  };
+  
+  let sentTransaction;
+  sentTransaction = await retrieve();
+  while (!sentTransaction) {
+    await (new Promise((resolve)=>setTimeout(resolve, 3000)));
+    sentTransaction = await retrieve();
   }
   return sentTransaction
 };
@@ -1065,15 +1154,6 @@ const submitContractInteraction$2 = async ({ transaction, wallet })=>{
   const data = await transaction.getData();
   const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined;
   const nonce = ethers.utils.hexlify(transaction.nonce);
-  console.log({
-    from: transaction.from,
-    to: transaction.to,
-    value,
-    data,
-    gas: gas.toHexString(),
-    gasPrice: gasPrice.toHexString(),
-    nonce,
-  });
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
@@ -1091,15 +1171,6 @@ const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
   const gas = await estimate(transaction);
   const value = ethers.utils.hexlify(ethers.BigNumber.from(transaction.value));
   const nonce = ethers.utils.hexlify(transaction.nonce);
-  console.log({
-    from: transaction.from,
-    to: transaction.to,
-    value,
-    data: '0x',
-    gas: gas.toHexString(),
-    gasPrice: gasPrice.toHexString(),
-    nonce,
-  });
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
