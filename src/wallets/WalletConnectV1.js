@@ -1,5 +1,7 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
+import { request } from '@depay/web3-client'
+import { getSmartContractWallet } from './MultiSig'
 import { sendTransaction } from './WalletConnectV1/transaction'
 import { WalletConnectClient } from '@depay/walletconnect-v1'
 
@@ -203,6 +205,15 @@ class WalletConnectV1 {
       case 'account':
         this.connector.off("session_update")
         break
+    }
+  }
+
+  async transactionCount({ blockchain, address }) {
+    const smartContractWallet = await getSmartContractWallet(blockchain, address)
+    if(smartContractWallet) {
+      return await smartContractWallet.transactionCount()
+    } else {
+      return await request({ blockchain, method: 'transactionCount', address })
     }
   }
 

@@ -1,5 +1,6 @@
 import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
+import { request } from '@depay/web3-client'
 import { sendTransaction } from './WindowEthereum/transaction'
 import { supported } from '../blockchains.evm'
 
@@ -114,6 +115,10 @@ export default class WindowEthereum {
         }
       })
     })
+  }
+
+  transactionCount({ blockchain, address }) {
+    return request({ blockchain, method: 'transactionCount', address })
   }
 
   async sign(message) {

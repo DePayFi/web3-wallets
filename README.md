@@ -408,6 +408,14 @@ transaction.value // '1000000000000000000'
 
 in case wallet is connected to the wrong network and network cant be switched automatically.
 
+### Get wallet transaction count
+
+```javascript
+import { transactionCount } from '@depay/web3-wallets'
+
+let count = await transactionCount({ blockchain: 'polygon', address: '0x8Ffdb4Ee24a625856c82db7FAAE5Bd8B3406eF86' })
+```
+
 ### Sign messages
 
 ```javascript

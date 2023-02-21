@@ -14,7 +14,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   }
   await transaction.prepare({ wallet })
   const smartContractWallet = await getSmartContractWallet(transaction.blockchain, transaction.from)
-  const transactionCount = smartContractWallet ? await smartContractWallet.transactionCount() : await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
+  let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from })
   transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then((tx)=>{
     if (tx) {

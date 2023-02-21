@@ -127,6 +127,10 @@ class WalletLink {
     return internalCallback
   }
 
+  transactionCount({ blockchain, address }) {
+    return request({ blockchain, method: 'transactionCount', address })
+  }
+
   async sign(message) {
     let address = await this.account()
     let provider = new ethers.providers.Web3Provider(this.connector, 'any')

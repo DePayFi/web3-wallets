@@ -1,8 +1,8 @@
 import { Blockchain } from '@depay/web3-blockchains';
 import { ethers } from 'ethers';
+import { request as request$2, getProvider, estimate } from '@depay/web3-client';
 import { CONSTANTS } from '@depay/web3-constants';
 import { PublicKey, Transaction as Transaction$1, SystemProgram } from '@depay/solana-web3.js';
-import { getProvider, request as request$1, estimate } from '@depay/web3-client';
 import { WalletConnectClient } from '@depay/walletconnect-v1';
 import { Core, SignClient } from '@depay/walletconnect-v2';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
@@ -213,7 +213,7 @@ let getWindow = () => {
 
 // MAKE SURE PROVIDER SUPPORT BATCH SIZE OF 99 BATCH REQUESTS!
 const ENDPOINTS = {
-  ethereum: ['https://rpc.ankr.com/eth', 'https://eth-mainnet-public.unifra.io', 'https://ethereum.publicnode.com'],
+  ethereum: ['https://rpc.ankr.com/eth', 'https://eth.llamarpc.com', 'https://ethereum.publicnode.com'],
   bsc: ['https://bsc-dataseed.binance.org', 'https://bsc-dataseed1.ninicoin.io', 'https://bsc-dataseed3.defibit.io'],
   polygon: ['https://polygon-rpc.com', 'https://poly-rpc.gateway.pokt.network', 'https://matic-mainnet.chainstacklabs.com'],
   velas: ['https://mainnet.velas.com/rpc', 'https://evmexplorer.velas.com/rpc', 'https://explorer.velas.com/rpc'],
@@ -469,7 +469,7 @@ var requestEVM = async ({ blockchain, address, api, method, params, block }) => 
   }
 };
 
-let request = async function (url, options) {
+let request$1 = async function (url, options) {
   let { blockchain, address, method } = parseUrl(url);
   let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
 
@@ -495,7 +495,7 @@ const sendTransaction$4 = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });
-  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction.nonce = transactionCount;
   let provider = new ethers.providers.Web3Provider(wallet.getProvider(), 'any');
   let signer = provider.getSigner(0);
@@ -679,6 +679,10 @@ class WindowEthereum {
         }
       });
     })
+  }
+
+  transactionCount({ blockchain, address }) {
+    return request$2({ blockchain, method: 'transactionCount', address })
   }
 
   async sign(message) {
@@ -1024,7 +1028,7 @@ class Safe {
     if(jsonResult && jsonResult.nonce) {
       transactionCount = jsonResult.nonce;
     } else {
-      transactionCount = parseInt((await request$1({
+      transactionCount = parseInt((await request$2({
         blockchain: this.blockchain,
         address: this.address,
         api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -1062,7 +1066,7 @@ const isSmartContractWallet = async(blockchain, address)=>{
 const identifySmartContractWallet = async (blockchain, address)=>{
   let name; 
   try {
-    name = await request$1({
+    name = await request$2({
       blockchain,
       address,
       api: [{ "constant": true, "inputs": [], "name": "NAME", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function"}],
@@ -1073,7 +1077,7 @@ const identifySmartContractWallet = async (blockchain, address)=>{
   
   let executor; 
   try {
-    executor = await request$1({
+    executor = await request$2({
       blockchain,
       address,
       api: [{ "constant": true, "inputs": [], "name": "staticCallExecutor", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function"}],
@@ -1107,7 +1111,7 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
   }
   await transaction.prepare({ wallet });
   const smartContractWallet = await getSmartContractWallet(transaction.blockchain, transaction.from);
-  const transactionCount = smartContractWallet ? await smartContractWallet.transactionCount() : await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+  let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from });
   transaction.nonce = transactionCount;
   await submit$2({ transaction, wallet }).then((tx)=>{
     if (tx) {
@@ -1414,6 +1418,15 @@ class WalletConnectV1 {
     }
   }
 
+  async transactionCount({ blockchain, address }) {
+    const smartContractWallet = await getSmartContractWallet(blockchain, address);
+    if(smartContractWallet) {
+      return await smartContractWallet.transactionCount()
+    } else {
+      return await request$2({ blockchain, method: 'transactionCount', address })
+    }
+  }
+
   async sign(message) {
     let address = await this.account();
     var params = [ethers.utils.toUtf8Bytes(message), address];
@@ -1435,7 +1448,7 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });
-  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+  let transactionCount = await request$2({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction.nonce = transactionCount;
   await submit$1({ transaction, wallet }).then(async (response)=>{
     if(typeof response == 'string') {
@@ -1911,6 +1924,10 @@ class WalletLink {
         break
     }
     return internalCallback
+  }
+
+  transactionCount({ blockchain, address }) {
+    return request({ blockchain, method: 'transactionCount', address })
   }
 
   async sign(message) {

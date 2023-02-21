@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-constants'), require('@depay/solana-web3.js'), require('@depay/web3-client'), require('@depay/walletconnect-v1'), require('@depay/walletconnect-v2'), require('@depay/coinbase-wallet-sdk')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-constants', '@depay/solana-web3.js', '@depay/web3-client', '@depay/walletconnect-v1', '@depay/walletconnect-v2', '@depay/coinbase-wallet-sdk'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Constants, global.SolanaWeb3js, global.Web3Client, global.WalletConnect, global.WalletConnectV2, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Blockchains, ethers, web3Constants, solanaWeb3_js, web3Client, walletconnectV1, walletconnectV2, coinbaseWalletSdk) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-client'), require('@depay/web3-constants'), require('@depay/solana-web3.js'), require('@depay/walletconnect-v1'), require('@depay/walletconnect-v2'), require('@depay/coinbase-wallet-sdk')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-client', '@depay/web3-constants', '@depay/solana-web3.js', '@depay/walletconnect-v1', '@depay/walletconnect-v2', '@depay/coinbase-wallet-sdk'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Client, global.Web3Constants, global.SolanaWeb3js, global.WalletConnect, global.WalletConnectV2, global.CoinbaseWalletSdk));
+}(this, (function (exports, web3Blockchains, ethers, web3Client, web3Constants, solanaWeb3_js, walletconnectV1, walletconnectV2, coinbaseWalletSdk) { 'use strict';
 
   function _optionalChain$g(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
@@ -210,7 +210,7 @@
 
   // MAKE SURE PROVIDER SUPPORT BATCH SIZE OF 99 BATCH REQUESTS!
   const ENDPOINTS = {
-    ethereum: ['https://rpc.ankr.com/eth', 'https://eth-mainnet-public.unifra.io', 'https://ethereum.publicnode.com'],
+    ethereum: ['https://rpc.ankr.com/eth', 'https://eth.llamarpc.com', 'https://ethereum.publicnode.com'],
     bsc: ['https://bsc-dataseed.binance.org', 'https://bsc-dataseed1.ninicoin.io', 'https://bsc-dataseed3.defibit.io'],
     polygon: ['https://polygon-rpc.com', 'https://poly-rpc.gateway.pokt.network', 'https://matic-mainnet.chainstacklabs.com'],
     velas: ['https://mainnet.velas.com/rpc', 'https://evmexplorer.velas.com/rpc', 'https://explorer.velas.com/rpc'],
@@ -466,7 +466,7 @@
     }
   };
 
-  let request = async function (url, options) {
+  let request$1 = async function (url, options) {
     let { blockchain, address, method } = parseUrl(url);
     let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
 
@@ -492,7 +492,7 @@
       throw({ code: 'WRONG_NETWORK' })
     }
     await transaction.prepare({ wallet });
-    let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+    let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction.nonce = transactionCount;
     let provider = new ethers.ethers.providers.Web3Provider(wallet.getProvider(), 'any');
     let signer = provider.getSigner(0);
@@ -676,6 +676,10 @@
           }
         });
       })
+    }
+
+    transactionCount({ blockchain, address }) {
+      return web3Client.request({ blockchain, method: 'transactionCount', address })
     }
 
     async sign(message) {
@@ -1104,7 +1108,7 @@
     }
     await transaction.prepare({ wallet });
     const smartContractWallet = await getSmartContractWallet(transaction.blockchain, transaction.from);
-    const transactionCount = smartContractWallet ? await smartContractWallet.transactionCount() : await web3Client.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+    let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from });
     transaction.nonce = transactionCount;
     await submit$2({ transaction, wallet }).then((tx)=>{
       if (tx) {
@@ -1408,6 +1412,15 @@
         case 'account':
           this.connector.off("session_update");
           break
+      }
+    }
+
+    async transactionCount({ blockchain, address }) {
+      const smartContractWallet = await getSmartContractWallet(blockchain, address);
+      if(smartContractWallet) {
+        return await smartContractWallet.transactionCount()
+      } else {
+        return await web3Client.request({ blockchain, method: 'transactionCount', address })
       }
     }
 
@@ -1908,6 +1921,10 @@
           break
       }
       return internalCallback
+    }
+
+    transactionCount({ blockchain, address }) {
+      return request({ blockchain, method: 'transactionCount', address })
     }
 
     async sign(message) {
