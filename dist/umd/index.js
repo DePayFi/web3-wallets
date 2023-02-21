@@ -1014,12 +1014,21 @@
     }
 
     async transactionCount() {
-      return parseInt((await web3Client.request({
-        blockchain: this.blockchain,
-        address: this.address,
-        api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-        method: 'nonce',
-      })).toString(), 10)
+      let transactionCount;
+      let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[blockchain]}.safe.global/api/v1/safes/${this.address}/`)
+        .then((response) => response.json())
+        .catch((error) => { console.error('Error:', error); });
+      if(jsonResult && jsonResult.nonce) {
+        transactionCount = jsonResult.nonce;
+      } else {
+        transactionCount = parseInt((await web3Client.request({
+          blockchain: this.blockchain,
+          address: this.address,
+          api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+          method: 'nonce',
+        })).toString(), 10);
+      }
+      return transactionCount
     }
 
     async retrieveTransaction({ blockchain, tx }) {
