@@ -21,7 +21,7 @@ export default class Safe {
 
   async transactionCount() {
     let transactionCount
-    let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[blockchain]}.safe.global/api/v1/safes/${this.address}/`)
+    let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[this.blockchain]}.safe.global/api/v1/safes/${this.address}/`)
       .then((response) => response.json())
       .catch((error) => { console.error('Error:', error) })
     if(jsonResult && jsonResult.nonce) {
