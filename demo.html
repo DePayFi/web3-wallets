@@ -120,17 +120,30 @@
         <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
-              <div class="overflow-auto" style="height: 120px;">
+              <div>
                 <h5 class="px-4">WalletConnect V1 connect</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test connecting WalletConnect V1</div>
+                  <div id="walletConnectV1QRCode">
+                  </div>
                 </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.connectWalletConnectV1 = ()=>{
+                  window.connectWalletConnectV1 = async()=>{
                     wallet = new Web3Wallets.wallets.WalletConnectV1()
-                    wallet.connect()
+                    let account = await wallet.connect({
+                      connect: ({ uri })=>{
+                        copyTextToClipboard(uri)
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("walletConnectV1QRCode"));
+                      }
+                    })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectWalletConnectV1()'>Try it</button>
@@ -147,9 +160,15 @@
                 <div class="px-4">
                   <div class="text-secondary ">Test connecting WalletConnect V2</div>
                   <div>
+                    <select id="WalletConnectv2Blockchain">
+                      <option type='checkbox' value="ethereum">Ethereum</option>
+                      <option type='checkbox' value="bsc">BSC</option>
+                      <option type='checkbox' value="polygon">Polygon</option>
+                      <option type='checkbox' value="velas">Velas</option>
+                    </select>
                     <input id="walletConnectProjectId" placeholder="projectId"/>
                   </div>
-                  <div id="walletConnectQRCode">
+                  <div id="walletConnectV2QRCode">
                   </div>
                 </div>
               </div>
@@ -158,7 +177,9 @@
                   window.connectWalletConnectV2 = async ()=>{
                     window._walletConnectProjectId = document.getElementById('walletConnectProjectId').value
                     wallet = new Web3Wallets.wallets.WalletConnectV2()
-                    await wallet.connect({
+                    let blockchain = document.getElementById('WalletConnectv2Blockchain').value
+                    let account = await wallet.connect({
+                      blockchain,
                       connect: ({ uri })=>{
                         const qrCode = new QRCodeStyling({
                           width: 300,
@@ -166,9 +187,10 @@
                           type: "svg",
                           data: uri,
                         });
-                        qrCode.append(document.getElementById("walletConnectQRCode"));
+                        qrCode.append(document.getElementById("walletConnectV2QRCode"));
                       }
                     })
+                    console.log('account', account)
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectWalletConnectV2()'>Try it</button>
@@ -258,9 +280,9 @@
                       from: await window.wallet.account(),
                       value: 0.01,
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleSOLTransfer()'>Try it</button>
@@ -293,9 +315,9 @@
                         to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
                       })],
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendUSDCSolana()'>Try it</button>
@@ -318,10 +340,10 @@
                       blockchain: "bsc",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
                       value: "1000000000000000",
-                      sent: function(transaction){ console.log("sent callack", transaction) },
-                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleTransferBsc()'>Try it</button>
@@ -334,7 +356,33 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Send simple ETH transfer bsc</h5>
+                <h5 class="px-4">Send simple MATIC transfer polygon</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleTransferMatic = async ()=> {
+                    console.log('sendSimpleTransferMatic')
+                    wallet.sendTransaction({ 
+                      blockchain: "polygon",
+                      to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
+                      value: "1000000000000000",
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleTransferMatic()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send simple ETH transfer ethereum</h5>
               </div>
               <div class="px-4 pt-3">
                 <script>
@@ -344,10 +392,10 @@
                       blockchain: "ethereum",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
                       value: "100000000000",
-                      sent: function(transaction){ console.log("sent callack", transaction) },
-                      confirmed: function(transaction){ console.log("confirmed callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleEthTransfer()'>Try it</button>
@@ -373,8 +421,11 @@
                       blockchain: "bsc",
                       to: "0xb6c3ea7940bb9d99bc968d41e6fa06e07402ed43",
                       from: await wallet.account(),
-                      value: "1000000000000000"
-                    })
+                      value: "1000000000000000",
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleTransferBscIntoContract()'>Try it</button>
@@ -400,7 +451,10 @@
                       method: "transfer", 
                       params: ["0x317D875cA3B9f8d14f960486C0d1D1913be74e90", "1000000000000000000" ],
                       api: [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}],
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendContractTransactionBsc()'>Try it</button>
@@ -426,10 +480,106 @@
                       method: "transfer", 
                       params: ["0x317D875cA3B9f8d14f960486C0d1D1913be74e90", "100" ],
                       api: [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}],
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendContractTransactionEthereum()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send DePayRouter route USDC on polygon</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendRouteOnPolygon = async ()=> {
+                    console.log('route on polygon')
+                    let account = await wallet.account()
+                    await wallet.sendTransaction({ 
+                      blockchain: "polygon", 
+                      from: account, 
+                      to: "0x2CA727BC33915823e3D05fe043d310B8c5b2dC5b", 
+                      method: "route", 
+                      params: { path: ['0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'], amounts: ['100000', '100000'], addresses: [account, account], plugins: ['0x78C0F1c712A9AA2004C1F401A7307d8bCB62abBd'], data: [] },
+                      api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                      value: 0,
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendRouteOnPolygon()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send DePayRouter route MATIC on polygon</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendRouteOnMaticPolygon = async ()=> {
+                    console.log('route on polygon')
+                    let account = await wallet.account()
+                    await wallet.sendTransaction({ 
+                      blockchain: "polygon", 
+                      from: account, 
+                      to: "0x2CA727BC33915823e3D05fe043d310B8c5b2dC5b", 
+                      method: "route", 
+                      params: { path: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'], amounts: ['10000000000', '10000000000'], addresses: [account, account], plugins: ['0x78C0F1c712A9AA2004C1F401A7307d8bCB62abBd'], data: [] },
+                      api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                      value: '10000000000',
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendRouteOnMaticPolygon()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send DePayRouter route on bsc</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendRouteOnBSC = async ()=> {
+                    console.log('route on bsc')
+                    let account = await wallet.account()
+                    await wallet.sendTransaction({ 
+                      blockchain: "bsc", 
+                      from: account, 
+                      to: "0x0Dfb7137bC64b63F7a0de7Cb9CDa178702666220", 
+                      method: "route", 
+                      params: { path: ['0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'], amounts: ['100000', '100000'], addresses: [account, account], plugins: ['0x8B127D169D232D5F3ebE1C3D06CE343FD7C1AA11'], data: [] },
+                      api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                      value: 0,
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendRouteOnBSC()'>Try it</button>
               </div>
             </div>
           </div>

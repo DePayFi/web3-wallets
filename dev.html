@@ -283,9 +283,9 @@
                       from: await window.wallet.account(),
                       value: 0.01,
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleSOLTransfer()'>Try it</button>
@@ -318,9 +318,9 @@
                         to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
                       })],
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendUSDCSolana()'>Try it</button>
@@ -343,10 +343,10 @@
                       blockchain: "bsc",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
                       value: "1000000000000000",
-                      sent: function(transaction){ console.log("sent callack", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleTransferBsc()'>Try it</button>
@@ -369,10 +369,10 @@
                       blockchain: "polygon",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
                       value: "1000000000000000",
-                      sent: function(transaction){ console.log("sent callack", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleTransferMatic()'>Try it</button>
@@ -395,10 +395,10 @@
                       blockchain: "ethereum",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
                       value: "100000000000",
-                      sent: function(transaction){ console.log("sent callack", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleEthTransfer()'>Try it</button>
@@ -426,9 +426,9 @@
                       from: await wallet.account(),
                       value: "1000000000000000",
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendSimpleTransferBscIntoContract()'>Try it</button>
@@ -455,9 +455,9 @@
                       params: ["0x317D875cA3B9f8d14f960486C0d1D1913be74e90", "1000000000000000000" ],
                       api: [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}],
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendContractTransactionBsc()'>Try it</button>
@@ -484,9 +484,9 @@
                       params: ["0x317D875cA3B9f8d14f960486C0d1D1913be74e90", "100" ],
                       api: [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}],
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendContractTransactionEthereum()'>Try it</button>
@@ -515,9 +515,9 @@
                       api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
                       value: 0,
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendRouteOnPolygon()'>Try it</button>
@@ -546,9 +546,9 @@
                       api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
                       value: '10000000000',
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendRouteOnMaticPolygon()'>Try it</button>
@@ -577,9 +577,9 @@
                       api: [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
                       value: 0,
                       sent: function(transaction){ console.log("sent callback", transaction) },
-                      succeeded: function(transaction){ console.log("succeeded callack", transaction) },
-                      failed: function(transaction){ console.log("failed callack", transaction) } 
-                    })
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
                   }
                 </script>
                 <button class='btn btn-primary' onClick='window.sendRouteOnBSC()'>Try it</button>

@@ -16,34 +16,35 @@ const sendTransaction = async ({ transaction, wallet })=> {
   const smartContractWallet = await getSmartContractWallet(transaction.blockchain, transaction.from)
   const transactionCount = smartContractWallet ? await smartContractWallet.transactionCount() : await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction.nonce = transactionCount
-  await submit({ transaction, wallet }).then(async (tx)=>{
+  await submit({ transaction, wallet }).then((tx)=>{
     if (tx) {
       let blockchain = Blockchain.findByName(transaction.blockchain)
       transaction.id = tx
       transaction.url = smartContractWallet && smartContractWallet.explorerUrlFor ? smartContractWallet.explorerUrlFor({ transaction }) : blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
-      let sentTransaction = await retrieveTransaction({ blockchain: transaction.blockchain, tx, smartContractWallet })
-      transaction.id = sentTransaction.hash || transaction.id
-      transaction.url = blockchain.explorerUrlFor({ transaction })
-      transaction.nonce = sentTransaction.nonce || transactionCount
-      sentTransaction.wait(1).then(() => {
-        transaction._succeeded = true
-        if (transaction.succeeded) transaction.succeeded(transaction)
-      }).catch((error)=>{
-        if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
-          if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
-            transaction.id = error.replacement.hash
-            transaction._succeeded = true
-            if (transaction.succeeded) transaction.succeeded(transaction)
-          } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
-            transaction.id = error.replacement.hash
+      retrieveTransaction({ blockchain: transaction.blockchain, tx, smartContractWallet }).then((sentTransaction)=>{
+        transaction.id = sentTransaction.hash || transaction.id
+        transaction.url = blockchain.explorerUrlFor({ transaction })
+        transaction.nonce = sentTransaction.nonce || transactionCount
+        sentTransaction.wait(1).then(() => {
+          transaction._succeeded = true
+          if (transaction.succeeded) transaction.succeeded(transaction)
+        }).catch((error)=>{
+          if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
+            if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
+              transaction.id = error.replacement.hash
+              transaction._succeeded = true
+              if (transaction.succeeded) transaction.succeeded(transaction)
+            } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
+              transaction.id = error.replacement.hash
+              transaction._failed = true
+              if(transaction.failed) transaction.failed(transaction, error)  
+            }
+          } else {
             transaction._failed = true
-            if(transaction.failed) transaction.failed(transaction, error)  
+            if(transaction.failed) transaction.failed(transaction, error)
           }
-        } else {
-          transaction._failed = true
-          if(transaction.failed) transaction.failed(transaction, error)
-        }
+        })
       })
     } else {
       throw('Submitting transaction failed!')
