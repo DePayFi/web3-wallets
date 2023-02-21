@@ -59901,10 +59901,16 @@
     }
   }
 
-  const blockchainNames = {
+  const transactionApiBlockchainNames = {
     'ethereum': 'mainnet',
     'bsc': 'bsc',
     'polygon': 'polygon',
+  };
+
+  const explorerBlockchainNames = {
+    'ethereum': 'eth',
+    'bsc': 'bnb',
+    'polygon': 'matic',
   };
 
   class Safe {
@@ -59925,13 +59931,19 @@
 
     async retrieveTransaction({ blockchain, tx }) {
       const provider = await getProvider(blockchain);
-      let jsonResult = await fetch(`https://safe-transaction-${blockchainNames[blockchain]}.safe.global/api/v1/multisig-transactions/${tx}/`)
+      let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[blockchain]}.safe.global/api/v1/multisig-transactions/${tx}/`)
         .then((response) => response.json())
         .catch((error) => { console.error('Error:', error); });
       if(jsonResult && jsonResult.isExecuted && jsonResult.transactionHash) {
         return await provider.getTransaction(jsonResult.transactionHash)
       } else {
         return undefined
+      }
+    }
+
+    explorerUrlFor({ transaction }) {
+      if(transaction) {
+        return `https://app.safe.global/${explorerBlockchainNames[transaction.blockchain]}:${transaction.from}/transactions/tx?id=multisig_${transaction.from}_${transaction.id}`
       }
     }
   }
@@ -59996,7 +60008,7 @@
       if (tx) {
         let blockchain = web3Blockchains.Blockchain.findByName(transaction.blockchain);
         transaction.id = tx;
-        transaction.url = blockchain.explorerUrlFor({ transaction });
+        transaction.url = smartContractWallet && smartContractWallet.explorerUrlFor ? smartContractWallet.explorerUrlFor({ transaction }) : blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         let sentTransaction = await retrieveTransaction$1({ blockchain: transaction.blockchain, tx, smartContractWallet });
         transaction.id = sentTransaction.hash || transaction.id;
