@@ -372,13 +372,14 @@ describe('WalletConnect: sendTransaction', () => {
         })
 
         it('switches network if transaction is supposed to be sent on different network', async ()=> {
-          connect(blockchain)
           let switchMock = mock({
             blockchain,
             network: {
               switchTo: otherBlockchain
             }
           })
+          mock({ blockchain: otherBlockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
+          connect(blockchain)
           let submittedTransaction = await wallet.sendTransaction(transaction)
           expect(mockedTransaction).toHaveBeenCalled()
           expect(switchMock).toHaveBeenCalled()

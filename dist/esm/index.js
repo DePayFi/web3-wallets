@@ -1225,6 +1225,16 @@ const setConnectedInstance$2 = (value)=>{
   window[KEY$1] = value;
 };
 
+const getWalletConnectInstance = (connect)=>{
+  return new WalletConnectClient({
+    bridge: "https://walletconnect.depay.com",
+    qrcodeModal: { 
+      open: async(uri)=>connect({ uri }),
+      close: ()=>{},
+    }
+  })
+};
+
 class WalletConnectV1 {
 
   static __initStatic() {this.info = {
@@ -1233,8 +1243,9 @@ class WalletConnectV1 {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ 
-    return getConnectedInstance$2() != undefined 
+  static __initStatic2() {this.isAvailable = ()=>{
+    let connector = getWalletConnectInstance(()=>{});
+    return getConnectedInstance$2() != undefined || connector.connected
   };}
 
   constructor() {
@@ -1250,13 +1261,7 @@ class WalletConnectV1 {
   }
 
   newWalletConnectInstance(connect) {
-    let instance = new WalletConnectClient({
-      bridge: "https://walletconnect.depay.com",
-      qrcodeModal: { 
-        open: async(uri)=>connect({ uri }),
-        close: ()=>{},
-      }
-    });
+    let instance = getWalletConnectInstance(connect);
 
     instance.on("connect", (error, payload) => {
       if (error) { throw error }
@@ -1286,8 +1291,9 @@ class WalletConnectV1 {
   }
 
   async account() {
-    if(this.connectedAccounts == undefined) { return }
-    return this.connectedAccounts[0]
+    if(!this.connector){ return }
+    let accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' });
+    if(accounts && accounts.length) { return ethers.utils.getAddress(accounts[0]) }
   }
 
   async connect(options) {
@@ -1295,7 +1301,6 @@ class WalletConnectV1 {
     if(_optionalChain$2([options, 'optionalAccess', _ => _.name])) { this.name = options.name; }
     if(_optionalChain$2([options, 'optionalAccess', _2 => _2.logo])) { this.logo = options.logo; }
     try {
-      window.localStorage.removeItem('walletconnect'); // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
 
       this.connector = WalletConnectV1.instance;
 
@@ -1304,23 +1309,26 @@ class WalletConnectV1 {
       }
 
       if(this.connector.connected) {
-        await this.connector.killSession();
-        setConnectedInstance$2(undefined);
-        this.connector = this.newWalletConnectInstance(connect);
-      }
 
-      let { accounts, chainId } = await this.connector.connect();
+        let account = await this.account();
+        this.connectedChainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
 
-      if(accounts instanceof Array && accounts.length) {
-        setConnectedInstance$2(this);
-        accounts = accounts.map((account)=>ethers.utils.getAddress(account));
-        this.connectedAccounts = accounts;
-        this.connectedChainId = chainId;
-
-        return accounts[0]
+        return account
       } else {
-        return
+
+        let { accounts, chainId } = await this.connector.connect();
+
+        if(accounts instanceof Array && accounts.length) {
+          setConnectedInstance$2(this);
+          accounts = accounts.map((account)=>ethers.utils.getAddress(account));
+          this.connectedChainId = chainId;
+
+          return accounts[0]
+        } else {
+          return
+        }
       }
+      
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error);
       return undefined
