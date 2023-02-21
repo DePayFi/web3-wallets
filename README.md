@@ -224,29 +224,60 @@ await wallet.switchTo('bsc')
 
 ### Transaction
 
+### Data Structure
+
+`api: Array`: Api of the contract (e.g. abi for Ethereum).
+
+`blockchain: String`: Name of the blockchain e.g. 'ethereum'.
+
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
+
+`from: String`: Address of the transaction sender.
+
+`id: String`: Identifier of the transaction.
+
+`instructions: Array`: List of instructions (e.g. Solana).
+
+`method: String`: Name of the contract method to be called.
+
+`nonce: Integer`: Nonce (number only used once) of the transaction.
+
+`params: Object or Array`: Parameters passed to the method.
+
+`sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
+
+`succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
+
+`to String`: Address of the contract to be transacted with.
+
+`url String`: Url to open the transaction (e.g. in an explorer).
+
+`value: Number or BigNumber as String`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
+
 ### sendTransaction
 
 #### EVM: sendTransaction
 
 Available arguments for EVM blockchains:
 
+`api: Array`: Api of the contract (e.g. abi for Ethereum).
+
 `blockchain: String`: Name of the blockchain e.g. 'ethereum'.
 
-`to String`: Address of the contract to be transacted with.
-
-`api: Array`: Api of the contract (e.g. abi for Ethereum).
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
 
 `method: String`: Name of the contract method to be called.
 
 `params: Object or Array`: Parameters passed to the method.
 
-`value: Number or BigNumber as String`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
-
 `sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
 
 `succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
 
-`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
+`to String`: Address of the contract to be transacted with.
+
+`value: Number or BigNumber as String`: Value of the transaction (amount of the native blockchain currency sent along with the transaction).
+
 
 ##### EVM: Simple value transfer
 
@@ -292,11 +323,11 @@ Available arguments for Solana blockchains:
 
 `blockchain: String`: Name of the blockchain e.g. 'solana'.
 
+`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
+
 `sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
 
 `succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
-
-`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
 
 ##### Solana: Simple value transfer
 
