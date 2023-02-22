@@ -60155,8 +60155,8 @@ class WalletConnectV1 {
   };}
 
   constructor() {
-    this.name = this.constructor.info.name;
-    this.logo = this.constructor.info.logo;
+    this.name = localStorage[KEY$1+'_name'] ? localStorage[KEY$1+'_name'] : this.constructor.info.name;
+    this.logo = localStorage[KEY$1+'_logo'] ? localStorage[KEY$1+'_logo'] : this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction$3({
@@ -60215,8 +60215,6 @@ class WalletConnectV1 {
       }
 
       if(this.connector.connected) {
-        if(localStorage[KEY$1+'_name']) { this.name = localStorage[KEY$1+'_name']; }
-        if(localStorage[KEY$1+'_logo']) { this.logo = localStorage[KEY$1+'_logo']; }
 
         let account = await this.account();
         this.connectedChainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
