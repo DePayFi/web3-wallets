@@ -12,10 +12,10 @@ describe('Coinbase Wallet (evm)', () => {
       let wallet
 
       const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
-      beforeEach(()=>{
+      beforeEach(async ()=>{
         resetMocks()
         mock({ blockchain, wallet: 'coinbase', accounts: { return: [account] } })
-        wallet = getWallets()[0]
+        wallet = (await getWallets())[0]
       })
 
       it('should detect the wallet type', () => {

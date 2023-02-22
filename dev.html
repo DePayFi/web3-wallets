@@ -54,7 +54,7 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='console.log(Web3Wallets.getWallets())'>Try it</button>
+                <button class='btn btn-primary' onClick='Web3Wallets.getWallets().then(console.log)'>Try it</button>
               </div>
             </div>
           </div>
@@ -73,16 +73,19 @@
                     document.addEventListener("DOMContentLoaded", function() {
                       let select = document.getElementById('connectWallet')
                       setTimeout(()=>{
-                        Web3Wallets.getWallets().forEach((wallet, index)=>{
-                          let option = document.createElement("option")
-                          option.setAttribute('value', index)
-                          option.innerHTML = wallet.name
-                          select.append(option)
+                        Web3Wallets.getWallets().then((availableWallets)=>{
+                          availableWallets.forEach((wallet, index)=>{
+                            let option = document.createElement("option")
+                            option.setAttribute('value', index)
+                            option.innerHTML = wallet.name
+                            select.append(option)
+                          })
                         })
                       }, 500)
                     })
                     window.connectWalletViaSelect = async ()=> {
-                      let wallet = Web3Wallets.getWallets()[parseInt(document.getElementById("connectWallet").value, 10)]
+                      let wallets = await Web3Wallets.getWallets()
+                      let wallet = wallets[parseInt(document.getElementById("connectWallet").value, 10)]
                       console.log(wallet)
                       let accounts = await wallet.connect()
                       window.wallet = wallet
@@ -93,28 +96,6 @@
               </div>
               <div class="px-4 pt-3">
                 <button class='btn btn-primary' onClick='connectWalletViaSelect()'>Try it</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
-          <div class="px-0 py-4 rounded-lg bg-white border">
-            <div class="col px-0">
-              <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">getConnectedWallets()</h5>
-                <div class="px-4">
-                  <div class="text-secondary pb-2">Get all connected wallets.</div>
-                  <script>
-                    window.getConnectedWallets = async ()=> {
-                      let connectedWallets = await Web3Wallets.getConnectedWallets()
-                      console.log('connectedWallets', connectedWallets)
-                    }
-                  </script>
-                </div>
-              </div>
-              <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='getConnectedWallets()'>Try it</button>
               </div>
             </div>
           </div>
@@ -150,53 +131,6 @@
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectWalletConnectV1()'>Try it</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
-          <div class="px-0 py-4 rounded-lg bg-white border">
-            <div class="col px-0">
-              <div class="overflow-auto" style="min-height: 120px;">
-                <h5 class="px-4">WalletConnect V2 connect</h5>
-                <div class="px-4">
-                  <div class="text-secondary ">Test connecting WalletConnect V2</div>
-                  <div>
-                    <select id="WalletConnectv2Blockchain">
-                      <option type='checkbox' value="ethereum">Ethereum</option>
-                      <option type='checkbox' value="bsc">BSC</option>
-                      <option type='checkbox' value="polygon">Polygon</option>
-                      <option type='checkbox' value="velas">Velas</option>
-                    </select>
-                    <input id="walletConnectProjectId" placeholder="projectId"/>
-                  </div>
-                  <div id="walletConnectV2QRCode">
-                  </div>
-                </div>
-              </div>
-              <div class="px-4 pt-3">
-                <script>
-                  window.connectWalletConnectV2 = async ()=>{
-                    window._walletConnectProjectId = document.getElementById('walletConnectProjectId').value
-                    wallet = new Web3Wallets.wallets.WalletConnectV2()
-                    let blockchain = document.getElementById('WalletConnectv2Blockchain').value
-                    let account = await wallet.connect({
-                      blockchain,
-                      connect: ({ uri })=>{
-                        const qrCode = new QRCodeStyling({
-                          width: 300,
-                          height: 300,
-                          type: "svg",
-                          data: uri,
-                        });
-                        qrCode.append(document.getElementById("walletConnectV2QRCode"));
-                      }
-                    })
-                    console.log('account', account)
-                  }
-                </script>
-                <button class='btn btn-primary' onClick='connectWalletConnectV2()'>Try it</button>
               </div>
             </div>
           </div>

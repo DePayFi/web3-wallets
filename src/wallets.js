@@ -8,7 +8,6 @@ import Opera from './wallets/Opera'
 import Phantom from './wallets/Phantom'
 import Trust from './wallets/Trust'
 import WalletConnectV1 from './wallets/WalletConnectV1'
-import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
 import WindowSolana from './wallets/WindowSolana'
@@ -26,6 +25,5 @@ export default {
   WindowEthereum,
   WindowSolana,
   WalletConnectV1,
-  WalletConnectV2,
   WalletLink
 }

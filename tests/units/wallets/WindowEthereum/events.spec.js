@@ -17,9 +17,9 @@ describe('window.ethereum wallet events', () => {
 
         const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
         beforeEach(()=>resetMocks())
-        beforeEach(()=>{
+        beforeEach(async()=>{
           mock({ blockchain, accounts: { return: [account] } })
-          wallet = getWallets()[0]
+          wallet = (await getWallets())[0]
         })
 
         it('registers a callback and informs about wallet account change', async () => {

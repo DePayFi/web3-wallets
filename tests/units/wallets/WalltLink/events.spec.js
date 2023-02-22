@@ -20,7 +20,7 @@ describe('WalletLink: events', () => {
         beforeEach(async ()=>{
           mock({ blockchain, wallet: 'walletlink', connector: wallets.WalletLink, accounts: { return: [account] }})
           await new wallets.WalletLink().connect()
-          wallet = getWallets()[0]
+          wallet = (await getWallets())[0]
           expect(wallet.name).toEqual('Coinbase')
         })
 

@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import { CONSTANTS } from '@depay/web3-constants';
 import { request as request$3 } from '@depay/web3-client-evm';
 import { WalletConnectClient } from '@depay/walletconnect-v1';
-import { Core, SignClient } from '@depay/walletconnect-v2';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -59485,7 +59484,7 @@ const getProvider = async (blockchain)=>{
   }
 };
 
-function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Transaction {
 
   constructor({ blockchain, from, to, value, api, method, params, instructions, sent, succeeded, failed }) {
@@ -59496,7 +59495,7 @@ class Transaction {
     this.to = (to && to.match('0x')) ? ethers.utils.getAddress(to) : to;
 
     // optional
-    this.value = _optionalChain$e([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+    this.value = _optionalChain$c([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
     this.api = api;
     this.method = method;
     this.params = params;
@@ -59583,7 +59582,7 @@ class Transaction {
   }
 }
 
-const sendTransaction$4 = async ({ transaction, wallet })=> {
+const sendTransaction$3 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
@@ -59596,7 +59595,7 @@ const sendTransaction$4 = async ({ transaction, wallet })=> {
   transaction.nonce = transactionCount;
   let provider = new ethers.providers.Web3Provider(wallet.getProvider(), 'any');
   let signer = provider.getSigner(0);
-  await submit$4({ transaction, provider, signer }).then((sentTransaction)=>{
+  await submit$3({ transaction, provider, signer }).then((sentTransaction)=>{
     if (sentTransaction) {
       transaction.id = sentTransaction.hash;
       transaction.nonce = sentTransaction.nonce || transactionCount;
@@ -59630,15 +59629,15 @@ const sendTransaction$4 = async ({ transaction, wallet })=> {
   return transaction
 };
 
-const submit$4 = ({ transaction, provider, signer }) => {
+const submit$3 = ({ transaction, provider, signer }) => {
   if(transaction.method) {
-    return submitContractInteraction$3({ transaction, signer, provider })
+    return submitContractInteraction$2({ transaction, signer, provider })
   } else {
-    return submitSimpleTransfer$4({ transaction, signer })
+    return submitSimpleTransfer$3({ transaction, signer })
   }
 };
 
-const submitContractInteraction$3 = ({ transaction, signer, provider })=>{
+const submitContractInteraction$2 = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider);
   let contractArguments = transaction.getContractArguments({ contract });
   let method = contract.connect(signer)[transaction.method];
@@ -59653,7 +59652,7 @@ const submitContractInteraction$3 = ({ transaction, signer, provider })=>{
   }
 };
 
-const submitSimpleTransfer$4 = ({ transaction, signer })=>{
+const submitSimpleTransfer$3 = ({ transaction, signer })=>{
   return signer.sendTransaction({
     to: transaction.to,
     value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
@@ -59664,7 +59663,7 @@ let supported$2 = ['ethereum', 'bsc', 'polygon', 'velas'];
 supported$2.evm = ['ethereum', 'bsc', 'polygon', 'velas'];
 supported$2.solana = [];
 
-function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59675,12 +59674,12 @@ class WindowEthereum {
 
   static __initStatic2() {this.isAvailable = ()=>{ 
     return (
-      _optionalChain$d([window, 'optionalAccess', _13 => _13.ethereum]) &&
+      _optionalChain$b([window, 'optionalAccess', _13 => _13.ethereum]) &&
       Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length != 1 && // MetaMask
-      !_optionalChain$d([window, 'optionalAccess', _14 => _14.coin98]) && // Coin98
-      !(_optionalChain$d([window, 'optionalAccess', _15 => _15.ethereum, 'optionalAccess', _16 => _16.isTrust]) || _optionalChain$d([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isTrustWallet])) && // Trust Wallet
-      !_optionalChain$d([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isDeficonnectProvider]) && // crypto.com
-      !(_optionalChain$d([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.isCoinbaseWallet]) || _optionalChain$d([window, 'optionalAccess', _23 => _23.ethereum, 'optionalAccess', _24 => _24.isWalletLink]))
+      !_optionalChain$b([window, 'optionalAccess', _14 => _14.coin98]) && // Coin98
+      !(_optionalChain$b([window, 'optionalAccess', _15 => _15.ethereum, 'optionalAccess', _16 => _16.isTrust]) || _optionalChain$b([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isTrustWallet])) && // Trust Wallet
+      !_optionalChain$b([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isDeficonnectProvider]) && // crypto.com
+      !(_optionalChain$b([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.isCoinbaseWallet]) || _optionalChain$b([window, 'optionalAccess', _23 => _23.ethereum, 'optionalAccess', _24 => _24.isWalletLink]))
     )
   };}
   
@@ -59689,7 +59688,7 @@ class WindowEthereum {
     this.logo = this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{
-      return sendTransaction$4({
+      return sendTransaction$3({
         wallet: this,
         transaction
       })
@@ -59791,7 +59790,7 @@ class WindowEthereum {
   }
 } WindowEthereum.__initStatic(); WindowEthereum.__initStatic2();
 
-function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Binance extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59801,7 +59800,7 @@ class Binance extends WindowEthereum {
   };}
 
   static __initStatic2() {this.isAvailable = ()=>{
-    return _optionalChain$c([window, 'optionalAccess', _2 => _2.BinanceChain]) &&
+    return _optionalChain$a([window, 'optionalAccess', _2 => _2.BinanceChain]) &&
       !window.coin98
   };}
 
@@ -59809,7 +59808,7 @@ class Binance extends WindowEthereum {
 
 } Binance.__initStatic(); Binance.__initStatic2();
 
-function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Brave extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59818,10 +59817,10 @@ class Brave extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$b([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isBraveWallet]) };}
+  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$9([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isBraveWallet]) };}
 } Brave.__initStatic(); Brave.__initStatic2();
 
-function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Coin98 extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59830,10 +59829,10 @@ class Coin98 extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$a([window, 'optionalAccess', _2 => _2.coin98]) };}
+  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$8([window, 'optionalAccess', _2 => _2.coin98]) };}
 } Coin98.__initStatic(); Coin98.__initStatic2();
 
-function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Coinbase extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59842,10 +59841,10 @@ class Coinbase extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ return (_optionalChain$9([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isCoinbaseWallet]) || _optionalChain$9([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isWalletLink])) };}
+  static __initStatic2() {this.isAvailable = ()=>{ return (_optionalChain$7([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isCoinbaseWallet]) || _optionalChain$7([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isWalletLink])) };}
 } Coinbase.__initStatic(); Coinbase.__initStatic2();
 
-function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class CryptoCom extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59854,10 +59853,10 @@ class CryptoCom extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$8([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isDeficonnectProvider]) };}
+  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$6([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isDeficonnectProvider]) };}
 } CryptoCom.__initStatic(); CryptoCom.__initStatic2();
 
-function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class MetaMask extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59867,11 +59866,11 @@ class MetaMask extends WindowEthereum {
   };}
 
   static __initStatic2() {this.isAvailable = ()=>{ 
-    return _optionalChain$7([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
+    return _optionalChain$5([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
   };}
 } MetaMask.__initStatic(); MetaMask.__initStatic2();
 
-function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Opera extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59880,10 +59879,10 @@ class Opera extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$6([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isOpera]) };}
+  static __initStatic2() {this.isAvailable = ()=>{ return _optionalChain$4([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isOpera]) };}
 } Opera.__initStatic(); Opera.__initStatic2();
 
-function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Trust extends WindowEthereum {
 
   static __initStatic() {this.info = {
@@ -59892,7 +59891,7 @@ class Trust extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   };}
 
-  static __initStatic2() {this.isAvailable = ()=>{ return (_optionalChain$5([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$5([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) };}
+  static __initStatic2() {this.isAvailable = ()=>{ return (_optionalChain$3([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$3([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) };}
 } Trust.__initStatic(); Trust.__initStatic2();
 
 class Argent {
@@ -60007,7 +60006,7 @@ const getSmartContractWallet = async(blockchain, address)=> {
   }
 };
 
-const sendTransaction$3 = async ({ transaction, wallet })=> {
+const sendTransaction$2 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
@@ -60019,13 +60018,13 @@ const sendTransaction$3 = async ({ transaction, wallet })=> {
   const smartContractWallet = await getSmartContractWallet(transaction.blockchain, transaction.from);
   let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from });
   transaction.nonce = transactionCount;
-  await submit$3({ transaction, wallet }).then((tx)=>{
+  await submit$2({ transaction, wallet }).then((tx)=>{
     if (tx) {
       let blockchain = Blockchain.findByName(transaction.blockchain);
       transaction.id = tx;
       transaction.url = smartContractWallet && smartContractWallet.explorerUrlFor ? smartContractWallet.explorerUrlFor({ transaction }) : blockchain.explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
-      retrieveTransaction$1({ blockchain: transaction.blockchain, tx, smartContractWallet }).then((sentTransaction)=>{
+      retrieveTransaction({ blockchain: transaction.blockchain, tx, smartContractWallet }).then((sentTransaction)=>{
         transaction.id = sentTransaction.hash || transaction.id;
         transaction.url = blockchain.explorerUrlFor({ transaction });
         transaction.nonce = sentTransaction.nonce || transactionCount;
@@ -60056,7 +60055,7 @@ const sendTransaction$3 = async ({ transaction, wallet })=> {
   return transaction
 };
 
-const retrieveTransaction$1 = async ({ blockchain, tx, smartContractWallet })=>{
+const retrieveTransaction = async ({ blockchain, tx, smartContractWallet })=>{
   const provider = await getProvider(blockchain);
   let retrieve = async()=>{
     try {
@@ -60077,15 +60076,15 @@ const retrieveTransaction$1 = async ({ blockchain, tx, smartContractWallet })=>{
   return sentTransaction
 };
 
-const submit$3 = ({ transaction, wallet }) => {
+const submit$2 = ({ transaction, wallet }) => {
   if(transaction.method) {
-    return submitContractInteraction$2({ transaction, wallet })
+    return submitContractInteraction$1({ transaction, wallet })
   } else {
-    return submitSimpleTransfer$3({ transaction, wallet })
+    return submitSimpleTransfer$2({ transaction, wallet })
   }
 };
 
-const submitContractInteraction$2 = async ({ transaction, wallet })=>{
+const submitContractInteraction$1 = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain);
   const gasPrice = await provider.getGasPrice();
   const gas = await estimate(transaction);
@@ -60103,7 +60102,7 @@ const submitContractInteraction$2 = async ({ transaction, wallet })=>{
   })
 };
 
-const submitSimpleTransfer$3 = async ({ transaction, wallet })=>{
+const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain);
   const gasPrice = await provider.getGasPrice();
   const gas = await estimate(transaction);
@@ -60120,17 +60119,30 @@ const submitSimpleTransfer$3 = async ({ transaction, wallet })=>{
   })
 };
 
-function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-const KEY$1 = '_DePayWeb3WalletsConnectedWalletConnectV1Instance';
+function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance';
 
-const getConnectedInstance$2 = ()=>{
-  if(window[KEY$1]) { return window[KEY$1] }
-  let connector = getWalletConnectInstance(()=>{});
-  if(connector.connected) { return new WalletConnectV1() }
+let currentPlainInstance;
+
+const getPlainInstance = ()=>{
+  if(currentPlainInstance) { return currentPlainInstance }
+  currentPlainInstance = getWalletConnectInstance(()=>{});
 };
 
-const setConnectedInstance$2 = (value)=>{
-  window[KEY$1] = value;
+const isConnected = async()=>{
+  let connector = getPlainInstance();
+  let account;
+  try { account = await connector.sendCustomRequest({ method: 'eth_chainId' }); } catch (e) {}
+  return !!account
+};
+
+const getConnectedInstance$1 = async()=>{
+  if(window[KEY]) { return window[KEY] }
+  if(await isConnected()) { return new WalletConnectV1() }
+};
+
+const setConnectedInstance$1 = (value)=>{
+  window[KEY] = value;
 };
 
 const getWalletConnectInstance = (connect)=>{
@@ -60152,16 +60164,15 @@ class WalletConnectV1 {
   };}
 
   static __initStatic2() {this.isAvailable = ()=>{
-    let connector = getWalletConnectInstance(()=>{});
-    return getConnectedInstance$2() != undefined || connector.connected
+    return getConnectedInstance$1() != undefined
   };}
 
   constructor() {
-    this.name = localStorage[KEY$1+'_name'] ? localStorage[KEY$1+'_name'] : this.constructor.info.name;
-    this.logo = localStorage[KEY$1+'_logo'] ? localStorage[KEY$1+'_logo'] : this.constructor.info.logo;
+    this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != 'undefined') ? localStorage[KEY+'_name'] : this.constructor.info.name;
+    this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != 'undefined') ? localStorage[KEY+'_logo'] : this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{ 
-      return sendTransaction$3({
+      return sendTransaction$2({
         wallet: this,
         transaction
       })
@@ -60186,14 +60197,14 @@ class WalletConnectV1 {
     });
 
     instance.on("disconnect", (error, payload) => {
-      setConnectedInstance$2(undefined);
-      localStorage[KEY$1+'_name'] = undefined;
-      localStorage[KEY$1+'_logo'] = undefined;
+      setConnectedInstance$1(undefined);
+      localStorage[KEY+'_name'] = undefined;
+      localStorage[KEY+'_logo'] = undefined;
       if (error) { throw error }
     });
 
     instance.on("modal_closed", ()=>{
-      setConnectedInstance$2(undefined);
+      setConnectedInstance$1(undefined);
       this.connector = undefined;
     });
 
@@ -60226,11 +60237,11 @@ class WalletConnectV1 {
 
         let { accounts, chainId } = await this.connector.connect();
 
-        if(_optionalChain$4([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$1+'_name'] = this.name = options.name; }
-        if(_optionalChain$4([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1+'_logo'] = this.logo = options.logo; }
+        if(_optionalChain$2([options, 'optionalAccess', _ => _.name])) { localStorage[KEY+'_name'] = this.name = options.name; }
+        if(_optionalChain$2([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY+'_logo'] = this.logo = options.logo; }
 
         if(accounts instanceof Array && accounts.length) {
-          setConnectedInstance$2(this);
+          setConnectedInstance$1(this);
           accounts = accounts.map((account)=>ethers.utils.getAddress(account));
           this.connectedChainId = chainId;
 
@@ -60354,298 +60365,8 @@ class WalletConnectV1 {
   }
 } WalletConnectV1.__initStatic(); WalletConnectV1.__initStatic2();
 
-WalletConnectV1.getConnectedInstance = getConnectedInstance$2;
-WalletConnectV1.setConnectedInstance = setConnectedInstance$2;
-
-function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-const sendTransaction$2 = async ({ transaction, wallet })=> {
-  transaction = new Transaction(transaction);
-  if((await wallet.connectedTo(transaction.blockchain)) == false) {
-    await wallet.switchTo(transaction.blockchain);
-  }
-  if((await wallet.connectedTo(transaction.blockchain)) == false) {
-    throw({ code: 'WRONG_NETWORK' })
-  }
-  await transaction.prepare({ wallet });
-  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
-  transaction.nonce = transactionCount;
-  await submit$2({ transaction, wallet }).then(async (response)=>{
-    if(typeof response == 'string') {
-      let blockchain = Blockchain.findByName(transaction.blockchain);
-      transaction.id = response;
-      transaction.url = blockchain.explorerUrlFor({ transaction });
-      if (transaction.sent) transaction.sent(transaction);
-      let sentTransaction = await retrieveTransaction(transaction.id, transaction.blockchain);
-      transaction.nonce = sentTransaction.nonce || transactionCount;
-      if(!sentTransaction) {
-        transaction._failed = true;
-        console.log('Error retrieving transaction');
-        if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
-      } else {
-        sentTransaction.wait(1).then(() => {
-          transaction._succeeded = true;
-          if (transaction.succeeded) transaction.succeeded(transaction);
-        }).catch((error)=>{
-          if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
-            if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
-              transaction.id = error.replacement.hash;
-              transaction._succeeded = true;
-              if (transaction.succeeded) transaction.succeeded(transaction);
-            } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
-              transaction.id = error.replacement.hash;
-              transaction._failed = true;
-              if(transaction.failed) transaction.failed(transaction, error);  
-            }
-          } else {
-            transaction._failed = true;
-            if(transaction.failed) transaction.failed(transaction, error);
-          }
-        });
-      }
-    } else {
-      throw(response)
-    }
-  });
-  return transaction
-};
-
-const retrieveTransaction = async (tx, blockchain)=>{
-  let sentTransaction;
-  const provider = await getProvider(blockchain);
-  sentTransaction = await provider.getTransaction(tx);
-  const maxRetries = 120;
-  let attempt = 1;
-  while (attempt <= maxRetries && !sentTransaction) {
-    sentTransaction = await provider.getTransaction(tx);
-    await (new Promise((resolve)=>setTimeout(resolve, 5000)));
-    attempt++;
-  }
-  return sentTransaction
-};
-
-const submit$2 = ({ transaction, wallet }) => {
-  if(transaction.method) {
-    return submitContractInteraction$1({ transaction, wallet })
-  } else {
-    return submitSimpleTransfer$2({ transaction, wallet })
-  }
-};
-
-const submitContractInteraction$1 = async ({ transaction, wallet })=>{
-  const provider = await getProvider(transaction.blockchain);
-  return wallet.signClient.request({
-    topic: wallet.session.topic,
-    chainId: wallet.session.chainId,
-    request: {
-      method: 'eth_sendTransaction',
-      params: [{
-        from: transaction.from,
-        to: transaction.to,
-        value: _optionalChain$3([transaction, 'access', _ => _.value, 'optionalAccess', _2 => _2.toString, 'call', _3 => _3()]),
-        data: await transaction.getData(),
-        gas: (await estimate(transaction)).toString(),
-        gasPrice: (await provider.getGasPrice()).toString(),
-        nonce: transaction.nonce,
-      }]
-    }
-  })
-};
-
-const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
-  const provider = await getProvider(transaction.blockchain);
-  let blockchain = Blockchain.findByName(transaction.blockchain);
-  return wallet.signClient.request({
-    topic: wallet.session.topic,
-    chainId: wallet.session.chainId,
-    request: {
-      method: 'eth_sendTransaction',
-      params: [{
-        chainId: blockchain.id,
-        from: transaction.from,
-        to: transaction.to,
-        value: _optionalChain$3([transaction, 'access', _4 => _4.value, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]),
-        gas: (await estimate(transaction)).toString(),
-        gasPrice: (await provider.getGasPrice()).toString(),
-        nonce: transaction.nonce
-      }]
-    }
-  }).catch((e)=>{console.log('ERROR', e);})
-};
-
-function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-const KEY = '_DePayWeb3WalletsConnectedWalletConnectV2Instance';
-
-const getConnectedInstance$1 = ()=>{
-  return window[KEY]
-};
-
-const setConnectedInstance$1 = (value)=>{
-  window[KEY] = value;
-};
-
-class WalletConnectV2 {
-
-  static __initStatic() {this.info = {
-    name: 'WalletConnect',
-    logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0ndXRmLTgnPz48IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMjUuNC4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAtLT48c3ZnIHZlcnNpb249JzEuMScgaWQ9J0xheWVyXzEnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZycgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHg9JzBweCcgeT0nMHB4JyB2aWV3Qm94PScwIDAgNTAwIDUwMCcgc3R5bGU9J2VuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTAwIDUwMDsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxzdHlsZSB0eXBlPSd0ZXh0L2Nzcyc+IC5zdDB7ZmlsbDojNTk5MUNEO30KPC9zdHlsZT48ZyBpZD0nUGFnZS0xJz48ZyBpZD0nd2FsbGV0Y29ubmVjdC1sb2dvLWFsdCc+PHBhdGggaWQ9J1dhbGxldENvbm5lY3QnIGNsYXNzPSdzdDAnIGQ9J00xMDIuNywxNjJjODEuNS03OS44LDIxMy42LTc5LjgsMjk1LjEsMGw5LjgsOS42YzQuMSw0LDQuMSwxMC41LDAsMTQuNEwzNzQsMjE4LjkgYy0yLDItNS4zLDItNy40LDBsLTEzLjUtMTMuMmMtNTYuOC01NS43LTE0OS01NS43LTIwNS44LDBsLTE0LjUsMTQuMWMtMiwyLTUuMywyLTcuNCwwTDkxLjksMTg3Yy00LjEtNC00LjEtMTAuNSwwLTE0LjQgTDEwMi43LDE2MnogTTQ2Ny4xLDIyOS45bDI5LjksMjkuMmM0LjEsNCw0LjEsMTAuNSwwLDE0LjRMMzYyLjMsNDA1LjRjLTQuMSw0LTEwLjcsNC0xNC44LDBjMCwwLDAsMCwwLDBMMjUyLDMxMS45IGMtMS0xLTIuNy0xLTMuNywwaDBsLTk1LjUsOTMuNWMtNC4xLDQtMTAuNyw0LTE0LjgsMGMwLDAsMCwwLDAsMEwzLjQsMjczLjZjLTQuMS00LTQuMS0xMC41LDAtMTQuNGwyOS45LTI5LjIgYzQuMS00LDEwLjctNCwxNC44LDBsOTUuNSw5My41YzEsMSwyLjcsMSwzLjcsMGMwLDAsMCwwLDAsMGw5NS41LTkzLjVjNC4xLTQsMTAuNy00LDE0LjgsMGMwLDAsMCwwLDAsMGw5NS41LDkzLjUgYzEsMSwyLjcsMSwzLjcsMGw5NS41LTkzLjVDNDU2LjQsMjI1LjksNDYzLDIyNS45LDQ2Ny4xLDIyOS45eicvPjwvZz48L2c+PC9zdmc+Cg==",
-    blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
-  };}
-
-  static __initStatic2() {this.isAvailable = ()=>{ 
-    return getConnectedInstance$1() != undefined 
-  };}
-
-  constructor() {
-    this.name = this.constructor.info.name;
-    this.logo = this.constructor.info.logo;
-    this.blockchains = this.constructor.info.blockchains;
-    this.connector = WalletConnect.instance || this.newWalletConnectInstance();
-    WalletConnect.instance = this.connector;
-    this.sendTransaction = (transaction)=>{ 
-      return sendTransaction$2({
-        wallet: this,
-        transaction
-      })
-    };
-  }
-
-  newWalletConnectInstance() { 
-    return new Core({ projectId: window._walletConnectProjectId })
-  }
-
-  async account() {
-    if(this.connectedAccount == undefined) { return }
-    return this.connectedAccount
-  }
-
-  async connect({ connect, blockchain }) {
-    
-    if(!connect || typeof connect != 'function') { throw('Provided connect paremeters is not present or not a function!') }
-    
-    try {
-
-      delete localStorage[`wc@2:core:${this.connector.pairing.version}//subscription`]; // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
-      this.signClient = await SignClient.init({ core: this.connector });
-
-      this.signClient.on("session_delete", () => {
-        console.log('WALLETCONNECT DISCONNECT');
-        this.connector = undefined;
-        WalletConnect.instance = undefined;
-        this.connectedAccount = undefined;
-        this.signClient = undefined;
-        this.session = undefined;
-      });
-
-      blockchain = Blockchain.findByName(blockchain);
-
-      let namespaces = {};
-
-      namespaces[blockchain.namespace] = {
-        methods: [
-          "eth_sendTransaction",
-          "personal_sign",
-          "eth_chainId",
-          "wallet_switchEthereumChain",
-        ],
-        chains: [`${blockchain.namespace}:${blockchain.networkId}`],
-        events: [],
-      };
-
-      const { uri, approval } = await this.signClient.connect({ requiredNamespaces: namespaces });
-
-      await connect({ uri });
-      this.session = await approval();
-      this.session.chainId = `${blockchain.namespace}:${blockchain.networkId}`;
-      
-      let meta = _optionalChain$2([this, 'access', _ => _.session, 'optionalAccess', _2 => _2.peer, 'optionalAccess', _3 => _3.metadata]);
-      if(meta && meta.name) {
-        this.name = meta.name;
-        if(_optionalChain$2([meta, 'optionalAccess', _4 => _4.icons]) && meta.icons.length) { this.logo = meta.icons[0]; }
-      }
-
-      const account = Object.values(this.session.namespaces)[0].accounts[0].split(":")[2];
-      this.connectedAccount = account;
-      this.connectedBlockchain = blockchain.name;
-      
-      return account
-
-    } catch (error) {
-      console.log('WALLETCONNECT ERROR', error);
-    }
-  }
-
-  async connectedTo(input) {
-    if(input) {
-      return input === this.connectedBlockchain
-    } else {
-      const blockchain = Blockchain.findByName(this.connectedBlockchain);
-      return blockchain.name
-    }
-  }
-
-  switchTo(blockchainName) {
-    return new Promise((resolve, reject)=>{
-      let resolved, rejected;
-      const blockchain = Blockchain.findByName(blockchainName);
-      setTimeout(async()=>{
-        if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
-          reject({ code: 'NOT_SUPPORTED' });
-        } else {
-          resolve();
-        }
-      }, 4000);
-      this.connectedBlockchain = blockchain.name;
-      this.signClient.request({
-        topic: this.session.topic,
-        chainId: this.session.chainId,
-        request:{
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: blockchain.id }],
-        }
-      }).then((result)=>{
-        console.log('RESULT ', result);
-        resolved = true;
-        resolve();
-      });
-    })
-  }
-
-  addNetwork(blockchainName) {
-    return new Promise((resolve, reject)=>{
-      reject({ code: 'NOT_SUPPORTED' });
-    })
-  }
-
-  on(event, callback) {
-    // currently not supported
-  }
-
-  off(event, callback) {
-    // currently not supported
-  }
-
-  async sign(message) {
-    let address = await this.account();
-    var params = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)), address];
-    let signature = await this.signClient.request({
-      topic: this.session.topic,
-      chainId: this.session.chainId,
-      request:{
-        id: 1,
-        jsonrpc: '2.0',
-        method: 'personal_sign',
-        params
-      }
-    });
-    if(typeof signature == 'object') {
-      signature = ethers.utils.hexlify(signature);
-    }
-    return signature
-  }
-} WalletConnectV2.__initStatic(); WalletConnectV2.__initStatic2();
-
-WalletConnectV2.getConnectedInstance = getConnectedInstance$1;
-WalletConnectV2.setConnectedInstance = setConnectedInstance$1;
+WalletConnectV1.getConnectedInstance = getConnectedInstance$1;
+WalletConnectV1.setConnectedInstance = setConnectedInstance$1;
 
 const sendTransaction$1 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
@@ -61052,40 +60773,32 @@ var wallets = {
   WindowEthereum,
   WindowSolana,
   WalletConnectV1,
-  WalletConnectV2,
   WalletLink
 };
 
-const getWallets = ()=>{
-  let availableWallets = [];
+const getWallets = async()=>{
 
-  Object.keys(wallets).forEach((key)=>{
-    let wallet = wallets[key];
-    if(wallet.isAvailable()) {
-      let instance;
-      if(wallet.getConnectedInstance && wallet.getConnectedInstance()) {
-        instance = wallet.getConnectedInstance();
-      } else {
-        instance = new wallet;
+  let availableWallets = await Promise.all(
+    Object.keys(wallets).map(
+      async(key)=>{
+      
+        let wallet = wallets[key];
+
+        if(wallet.isAvailable()) {
+          let instance;
+          
+          if(wallet.getConnectedInstance) {
+            instance = await wallet.getConnectedInstance();
+            return instance
+          } else {
+            return new wallet
+          }          
+        }
       }
-      availableWallets.push(instance);
-    }
-  });
+    )
+  );
 
-  return availableWallets
-};
-
-const getConnectedWallets = async()=>{
-
-  let connectedWallets = (await Promise.all(
-    getWallets().map(async(wallet)=>{
-      if(await wallet.account()) {
-        return wallet
-      }
-    })
-  )).filter((value)=>!!value);
-
-  return connectedWallets
+  return availableWallets.filter((wallet)=>wallet)
 };
 
 const supported = [
@@ -61098,8 +60811,7 @@ const supported = [
   wallets.Coin98,
   wallets.CryptoCom,
   wallets.WalletConnectV1,
-  wallets.WalletConnectV2,
   wallets.WalletLink
 ];
 
-export { getConnectedWallets, getWallets, supported, wallets };
+export { getWallets, supported, wallets };

@@ -20,7 +20,7 @@ describe('WalletConnect: sendTransaction', () => {
         mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
         mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
         await new wallets.WalletConnectV1().connect()
-        wallet = getWallets()[0]
+        wallet = (await getWallets())[0]
         expect(wallet.name).toEqual('WalletConnect')
         mock({ blockchain, code: { for: account, return: '0x' }})
       })

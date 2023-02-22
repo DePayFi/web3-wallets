@@ -18,7 +18,7 @@ describe('window.solana wallet events', () => {
         const accounts = ['2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1']
         beforeEach(()=>resetMocks())
         beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
-        beforeEach(()=>wallet = getWallets()[0])
+        beforeEach(async()=>wallet = (await getWallets())[0])
 
         it('registers a callback and informs about wallet account change', async () => {
           let walletChangedTo

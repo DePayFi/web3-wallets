@@ -1,23 +1,28 @@
 import wallets from './wallets'
 
-const getWallets = ()=>{
-  let availableWallets = []
+const getWallets = async()=>{
 
-  Object.keys(wallets).forEach((key)=>{
-    let wallet = wallets[key]
-    if(wallet.isAvailable()) {
-      let instance
-      if(wallet.getConnectedInstance && wallet.getConnectedInstance()) {
-        instance = wallet.getConnectedInstance()
-      } else {
-        instance = new wallet
+  let availableWallets = await Promise.all(
+    Object.keys(wallets).map(
+      async(key)=>{
+      
+        let wallet = wallets[key]
+
+        if(wallet.isAvailable()) {
+          let instance
+          
+          if(wallet.getConnectedInstance) {
+            instance = await wallet.getConnectedInstance()
+            return instance
+          } else {
+            return new wallet
+          }          
+        }
       }
-      availableWallets.push(instance)
-    }
-  })
+    )
+  )
 
-  return availableWallets
+  return availableWallets.filter((wallet)=>wallet)
 }
-
 
 export default getWallets

@@ -18,7 +18,7 @@ describe('window.ethereum wallet sendTransaction (evm)', () => {
         provider = await getProvider(blockchain)
         mock({ blockchain, provider })
         mock({ blockchain, accounts: { return: [account] } })
-        wallet = getWallets()[0]
+        wallet = (await getWallets())[0]
       })
       afterEach(resetMocks)
 

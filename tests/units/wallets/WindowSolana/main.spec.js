@@ -29,7 +29,7 @@ describe('window.solana wallet', () => {
         let wallet
         beforeEach(resetMocks)
         beforeEach(()=>mock({ blockchain, accounts: { return: [account] } }))
-        beforeEach(()=> wallet = getWallets()[0] )
+        beforeEach(async()=> wallet = (await getWallets())[0] )
 
         it('should detect any solana wallet integration that integrates window.solana', () => {
           mock(blockchain)

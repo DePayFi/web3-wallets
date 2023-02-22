@@ -72,63 +72,31 @@ import { getWallets } from '@depay/web3-wallets-evm'
 `getWallets`: Returns an array of available/connectable wallets.
 
 ```javascript
-let wallets = getWallets();
+let availableWallets = await getWallets();
 // [<Wallet name='MetaMask'>, <Wallet name='Phantom'>]
 ```
 
 ```javascript
-let wallets = getWallets();
+let availableWallets = await getWallets();
 // [] no wallets detected. (you can still try WalletConnect or WalletLink)
 ```
 
 ```javascript
 import { getWallets, wallets } from "@depay/web3-wallets"
 
-let foundWallets = getWallets()
+let availableWallets = await getWallets()
 
 let wallet
-if(foundWallets.length == 1) {
-  wallet = foundWallets[0]
-} else if(foundWallets.length > 1) {
-  wallet = foundWallets[parseInt(prompt('Which wallet do you want to connect?'), 10)]
+if(availableWallets.length == 1) {
+  wallet = availableWallets[0]
+} else if(availableWallets.length > 1) {
+  wallet = availableWallets[parseInt(prompt('Which wallet do you want to connect?'), 10)]
 } else {
   // Let the user choose:
   // you can still try to connect via wallets.WalletConnect.connect()
   // or wallets.WalletLink.connect()
   wallet = wallets.WalletLink
 }
-```
-
-### getConnectedWallets
-
-`getConnectedWallets`: Returns an array of currently connected wallets.
-
-```javascript
-let wallets = await getConnectedWallets();
-// [<Wallet name='MetaMask'>, <Wallet name='Phantom'>]
-```
-
-### WalletConnectV2
-
-```javascript
-import { wallets } from "@depay/web3-wallets"
-import QRCodeStyling from "qr-code-styling"
-
-let wallet = new wallets.WalletConnectV2()
-
-await wallet.connect({
-  blockchain: 'ethereum',
-  connect: ({ uri })=>{
-    const qrCode = new QRCodeStyling({
-      width: 300,
-      height: 300,
-      type: "svg",
-      data: uri,
-    });
-    qrCode.append(document.getElementById("walletConnectQRCode"));
-  }
-})
-
 ```
 
 ### Name

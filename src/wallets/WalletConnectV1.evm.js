@@ -7,10 +7,23 @@ import { WalletConnectClient } from '@depay/walletconnect-v1'
 
 const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance'
 
-const getConnectedInstance = ()=>{
+let currentPlainInstance
+
+const getPlainInstance = ()=>{
+  if(currentPlainInstance) { return currentPlainInstance }
+  currentPlainInstance = getWalletConnectInstance(()=>{})
+}
+
+const isConnected = async()=>{
+  let connector = getPlainInstance()
+  let account
+  try { account = await connector.sendCustomRequest({ method: 'eth_chainId' }) } catch {}
+  return !!account
+}
+
+const getConnectedInstance = async()=>{
   if(window[KEY]) { return window[KEY] }
-  let connector = getWalletConnectInstance(()=>{})
-  if(connector.connected) { return new WalletConnectV1() }
+  if(await isConnected()) { return new WalletConnectV1() }
 }
 
 const setConnectedInstance = (value)=>{
@@ -36,13 +49,12 @@ class WalletConnectV1 {
   }
 
   static isAvailable = ()=>{
-    let connector = getWalletConnectInstance(()=>{})
-    return getConnectedInstance() != undefined || connector.connected
+    return getConnectedInstance() != undefined
   }
 
   constructor() {
-    this.name = localStorage[KEY+'_name'] ? localStorage[KEY+'_name'] : this.constructor.info.name
-    this.logo = localStorage[KEY+'_logo'] ? localStorage[KEY+'_logo'] : this.constructor.info.logo
+    this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != 'undefined') ? localStorage[KEY+'_name'] : this.constructor.info.name
+    this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != 'undefined') ? localStorage[KEY+'_logo'] : this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({

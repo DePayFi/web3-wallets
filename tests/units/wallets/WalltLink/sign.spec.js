@@ -19,7 +19,7 @@ describe('WalletLink: sign', () => {
         WalletLink.setConnectedInstance(undefined)
         mock({ accounts: { return: [account] }, blockchain, wallet: 'walletlink', connector: wallets.WalletLink })
         await new wallets.WalletLink().connect()
-        wallet = getWallets()[0]
+        wallet = (await getWallets())[0]
         expect(wallet.name).toEqual('Coinbase')
       })
 

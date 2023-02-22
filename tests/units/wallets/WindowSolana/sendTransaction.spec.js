@@ -20,7 +20,7 @@ describe('window.solana wallet sendTransaction', () => {
         resetMocks()
         provider = await getProvider(blockchain)
         mock({ blockchain, accounts: { return: [account] } })
-        wallet = getWallets()[0]
+        wallet = (await getWallets())[0]
       })
 
       describe('complex contract transaction', ()=>{
