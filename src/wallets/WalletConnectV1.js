@@ -238,7 +238,10 @@ class WalletConnectV1 {
   }
 
   async sign(message) {
+    let blockchain = await this.connectedTo()
     let address = await this.account()
+    const smartContractWallet = await getSmartContractWallet(blockchain, address)
+    if(smartContractWallet){ throw({ message: 'Smart contract wallets are not supported for signing!', code: "SMART_CONTRACT_WALLET_NOT_SUPPORTED" }) }
     var params = [ethers.utils.toUtf8Bytes(message), address]
     let signature = await this.connector.signPersonalMessage(params)
     return signature

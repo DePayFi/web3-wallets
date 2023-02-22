@@ -30,7 +30,7 @@ const getSmartContractWallet = async(blockchain, address)=> {
   } else if(type == 'Argent') {
     return new Argent({ blockchain, address })
   } else {
-    throw('Unrecognized smart contract wallet not supported!')
+    if(smartContractWallet){ throw({ message: 'Unrecognized smart contract wallet not supported!', code: "SMART_CONTRACT_WALLET_NOT_SUPPORTED" }) }
   }
 }
 
