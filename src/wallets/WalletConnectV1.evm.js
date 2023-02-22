@@ -65,27 +65,18 @@ class WalletConnectV1 {
     }
   }
 
+  disconnect() {
+    setConnectedInstance(undefined)
+    localStorage[KEY+'_name'] = undefined
+    localStorage[KEY+'_logo'] = undefined
+    currentPlainInstance = undefined
+  }
+
   newWalletConnectInstance(connect) {
     let instance = getWalletConnectInstance(connect)
 
-    instance.on("connect", (error, payload) => {
-      if (error) { throw error }
-      const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
-      this.connectedChainId = chainId
-    })
-
-    instance.on("session_update", (error, payload) => {
-      if (error) { throw error }
-      const { accounts, chainId } = payload.params[0]
-      this.connectedAccounts = accounts.map((account)=>ethers.utils.getAddress(account))
-      this.connectedChainId = chainId
-    })
-
     instance.on("disconnect", (error, payload) => {
-      setConnectedInstance(undefined)
-      localStorage[KEY+'_name'] = undefined
-      localStorage[KEY+'_logo'] = undefined
+      this.disconnect()
       if (error) { throw error }
     })
 
@@ -113,12 +104,15 @@ class WalletConnectV1 {
         this.connector = this.newWalletConnectInstance(connect)
       }
 
-      if(this.connector.connected) {
+      if(options && options.reconnect) {
+        if(this.connector) {
+          await this.connector.killSession()
+          this.disconnect()
+        }
+      }
 
-        let account = await this.account()
-        this.connectedChainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' })
-
-        return account
+      if((await isConnected())) {
+        return await this.account()
       } else {
 
         let { accounts, chainId } = await this.connector.connect()
@@ -129,7 +123,6 @@ class WalletConnectV1 {
         if(accounts instanceof Array && accounts.length) {
           setConnectedInstance(this)
           accounts = accounts.map((account)=>ethers.utils.getAddress(account))
-          this.connectedChainId = chainId
 
           return accounts[0]
         } else {
