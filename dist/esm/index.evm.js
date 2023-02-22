@@ -60221,7 +60221,7 @@ class WalletConnectV1 {
 
       if(options && options.reconnect) {
         if(this.connector) {
-          await this.connector.killSession();
+          try{ await this.connector.killSession(); } catch (e) {}
           this.disconnect();
         }
       }
