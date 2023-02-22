@@ -69,6 +69,8 @@ class WalletConnectV1 {
 
     instance.on("disconnect", (error, payload) => {
       setConnectedInstance(undefined)
+      localStorage[KEY+'_name'] = undefined
+      localStorage[KEY+'_logo'] = undefined
       if (error) { throw error }
     })
 
@@ -88,9 +90,6 @@ class WalletConnectV1 {
 
   async connect(options) {
     let connect = (options && options.connect) ? options.connect : ({uri})=>{}
-    localStorage[KEY] = {}
-    if(options?.name) { localStorage[KEY].name = this.name = options.name }
-    if(options?.logo) { localStorage[KEY].logo = this.logo = options.logo }
     try {
 
       this.connector = WalletConnectV1.instance
@@ -100,10 +99,8 @@ class WalletConnectV1 {
       }
 
       if(this.connector.connected) {
-        if(localStorage[KEY]) {
-          if(localStorage[KEY].name) { this.name = localStorage[KEY].name }
-          if(localStorage[KEY].logo) { this.logo = localStorage[KEY].logo }
-        }
+        if(localStorage[KEY+'_name']) { this.name = localStorage[KEY+'_name'] }
+        if(localStorage[KEY+'_logo']) { this.logo = localStorage[KEY+'_logo'] }
 
         let account = await this.account()
         this.connectedChainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' })
@@ -112,6 +109,9 @@ class WalletConnectV1 {
       } else {
 
         let { accounts, chainId } = await this.connector.connect()
+
+        if(options?.name) { localStorage[KEY+'_name'] = this.name = options.name }
+        if(options?.logo) { localStorage[KEY+'_logo'] = this.logo = options.logo }
 
         if(accounts instanceof Array && accounts.length) {
           setConnectedInstance(this)
