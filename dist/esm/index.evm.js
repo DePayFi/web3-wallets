@@ -59927,11 +59927,11 @@ class Safe {
 
   async transactionCount() {
     let transactionCount;
-    let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[this.blockchain]}.safe.global/api/v1/safes/${this.address}/`)
+    let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[this.blockchain]}.safe.global/api/v1/safes/${this.address}/all-transactions/`)
       .then((response) => response.json())
       .catch((error) => { console.error('Error:', error); });
-    if(jsonResult && jsonResult.nonce) {
-      transactionCount = jsonResult.nonce;
+    if(jsonResult && jsonResult.results && jsonResult.results.length) {
+      transactionCount = jsonResult.results[0].nonce;
     } else {
       transactionCount = parseInt((await request$1({
         blockchain: this.blockchain,
