@@ -60132,7 +60132,7 @@
   const isConnected = async()=>{
     let connector = getPlainInstance();
     let accounts;
-    try { accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }); } catch (error) { console.log(error); }
+    try { accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }); } catch (error) {}
     return accounts && accounts.length
   };
 
