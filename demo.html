@@ -128,9 +128,47 @@
                         qrCode.append(document.getElementById("walletConnectV1QRCode"));
                       }
                     })
+                    console.log('ACCOUNT', account)
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectWalletConnectV1()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
+                <h5 class="px-4">WalletConnect V1 reconnect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting WalletConnect V1</div>
+                  <div id="walletConnectV1QRCodereconnect">
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.reconnectWalletConnectV1 = async()=>{
+                    wallet = new Web3Wallets.wallets.WalletConnectV1()
+                    let account = await wallet.connect({
+                      reconnect: true,
+                      connect: ({ uri })=>{
+                        copyTextToClipboard(uri)
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("walletConnectV1QRCodereconnect"));
+                      }
+                    })
+                    console.log('ACCOUNT', account)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='reconnectWalletConnectV1()'>Try it</button>
               </div>
             </div>
           </div>
