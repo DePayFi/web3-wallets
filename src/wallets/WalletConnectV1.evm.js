@@ -12,13 +12,14 @@ let currentPlainInstance
 const getPlainInstance = ()=>{
   if(currentPlainInstance) { return currentPlainInstance }
   currentPlainInstance = getWalletConnectInstance(()=>{})
+  return currentPlainInstance
 }
 
 const isConnected = async()=>{
   let connector = getPlainInstance()
-  let account
-  try { account = await connector.sendCustomRequest({ method: 'eth_chainId' }) } catch {}
-  return !!account
+  let accounts
+  try { accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }) } catch (error) { console.log(error) }
+  return accounts && accounts.length
 }
 
 const getConnectedInstance = async()=>{
@@ -49,7 +50,7 @@ class WalletConnectV1 {
   }
 
   static isAvailable = async()=>{
-    return getConnectedInstance() != undefined
+    return (await getConnectedInstance()) != undefined
   }
 
   constructor() {

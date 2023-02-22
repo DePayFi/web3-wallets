@@ -60127,13 +60127,14 @@ let currentPlainInstance;
 const getPlainInstance = ()=>{
   if(currentPlainInstance) { return currentPlainInstance }
   currentPlainInstance = getWalletConnectInstance(()=>{});
+  return currentPlainInstance
 };
 
 const isConnected = async()=>{
   let connector = getPlainInstance();
-  let account;
-  try { account = await connector.sendCustomRequest({ method: 'eth_chainId' }); } catch (e) {}
-  return !!account
+  let accounts;
+  try { accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }); } catch (error) { console.log(error); }
+  return accounts && accounts.length
 };
 
 const getConnectedInstance$1 = async()=>{
