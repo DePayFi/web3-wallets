@@ -60204,8 +60204,9 @@ class WalletConnectV1 {
 
   async connect(options) {
     let connect = (options && options.connect) ? options.connect : ({uri})=>{};
-    if(_optionalChain$4([options, 'optionalAccess', _ => _.name])) { this.name = options.name; }
-    if(_optionalChain$4([options, 'optionalAccess', _2 => _2.logo])) { this.logo = options.logo; }
+    localStorage[KEY$1] = {};
+    if(_optionalChain$4([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$1].name = this.name = options.name; }
+    if(_optionalChain$4([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1].logo = this.logo = options.logo; }
     try {
 
       this.connector = WalletConnectV1.instance;
@@ -60215,6 +60216,10 @@ class WalletConnectV1 {
       }
 
       if(this.connector.connected) {
+        if(localStorage[KEY$1]) {
+          if(localStorage[KEY$1].name) { this.name = localStorage[KEY$1].name; }
+          if(localStorage[KEY$1].logo) { this.logo = localStorage[KEY$1].logo; }
+        }
 
         let account = await this.account();
         this.connectedChainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
