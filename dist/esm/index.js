@@ -1025,7 +1025,7 @@ class Safe {
       .then((response) => response.json())
       .catch((error) => { console.error('Error:', error); });
     if(jsonResult && jsonResult.results && jsonResult.results.length) {
-      transactionCount = jsonResult.results[0].nonce;
+      transactionCount = jsonResult.results[0].nonce + 1;
     } else {
       transactionCount = parseInt((await request$2({
         blockchain: this.blockchain,
