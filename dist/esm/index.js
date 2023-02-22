@@ -1218,7 +1218,9 @@ function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[
 const KEY$1 = '_DePayWeb3WalletsConnectedWalletConnectV1Instance';
 
 const getConnectedInstance$2 = ()=>{
-  return window[KEY$1]
+  if(window[KEY$1]) { return window[KEY$1] }
+  let connector = getWalletConnectInstance(()=>{});
+  if(connector.connected) { return new WalletConnectV1() }
 };
 
 const setConnectedInstance$2 = (value)=>{

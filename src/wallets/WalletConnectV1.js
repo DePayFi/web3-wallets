@@ -8,7 +8,9 @@ import { WalletConnectClient } from '@depay/walletconnect-v1'
 const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance'
 
 const getConnectedInstance = ()=>{
-  return window[KEY]
+  if(window[KEY]) { return window[KEY] }
+  let connector = getWalletConnectInstance(()=>{})
+  if(connector.connected) { return new WalletConnectV1() }
 }
 
 const setConnectedInstance = (value)=>{
