@@ -5,6 +5,13 @@ import { getSmartContractWallet } from './MultiSig'
 import { sendTransaction } from './WalletConnectV1/transaction.evm'
 import { WalletConnectClient } from '@depay/walletconnect-v1'
 
+import { Blockchain } from '@depay/web3-blockchains'
+import { ethers } from 'ethers'
+import { request } from '@depay/web3-client'
+import { getSmartContractWallet } from './MultiSig'
+import { sendTransaction } from './WalletConnectV1/transaction'
+import { WalletConnectClient } from '@depay/walletconnect-v1'
+
 const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance'
 
 let currentPlainInstance
@@ -89,8 +96,9 @@ class WalletConnectV1 {
   }
 
   async account() {
-    if(!this.connector){ return }
-    let accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' })
+    if(!this.connector){ this.connector = getPlainInstance() }
+    let accounts
+    try{ accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' }) } catch {}
     if(accounts && accounts.length) { return ethers.utils.getAddress(accounts[0]) }
   }
 

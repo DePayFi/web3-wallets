@@ -60204,8 +60204,9 @@ class WalletConnectV1 {
   }
 
   async account() {
-    if(!this.connector){ return }
-    let accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' });
+    if(!this.connector){ this.connector = getPlainInstance(); }
+    let accounts;
+    try{ accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' }); } catch (e) {}
     if(accounts && accounts.length) { return ethers.utils.getAddress(accounts[0]) }
   }
 
@@ -60221,7 +60222,7 @@ class WalletConnectV1 {
 
       if(options && options.reconnect) {
         if(this.connector) {
-          try{ await this.connector.killSession(); } catch (e) {}
+          try{ await this.connector.killSession(); } catch (e2) {}
           this.disconnect();
         }
       }

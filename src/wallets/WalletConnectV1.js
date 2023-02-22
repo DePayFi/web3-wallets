@@ -89,8 +89,9 @@ class WalletConnectV1 {
   }
 
   async account() {
-    if(!this.connector){ return }
-    let accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' })
+    if(!this.connector){ this.connector = getPlainInstance() }
+    let accounts
+    try{ accounts = await this.connector.sendCustomRequest({ method: 'eth_accounts' }) } catch {}
     if(accounts && accounts.length) { return ethers.utils.getAddress(accounts[0]) }
   }
 
