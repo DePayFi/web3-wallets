@@ -5,13 +5,6 @@ import { getSmartContractWallet } from './MultiSig'
 import { sendTransaction } from './WalletConnectV1/transaction.evm'
 import { WalletConnectClient } from '@depay/walletconnect-v1'
 
-import { Blockchain } from '@depay/web3-blockchains'
-import { ethers } from 'ethers'
-import { request } from '@depay/web3-client'
-import { getSmartContractWallet } from './MultiSig'
-import { sendTransaction } from './WalletConnectV1/transaction'
-import { WalletConnectClient } from '@depay/walletconnect-v1'
-
 const KEY = '_DePayWeb3WalletsConnectedWalletConnectV1Instance'
 
 let currentPlainInstance
