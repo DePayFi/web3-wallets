@@ -1,4 +1,3 @@
-import Argent from './Argent'
 import Safe from './Safe'
 import { request, getProvider } from '@depay/web3-client'
 
@@ -19,17 +18,6 @@ const identifySmartContractWallet = async (blockchain, address)=>{
     })
   } catch {}
   if(name == 'Default Callback Handler') { return 'Safe' }
-  
-  let executor 
-  try {
-    executor = await request({
-      blockchain,
-      address,
-      api: [{ "constant": true, "inputs": [], "name": "staticCallExecutor", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function"}],
-      method: 'staticCallExecutor'
-    })
-  } catch {}
-  if(executor) { return 'Argent' }
   
 }
 

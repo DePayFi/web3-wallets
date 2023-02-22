@@ -59894,18 +59894,6 @@ class Trust extends WindowEthereum {
   static __initStatic2() {this.isAvailable = async()=>{ return (_optionalChain$3([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$3([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) };}
 } Trust.__initStatic(); Trust.__initStatic2();
 
-class Argent {
-
-  constructor ({ address, blockchain }) {
-    this.address = address;
-    this.blockchain = blockchain;
-  }
-
-  async transactionCount() {
-    return 1 // irrelevant as proxy address/relayer actually sending the transaction is not known yet (but needs to be something)
-  }
-}
-
 const transactionApiBlockchainNames = {
   'ethereum': 'mainnet',
   'bsc': 'bsc',
@@ -59979,17 +59967,6 @@ const identifySmartContractWallet = async (blockchain, address)=>{
     });
   } catch (e) {}
   if(name == 'Default Callback Handler') { return 'Safe' }
-  
-  let executor; 
-  try {
-    executor = await request$1({
-      blockchain,
-      address,
-      api: [{ "constant": true, "inputs": [], "name": "staticCallExecutor", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function"}],
-      method: 'staticCallExecutor'
-    });
-  } catch (e2) {}
-  if(executor) { return 'Argent' }
   
 };
 
