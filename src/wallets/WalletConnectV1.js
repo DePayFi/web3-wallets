@@ -48,8 +48,8 @@ class WalletConnectV1 {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{
-    return getConnectedInstance() != undefined
+  static isAvailable = async()=>{
+    return (await getConnectedInstance()) != undefined
   }
 
   constructor() {

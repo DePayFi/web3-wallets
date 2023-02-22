@@ -8,5 +8,5 @@ export default class Trust extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ return (window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) }
+  static isAvailable = async()=>{ return (window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) }
 }

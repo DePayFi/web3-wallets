@@ -8,5 +8,5 @@ export default class Coinbase extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ return (window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink) }
+  static isAvailable = async()=>{ return (window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink) }
 }

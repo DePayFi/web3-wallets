@@ -8,7 +8,7 @@ export default class Binance extends WindowEthereum {
     blockchains: ['ethereum', 'bsc']
   }
 
-  static isAvailable = ()=>{
+  static isAvailable = async()=>{
     return window?.BinanceChain &&
       !window.coin98
   }

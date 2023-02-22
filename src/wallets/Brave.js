@@ -8,5 +8,5 @@ export default class Brave extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ return window?.ethereum?.isBraveWallet }
+  static isAvailable = async()=>{ return window?.ethereum?.isBraveWallet }
 }

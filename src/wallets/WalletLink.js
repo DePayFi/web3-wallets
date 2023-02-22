@@ -20,7 +20,7 @@ class WalletLink {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas'],
   }
 
-  static isAvailable = ()=>{ return getConnectedInstance() != undefined }
+  static isAvailable = async()=>{ return getConnectedInstance() != undefined }
 
   constructor() {
     this.name = this.constructor.info.name

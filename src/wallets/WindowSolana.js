@@ -11,7 +11,7 @@ export default class WindowSolana {
     blockchains: supported.solana
   }
 
-   static isAvailable = ()=>{ 
+   static isAvailable = async()=>{ 
     return (
       window?.solana &&
       !window?.solana?.isPhantom &&

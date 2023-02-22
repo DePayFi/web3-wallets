@@ -8,5 +8,5 @@ export default class Coin98 extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ return window?.coin98 }
+  static isAvailable = async()=>{ return window?.coin98 }
 }

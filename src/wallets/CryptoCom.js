@@ -8,5 +8,5 @@ export default class CryptoCom extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ return window?.ethereum?.isDeficonnectProvider }
+  static isAvailable = async()=>{ return window?.ethereum?.isDeficonnectProvider }
 }

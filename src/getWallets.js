@@ -8,7 +8,7 @@ const getWallets = async()=>{
       
         let wallet = wallets[key]
 
-        if(wallet.isAvailable()) {
+        if(await wallet.isAvailable()) {
           let instance
           
           if(wallet.getConnectedInstance) {

@@ -12,7 +12,7 @@ export default class WindowEthereum {
     blockchains: supported.evm
   }
 
-  static isAvailable = ()=>{ 
+  static isAvailable = async()=>{ 
     return (
       window?.ethereum &&
       Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length != 1 && // MetaMask

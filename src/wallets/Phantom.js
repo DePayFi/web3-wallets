@@ -11,5 +11,5 @@ export default class Phantom extends WindowSolana {
     blockchains: supported.solana
   }
 
-  static isAvailable = ()=>{ return window?.solana?.isPhantom }
+  static isAvailable = async()=>{ return window?.solana?.isPhantom }
 }

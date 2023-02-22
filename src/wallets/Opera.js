@@ -8,5 +8,5 @@ export default class Opera extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ return window?.ethereum?.isOpera }
+  static isAvailable = async()=>{ return window?.ethereum?.isOpera }
 }

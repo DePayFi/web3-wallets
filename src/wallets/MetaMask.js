@@ -8,7 +8,7 @@ export default class MetaMask extends WindowEthereum {
     blockchains: ['ethereum', 'bsc', 'polygon', 'velas']
   }
 
-  static isAvailable = ()=>{ 
+  static isAvailable = async()=>{ 
     return window?.ethereum?.isMetaMask && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
   }
 }
