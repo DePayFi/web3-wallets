@@ -466,7 +466,7 @@
     }
   };
 
-  let request$1 = async function (url, options) {
+  let request = async function (url, options) {
     let { blockchain, address, method } = parseUrl(url);
     let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
 
@@ -492,7 +492,7 @@
       throw({ code: 'WRONG_NETWORK' })
     }
     await transaction.prepare({ wallet });
-    let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+    let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction.nonce = transactionCount;
     let provider = new ethers.ethers.providers.Web3Provider(wallet.getProvider(), 'any');
     let signer = provider.getSigner(0);
@@ -1634,7 +1634,7 @@
     }
 
     transactionCount({ blockchain, address }) {
-      return request({ blockchain, method: 'transactionCount', address })
+      return web3Client.request({ blockchain, method: 'transactionCount', address })
     }
 
     async sign(message) {

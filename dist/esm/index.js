@@ -1,6 +1,6 @@
 import { Blockchain } from '@depay/web3-blockchains';
 import { ethers } from 'ethers';
-import { request as request$2, getProvider, estimate } from '@depay/web3-client';
+import { request as request$1, getProvider, estimate } from '@depay/web3-client';
 import { CONSTANTS } from '@depay/web3-constants';
 import { PublicKey, Transaction as Transaction$1, SystemProgram } from '@depay/solana-web3.js';
 import { WalletConnectClient } from '@depay/walletconnect-v1';
@@ -468,7 +468,7 @@ var requestEVM = async ({ blockchain, address, api, method, params, block }) => 
   }
 };
 
-let request$1 = async function (url, options) {
+let request = async function (url, options) {
   let { blockchain, address, method } = parseUrl(url);
   let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
 
@@ -494,7 +494,7 @@ const sendTransaction$3 = async ({ transaction, wallet })=> {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });
-  let transactionCount = await request$1({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+  let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
   transaction.nonce = transactionCount;
   let provider = new ethers.providers.Web3Provider(wallet.getProvider(), 'any');
   let signer = provider.getSigner(0);
@@ -681,7 +681,7 @@ class WindowEthereum {
   }
 
   transactionCount({ blockchain, address }) {
-    return request$2({ blockchain, method: 'transactionCount', address })
+    return request$1({ blockchain, method: 'transactionCount', address })
   }
 
   async sign(message) {
@@ -1015,7 +1015,7 @@ class Safe {
     if(jsonResult && jsonResult.results && jsonResult.results.length) {
       transactionCount = jsonResult.results[0].nonce + 1;
     } else {
-      transactionCount = parseInt((await request$2({
+      transactionCount = parseInt((await request$1({
         blockchain: this.blockchain,
         address: this.address,
         api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -1053,7 +1053,7 @@ const isSmartContractWallet = async(blockchain, address)=>{
 const identifySmartContractWallet = async (blockchain, address)=>{
   let name; 
   try {
-    name = await request$2({
+    name = await request$1({
       blockchain,
       address,
       api: [{ "constant": true, "inputs": [], "name": "NAME", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function"}],
@@ -1419,7 +1419,7 @@ class WalletConnectV1 {
     if(smartContractWallet) {
       return await smartContractWallet.transactionCount()
     } else {
-      return await request$2({ blockchain, method: 'transactionCount', address })
+      return await request$1({ blockchain, method: 'transactionCount', address })
     }
   }
 
@@ -1636,7 +1636,7 @@ class WalletLink {
   }
 
   transactionCount({ blockchain, address }) {
-    return request({ blockchain, method: 'transactionCount', address })
+    return request$1({ blockchain, method: 'transactionCount', address })
   }
 
   async sign(message) {

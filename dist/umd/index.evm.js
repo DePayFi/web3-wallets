@@ -17065,7 +17065,7 @@
   	Url: Url
   });
 
-  function request$1$1(opts, cb) {
+  function request$1(opts, cb) {
     if (typeof opts === 'string')
       opts = urlParse(opts);
 
@@ -17098,7 +17098,7 @@
   }
 
   function get$1(opts, cb) {
-    var req = request$1$1(opts, cb);
+    var req = request$1(opts, cb);
     req.end();
     return req
   }
@@ -17194,7 +17194,7 @@
   };
 
   var _polyfillNode_https = {
-    request: request$1$1,
+    request: request$1,
     get: get$1,
     Agent: Agent$1,
     METHODS: METHODS$1,
@@ -17203,7 +17203,7 @@
 
   var _polyfillNode_https$1 = /*#__PURE__*/Object.freeze({
   	__proto__: null,
-  	request: request$1$1,
+  	request: request$1,
   	get: get$1,
   	Agent: Agent$1,
   	METHODS: METHODS$1,
@@ -59453,7 +59453,7 @@
   supported$3.evm = ['ethereum', 'bsc', 'polygon', 'velas'];
   supported$3.solana = ['solana'];
 
-  let request$1 = async function (url, options) {
+  let request = async function (url, options) {
     let { blockchain, address, method } = parseUrl(url);
     let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
 
@@ -59777,7 +59777,7 @@
     }
 
     transactionCount({ blockchain, address }) {
-      return request$1({ blockchain, method: 'transactionCount', address })
+      return request({ blockchain, method: 'transactionCount', address })
     }
 
     async sign(message) {
@@ -59920,7 +59920,7 @@
       if(jsonResult && jsonResult.results && jsonResult.results.length) {
         transactionCount = jsonResult.results[0].nonce + 1;
       } else {
-        transactionCount = parseInt((await request$1({
+        transactionCount = parseInt((await request({
           blockchain: this.blockchain,
           address: this.address,
           api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -59958,7 +59958,7 @@
   const identifySmartContractWallet = async (blockchain, address)=>{
     let name; 
     try {
-      name = await request$1({
+      name = await request({
         blockchain,
         address,
         api: [{ "constant": true, "inputs": [], "name": "NAME", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function"}],
@@ -60324,7 +60324,7 @@
       if(smartContractWallet) {
         return await smartContractWallet.transactionCount()
       } else {
-        return await request$1({ blockchain, method: 'transactionCount', address })
+        return await request({ blockchain, method: 'transactionCount', address })
       }
     }
 

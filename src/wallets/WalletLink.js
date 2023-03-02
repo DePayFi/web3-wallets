@@ -1,8 +1,9 @@
-import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk'
-import { Blockchain } from '@depay/web3-blockchains'
-import { ethers } from 'ethers'
-import { sendTransaction } from './WalletLink/transaction'
 import Coinbase from './Coinbase'
+import { Blockchain } from '@depay/web3-blockchains'
+import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk'
+import { ethers } from 'ethers'
+import { request } from '@depay/web3-client'
+import { sendTransaction } from './WalletLink/transaction'
 
 const getConnectedInstance = ()=>{
   return window._connectedWalletLinkInstance
