@@ -344,7 +344,7 @@ let sentTransaction = await wallet.sendTransaction({
 
 #### value
 
-If value is passed as a number it's gonna be converted into a big number applying the individual blockhain's default decimals:
+If value is passed as a number it's gonna be converted into a big number applying the individual blockchain's default decimals:
 
 ```javascript
 let transaction = new Transaction({
