@@ -15,7 +15,7 @@ export default class WindowEthereum {
   static isAvailable = async()=>{ 
     return (
       window?.ethereum &&
-      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length != 1 && // MetaMask
+      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)/)).length != 1 && // MetaMask
       !window?.coin98 && // Coin98
       !(window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) && // Trust Wallet
       !window?.ethereum?.isDeficonnectProvider && // crypto.com

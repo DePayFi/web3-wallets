@@ -13,7 +13,8 @@ const supported = [
   wallets.CryptoCom,
   wallets.HyperPay,
   wallets.WalletConnectV1,
-  wallets.WalletLink
+  wallets.WalletLink,
+  wallets.WindowEthereum,
 ]
 
 export { 

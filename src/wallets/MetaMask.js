@@ -9,6 +9,9 @@ export default class MetaMask extends WindowEthereum {
   }
 
   static isAvailable = async()=>{ 
-    return window?.ethereum?.isMetaMask && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
+    return(
+      window?.ethereum?.isMetaMask &&
+      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)/)).length == 1
+    )
   }
 }
