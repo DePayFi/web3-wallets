@@ -10,6 +10,7 @@ const supported = [
   wallets.Opera,
   wallets.Coin98,
   wallets.CryptoCom,
+  wallets.HyperPay,
   wallets.WalletConnectV1,
   wallets.WalletLink
 ]

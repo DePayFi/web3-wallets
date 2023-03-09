@@ -3,6 +3,7 @@ import Brave from './wallets/Brave'
 import Coin98 from './wallets/Coin98'
 import Coinbase from './wallets/Coinbase'
 import CryptoCom from './wallets/CryptoCom'
+import HyperPay from './wallets/HyperPay'
 import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import Trust from './wallets/Trust'
@@ -20,6 +21,7 @@ export default {
   Opera,
   Coin98,
   CryptoCom,
+  HyperPay,
   WindowEthereum,
   WindowSolana,
   WalletConnectV1,
