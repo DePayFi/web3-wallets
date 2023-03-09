@@ -59999,9 +59999,6 @@ const getSmartContractWallet = async(blockchain, address)=> {
 const sendTransaction$2 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
-    await wallet.switchTo(transaction.blockchain);
-  }
-  if((await wallet.connectedTo(transaction.blockchain)) == false) {
     throw({ code: 'WRONG_NETWORK' })
   }
   await transaction.prepare({ wallet });

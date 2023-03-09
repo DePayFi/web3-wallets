@@ -340,51 +340,6 @@ describe('WalletConnect: sendTransaction', () => {
           expect(failedCallbackTransaction.value.toString()).toEqual('1000000000000000000')
         })
       })
-
-      describe('switch network', ()=>{
-
-        let otherBlockchain
-        
-        beforeEach(async()=>{
-
-          otherBlockchain = supportedBlockchains.evm.filter((b)=>b != blockchain)[0]
-
-          resetCache()
-          resetMocks()
-          provider = await getProvider(otherBlockchain)
-          mock({ blockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
-          mock({ blockchain, provider, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
-          mock({ blockchain: otherBlockchain, code: { for: account, return: '0x' }})
-
-          mockedTransaction = mock({
-            blockchain: otherBlockchain,
-            transaction: {
-              to: '0xae60ac8e69414c2dc362d0e6a03af643d1d85b92',
-              value: '1000000000000000000'
-            }
-          })
-          
-          transaction = {
-            blockchain: otherBlockchain,
-            to: address,
-            value: 1
-          }
-        })
-
-        it('switches network if transaction is supposed to be sent on different network', async ()=> {
-          let switchMock = mock({
-            blockchain,
-            network: {
-              switchTo: otherBlockchain
-            }
-          })
-          mock({ blockchain: otherBlockchain, accounts: { return: [account] }, wallet: 'walletconnect', connector: wallets.WalletConnectV1 })
-          connect(blockchain)
-          let submittedTransaction = await wallet.sendTransaction(transaction)
-          expect(mockedTransaction).toHaveBeenCalled()
-          expect(switchMock).toHaveBeenCalled()
-        })
-      })
     })
   })
 })
