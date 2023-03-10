@@ -578,7 +578,7 @@ class WindowEthereum {
   static __initStatic2() {this.isAvailable = async()=>{ 
     return (
       _optionalChain$d([window, 'optionalAccess', _15 => _15.ethereum]) &&
-      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)/)).length != 1 && // MetaMask
+      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length != 1 && // MetaMask
       !_optionalChain$d([window, 'optionalAccess', _16 => _16.coin98]) && // Coin98
       !(_optionalChain$d([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isTrust]) || _optionalChain$d([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isTrustWallet])) && // Trust Wallet
       !_optionalChain$d([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.isDeficonnectProvider]) && // crypto.com
@@ -784,7 +784,7 @@ class MetaMask extends WindowEthereum {
   static __initStatic2() {this.isAvailable = async()=>{ 
     return(
       _optionalChain$6([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isMetaMask]) &&
-      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)/)).length == 1
+      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
     )
   };}
 } MetaMask.__initStatic(); MetaMask.__initStatic2();
