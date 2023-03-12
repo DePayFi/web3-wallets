@@ -575,13 +575,14 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$d([window, 'optionalAccess', _15 => _15.ethereum]) &&
+        _optionalChain$d([window, 'optionalAccess', _17 => _17.ethereum]) &&
         Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length != 1 && // MetaMask
-        !_optionalChain$d([window, 'optionalAccess', _16 => _16.coin98]) && // Coin98
-        !(_optionalChain$d([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isTrust]) || _optionalChain$d([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isTrustWallet])) && // Trust Wallet
-        !_optionalChain$d([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.isDeficonnectProvider]) && // crypto.com
-        !_optionalChain$d([window, 'optionalAccess', _23 => _23.ethereum, 'optionalAccess', _24 => _24.isHyperPay]) && // isHyperPay
-        !(_optionalChain$d([window, 'optionalAccess', _25 => _25.ethereum, 'optionalAccess', _26 => _26.isCoinbaseWallet]) || _optionalChain$d([window, 'optionalAccess', _27 => _27.ethereum, 'optionalAccess', _28 => _28.isWalletLink]))
+        !_optionalChain$d([window, 'optionalAccess', _18 => _18.coin98]) && // Coin98
+        !(_optionalChain$d([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isTrust]) || _optionalChain$d([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.isTrustWallet])) && // Trust Wallet
+        !_optionalChain$d([window, 'optionalAccess', _23 => _23.ethereum, 'optionalAccess', _24 => _24.isDeficonnectProvider]) && // crypto.com
+        !_optionalChain$d([window, 'optionalAccess', _25 => _25.ethereum, 'optionalAccess', _26 => _26.isHyperPay]) && // isHyperPay
+        !_optionalChain$d([window, 'optionalAccess', _27 => _27.ethereum, 'optionalAccess', _28 => _28.isPhantom]) && // Phantom
+        !(_optionalChain$d([window, 'optionalAccess', _29 => _29.ethereum, 'optionalAccess', _30 => _30.isCoinbaseWallet]) || _optionalChain$d([window, 'optionalAccess', _31 => _31.ethereum, 'optionalAccess', _32 => _32.isWalletLink]))
       )
     };}
     

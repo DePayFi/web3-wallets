@@ -20,6 +20,7 @@ export default class WindowEthereum {
       !(window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) && // Trust Wallet
       !window?.ethereum?.isDeficonnectProvider && // crypto.com
       !window?.ethereum?.isHyperPay && // isHyperPay
+      !window?.ethereum?.isPhantom && // Phantom
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
     )
   }
