@@ -13,7 +13,7 @@ npm install --save @depay/web3-wallets
 ```javascript
 import { getWallets } from '@depay/web3-wallets'
 
-let wallets = getWallets()
+let wallets = await getWallets()
 let wallet = wallets[0]
 
 wallet.name // MetaMask
