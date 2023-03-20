@@ -1,13 +1,13 @@
 import { Blockchain } from '@depay/web3-blockchains';
 import { ethers } from 'ethers';
-import { request as request$3, getProvider, estimate } from '@depay/web3-client-evm';
+import { request as request$3, getProvider, estimate } from '@depay/web3-client-solana';
 import { CONSTANTS } from '@depay/web3-constants';
 import { WalletConnectClient } from '@depay/walletconnect-v1';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
 
-let supported$2 = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
-supported$2.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
-supported$2.solana = [];
+let supported$2 = ['solana'];
+supported$2.evm = [];
+supported$2.solana = ['solana'];
 
 var _global$1 = (typeof global !== "undefined" ? global :
   typeof self !== "undefined" ? self :
@@ -60762,19 +60762,9 @@ const getWallets = async()=>{
 };
 
 const supported = [
-  wallets.MetaMask,
   wallets.Phantom,
-  wallets.Coinbase,
-  wallets.Binance,
-  wallets.Trust,
-  wallets.Brave,
-  wallets.Opera,
-  wallets.Coin98,
-  wallets.CryptoCom,
-  wallets.HyperPay,
   wallets.WalletConnectV1,
   wallets.WalletLink,
-  wallets.WindowEthereum,
 ];
 
 export { getWallets, supported, wallets };

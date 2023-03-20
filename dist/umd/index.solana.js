@@ -1,12 +1,12 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-client-evm'), require('@depay/web3-constants'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-client-evm', '@depay/web3-constants', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-client-solana'), require('@depay/web3-constants'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-client-solana', '@depay/web3-constants', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Client, global.Web3Constants, global.WalletConnect, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Blockchains, ethers, web3ClientEvm, web3Constants, walletconnectV1, coinbaseWalletSdk) { 'use strict';
+}(this, (function (exports, web3Blockchains, ethers, web3ClientSolana, web3Constants, walletconnectV1, coinbaseWalletSdk) { 'use strict';
 
-  let supported$2 = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
-  supported$2.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
-  supported$2.solana = [];
+  let supported$2 = ['solana'];
+  supported$2.evm = [];
+  supported$2.solana = ['solana'];
 
   var _global$1 = (typeof global !== "undefined" ? global :
     typeof self !== "undefined" ? self :
@@ -59553,7 +59553,7 @@
       throw({ code: 'WRONG_NETWORK' })
     }
     await transaction.prepare({ wallet });
-    let transactionCount = await web3ClientEvm.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
+    let transactionCount = await web3ClientSolana.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction.nonce = transactionCount;
     let provider = new ethers.ethers.providers.Web3Provider(wallet.getProvider(), 'any');
     let signer = provider.getSigner(0);
@@ -59876,7 +59876,7 @@
           count++;
           if(count >= MAX_POLLS) { return clearInterval(interval) }
 
-          const provider = await web3ClientEvm.getProvider(transaction.blockchain);
+          const provider = await web3ClientSolana.getProvider(transaction.blockchain);
           const { value } = await provider.getSignatureStatus(signature);
           const confirmationStatus = _optionalChain$4([value, 'optionalAccess', _ => _.confirmationStatus]);
           if(confirmationStatus) {
@@ -59913,7 +59913,7 @@
   const submitSimpleTransfer$2 = async ({ transaction, wallet })=> {
     let fromPubkey = new PublicKey(await wallet.account());
     let toPubkey = new PublicKey(transaction.to);
-    const provider = await web3ClientEvm.getProvider(transaction.blockchain);
+    const provider = await web3ClientSolana.getProvider(transaction.blockchain);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
     let transferTransaction = new Transaction$1({
       recentBlockhash,
@@ -59931,7 +59931,7 @@
 
   const submitInstructions = async ({ transaction, wallet })=> {
     let fromPubkey = new PublicKey(await wallet.account());
-    const provider = await web3ClientEvm.getProvider(transaction.blockchain);
+    const provider = await web3ClientSolana.getProvider(transaction.blockchain);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
     let transferTransaction = new Transaction$1({
       recentBlockhash,
@@ -60084,7 +60084,7 @@
       if(jsonResult && jsonResult.results && jsonResult.results.length) {
         transactionCount = jsonResult.results[0].nonce + 1;
       } else {
-        transactionCount = parseInt((await web3ClientEvm.request({
+        transactionCount = parseInt((await web3ClientSolana.request({
           blockchain: this.blockchain,
           address: this.address,
           api: [{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -60095,7 +60095,7 @@
     }
 
     async retrieveTransaction({ blockchain, tx }) {
-      const provider = await web3ClientEvm.getProvider(blockchain);
+      const provider = await web3ClientSolana.getProvider(blockchain);
       let jsonResult = await fetch(`https://safe-transaction-${transactionApiBlockchainNames[blockchain]}.safe.global/api/v1/multisig-transactions/${tx}/`)
         .then((response) => response.json())
         .catch((error) => { console.error('Error:', error); });
@@ -60114,7 +60114,7 @@
   }
 
   const isSmartContractWallet = async(blockchain, address)=>{
-    const provider = await web3ClientEvm.getProvider(blockchain);
+    const provider = await web3ClientSolana.getProvider(blockchain);
     const code = await provider.getCode(address);
     return (code != '0x')
   };
@@ -60122,7 +60122,7 @@
   const identifySmartContractWallet = async (blockchain, address)=>{
     let name; 
     try {
-      name = await web3ClientEvm.request({
+      name = await web3ClientSolana.request({
         blockchain,
         address,
         api: [{ "constant": true, "inputs": [], "name": "NAME", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function"}],
@@ -60193,7 +60193,7 @@
   };
 
   const retrieveTransaction = async ({ blockchain, tx, smartContractWallet })=>{
-    const provider = await web3ClientEvm.getProvider(blockchain);
+    const provider = await web3ClientSolana.getProvider(blockchain);
     let retrieve = async()=>{
       try {
         if(smartContractWallet && smartContractWallet.retrieveTransaction) {
@@ -60222,9 +60222,9 @@
   };
 
   const submitContractInteraction$1 = async ({ transaction, wallet })=>{
-    const provider = await web3ClientEvm.getProvider(transaction.blockchain);
+    const provider = await web3ClientSolana.getProvider(transaction.blockchain);
     const gasPrice = await provider.getGasPrice();
-    const gas = await web3ClientEvm.estimate(transaction);
+    const gas = await web3ClientSolana.estimate(transaction);
     const data = await transaction.getData();
     const value = transaction.value ? ethers.ethers.utils.hexlify(ethers.ethers.BigNumber.from(transaction.value)) : undefined;
     const nonce = ethers.ethers.utils.hexlify(transaction.nonce);
@@ -60240,9 +60240,9 @@
   };
 
   const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
-    const provider = await web3ClientEvm.getProvider(transaction.blockchain);
+    const provider = await web3ClientSolana.getProvider(transaction.blockchain);
     const gasPrice = await provider.getGasPrice();
-    const gas = await web3ClientEvm.estimate(transaction);
+    const gas = await web3ClientSolana.estimate(transaction);
     const value = ethers.ethers.utils.hexlify(ethers.ethers.BigNumber.from(transaction.value));
     const nonce = ethers.ethers.utils.hexlify(transaction.nonce);
     return wallet.connector.sendTransaction({
@@ -60486,7 +60486,7 @@
       if(smartContractWallet) {
         return await smartContractWallet.transactionCount()
       } else {
-        return await web3ClientEvm.request({ blockchain, method: 'transactionCount', address })
+        return await web3ClientSolana.request({ blockchain, method: 'transactionCount', address })
       }
     }
 
@@ -60761,19 +60761,9 @@
   };
 
   const supported = [
-    wallets.MetaMask,
     wallets.Phantom,
-    wallets.Coinbase,
-    wallets.Binance,
-    wallets.Trust,
-    wallets.Brave,
-    wallets.Opera,
-    wallets.Coin98,
-    wallets.CryptoCom,
-    wallets.HyperPay,
     wallets.WalletConnectV1,
     wallets.WalletLink,
-    wallets.WindowEthereum,
   ];
 
   exports.getWallets = getWallets;

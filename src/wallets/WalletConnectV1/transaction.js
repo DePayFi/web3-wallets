@@ -1,7 +1,20 @@
+/*#if _EVM
+
+import { request, getProvider, estimate } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { request, getProvider, estimate } from '@depay/web3-client-solana'
+
+//#else */
+
+import { request, getProvider, estimate } from '@depay/web3-client'
+
+//#endif
+
 import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getSmartContractWallet } from '../MultiSig'
-import { request, estimate, getProvider } from '@depay/web3-client'
 import { Transaction } from '../../Transaction'
 
 const sendTransaction = async ({ transaction, wallet })=> {

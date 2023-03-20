@@ -1,4 +1,16 @@
+/*#if _EVM
+
+import { request, getProvider } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { request, getProvider } from '@depay/web3-client-solana'
+
+//#else */
+
 import { request, getProvider } from '@depay/web3-client'
+
+//#endif
 
 const transactionApiBlockchainNames = {
   'ethereum': 'mainnet',

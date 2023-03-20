@@ -2,7 +2,7 @@ import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { request } from '@depay/web3-client'
 import { sendTransaction } from './WindowEthereum/transaction'
-import { supported } from '../blockchains.evm'
+import { supported } from '../blockchains'
 
 export default class WindowEthereum {
 

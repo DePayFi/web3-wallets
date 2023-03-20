@@ -4,6 +4,7 @@ import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk'
 import { ethers } from 'ethers'
 import { request } from '@depay/web3-client'
 import { sendTransaction } from './WalletLink/transaction'
+import { supported } from '../blockchains'
 
 const getConnectedInstance = ()=>{
   return window._connectedWalletLinkInstance
@@ -18,7 +19,7 @@ class WalletLink {
   static info = {
     name: 'Coinbase',
     logo: Coinbase.info.logo,
-    blockchains: ['ethereum', 'bsc', 'polygon', 'velas'],
+    blockchains: supported.evm,
   }
 
   static isAvailable = async()=>{ return getConnectedInstance() != undefined }

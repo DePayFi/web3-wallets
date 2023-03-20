@@ -1,5 +1,4 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { PublicKey } from '@depay/solana-web3.js'
 import { sendTransaction } from './WindowSolana/transaction'
 import { supported } from '../blockchains'
 

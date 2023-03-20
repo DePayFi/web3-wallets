@@ -1,5 +1,18 @@
-import Safe from './Safe'
+/*#if _EVM
+
+import { request, getProvider } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { request, getProvider } from '@depay/web3-client-solana'
+
+//#else */
+
 import { request, getProvider } from '@depay/web3-client'
+
+//#endif
+
+import Safe from './Safe'
 
 const isSmartContractWallet = async(blockchain, address)=>{
   const provider = await getProvider(blockchain)

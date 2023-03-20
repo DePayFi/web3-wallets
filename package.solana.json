@@ -1,10 +1,10 @@
 {
-  "name": "@depay/web3-wallets-evm",
+  "name": "@depay/web3-wallets-solana",
   "moduleName": "Web3Wallets",
   "version": "15.3.0",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
-  "main": "dist/umd/index.evm.js",
-  "module": "dist/esm/index.evm.js",
+  "main": "dist/umd/index.solana.js",
+  "module": "dist/esm/index.solana.js",
   "files": [
     "dist"
   ],
@@ -28,7 +28,7 @@
     "@depay/walletconnect-v1": "^1.8.0",
     "@depay/walletconnect-v2": "^2.4.2",
     "@depay/web3-blockchains": "^6.5.1",
-    "@depay/web3-client-evm": "^10.6.2",
+    "@depay/web3-client-solana": "^10.6.2",
     "@depay/web3-constants": "^6.4.2",
     "ethers": "^5.7.1"
   },

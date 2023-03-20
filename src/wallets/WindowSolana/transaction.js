@@ -1,6 +1,19 @@
+/*#if _EVM
+
+import { getProvider } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { getProvider } from '@depay/web3-client-solana'
+
+//#else */
+
+import { getProvider } from '@depay/web3-client'
+
+//#endif
+
 import { Blockchain } from '@depay/web3-blockchains'
 import { Transaction as SolanaTransaction, SystemProgram, PublicKey } from '@depay/solana-web3.js'
-import { getProvider } from '@depay/web3-client'
 import { Transaction } from '../../Transaction'
 
 const POLL_SPEED = 500 // 0.5 seconds

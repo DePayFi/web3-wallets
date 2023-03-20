@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
-import { getWallets } from 'src/index.evm'
+import { getWallets } from 'dist/esm/index.evm'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail, replace } from '@depay/web3-mock'
-import { supported as supportedBlockchains } from 'src/blockchains.evm'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('window.ethereum wallet replaced transactions (evm)', () => {
 

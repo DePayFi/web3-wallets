@@ -148,6 +148,7 @@ describe('WalletConnect: sendTransaction', () => {
           expect(submittedTransaction.id == undefined).toEqual(false)
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
+            'fantom': 'https://ftmscan.com/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
             'velas': 'https://evmexplorer.velas.com/tx/',
@@ -290,6 +291,7 @@ describe('WalletConnect: sendTransaction', () => {
           expect(submittedTransaction.id == undefined).toEqual(false)
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
+            'fantom': 'https://ftmscan.com/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
             'velas': 'https://evmexplorer.velas.com/tx/',

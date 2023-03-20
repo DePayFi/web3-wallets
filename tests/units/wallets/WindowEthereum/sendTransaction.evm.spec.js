@@ -1,8 +1,8 @@
 import { ethers } from 'ethers'
 import { getProvider } from '@depay/web3-client-evm'
-import { getWallets } from 'src/index.evm'
+import { getWallets } from 'dist/esm/index.evm'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/web3-mock'
-import { supported as supportedBlockchains } from 'src/blockchains.evm'
+import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('window.ethereum wallet sendTransaction (evm)', () => {
 
@@ -144,6 +144,7 @@ describe('window.ethereum wallet sendTransaction (evm)', () => {
           expect(submittedTransaction.id == undefined).toEqual(false)
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
+            'fantom': 'https://ftmscan.com/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
             'velas': 'https://evmexplorer.velas.com/tx/',
@@ -286,6 +287,7 @@ describe('window.ethereum wallet sendTransaction (evm)', () => {
           expect(submittedTransaction.id == undefined).toEqual(false)
           let blockexplorer = {
             'ethereum': 'https://etherscan.io/tx/',
+            'fantom': 'https://ftmscan.com/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
             'velas': 'https://evmexplorer.velas.com/tx/',
