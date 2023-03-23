@@ -12,7 +12,7 @@ import { request } from '@depay/web3-client'
 
 //#endif
 
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getSmartContractWallet } from './MultiSig'
 import { sendTransaction } from './WalletConnectV1/transaction'
@@ -153,7 +153,7 @@ class WalletConnectV1 {
 
   async connectedTo(input) {
     let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' })
-    const blockchain = Blockchain.findById(chainId)
+    const blockchain = Blockchains.findById(chainId)
     if(input) {
       return input === blockchain.name
     } else {
@@ -164,7 +164,7 @@ class WalletConnectV1 {
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
       let resolved, rejected
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains.findByName(blockchainName)
       setTimeout(async()=>{
         if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
           reject({ code: 'NOT_SUPPORTED' })
@@ -199,7 +199,7 @@ class WalletConnectV1 {
 
   addNetwork(blockchainName) {
     return new Promise((resolve, reject)=>{
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains.findByName(blockchainName)
       this.connector.sendCustomRequest({ 
         method: 'wallet_addEthereumChain',
         params: [{

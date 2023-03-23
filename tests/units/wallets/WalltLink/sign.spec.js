@@ -1,6 +1,5 @@
 import fetchMock from 'fetch-mock'
 import WalletLink from 'src/wallets/WalletLink'
-import { Blockchain } from '@depay/web3-blockchains'
 import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
 import { supported as supportedBlockchains } from 'src/blockchains'

@@ -1,5 +1,5 @@
 import Coinbase from './Coinbase'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk'
 import { ethers } from 'ethers'
 import { request } from '@depay/web3-client'
@@ -62,7 +62,7 @@ class WalletLink {
 
   async connectedTo(input) {
     let chainId = await this.connector.getChainId()
-    const blockchain = Blockchain.findByNetworkId(chainId)
+    const blockchain = Blockchains.findByNetworkId(chainId)
     if(input) {
       return input === blockchain.name
     } else {
@@ -72,7 +72,7 @@ class WalletLink {
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains.findByName(blockchainName)
       this.connector.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],
@@ -90,7 +90,7 @@ class WalletLink {
 
   addNetwork(blockchainName) {
     return new Promise((resolve, reject)=>{
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains.findByName(blockchainName)
       this.connector.request({
         method: 'wallet_addEthereumChain',
         params: [{

@@ -12,7 +12,7 @@ import { request, getProvider, estimate } from '@depay/web3-client'
 
 //#endif
 
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getSmartContractWallet } from '../MultiSig'
 import { Transaction } from '../../Transaction'
@@ -28,7 +28,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then((tx)=>{
     if (tx) {
-      let blockchain = Blockchain.findByName(transaction.blockchain)
+      let blockchain = Blockchains.findByName(transaction.blockchain)
       transaction.id = tx
       transaction.url = smartContractWallet && smartContractWallet.explorerUrlFor ? smartContractWallet.explorerUrlFor({ transaction }) : blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)

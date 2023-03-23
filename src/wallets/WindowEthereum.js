@@ -1,4 +1,4 @@
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { request } from '@depay/web3-client'
 import { sendTransaction } from './WindowEthereum/transaction'
@@ -72,7 +72,7 @@ export default class WindowEthereum {
   }
 
   async connectedTo(input) {
-    const blockchain = Blockchain.findById(await this.getProvider().request({ method: 'eth_chainId' }))
+    const blockchain = Blockchains.findById(await this.getProvider().request({ method: 'eth_chainId' }))
     if(input) {
       return input === blockchain.name
     } else {
@@ -82,7 +82,7 @@ export default class WindowEthereum {
 
   addNetwork(blockchainName) {
     return new Promise((resolve, reject)=>{
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains.findByName(blockchainName)
       this.getProvider().request({
         method: 'wallet_addEthereumChain',
         params: [{
@@ -103,7 +103,7 @@ export default class WindowEthereum {
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains.findByName(blockchainName)
       this.getProvider().request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: blockchain.id }],

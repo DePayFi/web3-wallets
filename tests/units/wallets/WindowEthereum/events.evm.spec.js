@@ -1,5 +1,4 @@
 import fetchMock from 'fetch-mock'
-import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getWallets, wallets } from 'dist/esm/index.evm'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'

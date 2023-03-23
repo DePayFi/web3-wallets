@@ -1,8 +1,12 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-client'), require('@depay/web3-constants'), require('@depay/solana-web3.js'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-client', '@depay/web3-constants', '@depay/solana-web3.js', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Client, global.Web3Constants, global.SolanaWeb3js, global.WalletConnect, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Blockchains, ethers, web3Client, web3Constants, solanaWeb3_js, walletconnectV1, coinbaseWalletSdk) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-blockchains'), require('ethers'), require('@depay/web3-client'), require('@depay/solana-web3.js'), require('@depay/walletconnect-v1'), require('@depay/coinbase-wallet-sdk')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-blockchains', 'ethers', '@depay/web3-client', '@depay/solana-web3.js', '@depay/walletconnect-v1', '@depay/coinbase-wallet-sdk'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Blockchains, global.ethers, global.Web3Client, global.SolanaWeb3js, global.WalletConnect, global.CoinbaseWalletSdk));
+}(this, (function (exports, Blockchains, ethers, web3Client, solanaWeb3_js, walletconnectV1, coinbaseWalletSdk) { 'use strict';
+
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
   let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'velas'];
   supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
@@ -39,7 +43,7 @@
 
     static bigNumberify(value, blockchain) {
       if (typeof value === 'number') {
-        return ethers.ethers.utils.parseUnits(value.toString(), web3Constants.CONSTANTS[blockchain].DECIMALS)
+        return ethers.ethers.utils.parseUnits(value.toString(), Blockchains__default['default'][blockchain].currency.decimals)
       } else if (value && value.toString) {
         return ethers.ethers.BigNumber.from(value.toString())
       } else {
@@ -123,7 +127,7 @@
       if (sentTransaction) {
         transaction.id = sentTransaction.hash;
         transaction.nonce = sentTransaction.nonce || transactionCount;
-        transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+        transaction.url = Blockchains__default['default'].findByName(transaction.blockchain).explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         sentTransaction.wait(1).then(() => {
           transaction._succeeded = true;
@@ -132,7 +136,7 @@
           if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
             if(error.replacement && error.replacement.hash) {
               transaction.id = error.replacement.hash;
-              transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+              transaction.url = Blockchains__default['default'].findByName(transaction.blockchain).explorerUrlFor({ transaction });
             }
             if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
               transaction._succeeded = true;
@@ -252,7 +256,7 @@
     }
 
     async connectedTo(input) {
-      const blockchain = web3Blockchains.Blockchain.findById(await this.getProvider().request({ method: 'eth_chainId' }));
+      const blockchain = Blockchains__default['default'].findById(await this.getProvider().request({ method: 'eth_chainId' }));
       if(input) {
         return input === blockchain.name
       } else {
@@ -262,7 +266,7 @@
 
     addNetwork(blockchainName) {
       return new Promise((resolve, reject)=>{
-        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        const blockchain = Blockchains__default['default'].findByName(blockchainName);
         this.getProvider().request({
           method: 'wallet_addEthereumChain',
           params: [{
@@ -283,7 +287,7 @@
 
     switchTo(blockchainName) {
       return new Promise((resolve, reject)=>{
-        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        const blockchain = Blockchains__default['default'].findByName(blockchainName);
         this.getProvider().request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: blockchain.id }],
@@ -430,7 +434,7 @@
     await submit$2({ transaction, wallet }).then(({ signature })=>{
       if(signature) {
         transaction.id = signature;
-        transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+        transaction.url = Blockchains__default['default'].findByName(transaction.blockchain).explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
 
         let count = 0;
@@ -719,7 +723,7 @@
     transaction.nonce = transactionCount;
     await submit$1({ transaction, wallet }).then((tx)=>{
       if (tx) {
-        let blockchain = web3Blockchains.Blockchain.findByName(transaction.blockchain);
+        let blockchain = Blockchains__default['default'].findByName(transaction.blockchain);
         transaction.id = tx;
         transaction.url = smartContractWallet && smartContractWallet.explorerUrlFor ? smartContractWallet.explorerUrlFor({ transaction }) : blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
@@ -954,7 +958,7 @@
 
     async connectedTo(input) {
       let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
-      const blockchain = web3Blockchains.Blockchain.findById(chainId);
+      const blockchain = Blockchains__default['default'].findById(chainId);
       if(input) {
         return input === blockchain.name
       } else {
@@ -965,7 +969,7 @@
     switchTo(blockchainName) {
       return new Promise((resolve, reject)=>{
         let resolved, rejected;
-        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        const blockchain = Blockchains__default['default'].findByName(blockchainName);
         setTimeout(async()=>{
           if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
             reject({ code: 'NOT_SUPPORTED' });
@@ -1000,7 +1004,7 @@
 
     addNetwork(blockchainName) {
       return new Promise((resolve, reject)=>{
-        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        const blockchain = Blockchains__default['default'].findByName(blockchainName);
         this.connector.sendCustomRequest({ 
           method: 'wallet_addEthereumChain',
           params: [{
@@ -1081,7 +1085,7 @@
       if (sentTransaction) {
         transaction.id = sentTransaction.hash;
         transaction.nonce = sentTransaction.nonce;
-        transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+        transaction.url = Blockchains__default['default'].findByName(transaction.blockchain).explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
         sentTransaction.wait(1).then(() => {
           transaction._succeeded = true;
@@ -1090,7 +1094,7 @@
           if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
             if(error.replacement && error.replacement.hash) {
               transaction.id = error.replacement.hash;
-              transaction.url = web3Blockchains.Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction });
+              transaction.url = Blockchains__default['default'].findByName(transaction.blockchain).explorerUrlFor({ transaction });
             }
             if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
               transaction._succeeded = true;
@@ -1197,7 +1201,7 @@
 
     async connectedTo(input) {
       let chainId = await this.connector.getChainId();
-      const blockchain = web3Blockchains.Blockchain.findByNetworkId(chainId);
+      const blockchain = Blockchains__default['default'].findByNetworkId(chainId);
       if(input) {
         return input === blockchain.name
       } else {
@@ -1207,7 +1211,7 @@
 
     switchTo(blockchainName) {
       return new Promise((resolve, reject)=>{
-        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        const blockchain = Blockchains__default['default'].findByName(blockchainName);
         this.connector.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: blockchain.id }],
@@ -1225,7 +1229,7 @@
 
     addNetwork(blockchainName) {
       return new Promise((resolve, reject)=>{
-        const blockchain = web3Blockchains.Blockchain.findByName(blockchainName);
+        const blockchain = Blockchains__default['default'].findByName(blockchainName);
         this.connector.request({
           method: 'wallet_addEthereumChain',
           params: [{

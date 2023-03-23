@@ -12,7 +12,7 @@ import { getProvider } from '@depay/web3-client'
 
 //#endif
 
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { Transaction as SolanaTransaction, SystemProgram, PublicKey } from '@depay/solana-web3.js'
 import { Transaction } from '../../Transaction'
 
@@ -25,7 +25,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   await submit({ transaction, wallet }).then(({ signature })=>{
     if(signature) {
       transaction.id = signature
-      transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
+      transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
 
       let count = 0

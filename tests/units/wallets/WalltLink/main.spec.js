@@ -1,5 +1,5 @@
 import WalletLink from 'src/wallets/WalletLink'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
@@ -78,7 +78,7 @@ describe('Coinbase WalletLink', () => {
 
         it('adds the network if the network you request to switch to does not exist and switches to it afterwards', async ()=>{
           let switchMock
-          let blockchain = Blockchain.findByName('bsc')
+          let blockchain = Blockchains.findByName('bsc')
 
           mock({
             blockchain: 'ethereum',

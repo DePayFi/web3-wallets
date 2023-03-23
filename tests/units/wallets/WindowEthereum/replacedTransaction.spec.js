@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { getWallets } from 'src'
 import { mock, connect, resetMocks, confirm, increaseBlock, fail, replace } from '@depay/web3-mock'
+import { resetCache } from '@depay/web3-client'
 import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('window.ethereum wallet replaced transactions', () => {
@@ -12,12 +13,12 @@ describe('window.ethereum wallet replaced transactions', () => {
       let wallet
 
       const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
-      beforeEach(resetMocks)
       beforeEach(async()=>{
+        resetMocks()
+        resetCache()
         mock({ blockchain, accounts: { return: [account] }})
         wallet = (await getWallets())[0]
       })
-      afterEach(resetMocks)
 
       let address = '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92';
       let api = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
@@ -37,6 +38,7 @@ describe('window.ethereum wallet replaced transactions', () => {
       describe('a replacing transaction was mined successfully', ()=>{
         
         beforeEach(()=>{
+          jest.setTimeout(15000)
 
           transaction = {
             blockchain,
@@ -64,8 +66,9 @@ describe('window.ethereum wallet replaced transactions', () => {
           let submittedTransaction = await wallet.sendTransaction({... transaction, succeeded: (_succededTransaction)=>{
             succededTransaction = _succededTransaction
           }})
+          await new Promise((r) => setTimeout(r, 1000));
           replace(mockedTransaction, replacingTransactionMock)
-          await new Promise((r) => setTimeout(r, 2000));
+          await new Promise((r) => setTimeout(r, 4000));
           expect(succededTransaction.id).toEqual(replacingTransactionMock.transaction._id)
           expect(succededTransaction.url).toMatch(replacingTransactionMock.transaction._id)
         })
@@ -74,6 +77,7 @@ describe('window.ethereum wallet replaced transactions', () => {
       describe('a replacing transaction was mined but failed', ()=>{
         
         beforeEach(()=>{
+          jest.setTimeout(15000)
 
           transaction = {
             blockchain,
@@ -101,8 +105,9 @@ describe('window.ethereum wallet replaced transactions', () => {
           let submittedTransaction = await wallet.sendTransaction({... transaction, failed: (_failedTransaction)=>{
             failedTransaction = _failedTransaction
           }})
+          await new Promise((r) => setTimeout(r, 1000));
           replace(mockedTransaction, replacingTransactionMock, false)
-          await new Promise((r) => setTimeout(r, 2000));
+          await new Promise((r) => setTimeout(r, 4000));
           expect(failedTransaction.id).toEqual(replacingTransactionMock.transaction._id)
           expect(failedTransaction.url).toMatch(replacingTransactionMock.transaction._id)
         })

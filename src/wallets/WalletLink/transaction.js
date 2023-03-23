@@ -1,5 +1,5 @@
 import { Transaction } from '../../Transaction'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 
 const sendTransaction = async ({ transaction, wallet })=> {
@@ -17,7 +17,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
     if (sentTransaction) {
       transaction.id = sentTransaction.hash
       transaction.nonce = sentTransaction.nonce
-      transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
+      transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
       sentTransaction.wait(1).then(() => {
         transaction._succeeded = true
@@ -26,7 +26,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
         if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
           if(error.replacement && error.replacement.hash) {
             transaction.id = error.replacement.hash
-            transaction.url = Blockchain.findByName(transaction.blockchain).explorerUrlFor({ transaction })
+            transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction })
           }
           if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
             transaction._succeeded = true

@@ -1,5 +1,5 @@
 import WalletConnectV1 from 'src/wallets/WalletConnectV1'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { getWallets, wallets, supported } from 'src'
 import { mock, resetMocks, trigger } from '@depay/web3-mock'
@@ -84,7 +84,7 @@ describe('WalletConnect', () => {
 
         it('adds network', async()=> {
           let switchMock
-          let blockchain = Blockchain.findByName('bsc')
+          let blockchain = Blockchains.findByName('bsc')
 
           mock({
             blockchain: 'ethereum',

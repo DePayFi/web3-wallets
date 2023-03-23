@@ -1014,55 +1014,57 @@
     "@walletconnect/core" "^2.4.2"
     "@walletconnect/sign-client" "^2.4.2"
 
-"@depay/web3-blockchains@^6.5.1":
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-6.5.1.tgz#93a584f9ffaa6192a9fa833dd8484be4bd137c27"
-  integrity sha512-1Z3Jb5F/OMVGS4fW9OQm3gS6jmpaIvU3vNxanqiGLOkUJXYjK2JOASx3dtoYTP8mJxjRNW1VUtNVYOy9umkQUg==
+"@depay/web3-blockchains@^7.0.0", "@depay/web3-blockchains@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-7.1.0.tgz#101c4d36e263f5d703e1604899b3b17fdd084bbb"
+  integrity sha512-/ZhT+c5Z58SCpo9aU7Z2mDGQxMc2Ia2BM8RKt/V337I9fYNp7zRdiYX8U+hnN4BvB9S0yu3l8vRgKwEAU1fhuA==
 
 "@depay/web3-client-evm@^10.6.2":
-  version "10.6.2"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-10.6.2.tgz#adbb4bc369a20c03a043a17e410ce9bb9133c8bb"
-  integrity sha512-VXzOPH7856cOUAt92DiJbik6mzEB6Mkb8NjmcOAe8XNi60rJkentG0rXPPtBFLJZQajJRQjmjIjbRPbh/S9PVg==
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-10.7.0.tgz#9f870d8b8fb1fc4ae0da49e5aa86578bc27ef617"
+  integrity sha512-gWHwh7libwbwcUbpgwOou3TwyrpXVq1ylRgXnouI+9N5wVxmHO5bn+mu/NezPKhHFajcAi7PQEVx737yS5nXrw==
 
 "@depay/web3-client-solana@^10.6.2":
-  version "10.6.2"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client-solana/-/web3-client-solana-10.6.2.tgz#2f9a5636083b60e55d6d2285254520f1cb56ff45"
-  integrity sha512-q3NB/7alPn1zxlOO34BJE+ZEvspWwT0qfeH+EMTh6N6wYr6jpiItN0mSk5DTO4StqlcA+hDVJmU+3hdas1AbBA==
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-solana/-/web3-client-solana-10.7.0.tgz#60b4a8bcf3374a8a675b144a497b8fc06f81f25f"
+  integrity sha512-9+436IICBU/P63OtVIfsrYkC9L/Yt4V5XNpWCxDZq3K7ScDA27pAZraTm/0AVBPPzG5UcbxRNEPr3qLvksX6yw==
 
 "@depay/web3-client@^10.6.2":
-  version "10.6.2"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.6.2.tgz#8dac0638c2547ffb999b83d0de80bb9ebe2f725b"
-  integrity sha512-RP05uQ+iX06+x820W6TBrcmX4u1hn0iBYhwaXApTjtgI5NcIzrCa5sF4h+ybO7K0H7PrZDE+fANw+hMIzwrovw==
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.7.0.tgz#2f186c23a393e2d356cfddf7f57c441623f1184a"
+  integrity sha512-TtYvfnk/b6ccgn555YXl308A0kX3EODxqxZef0h4wc/sNOcrv/fWafWdfgdqyuu2iFiD2Lga38RhREzQogEDIg==
 
-"@depay/web3-constants@^6.4.0", "@depay/web3-constants@^6.4.2":
-  version "6.4.2"
-  resolved "https://registry.yarnpkg.com/@depay/web3-constants/-/web3-constants-6.4.2.tgz#52ed9b50aa31ef3e649c8c2453606b5d26e6c0b7"
-  integrity sha512-Sfas4MUCSpykJUS8+t/haPSLJkhXyJONNldgwWk/Uc801iaDMEBJr2m0rR7+2ceYXUSUQrj2g33Jro6pOPBmgg==
-
-"@depay/web3-mock@^13.25.5":
-  version "13.25.5"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.25.5.tgz#8e16ca2754317345a622b34fd59a17b41f78397c"
-  integrity sha512-DJhoOtMv8i0WuI1H+0o3CvafDsZYQXMv2CRmwOXdEksxXD6uU6VpZAXhYQAN9bS/H5U9LFTtLDgqkqE0m6dG6A==
+"@depay/web3-mock-evm@^13.26.0":
+  version "13.26.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock-evm/-/web3-mock-evm-13.26.0.tgz#754781eb01e83caf7f468c92b5ade8ada2e95560"
+  integrity sha512-4WT7A83DFNxcvA0I+EpyCI1MsgvZAangdVTJwzfk5O1rFVXA3rs0GuxjCv7RQDI7mtX9UlQLanrTSFcKS66Dow==
   dependencies:
-    "@depay/solana-web3.js" "^1.20.15"
-    "@depay/web3-blockchains" "^6.5.1"
-    "@depay/web3-constants" "^6.4.0"
+    "@depay/web3-blockchains" "^7.0.0"
     ethers "^5.7.1"
 
-"@depay/web3-tokens-evm@^9.15.0":
-  version "9.15.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens-evm/-/web3-tokens-evm-9.15.0.tgz#364afce37e2714402731b98ca311440a633a510d"
-  integrity sha512-Q6sFWQ5/w2slKvEXSZbzLCs6qKyRzAQNguzb5qPcNcqaXgbQySdVu+iGsMbDWxSFTkzSk0kttyG0ANfPFhPW2w==
+"@depay/web3-mock@^13.26.0":
+  version "13.26.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.26.0.tgz#d7ad4faf1f8b0f650e2bacb4ffeae1022ecf71de"
+  integrity sha512-LMticjDtjhifYRC9wCW0VNEt1OS5Asexu7BKY8EyF/C7FWO74YV+TxzILVpPAWLNnKLV9m2KxIs0W30U0QMwFw==
+  dependencies:
+    "@depay/solana-web3.js" "^1.20.15"
+    "@depay/web3-blockchains" "^7.0.0"
+    ethers "^5.7.1"
 
-"@depay/web3-tokens-solana@^9.15.0":
-  version "9.15.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens-solana/-/web3-tokens-solana-9.15.0.tgz#407b5b83c9cb8fc5baa2bb1ed20c168c393e80f2"
-  integrity sha512-126LPNVZYy6rQMcr9ywcIJdNwfOXwpvGPX6TZefp8ZmGHtBhwHPriRPp7RPomO+hsUnh3cpuezfMJhJaoKIn6Q==
+"@depay/web3-tokens-evm@^9.16.0":
+  version "9.16.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens-evm/-/web3-tokens-evm-9.16.0.tgz#476638c3717ae36decb836a279985d59b8091265"
+  integrity sha512-+Izm9g+L25FABQD+kJx8aCLsrmZT/LStYAOoq/xGCKiwgCmAx+0A5cSXF98BCRNiQ/gmAAH3J4XGRM7azAiIng==
 
-"@depay/web3-tokens@^9.15.0":
-  version "9.15.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.15.0.tgz#cf0e5a8b50594a8975b625c2d2e2c28cc57fb7cd"
-  integrity sha512-ZJ0GxtBcWUKPo8xnhKcLN86wqRdxlc5cLF926CTAZ1aVF4HEoOx2H/YR4q6zYkiTRZNwDYBpDh0mmNxdr0tvfw==
+"@depay/web3-tokens-solana@^9.16.0":
+  version "9.16.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens-solana/-/web3-tokens-solana-9.16.0.tgz#d48e727cd7feac313b0561dbaacdacc6a6324416"
+  integrity sha512-01Qetb5dHYBL/z2bTPDJ/xcTQimwGpSRMJHHFuDNmH7Q8183BA5RBUnR9XNnabhqG3Ccsfi1qg1AGB2O5VPEKw==
+
+"@depay/web3-tokens@^9.16.0":
+  version "9.16.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.16.0.tgz#dc35e45e5b2629a3c07cc2a5f210357ba0167736"
+  integrity sha512-QAOfgRj5bfpNmHedO52BGwH8tSW8PMtVZ29S14iaCqKOm2WA03C33ro70Lzvsb5jhfSJy5HGuw++VWXMloVKwA==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"

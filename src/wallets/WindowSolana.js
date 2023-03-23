@@ -1,4 +1,3 @@
-import { Blockchain } from '@depay/web3-blockchains'
 import { sendTransaction } from './WindowSolana/transaction'
 import { supported } from '../blockchains'
 

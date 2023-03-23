@@ -1,5 +1,5 @@
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
-import { CONSTANTS } from '@depay/web3-constants'
 
 class Transaction {
 
@@ -31,7 +31,7 @@ class Transaction {
 
   static bigNumberify(value, blockchain) {
     if (typeof value === 'number') {
-      return ethers.utils.parseUnits(value.toString(), CONSTANTS[blockchain].DECIMALS)
+      return ethers.utils.parseUnits(value.toString(), Blockchains[blockchain].currency.decimals)
     } else if (value && value.toString) {
       return ethers.BigNumber.from(value.toString())
     } else {
