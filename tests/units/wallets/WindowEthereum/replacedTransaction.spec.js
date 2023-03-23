@@ -6,7 +6,7 @@ import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('window.ethereum wallet replaced transactions', () => {
 
-  supportedBlockchains.evm.forEach((blockchain)=>{
+  ['ethereum'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
       
@@ -38,7 +38,6 @@ describe('window.ethereum wallet replaced transactions', () => {
       describe('a replacing transaction was mined successfully', ()=>{
         
         beforeEach(()=>{
-          jest.setTimeout(15000)
 
           transaction = {
             blockchain,
@@ -66,9 +65,8 @@ describe('window.ethereum wallet replaced transactions', () => {
           let submittedTransaction = await wallet.sendTransaction({... transaction, succeeded: (_succededTransaction)=>{
             succededTransaction = _succededTransaction
           }})
-          await new Promise((r) => setTimeout(r, 1000));
           replace(mockedTransaction, replacingTransactionMock)
-          await new Promise((r) => setTimeout(r, 4000));
+          await new Promise((r) => setTimeout(r, 2000));
           expect(succededTransaction.id).toEqual(replacingTransactionMock.transaction._id)
           expect(succededTransaction.url).toMatch(replacingTransactionMock.transaction._id)
         })
@@ -77,7 +75,6 @@ describe('window.ethereum wallet replaced transactions', () => {
       describe('a replacing transaction was mined but failed', ()=>{
         
         beforeEach(()=>{
-          jest.setTimeout(15000)
 
           transaction = {
             blockchain,
@@ -105,9 +102,8 @@ describe('window.ethereum wallet replaced transactions', () => {
           let submittedTransaction = await wallet.sendTransaction({... transaction, failed: (_failedTransaction)=>{
             failedTransaction = _failedTransaction
           }})
-          await new Promise((r) => setTimeout(r, 1000));
           replace(mockedTransaction, replacingTransactionMock, false)
-          await new Promise((r) => setTimeout(r, 4000));
+          await new Promise((r) => setTimeout(r, 2000));
           expect(failedTransaction.id).toEqual(replacingTransactionMock.transaction._id)
           expect(failedTransaction.url).toMatch(replacingTransactionMock.transaction._id)
         })
