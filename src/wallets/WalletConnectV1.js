@@ -29,11 +29,21 @@ const getPlainInstance = ()=>{
   return currentPlainInstance
 }
 
-const isConnected = async()=>{
-  let connector = getPlainInstance()
-  let accounts
-  try { accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }) } catch (error) {}
-  return accounts && accounts.length
+const isConnected = ()=>{
+  return new Promise(async(resolve, reject)=>{
+    let connector = getPlainInstance()
+    let accounts
+
+    try {
+      setTimeout(()=>{ resolve(false) }, 2000)
+      let blockNumber = await connector.sendCustomRequest({ method: 'eth_blockNumber' })
+      if(blockNumber) {
+        accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }) 
+      }
+    } catch (error) { resolve(false) }
+
+    return resolve(accounts && accounts.length)
+  })
 }
 
 const getConnectedInstance = async()=>{
