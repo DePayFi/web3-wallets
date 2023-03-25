@@ -60274,11 +60274,16 @@
 
   const isConnected = ()=>{
     return new Promise(async(resolve, reject)=>{
+      setTimeout(()=>{ resolve(false); }, 3000);
+
+      if(!localStorage['walletconnect'] || JSON.parse(localStorage['walletconnect']).handshakeTopic.length == 0) {
+        return resolve(false)
+      }
+
       let connector = getPlainInstance();
       let accounts;
 
       try {
-        setTimeout(()=>{ resolve(false); }, 2000);
         let blockNumber = await connector.sendCustomRequest({ method: 'eth_blockNumber' });
         if(blockNumber) {
           accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }); 
