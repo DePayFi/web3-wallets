@@ -836,9 +836,11 @@
 
   const isConnected = ()=>{
     return new Promise(async(resolve, reject)=>{
+      
       setTimeout(()=>{ resolve(false); }, 800);
 
       if(!localStorage['walletconnect'] || JSON.parse(localStorage['walletconnect']).handshakeTopic.length == 0) {
+        delete localStorage['walletconnect'];
         return resolve(false)
       }
 
@@ -849,8 +851,13 @@
         let blockNumber = await connector.sendCustomRequest({ method: 'eth_blockNumber' });
         if(blockNumber) {
           accounts = await connector.sendCustomRequest({ method: 'eth_accounts' }); 
+        } else {
+          delete localStorage['walletconnect'];
         }
-      } catch (error) { resolve(false); }
+      } catch (error) {
+        delete localStorage['walletconnect'];
+        resolve(false);
+      }
 
       return resolve(accounts && accounts.length)
     })
