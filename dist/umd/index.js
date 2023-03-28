@@ -836,7 +836,7 @@
 
   const isConnected = ()=>{
     return new Promise(async(resolve, reject)=>{
-      setTimeout(()=>{ resolve(false); }, 3000);
+      setTimeout(()=>{ resolve(false); }, 800);
 
       if(!localStorage['walletconnect'] || JSON.parse(localStorage['walletconnect']).handshakeTopic.length == 0) {
         return resolve(false)
