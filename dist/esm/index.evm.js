@@ -60224,10 +60224,11 @@ const submit$1 = ({ transaction, wallet }) => {
 const submitContractInteraction$1 = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain);
   const gasPrice = await provider.getGasPrice();
-  const gas = await estimate(transaction);
+  let gas = await estimate(transaction);
   const data = await transaction.getData();
   const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined;
   const nonce = ethers.utils.hexlify(transaction.nonce);
+  gas = gas.add(gas.div(10));
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,

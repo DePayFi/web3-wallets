@@ -790,10 +790,11 @@
   const submitContractInteraction$1 = async ({ transaction, wallet })=>{
     const provider = await web3Client.getProvider(transaction.blockchain);
     const gasPrice = await provider.getGasPrice();
-    const gas = await web3Client.estimate(transaction);
+    let gas = await web3Client.estimate(transaction);
     const data = await transaction.getData();
     const value = transaction.value ? ethers.ethers.utils.hexlify(ethers.ethers.BigNumber.from(transaction.value)) : undefined;
     const nonce = ethers.ethers.utils.hexlify(transaction.nonce);
+    gas = gas.add(gas.div(10));
     return wallet.connector.sendTransaction({
       from: transaction.from,
       to: transaction.to,
