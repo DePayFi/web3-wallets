@@ -481,33 +481,37 @@
     let toPubkey = new solanaWeb3_js.PublicKey(transaction.to);
     const provider = await web3Client.getProvider(transaction.blockchain);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
-    let transferTransaction = new solanaWeb3_js.Transaction({
-      recentBlockhash,
-      feePayer: fromPubkey
-    });
-    transferTransaction.add(
+    const instructions = [
       solanaWeb3_js.SystemProgram.transfer({
         fromPubkey,
         toPubkey,
         lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
       })
-    );
-    return window.solana.signAndSendTransaction(transferTransaction)
+    ];
+    const messageV0 = new solanaWeb3_js.TransactionMessage({
+      payerKey: fromPubkey,
+      recentBlockhash,
+      instructions,
+    }).compileToV0Message();
+    const transactionV0 = new solanaWeb3_js.VersionedTransaction(messageV0);
+    return window.solana.signAndSendTransaction(transactionV0)
   };
 
   const submitInstructions = async ({ transaction, wallet })=> {
     let fromPubkey = new solanaWeb3_js.PublicKey(await wallet.account());
     const provider = await web3Client.getProvider(transaction.blockchain);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
-    let transferTransaction = new solanaWeb3_js.Transaction({
+    const messageV0 = new solanaWeb3_js.TransactionMessage({
+      payerKey: fromPubkey,
       recentBlockhash,
-      feePayer: fromPubkey
-    });
-    transaction.instructions.forEach((instruction)=>{
-      transferTransaction.add(instruction);
-    });
-
-    return window.solana.signAndSendTransaction(transferTransaction)
+      instructions: transaction.instructions,
+    }).compileToV0Message();
+    const transactionV0 = new solanaWeb3_js.VersionedTransaction(messageV0);
+    let signers = transaction.instructions.map((instruction)=>instruction.signers).filter(Boolean).flat();
+    if(signers.length) {
+      transactionV0.sign(Array.from(new Set(signers)));
+    }
+    return window.solana.signAndSendTransaction(transactionV0)
   };
 
   function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }

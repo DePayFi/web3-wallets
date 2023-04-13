@@ -1,7 +1,7 @@
 import Blockchains from '@depay/web3-blockchains';
 import { ethers } from 'ethers';
 import { request, getProvider, estimate } from '@depay/web3-client';
-import { PublicKey, Transaction as Transaction$1, SystemProgram } from '@depay/solana-web3.js';
+import { PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from '@depay/solana-web3.js';
 import { WalletConnectClient } from '@depay/walletconnect-v1';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
 
@@ -478,33 +478,37 @@ const submitSimpleTransfer$2 = async ({ transaction, wallet })=> {
   let toPubkey = new PublicKey(transaction.to);
   const provider = await getProvider(transaction.blockchain);
   let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
-  let transferTransaction = new Transaction$1({
-    recentBlockhash,
-    feePayer: fromPubkey
-  });
-  transferTransaction.add(
+  const instructions = [
     SystemProgram.transfer({
       fromPubkey,
       toPubkey,
       lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
     })
-  );
-  return window.solana.signAndSendTransaction(transferTransaction)
+  ];
+  const messageV0 = new TransactionMessage({
+    payerKey: fromPubkey,
+    recentBlockhash,
+    instructions,
+  }).compileToV0Message();
+  const transactionV0 = new VersionedTransaction(messageV0);
+  return window.solana.signAndSendTransaction(transactionV0)
 };
 
 const submitInstructions = async ({ transaction, wallet })=> {
   let fromPubkey = new PublicKey(await wallet.account());
   const provider = await getProvider(transaction.blockchain);
   let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
-  let transferTransaction = new Transaction$1({
+  const messageV0 = new TransactionMessage({
+    payerKey: fromPubkey,
     recentBlockhash,
-    feePayer: fromPubkey
-  });
-  transaction.instructions.forEach((instruction)=>{
-    transferTransaction.add(instruction);
-  });
-
-  return window.solana.signAndSendTransaction(transferTransaction)
+    instructions: transaction.instructions,
+  }).compileToV0Message();
+  const transactionV0 = new VersionedTransaction(messageV0);
+  let signers = transaction.instructions.map((instruction)=>instruction.signers).filter(Boolean).flat();
+  if(signers.length) {
+    transactionV0.sign(Array.from(new Set(signers)));
+  }
+  return window.solana.signAndSendTransaction(transactionV0)
 };
 
 function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
