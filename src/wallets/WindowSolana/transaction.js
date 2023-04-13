@@ -13,7 +13,7 @@ import { getProvider } from '@depay/web3-client'
 //#endif
 
 import Blockchains from '@depay/web3-blockchains'
-import { Transaction as SolanaTransaction, SystemProgram, PublicKey } from '@depay/solana-web3.js'
+import { VersionedTransaction, TransactionMessage, SystemProgram, PublicKey } from '@depay/solana-web3.js'
 import { Transaction } from '../../Transaction'
 
 const POLL_SPEED = 500 // 0.5 seconds
@@ -72,33 +72,37 @@ const submitSimpleTransfer = async ({ transaction, wallet })=> {
   let toPubkey = new PublicKey(transaction.to)
   const provider = await getProvider(transaction.blockchain)
   let recentBlockhash = (await provider.getLatestBlockhash()).blockhash
-  let transferTransaction = new SolanaTransaction({
-    recentBlockhash,
-    feePayer: fromPubkey
-  })
-  transferTransaction.add(
+  const instructions = [
     SystemProgram.transfer({
       fromPubkey,
       toPubkey,
       lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
     })
-  )
-  return window.solana.signAndSendTransaction(transferTransaction)
+  ]
+  const messageV0 = new TransactionMessage({
+    payerKey: fromPubkey,
+    recentBlockhash,
+    instructions,
+  }).compileToV0Message()
+  const transactionV0 = new VersionedTransaction(messageV0)
+  return window.solana.signAndSendTransaction(transactionV0)
 }
 
 const submitInstructions = async ({ transaction, wallet })=> {
   let fromPubkey = new PublicKey(await wallet.account())
   const provider = await getProvider(transaction.blockchain)
   let recentBlockhash = (await provider.getLatestBlockhash()).blockhash
-  let transferTransaction = new SolanaTransaction({
+  const messageV0 = new TransactionMessage({
+    payerKey: fromPubkey,
     recentBlockhash,
-    feePayer: fromPubkey
-  })
-  transaction.instructions.forEach((instruction)=>{
-    transferTransaction.add(instruction)
-  })
-
-  return window.solana.signAndSendTransaction(transferTransaction)
+    instructions: transaction.instructions,
+  }).compileToV0Message()
+  const transactionV0 = new VersionedTransaction(messageV0)
+  let signers = transaction.instructions.map((instruction)=>instruction.signers).filter(Boolean).flat()
+  if(signers.length) {
+    transactionV0.sign(Array.from(new Set(signers)))
+  }
+  return window.solana.signAndSendTransaction(transactionV0)
 }
 
 export {

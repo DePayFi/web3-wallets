@@ -993,10 +993,10 @@
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.4"
 
-"@depay/solana-web3.js@^1.20.15":
-  version "1.20.15"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.20.15.tgz#6e18476209e04cf29dd30761102e58a0a5b98b4d"
-  integrity sha512-diPDtBTQDmWDeHo32xWKIO7syd8Vk/wDez8PCU9S4q8RArU8vwBM/fpAlxn+LTBR3O1ci3BTgD/YwDtwAuD7Ig==
+"@depay/solana-web3.js@^1.21.2":
+  version "1.21.2"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.21.2.tgz#65b2b60b66ad8b42f717ee22bc753ca538f2f56e"
+  integrity sha512-9UON+nXRrFnCYqg2vcGceP+4Ly+zzAJ88RthuvVhHtIfPeEqDyjj9S77iwZT/4/lmYDnUPoC9pl4otfmX7B+9w==
 
 "@depay/walletconnect-v1@^1.8.0":
   version "1.8.0"
@@ -1014,7 +1014,7 @@
     "@walletconnect/core" "^2.4.2"
     "@walletconnect/sign-client" "^2.4.2"
 
-"@depay/web3-blockchains@^7.0.0", "@depay/web3-blockchains@^7.1.0":
+"@depay/web3-blockchains@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-7.1.0.tgz#101c4d36e263f5d703e1604899b3b17fdd084bbb"
   integrity sha512-/ZhT+c5Z58SCpo9aU7Z2mDGQxMc2Ia2BM8RKt/V337I9fYNp7zRdiYX8U+hnN4BvB9S0yu3l8vRgKwEAU1fhuA==
@@ -1034,21 +1034,30 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.7.0.tgz#2f186c23a393e2d356cfddf7f57c441623f1184a"
   integrity sha512-TtYvfnk/b6ccgn555YXl308A0kX3EODxqxZef0h4wc/sNOcrv/fWafWdfgdqyuu2iFiD2Lga38RhREzQogEDIg==
 
-"@depay/web3-mock-evm@^13.26.0":
-  version "13.26.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock-evm/-/web3-mock-evm-13.26.0.tgz#754781eb01e83caf7f468c92b5ade8ada2e95560"
-  integrity sha512-4WT7A83DFNxcvA0I+EpyCI1MsgvZAangdVTJwzfk5O1rFVXA3rs0GuxjCv7RQDI7mtX9UlQLanrTSFcKS66Dow==
+"@depay/web3-mock-evm@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock-evm/-/web3-mock-evm-14.0.0.tgz#da2b78ca077f5847278df489bd4ee0935a523a23"
+  integrity sha512-53hC3e1MIwBUYtoRNQGJj0QwkY7R/u87DB3pU5soqrXkiFKk+9Bte3F/IJZ5nNgMJBbZWqEGXdVzxZf4QiLqjA==
   dependencies:
-    "@depay/web3-blockchains" "^7.0.0"
+    "@depay/web3-blockchains" "^7.1.0"
     ethers "^5.7.1"
 
-"@depay/web3-mock@^13.26.0":
-  version "13.26.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-13.26.0.tgz#d7ad4faf1f8b0f650e2bacb4ffeae1022ecf71de"
-  integrity sha512-LMticjDtjhifYRC9wCW0VNEt1OS5Asexu7BKY8EyF/C7FWO74YV+TxzILVpPAWLNnKLV9m2KxIs0W30U0QMwFw==
+"@depay/web3-mock-solana@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock-solana/-/web3-mock-solana-14.0.0.tgz#2accd59c67b3b3f06db929a8ccb0c28979c74e9a"
+  integrity sha512-iia+DLLBcz621YLBQZ0mzK2+tOdjzQYt5rrkoCRyhjetspryBpfV1A01lbwZUTeQ6UhCxcsJAGR3gHsDwS7Zhw==
   dependencies:
-    "@depay/solana-web3.js" "^1.20.15"
-    "@depay/web3-blockchains" "^7.0.0"
+    "@depay/solana-web3.js" "^1.21.2"
+    "@depay/web3-blockchains" "^7.1.0"
+    ethers "^5.7.1"
+
+"@depay/web3-mock@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-mock/-/web3-mock-14.0.0.tgz#b2aa490f20ae248f8e1777ccb0891a9aacc22926"
+  integrity sha512-sWZEGcRya1KHbCr8ZVH+WohWiC1TmtzXfDvOf1t9zfqtkKi/EAX8Tw5jw/rcksZl7NXho2N/WEwDb7G8+KRvYg==
+  dependencies:
+    "@depay/solana-web3.js" "^1.21.2"
+    "@depay/web3-blockchains" "^7.1.0"
     ethers "^5.7.1"
 
 "@depay/web3-tokens-evm@^9.16.0":

@@ -351,6 +351,44 @@ let sentTransaction = await wallet.sendTransaction({
 })
 ```
 
+###### Solana: Instruction signers
+
+If you need to sign an instruction (e.g. creating "throw away" accounts)
+
+you can set the `signers` of an instruction, which will be used to partially sign the transaction:
+
+```javascript
+import { getProvider } from '@depay/web3-client'
+import { Token } from '@depay/web3-tokens'
+import { PublicKey, SystemProgram, Keypair } from '@depay/solana-web3.js'
+
+const wallets = await getWallets()
+const wallet = wallets[0]
+const fromAddress = await wallet.account()
+const provider = await getProvider('solana')
+const keypair = Keypair.generate()
+const account = keypair.publicKey.toString()
+const rent = await provider.getMinimumBalanceForRentExemption(Token.solana.TOKEN_LAYOUT.span)
+
+let instruction = SystemProgram.createAccount({
+  fromPubkey: new SolanaWeb3js.PublicKey(fromAddress),
+  newAccountPubkey: new SolanaWeb3js.PublicKey(wrappedAccount),
+  programId: new SolanaWeb3js.PublicKey(Web3Tokens.Token.solana.TOKEN_PROGRAM),
+  space: Web3Tokens.Token.solana.TOKEN_LAYOUT.span,
+  lamports: rent
+})
+
+instruction.signers = [keypair]
+
+let sentTransaction = await wallet.sendTransaction({
+  blockchain: 'solana',
+  instructions: [instruction],
+  sent: function(transaction){},
+  succeeded: function(transaction){},
+  failed: function(transaction, error){}
+})
+```
+
 #### value
 
 If value is passed as a number it's gonna be converted into a big number applying the individual blockchain's default decimals:
