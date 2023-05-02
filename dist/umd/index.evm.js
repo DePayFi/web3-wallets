@@ -40709,11 +40709,12 @@
 
   class StaticJsonRpcBatchProvider extends ethers.ethers.providers.JsonRpcProvider {
 
-    constructor(url, network, endpoints) {
+    constructor(url, network, endpoints, failover) {
       super(url);
       this._network = network;
       this._endpoint = url;
       this._endpoints = endpoints;
+      this._failover = failover;
     }
 
     detectNetwork() {
@@ -40743,6 +40744,7 @@
         }).catch((error) => {
           if(error && error.code == 'SERVER_ERROR') {
             const index = this._endpoints.indexOf(this._endpoint)+1;
+            this._failover();
             this._endpoint = index >= this._endpoints.length ? this._endpoints[0] : this._endpoints[index];
             this.requestChunk(chunk, this._endpoint);
           } else {
@@ -40813,37 +40815,44 @@
     return _window
   };
 
-  // MAKE SURE PROVIDER SUPPORT BATCH SIZE OF 99 BATCH REQUESTS!
-  const ENDPOINTS$1 = {
-    ethereum: ['https://rpc.ankr.com/eth', 'https://eth.llamarpc.com', 'https://ethereum.publicnode.com'],
-    bsc: ['https://bsc-dataseed.binance.org', 'https://bsc-dataseed1.ninicoin.io', 'https://bsc-dataseed3.defibit.io'],
-    polygon: ['https://polygon-rpc.com', 'https://poly-rpc.gateway.pokt.network', 'https://matic-mainnet.chainstacklabs.com'],
-    fantom: ['https://fantom.blockpi.network/v1/rpc/public', 'https://rpcapi.fantom.network', 'https://rpc.ftm.tools'],
-    velas: ['https://mainnet.velas.com/rpc', 'https://evmexplorer.velas.com/rpc', 'https://explorer.velas.com/rpc'],
-  };
-
-  const getProviders$1 = ()=> {
-    if(getWindow()._clientProviders == undefined) {
-      getWindow()._clientProviders = {};
+  const getAllProviders$1 = ()=> {
+    if(getWindow()._Web3ClientProviders == undefined) {
+      getWindow()._Web3ClientProviders = {};
     }
-    return getWindow()._clientProviders
+    return getWindow()._Web3ClientProviders
   };
 
   const setProvider$2 = (blockchain, provider)=> {
-    getProviders$1()[blockchain] = provider;
+    if(getAllProviders$1()[blockchain] === undefined) { getAllProviders$1()[blockchain] = []; }
+    const index = getAllProviders$1()[blockchain].indexOf(provider);
+    if(index > -1) {
+      getAllProviders$1()[blockchain].splice(index, 1);
+    }
+    getAllProviders$1()[blockchain].unshift(provider);
   };
 
-  const setProviderEndpoints$2 = async (blockchain, endpoints)=> {
+  const setProviderEndpoints$2 = async (blockchain, endpoints, detectFastest = true)=> {
     
-    let endpoint;
+    getAllProviders$1()[blockchain] = endpoints.map((endpoint, index)=>
+      new StaticJsonRpcBatchProvider(endpoint, blockchain, endpoints, ()=>{
+        if(getAllProviders$1()[blockchain].length === 1) {
+          setProviderEndpoints$2(blockchain, endpoints, detectFastest);
+        } else {
+          getAllProviders$1()[blockchain].splice(index, 1);
+        }
+      })
+    );
+    
+    let provider;
     let window = getWindow();
 
     if(
       window.fetch == undefined ||
       (typeof process != 'undefined' && process['env'] && process['env']['NODE_ENV'] == 'test') ||
-      (typeof window.cy != 'undefined')
+      (typeof window.cy != 'undefined') ||
+      detectFastest === false
     ) {
-      endpoint = endpoints[0];
+      provider = getAllProviders$1()[blockchain][0];
     } else {
       
       let responseTimes = await Promise.all(endpoints.map((endpoint)=>{
@@ -40867,74 +40876,96 @@
 
       const fastestResponse = Math.min(...responseTimes);
       const fastestIndex = responseTimes.indexOf(fastestResponse);
-      endpoint = endpoints[fastestIndex];
+      provider = getAllProviders$1()[blockchain][fastestIndex];
     }
     
-    setProvider$2(
-      blockchain,
-      new StaticJsonRpcBatchProvider(endpoint, blockchain, endpoints)
-    );
+    setProvider$2(blockchain, provider);
   };
 
   const getProvider$2 = async (blockchain)=> {
 
-    let providers = getProviders$1();
+    let providers = getAllProviders$1();
+    if(providers && providers[blockchain]){ return providers[blockchain][0] }
+    
+    let window = getWindow();
+    if(window._Web3ClientGetProviderPromise && window._Web3ClientGetProviderPromise[blockchain]) { return await window._Web3ClientGetProviderPromise[blockchain] }
+
+    if(!window._Web3ClientGetProviderPromise){ window._Web3ClientGetProviderPromise = {}; }
+    window._Web3ClientGetProviderPromise[blockchain] = new Promise(async(resolve)=> {
+      await setProviderEndpoints$2(blockchain, Blockchains__default['default'][blockchain].endpoints);
+      resolve(getWindow()._Web3ClientProviders[blockchain][0]);
+    });
+
+    return await window._Web3ClientGetProviderPromise[blockchain]
+  };
+
+  const getProviders$2 = async(blockchain)=>{
+
+    let providers = getAllProviders$1();
     if(providers && providers[blockchain]){ return providers[blockchain] }
     
     let window = getWindow();
-    if(window._getProviderPromise && window._getProviderPromise[blockchain]) { return await window._getProviderPromise[blockchain] }
+    if(window._Web3ClientGetProvidersPromise && window._Web3ClientGetProvidersPromise[blockchain]) { return await window._Web3ClientGetProvidersPromise[blockchain] }
 
-    if(!window._getProviderPromise){ window._getProviderPromise = {}; }
-    window._getProviderPromise[blockchain] = new Promise(async(resolve)=> {
-      await setProviderEndpoints$2(blockchain, ENDPOINTS$1[blockchain]);
-      resolve(getWindow()._clientProviders[blockchain]);
+    if(!window._Web3ClientGetProvidersPromise){ window._Web3ClientGetProvidersPromise = {}; }
+    window._Web3ClientGetProvidersPromise[blockchain] = new Promise(async(resolve)=> {
+      await setProviderEndpoints$2(blockchain, Blockchains__default['default'][blockchain].endpoints);
+      resolve(getWindow()._Web3ClientProviders[blockchain]);
     });
 
-    return await window._getProviderPromise[blockchain]
+    return await window._Web3ClientGetProvidersPromise[blockchain]
   };
 
   var EVM = {
     getProvider: getProvider$2,
+    getProviders: getProviders$2,
     setProviderEndpoints: setProviderEndpoints$2,
     setProvider: setProvider$2,
   };
 
   class StaticJsonRpcSequentialProvider extends Connection {
 
-    constructor(url, network, endpoints) {
+    constructor(url, network, endpoints, failover) {
       super(url);
       this._network = network;
       this._endpoint = url;
       this._endpoints = endpoints;
+      this._failover = failover;
     }
   }
 
-  const ENDPOINTS = {
-    solana: ['https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ', 'https://mainnet-beta.solflare.network', 'https://solana-mainnet.rpc.extrnode.com']
-  };
-
-  const getProviders = ()=> {
-    if(getWindow()._clientProviders == undefined) {
-      getWindow()._clientProviders = {};
+  const getAllProviders = ()=> {
+    if(getWindow()._Web3ClientProviders == undefined) {
+      getWindow()._Web3ClientProviders = {};
     }
-    return getWindow()._clientProviders
+    return getWindow()._Web3ClientProviders
   };
 
   const setProvider$1 = (blockchain, provider)=> {
-    getProviders()[blockchain] = provider;
+    if(getAllProviders()[blockchain] === undefined) { getAllProviders()[blockchain] = []; }
+    const index = getAllProviders()[blockchain].indexOf(provider);
+    if(index > -1) {
+      getAllProviders()[blockchain].splice(index, 1);
+    }
+    getAllProviders()[blockchain].unshift(provider);
   };
 
-  const setProviderEndpoints$1 = async (blockchain, endpoints)=> {
+  const setProviderEndpoints$1 = async (blockchain, endpoints, detectFastest = true)=> {
     
-    let endpoint;
+    getAllProviders()[blockchain] = endpoints.map((endpoint, index)=>
+      new StaticJsonRpcSequentialProvider(endpoint, blockchain, endpoints)
+    );
+
+    let provider;
     let window = getWindow();
 
     if(
       window.fetch == undefined ||
       (typeof process != 'undefined' && process['env'] && process['env']['NODE_ENV'] == 'test') ||
-      (typeof window.cy != 'undefined')
+      (typeof window.cy != 'undefined') ||
+      detectFastest === false
     ) {
-      endpoint = endpoints[0];
+      provider = getAllProviders()[blockchain][0];
     } else {
       
       let responseTimes = await Promise.all(endpoints.map((endpoint)=>{
@@ -40958,34 +40989,49 @@
 
       const fastestResponse = Math.min(...responseTimes);
       const fastestIndex = responseTimes.indexOf(fastestResponse);
-      endpoint = endpoints[fastestIndex];
+      provider = getAllProviders()[blockchain][fastestIndex];
     }
     
-    setProvider$1(
-      blockchain,
-      new StaticJsonRpcSequentialProvider(endpoint, blockchain, endpoints)
-    );
+    setProvider$1(blockchain, provider);
   };
 
   const getProvider$1 = async (blockchain)=> {
 
-    let providers = getProviders();
+    let providers = getAllProviders();
+    if(providers && providers[blockchain]){ return providers[blockchain][0] }
+    
+    let window = getWindow();
+    if(window._Web3ClientGetProviderPromise && window._Web3ClientGetProviderPromise[blockchain]) { return await window._Web3ClientGetProviderPromise[blockchain] }
+
+    if(!window._Web3ClientGetProviderPromise){ window._Web3ClientGetProviderPromise = {}; }
+    window._Web3ClientGetProviderPromise[blockchain] = new Promise(async(resolve)=> {
+      await setProviderEndpoints$1(blockchain, Blockchains__default['default'][blockchain].endpoints);
+      resolve(getWindow()._Web3ClientProviders[blockchain][0]);
+    });
+
+    return await window._Web3ClientGetProviderPromise[blockchain]
+  };
+
+  const getProviders$1 = async(blockchain)=>{
+
+    let providers = getAllProviders();
     if(providers && providers[blockchain]){ return providers[blockchain] }
     
     let window = getWindow();
-    if(window._getProviderPromise && window._getProviderPromise[blockchain]) { return await window._getProviderPromise[blockchain] }
+    if(window._Web3ClientGetProvidersPromise && window._Web3ClientGetProvidersPromise[blockchain]) { return await window._Web3ClientGetProvidersPromise[blockchain] }
 
-    if(!window._getProviderPromise){ window._getProviderPromise = {}; }
-    window._getProviderPromise[blockchain] = new Promise(async(resolve)=> {
-      await setProviderEndpoints$1(blockchain, ENDPOINTS[blockchain]);
-      resolve(getWindow()._clientProviders[blockchain]);
+    if(!window._Web3ClientGetProvidersPromise){ window._Web3ClientGetProvidersPromise = {}; }
+    window._Web3ClientGetProvidersPromise[blockchain] = new Promise(async(resolve)=> {
+      await setProviderEndpoints$1(blockchain, Blockchains__default['default'][blockchain].endpoints);
+      resolve(getWindow()._Web3ClientProviders[blockchain]);
     });
 
-    return await window._getProviderPromise[blockchain]
+    return await window._Web3ClientGetProvidersPromise[blockchain]
   };
 
   var Solana = {
     getProvider: getProvider$1,
+    getProviders: getProviders$1,
     setProviderEndpoints: setProviderEndpoints$1,
     setProvider: setProvider$1,
   };
@@ -40996,23 +41042,17 @@
 
   function _optionalChain$1$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let getCacheStore = () => {
-    if (getWindow()._cacheStore == undefined) {
-      resetCache();
+    if (getWindow()._Web3ClientCacheStore == undefined) {
+      getWindow()._Web3ClientCacheStore = {};
     }
-    return getWindow()._cacheStore
+    return getWindow()._Web3ClientCacheStore
   };
 
   let getPromiseStore = () => {
-    if (getWindow()._promiseStore == undefined) {
-      resetCache();
+    if (getWindow()._Web3ClientPromiseStore == undefined) {
+      getWindow()._Web3ClientPromiseStore = {};
     }
-    return getWindow()._promiseStore
-  };
-
-  let resetCache = () => {
-    getWindow()._cacheStore = {};
-    getWindow()._promiseStore = {};
-    getWindow()._clientProviders = {};
+    return getWindow()._Web3ClientPromiseStore
   };
 
   let set = function ({ key, value, expires }) {
@@ -41098,6 +41138,13 @@
     })
   };
 
+  const getConfiguration = () =>{
+    if(getWindow()._Web3ClientConfiguration === undefined) {
+      getWindow()._Web3ClientConfiguration = {};
+    }
+    return getWindow()._Web3ClientConfiguration
+  };
+
   let paramsToContractArgs = ({ contract, method, params }) => {
     let fragment = contract.interface.fragments.find((fragment) => {
       return fragment.name == method
@@ -41112,23 +41159,21 @@
     })
   };
 
-  let contractCall = ({ address, api, method, params, provider, block }) => {
+  const contractCall = ({ address, api, method, params, provider, block }) => {
     let contract = new ethers.ethers.Contract(address, api, provider);
     let args = paramsToContractArgs({ contract, method, params });
     return contract[method](...args, { blockTag: block })
   };
 
-  let balance$1 = ({ address, provider }) => {
+  const balance$1 = ({ address, provider }) => {
     return provider.getBalance(address)
   };
 
-  let transactionCount = ({ address, provider }) => {
+  const transactionCount = ({ address, provider }) => {
     return provider.getTransactionCount(address)
   };
 
-  var requestEVM = async ({ blockchain, address, api, method, params, block }) => {
-    const provider = await EVM.getProvider(blockchain);
-    
+  const singleRequest$1 = ({ blockchain, address, api, method, params, block, provider }) =>{
     if (api) {
       return contractCall({ address, api, method, params, provider, block })
     } else if (method === 'latestBlockNumber') {
@@ -41140,40 +41185,119 @@
     }
   };
 
-  let accountInfo = async ({ address, api, method, params, provider, block }) => {
+  var requestEVM = async ({ blockchain, address, api, method, params, block, timeout, strategy }) => {
+
+    strategy = strategy ? strategy : (getConfiguration().strategy || 'failover');
+    timeout = timeout ? timeout : (getConfiguration().timeout || undefined);
+
+    if(strategy === 'fastest') {
+
+      return Promise.race((await EVM.getProviders(blockchain)).map((provider)=>{
+
+        const request = singleRequest$1({ blockchain, address, api, method, params, block, provider });
+      
+        if(timeout) {
+          const timeoutPromise = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout));
+          return Promise.race([request, timeoutPromise])
+        } else {
+          return request
+        }
+      }))
+
+    } else { // failover
+
+      const provider = await EVM.getProvider(blockchain);
+      const request = singleRequest$1({ blockchain, address, api, method, params, block, provider });
+      
+      if(timeout) {
+        timeout = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout));
+        return Promise.race([request, timeout])
+      } else {
+        return request
+      }
+    }
+  };
+
+  const accountInfo = async ({ address, api, method, params, provider, block }) => {
     const info = await provider.getAccountInfo(new PublicKey(address));
     return api.decode(info.data)
   };
 
-  let balance = ({ address, provider }) => {
+  const balance = ({ address, provider }) => {
     return provider.getBalance(new PublicKey(address))
   };
 
-  var requestSolana = async ({ blockchain, address, api, method, params, block }) => {
-    const provider = await Solana.getProvider(blockchain);
+  const singleRequest = async({ blockchain, address, api, method, params, block, provider, providers })=> {
 
-    if(method == undefined || method === 'getAccountInfo') {
-      if(api == undefined) { 
-        api = ACCOUNT_LAYOUT; 
-      }
-      return accountInfo({ address, api, method, params, provider, block })
-    } else if(method === 'getProgramAccounts') {
-      return provider.getProgramAccounts(new PublicKey(address), params).then((accounts)=>{
-        if(api){
-          return accounts.map((account)=>{
-            account.data = api.decode(account.account.data);
-            return account
-          })
-        } else {
-          return accounts
+    try {
+
+      if(method == undefined || method === 'getAccountInfo') {
+        if(api == undefined) {
+          api = ACCOUNT_LAYOUT; 
         }
-      })
-    } else if(method === 'getTokenAccountBalance') {
-      return provider.getTokenAccountBalance(new PublicKey(address))
-    } else if (method === 'latestBlockNumber') {
-      return provider.getBlockHeight()  
-    } else if (method === 'balance') {
-      return balance({ address, provider })
+        return await accountInfo({ address, api, method, params, provider, block })
+      } else if(method === 'getProgramAccounts') {
+        return await provider.getProgramAccounts(new PublicKey(address), params).then((accounts)=>{
+          if(api){
+            return accounts.map((account)=>{
+              account.data = api.decode(account.account.data);
+              return account
+            })
+          } else {
+            return accounts
+          }
+        })
+      } else if(method === 'getTokenAccountBalance') {
+        return await provider.getTokenAccountBalance(new PublicKey(address))
+      } else if (method === 'latestBlockNumber') {
+        return await provider.getBlockHeight()  
+      } else if (method === 'balance') {
+        return await balance({ address, provider })
+      }
+
+    } catch (error){
+      if(providers && error && [
+        'Failed to fetch', '504', '503', '502', '500', '429', '426', '422', '413', '409', '408', '406', '405', '404', '403', '402', '401', '400'
+      ].some((errorType)=>error.toString().match(errorType))) {
+        let nextProvider = providers[providers.indexOf(provider)+1] || providers[0];
+        return singleRequest({ blockchain, address, api, method, params, block, provider: nextProvider, providers })
+      } else {
+        throw error
+      }
+    }
+  };
+
+  var requestSolana = async ({ blockchain, address, api, method, params, block, timeout, strategy }) => {
+
+    strategy = strategy ? strategy : (getConfiguration().strategy || 'failover');
+    timeout = timeout ? timeout : (getConfiguration().timeout || undefined);
+
+    const providers = await Solana.getProviders(blockchain);
+
+    if(strategy === 'fastest') {
+
+      return Promise.race(providers.map((provider)=>{
+
+        const succeedingRequest = new Promise((resolve)=>{
+          singleRequest({ blockchain, address, api, method, params, block, provider }).then(resolve);
+        }); // failing requests are ignored during race/fastest
+      
+        const timeoutPromise = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout || 10000));
+          
+        return Promise.race([succeedingRequest, timeoutPromise])
+      }))
+      
+    } else { // failover
+
+      const provider = await Solana.getProvider(blockchain);
+      const request = singleRequest({ blockchain, address, api, method, params, block, provider, providers });
+
+      if(timeout) {
+        timeout = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout));
+        return Promise.race([request, timeout])
+      } else {
+        return request
+      }
     }
   };
 
@@ -41204,9 +41328,10 @@
     }
   };
 
-  let request = async function (url, options) {
-    let { blockchain, address, method } = parseUrl(url);
-    let { api, params, cache: cache$1, block } = (typeof(url) == 'object' ? url : options) || {};
+  const request = async function (url, options) {
+    
+    const { blockchain, address, method } = parseUrl(url);
+    const { api, params, cache: cache$1, block, timeout, strategy } = (typeof(url) == 'object' ? url : options) || {};
 
     return await cache({
       expires: cache$1 || 0,
@@ -41215,13 +41340,13 @@
         if(supported$1.evm.includes(blockchain)) {
 
 
-          return requestEVM({ blockchain, address, api, method, params, block })
+          return await requestEVM({ blockchain, address, api, method, params, block, strategy, timeout })
 
 
         } else if(supported$1.solana.includes(blockchain)) {
 
 
-          return requestSolana({ blockchain, address, api, method, params, block })
+          return await requestSolana({ blockchain, address, api, method, params, block, strategy, timeout })
 
 
         } else {
