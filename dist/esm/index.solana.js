@@ -1580,7 +1580,10 @@ const getPlainInstance = ()=>{
 const isConnected = ()=>{
   return new Promise(async(resolve, reject)=>{
     
-    setTimeout(()=>{ resolve(false); }, 800);
+    setTimeout(()=>{ 
+      delete localStorage['walletconnect'];
+      resolve(false);
+    }, 5000);
 
     if(!localStorage['walletconnect'] || JSON.parse(localStorage['walletconnect']).handshakeTopic.length == 0) {
       delete localStorage['walletconnect'];
@@ -2066,10 +2069,14 @@ var wallets = {
   WalletLink
 };
 
-const getWallets = async()=>{
+const getWallets = async(args)=>{
+
+  let drip = (args && typeof args.drip === 'function') ? args.drip : undefined;
 
   let availableWallets = await Promise.all(
+    
     Object.keys(wallets).map(
+      
       async(key)=>{
       
         let wallet = wallets[key];
@@ -2079,16 +2086,18 @@ const getWallets = async()=>{
           
           if(wallet.getConnectedInstance) {
             instance = await wallet.getConnectedInstance();
+            if(drip) { drip(instance); }
             return instance
           } else {
+            if(drip) { drip(wallet); }
             return new wallet
-          }          
+          }
         }
       }
     )
   );
 
-  return availableWallets.filter((wallet)=>wallet)
+  return availableWallets.filter(Boolean)
 };
 
 const supported = [

@@ -32,7 +32,10 @@ const getPlainInstance = ()=>{
 const isConnected = ()=>{
   return new Promise(async(resolve, reject)=>{
     
-    setTimeout(()=>{ resolve(false) }, 800)
+    setTimeout(()=>{ 
+      delete localStorage['walletconnect']
+      resolve(false)
+    }, 5000)
 
     if(!localStorage['walletconnect'] || JSON.parse(localStorage['walletconnect']).handshakeTopic.length == 0) {
       delete localStorage['walletconnect']

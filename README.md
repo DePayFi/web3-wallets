@@ -14,6 +14,9 @@ npm install --save @depay/web3-wallets
 import { getWallets } from '@depay/web3-wallets'
 
 let wallets = await getWallets()
+
+// display wallets, have user pick one:
+
 let wallet = wallets[0]
 
 wallet.name // MetaMask
@@ -78,7 +81,8 @@ import { getWallets } from '@depay/web3-wallets-solana'
 
 ### getWallets
 
-`getWallets`: Returns an array of available/connectable wallets.
+`getWallets`: Returns an array of available/connectable wallets. Can wait up to 5 seconds because of checking existing WalletConnect connections.
+Use `drip` to receive available wallets faster.
 
 ```javascript
 let availableWallets = await getWallets();
@@ -87,7 +91,7 @@ let availableWallets = await getWallets();
 
 ```javascript
 let availableWallets = await getWallets();
-// [] no wallets detected. (you can still try WalletConnect or WalletLink)
+// [] no wallets detected. (you can still try have user connec via WalletConnect or WalletLink)
 ```
 
 ```javascript
@@ -106,6 +110,22 @@ if(availableWallets.length == 1) {
   // or wallets.WalletLink.connect()
   wallet = wallets.WalletLink
 }
+```
+
+#### drip
+
+Pass a `drip` callback to `getWallets` to receive available wallet as soon as they are found, without waiting for all wallets to be checked:
+
+```javascript
+
+getWallets({
+  drip: (wallet)=>{
+    setAvaialbleWallets(
+      availableWallets.concat([wallet])
+    )
+  }
+})
+
 ```
 
 ### Name

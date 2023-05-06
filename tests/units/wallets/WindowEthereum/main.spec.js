@@ -26,6 +26,19 @@ describe('window.ethereum wallet', () => {
         })
       })
 
+      describe('allows to drip wallets', ()=>{
+
+        it('drips wallet one by one as soon as they are available', async()=>{
+          mock({ blockchain })
+          let wallets = []
+          await getWallets({ drip:(wallet)=>{
+            wallets.push(wallet)
+          }})
+          let wallet = wallets[0]
+          expect(wallet.name).toBe('WindowEthereum')
+        })
+      })
+
       describe('with supported wallet connected', ()=>{
 
         const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
