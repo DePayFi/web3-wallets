@@ -41950,7 +41950,12 @@ const submitInstructions = async ({ transaction, wallet })=> {
     payerKey: fromPubkey,
     recentBlockhash,
     instructions: transaction.instructions,
-  }).compileToV0Message(transaction.alts ? transaction.alts.map((alt)=>new PublicKey(alt.toString())) : undefined);
+  }).compileToV0Message(
+    transaction.alts ? Primse.all(transaction.alts.map(async(alt)=>{
+      return await getProvider('solana')
+        .getAddressLookupTable(lookupTableAddress)
+        .then((res) => res.value)
+    })) : undefined);
   const transactionV0 = new VersionedTransaction(messageV0);
   if(transaction.signers && transaction.signers.length) {
     transactionV0.sign(Array.from(new Set(transaction.signers)));
