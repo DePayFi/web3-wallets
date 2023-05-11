@@ -41955,7 +41955,7 @@
       recentBlockhash,
       instructions: transaction.instructions,
     }).compileToV0Message(
-      transaction.alts ? Primse.all(transaction.alts.map(async(alt)=>{
+      transaction.alts ? Promise.all(transaction.alts.map(async(alt)=>{
         return await web3ClientEvm.getProvider('solana')
           .getAddressLookupTable(lookupTableAddress)
           .then((res) => res.value)
