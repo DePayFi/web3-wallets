@@ -3,7 +3,21 @@ import { ethers } from 'ethers'
 
 class Transaction {
 
-  constructor({ blockchain, from, to, value, api, method, params, instructions, sent, succeeded, failed }) {
+  constructor({
+    blockchain,
+    from,
+    to,
+    value,
+    api,
+    method,
+    params,
+    instructions,
+    signers,
+    alts,
+    sent,
+    succeeded,
+    failed
+  }) {
 
     // required
     this.blockchain = blockchain
@@ -19,6 +33,8 @@ class Transaction {
     this.succeeded = succeeded
     this.failed = failed
     this.instructions = instructions
+    this.signers = signers
+    this.alts = alts
 
     // internal
     this._succeeded = false

@@ -41448,7 +41448,21 @@
   function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
-    constructor({ blockchain, from, to, value, api, method, params, instructions, sent, succeeded, failed }) {
+    constructor({
+      blockchain,
+      from,
+      to,
+      value,
+      api,
+      method,
+      params,
+      instructions,
+      signers,
+      alts,
+      sent,
+      succeeded,
+      failed
+    }) {
 
       // required
       this.blockchain = blockchain;
@@ -41464,6 +41478,8 @@
       this.succeeded = succeeded;
       this.failed = failed;
       this.instructions = instructions;
+      this.signers = signers;
+      this.alts = alts;
 
       // internal
       this._succeeded = false;

@@ -223,7 +223,7 @@ await wallet.switchTo('bsc')
 
 ### Data Structure
 
-`api: Array`: Api of the contract (e.g. abi for Ethereum).
+`api: Array`: Api of the contract (e.g. abi for Ethereum, Layout/Struct for Solana).
 
 `blockchain: String`: Name of the blockchain e.g. 'ethereum'.
 
@@ -233,19 +233,21 @@ await wallet.switchTo('bsc')
 
 `id: String`: Identifier of the transaction.
 
-`instructions: Array`: List of instructions (e.g. Solana).
+`instructions: Array`: List of instructions (Solana).
 
-`method: String`: Name of the contract method to be called.
+`signers: Array`: List of signers (Solana).
 
-`nonce: Integer`: Nonce (number only used once) of the transaction.
+`method: String`: Name of the contract method to be called (EVM).
 
-`params: Object or Array`: Parameters passed to the method.
+`nonce: Integer`: Nonce (number only used once) of the transaction (EVM).
+
+`params: Object or Array`: Parameters passed to the method (EVM).
 
 `sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
 
 `succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
 
-`to String`: Address of the contract to be transacted with.
+`to String`: Address of the contract to be transacted with (EVM).
 
 `url String`: Url to open the transaction (e.g. in an explorer).
 
