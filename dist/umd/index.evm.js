@@ -41957,7 +41957,7 @@
     }).compileToV0Message(
       transaction.alts ? Promise.all(transaction.alts.map(async(alt)=>{
         return await web3ClientEvm.getProvider('solana')
-          .getAddressLookupTable(lookupTableAddress)
+          .getAddressLookupTable(new PublicKey(alt))
           .then((res) => res.value)
       })) : undefined);
     const transactionV0 = new VersionedTransaction(messageV0);
