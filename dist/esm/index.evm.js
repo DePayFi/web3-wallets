@@ -41952,9 +41952,7 @@ const submitInstructions = async ({ transaction, wallet })=> {
     instructions: transaction.instructions,
   }).compileToV0Message(
     transaction.alts ? Promise.all(transaction.alts.map(async(alt)=>{
-      return await getProvider('solana')
-        .getAddressLookupTable(new PublicKey(alt))
-        .then((res) => res.value)
+      return await (await getProvider('solana')).getAddressLookupTable(new PublicKey(alt)).then((res) => res.value)
     })) : undefined);
   const transactionV0 = new VersionedTransaction(messageV0);
   if(transaction.signers && transaction.signers.length) {

@@ -1264,9 +1264,7 @@
       instructions: transaction.instructions,
     }).compileToV0Message(
       transaction.alts ? Promise.all(transaction.alts.map(async(alt)=>{
-        return await web3ClientSolana.getProvider('solana')
-          .getAddressLookupTable(new solanaWeb3_js.PublicKey(alt))
-          .then((res) => res.value)
+        return await (await web3ClientSolana.getProvider('solana')).getAddressLookupTable(new solanaWeb3_js.PublicKey(alt)).then((res) => res.value)
       })) : undefined);
     const transactionV0 = new solanaWeb3_js.VersionedTransaction(messageV0);
     if(transaction.signers && transaction.signers.length) {
