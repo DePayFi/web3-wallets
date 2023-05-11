@@ -375,7 +375,7 @@ let sentTransaction = await wallet.sendTransaction({
 
 If you need to sign an instruction (e.g. creating "throw away" accounts)
 
-you can set the `signers` of an instruction, which will be used to partially sign the transaction:
+you can pass `signers` as part of the transaction passed to `sendTransaction`:
 
 ```javascript
 import { getProvider } from '@depay/web3-client'
@@ -398,11 +398,48 @@ let instruction = SystemProgram.createAccount({
   lamports: rent
 })
 
-instruction.signers = [keypair]
+let sentTransaction = await wallet.sendTransaction({
+  blockchain: 'solana',
+  instructions: [instruction],
+  signers: [keypair],
+  sent: function(transaction){},
+  succeeded: function(transaction){},
+  failed: function(transaction, error){}
+})
+```
+
+###### Solana: Address Lookup Tables
+
+If you need to pass address lookup tables in order to reduce transaction size,
+
+you can pass `alts` as part of the transaction passed to `sendTransaction`:
+
+```javascript
+import { getProvider } from '@depay/web3-client'
+import { Token } from '@depay/web3-tokens'
+import { PublicKey, SystemProgram, Keypair } from '@depay/solana-web3.js'
+
+const wallets = await getWallets()
+const wallet = wallets[0]
+const fromAddress = await wallet.account()
+const provider = await getProvider('solana')
+const keypair = Keypair.generate()
+const account = keypair.publicKey.toString()
+const rent = await provider.getMinimumBalanceForRentExemption(Token.solana.TOKEN_LAYOUT.span)
+
+let instruction = SystemProgram.createAccount({
+  fromPubkey: new SolanaWeb3js.PublicKey(fromAddress),
+  newAccountPubkey: new SolanaWeb3js.PublicKey(wrappedAccount),
+  programId: new SolanaWeb3js.PublicKey(Web3Tokens.Token.solana.TOKEN_PROGRAM),
+  space: Web3Tokens.Token.solana.TOKEN_LAYOUT.span,
+  lamports: rent
+})
 
 let sentTransaction = await wallet.sendTransaction({
   blockchain: 'solana',
   instructions: [instruction],
+  signers: [keypair],
+  alts: ['3sEm5YYxgLnP1Z11WXHSgScWqFMrATSNDgZcXAcB1w9A'],
   sent: function(transaction){},
   succeeded: function(transaction){},
   failed: function(transaction, error){}

@@ -96,11 +96,10 @@ const submitInstructions = async ({ transaction, wallet })=> {
     payerKey: fromPubkey,
     recentBlockhash,
     instructions: transaction.instructions,
-  }).compileToV0Message()
+  }).compileToV0Message(transaction.alts ? transaction.alts : undefined)
   const transactionV0 = new VersionedTransaction(messageV0)
-  let signers = transaction.instructions.map((instruction)=>instruction.signers).filter(Boolean).flat()
-  if(signers.length) {
-    transactionV0.sign(Array.from(new Set(signers)))
+  if(transaction.signers && transaction.signers.length) {
+    transactionV0.sign(Array.from(new Set(transaction.signers)))
   }
   return window.solana.signAndSendTransaction(transactionV0)
 }
