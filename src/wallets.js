@@ -8,6 +8,7 @@ import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import Phantom from './wallets/Phantom'
 import Trust from './wallets/Trust'
+import Rabby from './wallets/Rabby'
 import WalletConnectV1 from './wallets/WalletConnectV1'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
@@ -19,6 +20,7 @@ export default {
   Coinbase,
   Binance,
   Trust,
+  Rabby,
   Brave,
   Opera,
   Coin98,

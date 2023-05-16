@@ -21,6 +21,8 @@ export default class WindowEthereum {
       !window?.ethereum?.isDeficonnectProvider && // crypto.com
       !window?.ethereum?.isHyperPay && // isHyperPay
       !window?.ethereum?.isPhantom && // Phantom
+      !window?.solana?.isPhantom && // Phantom
+      !window?.ethereum?.isRabby && // Rabby
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
     )
   }

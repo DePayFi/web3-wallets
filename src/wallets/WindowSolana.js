@@ -9,7 +9,7 @@ export default class WindowSolana {
     blockchains: supported.solana
   }
 
-   static isAvailable = async()=>{ 
+  static isAvailable = async()=>{ 
     return (
       window?.solana &&
       !window?.solana?.isPhantom &&
@@ -59,7 +59,6 @@ export default class WindowSolana {
   off(event, internalCallback) {
     switch (event) {
       case 'account':
-        console.log('removeListener')
         window.solana.removeListener('accountChanged', internalCallback)
         break
     }
@@ -67,7 +66,11 @@ export default class WindowSolana {
   }
 
   async connectedTo(input) {
-    return input == 'solana'
+    if(input) {
+      return input == 'solana'
+    } else {
+      return 'solana'
+    }
   }
 
   switchTo(blockchainName) {

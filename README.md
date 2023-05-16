@@ -165,7 +165,6 @@ await wallet.connect() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 `blockchains:Array`: Array containing the names of supported blockchains
 
 ```javascript
-wallet.name // MetaMask
 wallet.blockchains // ['ethereum', 'bsc', 'polygon']
 ```
 

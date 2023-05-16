@@ -1,4 +1,8 @@
+import WindowEthereum from './WindowEthereum'
 import WindowSolana from './WindowSolana'
+import { sendTransaction as sendSolanaTransaction } from './WindowSolana/transaction'
+import { sendTransaction as sendEVMTransaction } from './WindowEthereum/transaction'
+import { supported } from '../blockchains'
 
 export default class Phantom extends WindowSolana {
 
@@ -8,5 +12,9 @@ export default class Phantom extends WindowSolana {
     blockchains: ['solana', 'ethereum', 'polygon']
   }
 
-  static isAvailable = async()=>{ return window?.solana?.isPhantom }
+  static isAvailable = async()=>{
+    return (
+      window?.solana?.isPhantom
+    )
+  }
 }

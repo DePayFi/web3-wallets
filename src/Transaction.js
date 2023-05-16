@@ -42,7 +42,7 @@ class Transaction {
   }
 
   async prepare({ wallet }) {
-    this.from = await wallet.account()
+    this.from = await wallet.account(this.blockchain)
   }
 
   static bigNumberify(value, blockchain) {
