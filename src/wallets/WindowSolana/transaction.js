@@ -85,7 +85,7 @@ const submitSimpleTransfer = async ({ transaction, wallet })=> {
     instructions,
   }).compileToV0Message()
   const transactionV0 = new VersionedTransaction(messageV0)
-  return window.solana.signAndSendTransaction(transactionV0)
+  return wallet._sendTransaction(transactionV0)
 }
 
 const submitInstructions = async ({ transaction, wallet })=> {
@@ -104,7 +104,7 @@ const submitInstructions = async ({ transaction, wallet })=> {
   if(transaction.signers && transaction.signers.length) {
     transactionV0.sign(Array.from(new Set(transaction.signers)))
   }
-  return window.solana.signAndSendTransaction(transactionV0)
+  return wallet._sendTransaction(transactionV0)
 }
 
 export {

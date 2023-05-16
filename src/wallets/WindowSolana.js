@@ -12,8 +12,9 @@ export default class WindowSolana {
   static isAvailable = async()=>{ 
     return (
       window?.solana &&
-      !window?.solana?.isPhantom &&
-      !window.coin98
+      !(window.solana.isPhantom && Object.keys(window.solana).filter((key)=>key.match(/^is(?!Connected)/)).length == 1) &&
+      !window.coin98 &&
+      !window.solana.isGlow
     )
   }
   
@@ -29,10 +30,13 @@ export default class WindowSolana {
     }
   }
 
+  getProvider() { return window.solana }
+
   async account() {
-    if(window?.solana == undefined){ return }
-    if(window?.solana?.publicKey) { return window.solana.publicKey.toString() }
-    if(window?.solana?.isBraveWallet != true) {
+    const provider = this.getProvider()
+    if(provider == undefined){ return }
+    if(provider.publicKey) { return provider.publicKey.toString() }
+    if(provider.isBraveWallet != true) {
       let publicKey
       try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })) } catch {}
       if(publicKey){ return publicKey.toString() }
@@ -40,9 +44,15 @@ export default class WindowSolana {
   }
 
   async connect() {
-    if(!window?.solana) { return undefined }
-    let { publicKey } = await window.solana.connect()
-    return publicKey.toString()
+    const provider = this.getProvider()
+    if(!provider) { return undefined }
+    const result = await provider.connect()
+
+    if(result && result.publicKey) {
+      return result.publicKey.toString()
+    } else {
+      return provider.publicKey.toString()
+    }
   }
 
   on(event, callback) {
@@ -50,7 +60,7 @@ export default class WindowSolana {
     switch (event) {
       case 'account':
         internalCallback = (publicKey) => callback(publicKey?.toString())
-        window.solana.on('accountChanged', internalCallback)
+        this.getProvider().on('accountChanged', internalCallback)
         break
     }
     return internalCallback
@@ -59,7 +69,7 @@ export default class WindowSolana {
   off(event, internalCallback) {
     switch (event) {
       case 'account':
-        window.solana.removeListener('accountChanged', internalCallback)
+        this.getProvider().removeListener('accountChanged', internalCallback)
         break
     }
     return internalCallback
@@ -87,7 +97,11 @@ export default class WindowSolana {
 
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message)
-    const signedMessage = await window.solana.signMessage(encodedMessage, "utf8")
-    return JSON.stringify(signedMessage.signature)
+    const signedMessage = await this.getProvider().signMessage(encodedMessage)
+    if(signedMessage && signedMessage.signature) {
+      return Array.from(signedMessage.signature)
+    }
   }
+
+  _sendTransaction(transaction) { return this.getProvider().signAndSendTransaction(transaction) }
 }

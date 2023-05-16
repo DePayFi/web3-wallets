@@ -23,6 +23,7 @@ export default class WindowEthereum {
       !window?.ethereum?.isPhantom && // Phantom
       !window?.solana?.isPhantom && // Phantom
       !window?.ethereum?.isRabby && // Rabby
+      !window?.backpack?.isBackpack && // Backpack
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
     )
   }

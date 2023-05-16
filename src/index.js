@@ -5,7 +5,6 @@ import wallets from './wallets'
 
 const supported = [
   wallets.MetaMask,
-  wallets.Phantom,
   wallets.Coinbase,
   wallets.Binance,
   wallets.Trust,
@@ -24,6 +23,9 @@ const supported = [
 
 const supported = [
   wallets.Phantom,
+  wallets.Backpack,
+  wallets.Glow,
+  wallets.Solflare,
   wallets.WalletConnectV1,
   wallets.WalletLink,
 ]
@@ -36,6 +38,9 @@ const supported = [
   wallets.Coinbase,
   wallets.Binance,
   wallets.Trust,
+  wallets.Backpack,
+  wallets.Glow,
+  wallets.Solflare,
   wallets.Rabby,
   wallets.Brave,
   wallets.Opera,

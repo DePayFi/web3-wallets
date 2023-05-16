@@ -8,6 +8,9 @@ import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import Phantom from './wallets/Phantom'
 import Trust from './wallets/Trust'
+import Glow from './wallets/Glow'
+import Solflare from './wallets/Solflare'
+import Backpack from './wallets/Backpack'
 import Rabby from './wallets/Rabby'
 import WalletConnectV1 from './wallets/WalletConnectV1'
 import WalletLink from './wallets/WalletLink'
@@ -20,6 +23,9 @@ export default {
   Coinbase,
   Binance,
   Trust,
+  Backpack,
+  Glow,
+  Solflare,
   Rabby,
   Brave,
   Opera,
