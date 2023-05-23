@@ -46,7 +46,9 @@ export default class WindowSolana {
   async connect() {
     const provider = this.getProvider()
     if(!provider) { return undefined }
-    const result = await provider.connect()
+
+    let result
+    try { result = await provider.connect() } catch {}
 
     if(result && result.publicKey) {
       return result.publicKey.toString()

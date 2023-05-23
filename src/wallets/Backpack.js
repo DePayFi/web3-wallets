@@ -1,4 +1,5 @@
 import WindowSolana from './WindowSolana'
+import { getProvider as getConnection } from '@depay/web3-client'
 
 export default class Backpack extends WindowSolana {
 
@@ -23,5 +24,7 @@ export default class Backpack extends WindowSolana {
     return Object.values(signature)
   }
 
-  _sendTransaction(transaction) { return this.getProvider().signTransaction(transaction) }
+  _sendTransaction(transaction) {
+    return this.getProvider().sendAndConfirm(transaction)
+  }
 }

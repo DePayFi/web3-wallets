@@ -22,7 +22,7 @@ const MAX_POLLS = 240 // 120 seconds
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
   await transaction.prepare({ wallet })
-  await submit({ transaction, wallet }).then(({ signature })=>{
+  await submit({ transaction, wallet }).then((signature)=>{
     if(signature) {
       transaction.id = signature
       transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction })
@@ -59,7 +59,29 @@ const sendTransaction = async ({ transaction, wallet })=> {
   return transaction
 }
 
-const submit = ({ transaction, wallet })=> {
+const submit = async({ transaction, wallet })=> {
+
+  let result = await submitThroughWallet({ transaction, wallet })
+
+  let signature
+
+  if(typeof result === 'object' && result.signatures && result.message) {
+    signature = await submitDirectly(result, await wallet.account())
+  } else if (typeof result === 'object' && result.signature && result.signature.length) {
+    signature = result.signature
+  } else if (typeof result === 'string' && result.length) {
+    signature = result
+  }
+  
+  return signature
+}
+
+const submitDirectly = async(tx, from) =>{
+  let provider = await getProvider('solana')
+  return await provider.sendRawTransaction(tx.serialize())
+}
+
+const submitThroughWallet = async({ transaction, wallet })=> {
   if(transaction.instructions) {
     return submitInstructions({ transaction, wallet })
   } else {

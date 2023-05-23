@@ -41879,7 +41879,7 @@ const MAX_POLLS = 240; // 120 seconds
 const sendTransaction$2 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   await transaction.prepare({ wallet });
-  await submit$2({ transaction, wallet }).then(({ signature })=>{
+  await submit$2({ transaction, wallet }).then((signature)=>{
     if(signature) {
       transaction.id = signature;
       transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction });
@@ -41916,7 +41916,29 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
   return transaction
 };
 
-const submit$2 = ({ transaction, wallet })=> {
+const submit$2 = async({ transaction, wallet })=> {
+
+  let result = await submitThroughWallet({ transaction, wallet });
+
+  let signature;
+
+  if(typeof result === 'object' && result.signatures && result.message) {
+    signature = await submitDirectly(result, await wallet.account());
+  } else if (typeof result === 'object' && result.signature && result.signature.length) {
+    signature = result.signature;
+  } else if (typeof result === 'string' && result.length) {
+    signature = result;
+  }
+  
+  return signature
+};
+
+const submitDirectly = async(tx, from) =>{
+  let provider = await getProvider('solana');
+  return await provider.sendRawTransaction(tx.serialize())
+};
+
+const submitThroughWallet = async({ transaction, wallet })=> {
   if(transaction.instructions) {
     return submitInstructions({ transaction, wallet })
   } else {
@@ -42010,7 +42032,9 @@ class WindowSolana {
   async connect() {
     const provider = this.getProvider();
     if(!provider) { return undefined }
-    const result = await provider.connect();
+
+    let result;
+    try { result = await provider.connect(); } catch (e2) {}
 
     if(result && result.publicKey) {
       return result.publicKey.toString()
@@ -42161,7 +42185,9 @@ class Backpack extends WindowSolana {
     return Object.values(signature)
   }
 
-  _sendTransaction(transaction) { return this.getProvider().signTransaction(transaction) }
+  _sendTransaction(transaction) {
+    return this.getProvider().sendAndConfirm(transaction)
+  }
 } Backpack.__initStatic(); Backpack.__initStatic2();
 
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
