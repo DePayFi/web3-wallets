@@ -92,10 +92,8 @@
                     window.connectWalletViaSelect = async ()=> {
                       let wallets = await Web3Wallets.getWallets()
                       let wallet = wallets[parseInt(document.getElementById("connectWallet").value, 10)]
-                      alert(1)
                       console.log(wallet)
                       let accounts = await wallet.connect()
-                      alert(2)
                       window.wallet = wallet
                       console.log(accounts)
                       alert(accounts)
