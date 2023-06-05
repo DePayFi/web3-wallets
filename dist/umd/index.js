@@ -518,15 +518,10 @@
   };
 
   const submitSimpleTransfer$2 = async ({ transaction, wallet })=> {
-    alert(1);
     let fromPubkey = new solanaWeb3_js.PublicKey(await wallet.account());
-    alert(2);
     let toPubkey = new solanaWeb3_js.PublicKey(transaction.to);
-    alert(3);
     const provider = await web3Client.getProvider(transaction.blockchain);
-    alert(4);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
-    alert(5);
     const instructions = [
       solanaWeb3_js.SystemProgram.transfer({
         fromPubkey,
@@ -534,15 +529,12 @@
         lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
       })
     ];
-    alert(6);
     const messageV0 = new solanaWeb3_js.TransactionMessage({
       payerKey: fromPubkey,
       recentBlockhash,
       instructions,
     }).compileToV0Message();
-    alert(7);
     const transactionV0 = new solanaWeb3_js.VersionedTransaction(messageV0);
-    alert(8);
     return wallet._sendTransaction(transactionV0)
   };
 
@@ -603,7 +595,7 @@
       if(provider.publicKey) { return provider.publicKey.toString() }
       if(provider.isBraveWallet != true) {
         let publicKey;
-        try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
+        try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e2) {}
         if(publicKey){ return publicKey.toString() }
       }
     }
@@ -613,7 +605,7 @@
       if(!provider) { return undefined }
 
       let result;
-      try { result = await provider.connect(); } catch (e2) {}
+      try { result = await provider.connect(); } catch (e3) {}
 
       if(result && result.publicKey) {
         return result.publicKey.toString()
@@ -670,8 +662,14 @@
       }
     }
 
-    _sendTransaction(transaction) { 
-      return this.getProvider().signAndSendTransaction(transaction)
+    _sendTransaction(transaction) {
+      alert('BEFORE SIGN');
+      try {
+        return this.getProvider().signAndSendTransaction(transaction)
+      } catch(e) {
+        alert('AFTER FAIL');
+        alert(e);
+      }
     }
   } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
