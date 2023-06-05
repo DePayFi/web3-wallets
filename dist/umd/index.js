@@ -663,14 +663,12 @@
     }
 
     _sendTransaction(transaction) {
-      alert('BEFORE SIGN 2');
-      alert(this.getProvider());
-      alert(this.getProvider().signAndSendTransaction);
+      alert('BEFORE SIGN 3');
       try {
-        let transaction = this.getProvider().signAndSendTransaction(transaction);
-        alert('transaction');
-        alert(transaction);
-        return transaction
+        let result = this.getProvider().signAndSendTransaction(transaction);
+        alert('result');
+        alert(result);
+        return result
       } catch(e) {
         alert('AFTER FAIL');
         alert(e);
