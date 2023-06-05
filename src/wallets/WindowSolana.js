@@ -106,10 +106,6 @@ export default class WindowSolana {
   }
 
   _sendTransaction(transaction) { 
-    try {
-      return this.getProvider().signAndSendTransaction(transaction)
-    } catch (e){
-      alert(e)
-    }
+    return this.getProvider().signAndSendTransaction(transaction)
   }
 }

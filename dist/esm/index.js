@@ -507,22 +507,23 @@ const submitDirectly = async(tx, from) =>{
 };
 
 const submitThroughWallet = async({ transaction, wallet })=> {
-  try {
-    if(transaction.instructions) {
-      return submitInstructions({ transaction, wallet })
-    } else {
-      return submitSimpleTransfer$2({ transaction, wallet })
-    }
-  } catch (e) {
-    alert(e);
+  if(transaction.instructions) {
+    return submitInstructions({ transaction, wallet })
+  } else {
+    return submitSimpleTransfer$2({ transaction, wallet })
   }
 };
 
 const submitSimpleTransfer$2 = async ({ transaction, wallet })=> {
+  alert(1);
   let fromPubkey = new PublicKey(await wallet.account());
+  alert(2);
   let toPubkey = new PublicKey(transaction.to);
+  alert(3);
   const provider = await getProvider(transaction.blockchain);
+  alert(4);
   let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
+  alert(5);
   const instructions = [
     SystemProgram.transfer({
       fromPubkey,
@@ -530,12 +531,15 @@ const submitSimpleTransfer$2 = async ({ transaction, wallet })=> {
       lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
     })
   ];
+  alert(6);
   const messageV0 = new TransactionMessage({
     payerKey: fromPubkey,
     recentBlockhash,
     instructions,
   }).compileToV0Message();
+  alert(7);
   const transactionV0 = new VersionedTransaction(messageV0);
+  alert(8);
   return wallet._sendTransaction(transactionV0)
 };
 
@@ -596,7 +600,7 @@ class WindowSolana {
     if(provider.publicKey) { return provider.publicKey.toString() }
     if(provider.isBraveWallet != true) {
       let publicKey;
-      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e2) {}
+      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
       if(publicKey){ return publicKey.toString() }
     }
   }
@@ -606,7 +610,7 @@ class WindowSolana {
     if(!provider) { return undefined }
 
     let result;
-    try { result = await provider.connect(); } catch (e3) {}
+    try { result = await provider.connect(); } catch (e2) {}
 
     if(result && result.publicKey) {
       return result.publicKey.toString()
@@ -664,11 +668,7 @@ class WindowSolana {
   }
 
   _sendTransaction(transaction) { 
-    try {
-      return this.getProvider().signAndSendTransaction(transaction)
-    } catch (e){
-      alert(e);
-    }
+    return this.getProvider().signAndSendTransaction(transaction)
   }
 } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 

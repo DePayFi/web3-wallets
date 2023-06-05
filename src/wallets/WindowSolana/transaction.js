@@ -82,22 +82,23 @@ const submitDirectly = async(tx, from) =>{
 }
 
 const submitThroughWallet = async({ transaction, wallet })=> {
-  try {
-    if(transaction.instructions) {
-      return submitInstructions({ transaction, wallet })
-    } else {
-      return submitSimpleTransfer({ transaction, wallet })
-    }
-  } catch (e) {
-    alert(e)
+  if(transaction.instructions) {
+    return submitInstructions({ transaction, wallet })
+  } else {
+    return submitSimpleTransfer({ transaction, wallet })
   }
 }
 
 const submitSimpleTransfer = async ({ transaction, wallet })=> {
+  alert(1)
   let fromPubkey = new PublicKey(await wallet.account())
+  alert(2)
   let toPubkey = new PublicKey(transaction.to)
+  alert(3)
   const provider = await getProvider(transaction.blockchain)
+  alert(4)
   let recentBlockhash = (await provider.getLatestBlockhash()).blockhash
+  alert(5)
   const instructions = [
     SystemProgram.transfer({
       fromPubkey,
@@ -105,12 +106,15 @@ const submitSimpleTransfer = async ({ transaction, wallet })=> {
       lamports: parseInt(Transaction.bigNumberify(transaction.value, transaction.blockchain), 10)
     })
   ]
+  alert(6)
   const messageV0 = new TransactionMessage({
     payerKey: fromPubkey,
     recentBlockhash,
     instructions,
   }).compileToV0Message()
+  alert(7)
   const transactionV0 = new VersionedTransaction(messageV0)
+  alert(8)
   return wallet._sendTransaction(transactionV0)
 }
 
