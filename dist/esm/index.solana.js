@@ -1401,7 +1401,7 @@ class WindowSolana {
   }
 
   _sendTransaction(transaction) {
-    alert('BEFORE SIGN');
+    alert('BEFORE SIGN 2');
     alert(this.getProvider());
     alert(this.getProvider().signAndSendTransaction);
     try {
