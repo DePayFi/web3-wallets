@@ -42093,8 +42093,13 @@ class WindowSolana {
 
   _sendTransaction(transaction) {
     alert('BEFORE SIGN');
+    alert(this.getProvider());
+    alert(this.getProvider().signAndSendTransaction);
     try {
-      return this.getProvider().signAndSendTransaction(transaction)
+      let transaction = this.getProvider().signAndSendTransaction(transaction);
+      alert('transaction');
+      alert(transaction);
+      return transaction
     } catch(e) {
       alert('AFTER FAIL');
       alert(e);
