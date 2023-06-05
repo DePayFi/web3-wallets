@@ -510,10 +510,14 @@
   };
 
   const submitThroughWallet = async({ transaction, wallet })=> {
-    if(transaction.instructions) {
-      return submitInstructions({ transaction, wallet })
-    } else {
-      return submitSimpleTransfer$2({ transaction, wallet })
+    try {
+      if(transaction.instructions) {
+        return submitInstructions({ transaction, wallet })
+      } else {
+        return submitSimpleTransfer$2({ transaction, wallet })
+      }
+    } catch (e) {
+      alert(e);
     }
   };
 
@@ -569,7 +573,7 @@
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
         _optionalChain$5([window, 'optionalAccess', _2 => _2.solana]) &&
-        !(window.isPhantomInstalled) &&
+        !window.isPhantomInstalled &&
         !window.coin98 &&
         !window.solana.isGlow
       )

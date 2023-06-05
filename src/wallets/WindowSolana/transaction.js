@@ -82,10 +82,14 @@ const submitDirectly = async(tx, from) =>{
 }
 
 const submitThroughWallet = async({ transaction, wallet })=> {
-  if(transaction.instructions) {
-    return submitInstructions({ transaction, wallet })
-  } else {
-    return submitSimpleTransfer({ transaction, wallet })
+  try {
+    if(transaction.instructions) {
+      return submitInstructions({ transaction, wallet })
+    } else {
+      return submitSimpleTransfer({ transaction, wallet })
+    }
+  } catch (e) {
+    alert(e)
   }
 }
 
