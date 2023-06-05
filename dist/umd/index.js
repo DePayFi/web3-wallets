@@ -676,9 +676,14 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$5([window, 'optionalAccess', _2 => _2.solana]) &&
-        window.solana.isPhantom &&
-        Object.keys(window.solana).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
+        ( // desktop extension
+          _optionalChain$5([window, 'optionalAccess', _2 => _2.solana]) &&
+          window.solana.isPhantom &&
+          Object.keys(window.solana).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
+        ) ||
+        ( // mobile inapp browser
+          window.isPhantomInstalled
+        )
       )
     };}
   } Phantom.__initStatic(); Phantom.__initStatic2();
