@@ -42096,15 +42096,15 @@
     }
 
     _sendTransaction(transaction) {
-      alert('BEFORE SIGN 4');
+      alert('BEFORE SIGN 5');
       try {
         let result = this.getProvider().signAndSendTransaction(transaction);
         alert('result');
         alert(result);
         result.catch((e)=>{
           alert('CATCH');
-          alert(e.error);
-          alert(Object.keys(e));
+          alert(e.error.code);
+          alert(e.error.message);
         });
         return result
       } catch(e) {
