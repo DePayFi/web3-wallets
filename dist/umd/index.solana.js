@@ -1404,14 +1404,15 @@
     }
 
     _sendTransaction(transaction) {
-      alert('BEFORE SIGN 3');
+      alert('BEFORE SIGN 4');
       try {
         let result = this.getProvider().signAndSendTransaction(transaction);
         alert('result');
         alert(result);
         result.catch((e)=>{
           alert('CATCH');
-          alert(e);
+          alert(e.error);
+          alert(Object.keys(e));
         });
         return result
       } catch(e) {
