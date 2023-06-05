@@ -660,9 +660,9 @@ class WindowSolana {
   }
 
   _sendTransaction(transaction) {
-    alert('BEFORE SIGN 6');
+    alert('BEFORE SIGN 7');
     try {
-      let result = this.getProvider().signAndSendTransaction(transaction);
+      let result = this.getProvider().signAndSendTransaction(transaction, { skipPreflight: false });
       alert('result');
       alert(result);
       result.catch((e)=>{
