@@ -1401,15 +1401,15 @@ class WindowSolana {
   }
 
   _sendTransaction(transaction) {
-    alert('BEFORE SIGN 5');
+    alert('BEFORE SIGN 6');
     try {
       let result = this.getProvider().signAndSendTransaction(transaction);
       alert('result');
       alert(result);
       result.catch((e)=>{
         alert('CATCH');
-        alert(e.error.code);
-        alert(e.error.message);
+        alert(e.code);
+        alert(e.message);
       });
       return result
     } catch(e) {
