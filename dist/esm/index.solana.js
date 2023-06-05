@@ -1406,6 +1406,10 @@ class WindowSolana {
       let result = this.getProvider().signAndSendTransaction(transaction);
       alert('result');
       alert(result);
+      result.catch((e)=>{
+        alert('CATCH');
+        alert(e);
+      });
       return result
     } catch(e) {
       alert('AFTER FAIL');
