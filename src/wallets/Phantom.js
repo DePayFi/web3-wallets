@@ -10,14 +10,7 @@ export default class Phantom extends WindowSolana {
 
   static isAvailable = async()=>{
     return (
-      ( // desktop extension
-        window?.solana &&
-        window.solana.isPhantom &&
-        Object.keys(window.solana).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
-      ) ||
-      ( // mobile inapp browser
-        window.isPhantomInstalled
-      )
+      window.isPhantomInstalled
     )
   }
 }
