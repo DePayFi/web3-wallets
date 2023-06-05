@@ -1333,7 +1333,7 @@ class WindowSolana {
     if(provider.publicKey) { return provider.publicKey.toString() }
     if(provider.isBraveWallet != true) {
       let publicKey;
-      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e2) {}
+      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
       if(publicKey){ return publicKey.toString() }
     }
   }
@@ -1343,7 +1343,7 @@ class WindowSolana {
     if(!provider) { return undefined }
 
     let result;
-    try { result = await provider.connect(); } catch (e3) {}
+    try { result = await provider.connect(); } catch (e2) {}
 
     if(result && result.publicKey) {
       return result.publicKey.toString()
@@ -1401,21 +1401,11 @@ class WindowSolana {
   }
 
   _sendTransaction(transaction) {
-    alert('BEFORE SIGN 7');
-    try {
-      let result = this.getProvider().signAndSendTransaction(transaction, { skipPreflight: false });
-      alert('result');
-      alert(result);
-      result.catch((e)=>{
-        alert('CATCH');
-        alert(e.code);
-        alert(e.message);
-      });
-      return result
-    } catch(e) {
-      alert('AFTER FAIL');
-      alert(e);
-    }
+    return this.getProvider()
+      .signAndSendTransaction(
+        transaction,
+        { skipPreflight: false } // requires default options to not raise error on phantom in app mobile (https://discord.com/channels/958228318132514876/974393659380334618/1089298098905423924)
+      )
   }
 } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 

@@ -106,20 +106,10 @@ export default class WindowSolana {
   }
 
   _sendTransaction(transaction) {
-    alert('BEFORE SIGN 7')
-    try {
-      let result = this.getProvider().signAndSendTransaction(transaction, { skipPreflight: false })
-      alert('result')
-      alert(result)
-      result.catch((e)=>{
-        alert('CATCH')
-        alert(e.code)
-        alert(e.message)
-      })
-      return result
-    } catch(e) {
-      alert('AFTER FAIL')
-      alert(e)
-    }
+    return this.getProvider()
+      .signAndSendTransaction(
+        transaction,
+        { skipPreflight: false } // requires default options to not raise error on phantom in app mobile (https://discord.com/channels/958228318132514876/974393659380334618/1089298098905423924)
+      )
   }
 }
