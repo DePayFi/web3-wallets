@@ -566,7 +566,7 @@ class WindowSolana {
   static __initStatic2() {this.isAvailable = async()=>{ 
     return (
       _optionalChain$5([window, 'optionalAccess', _2 => _2.solana]) &&
-      !(window.solana.isPhantom && Object.keys(window.solana).filter((key)=>key.match(/^is(?!Connected)/)).length == 1) &&
+      !(window.isPhantomInstalled) &&
       !window.coin98 &&
       !window.solana.isGlow
     )
@@ -592,7 +592,7 @@ class WindowSolana {
     if(provider.publicKey) { return provider.publicKey.toString() }
     if(provider.isBraveWallet != true) {
       let publicKey;
-      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e) {}
+      try { ({ publicKey } = await window.solana.connect({ onlyIfTrusted: true })); } catch (e2) {}
       if(publicKey){ return publicKey.toString() }
     }
   }
@@ -602,7 +602,7 @@ class WindowSolana {
     if(!provider) { return undefined }
 
     let result;
-    try { result = await provider.connect(); } catch (e2) {}
+    try { result = await provider.connect(); } catch (e3) {}
 
     if(result && result.publicKey) {
       return result.publicKey.toString()
@@ -659,7 +659,13 @@ class WindowSolana {
     }
   }
 
-  _sendTransaction(transaction) { return this.getProvider().signAndSendTransaction(transaction) }
+  _sendTransaction(transaction) { 
+    try {
+      return this.getProvider().signAndSendTransaction(transaction)
+    } catch (e){
+      alert(e);
+    }
+  }
 } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
 class Phantom extends WindowSolana {
