@@ -54,6 +54,7 @@
               </div>
               <div class="px-4 pt-3">
                 <button class='btn btn-primary' onClick='Web3Wallets.getWallets().then((wallets)=>{
+                  alert(window.isPhantomInstalled)
                   alert(Object.keys(window))
                   alert(Object.keys(window.solana))
                   console.log(wallets)
