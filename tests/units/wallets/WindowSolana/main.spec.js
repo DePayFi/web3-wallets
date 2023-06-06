@@ -32,7 +32,7 @@ describe('window.solana wallet', () => {
 
         it('should detect any solana wallet integration that integrates window.solana', () => {
           mock(blockchain)
-          expect(wallet.name).toBe('Wallet (Solana)')
+          expect(wallet.name).toBe('Solana Wallet')
         });
 
         it('provides a connect function', async () => {
