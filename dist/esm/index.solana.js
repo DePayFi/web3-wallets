@@ -1307,7 +1307,7 @@ class WindowSolana {
   static __initStatic2() {this.isAvailable = async()=>{ 
     return (
       _optionalChain$5([window, 'optionalAccess', _2 => _2.solana]) &&
-      !window.phantom &&
+      !(window.phantom && !window.glow) &&
       !window.coin98 &&
       !window.solana.isGlow
     )
@@ -1419,7 +1419,7 @@ class Phantom extends WindowSolana {
 
   static __initStatic2() {this.isAvailable = async()=>{
     return (
-      window.phantom
+      window.phantom && !window.glow
     )
   };}
 } Phantom.__initStatic(); Phantom.__initStatic2();

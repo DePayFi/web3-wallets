@@ -10,7 +10,7 @@ export default class Phantom extends WindowSolana {
 
   static isAvailable = async()=>{
     return (
-      window.phantom
+      window.phantom && !window.glow
     )
   }
 }
