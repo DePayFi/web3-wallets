@@ -12,7 +12,7 @@ export default class WindowSolana {
   static isAvailable = async()=>{ 
     return (
       window?.solana &&
-      !(window.phantom && !window.glow) &&
+      !(window.phantom && !window.glow && !window.solana.isGlow) &&
       !window.coin98 &&
       !window.solana.isGlow
     )

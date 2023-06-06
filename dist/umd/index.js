@@ -569,7 +569,7 @@
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
         _optionalChain$5([window, 'optionalAccess', _2 => _2.solana]) &&
-        !(window.phantom && !window.glow) &&
+        !(window.phantom && !window.glow && !window.solana.isGlow) &&
         !window.coin98 &&
         !window.solana.isGlow
       )
@@ -681,7 +681,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        window.phantom && !window.glow
+        window.phantom && !window.glow && !window.solana.isGlow
       )
     };}
   } Phantom.__initStatic(); Phantom.__initStatic2();
