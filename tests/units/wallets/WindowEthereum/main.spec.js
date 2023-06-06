@@ -50,7 +50,7 @@ describe('window.ethereum wallet', () => {
 
         it('should detect any generic wallet integration that integrates window.ethereum', () => {
           mock(blockchain)
-          expect(wallet.name).toBe('Wallet (Ethereum)')
+          expect(wallet.name).toBe('Ethereum Wallet')
         });
 
         it('provides a connect function', async () => {

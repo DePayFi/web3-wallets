@@ -10,9 +10,7 @@ export default class Phantom extends WindowSolana {
 
   static isAvailable = async()=>{
     return (
-      window?.solana &&
-      window.solana.isPhantom &&
-      Object.keys(window.solana).filter((key)=>key.match(/^is(?!Connected)/)).length == 1
+      window.phantom && !window.glow && !window.solana.isGlow
     )
   }
 }

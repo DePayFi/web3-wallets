@@ -53,7 +53,19 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='Web3Wallets.getWallets().then(console.log)'>Try it</button>
+                <button class='btn btn-primary' onClick='Web3Wallets.getWallets().then((wallets)=>{
+                  // alert(2)
+                  // alert(wallets.map((w)=>w.name))
+                  // alert(window.glow)
+                  // alert(window.glowSolana)
+                  // alert(window.phantom)
+                  // alert(window.phantom.solana)
+                  // alert(Object.keys(window))
+                  // alert(Object.keys(window.phantom))
+                  // alert(Object.keys(window.phantom.solana))
+                  // alert(Object.keys(window.solana))
+                  console.log(wallets)
+                })'>Try it</button>
               </div>
             </div>
           </div>
@@ -89,6 +101,7 @@
                       let accounts = await wallet.connect()
                       window.wallet = wallet
                       console.log(accounts)
+                      alert(accounts)
                     }
                   </script>
                 </div>

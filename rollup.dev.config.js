@@ -15,6 +15,7 @@ export default Object.assign({}, rollup, {
   ],
   plugins: [...rollup.plugins,
     serve({
+      host: '0.0.0.0',
       open: 'true',
       openPage: '/dev.html'
     }),
