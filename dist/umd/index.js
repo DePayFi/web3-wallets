@@ -749,6 +749,19 @@
 
   const KEY$1 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
 
+  var getFavicon = function(){
+    var favicon = 'favicon.ico';
+    var nodeList = document.getElementsByTagName("link");
+    for (var i = 0; i < nodeList.length; i++)
+    {
+      if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
+      {
+        favicon = nodeList[i].getAttribute("href");
+      }
+    }
+    return favicon
+  };
+
   class SolanaMobileWalletAdapter {
 
     static __initStatic() {this.info = {
@@ -777,17 +790,23 @@
     async connect(options) {
       const result = await solanaWeb3_js.transact(
         async (wallet) => {
+          console.log('identity', {
+            name: document.title,
+            uri:  window.location.origin.toString(),
+            icon: getFavicon()
+          });
           const authResult = wallet.authorize({
             cluster: 'mainnet-beta',
             identity: {
               name: document.title,
-              uri:  window.location.origin.toString()
+              uri:  window.location.origin.toString(),
+              icon: getFavicon()
             },
           });
           return authResult
         }
       );
-      if(!result || !result.auth_token || !result.accounts || result.acconuts.length === 0) { return }
+      if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
       this.auth_token = result.auth_token;
       return result.accounts[0].toString()
