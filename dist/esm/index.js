@@ -800,8 +800,6 @@ class SolanaMobileWalletAdapter {
       }
     );
     if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
-    console.log('result', result);
-    this.auth_token = result.auth_token;
     this.account = atob(result.accounts[0].address.toString());
     return this.account
   }
@@ -825,13 +823,13 @@ class SolanaMobileWalletAdapter {
   }
 
   async sign(message) {
-    const encodedMessage = new TextEncoder().encode(message);
-    const auth_token = this.auth_token;
+    const encodedMessage = btoa(message);
     const signedMessage = await transact(async (wallet) => {
-      console.log('auth_token', auth_token);
+      console.log('sign with this.account', this.account);
+      console.log('encodedMessage', encodedMessage);
       const signedMessage = await wallet.signMessages({
-          auth_token: auth_token,
-          payloads: encodedMessage,
+        addresses: [btoa(this.account)],
+        payloads: [encodedMessage],
       });
       console.log('signedMessage', signedMessage);
       return signedMessage
