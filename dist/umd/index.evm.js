@@ -43620,19 +43620,6 @@
 
   const KEY$1 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
 
-  var getFavicon = function(){
-      var favicon = undefined;
-      var nodeList = document.getElementsByTagName("link");
-      for (var i = 0; i < nodeList.length; i++)
-      {
-          if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
-          {
-              favicon = nodeList[i].getAttribute("href");
-          }
-      }
-      return favicon;
-  };
-
   class SolanaMobileWalletAdapter {
 
     static __initStatic() {this.info = {
@@ -43665,8 +43652,7 @@
             cluster: 'mainnet-beta',
             identity: {
               name: document.title,
-              uri:  window.location.origin.toString(),
-              icon: getFavicon() ? getFavicon().split('/').last : undefined
+              uri:  window.location.origin.toString()
             },
           });
           return authResult
