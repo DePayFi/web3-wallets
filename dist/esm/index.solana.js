@@ -1491,17 +1491,31 @@ const base64StringToPublicKey = (base64String)=> {
   const binaryString = window.atob(base64String);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
   return new PublicKey(bytes)
+};
+
+const getIdentity = ()=>{
+  return({
+    name: document.title,
+    uri:  window.location.origin.toString(),
+    icon: getFavicon()
+  })
 };
 
 const authorize = (wallet)=>{
   return wallet.authorize({
     cluster: 'mainnet-beta',
-    identity: {
-      name: document.title,
-      uri:  window.location.origin.toString(),
-      icon: getFavicon()
-    },
+    identity: getIdentity(),
+  })
+};
+
+const reauthorize = (wallet, authToken)=>{
+  return wallet.reauthorize({
+    auth_token: authToken,
+    identity: getIdentity()
   })
 };
 
@@ -1576,7 +1590,7 @@ class SolanaMobileWalletAdapter {
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message);
     const signedMessage = await transact(async (wallet) => {
-      const authResult = authorize(wallet);
+      const authResult = await reauthorize(wallet, this.authToken);
       console.log('authResult', authResult);
       const signedMessage = await wallet.signMessages({
         addresses: [authResult.accounts[0].address],
