@@ -1497,7 +1497,8 @@ var getFavicon = function(){
       favicon = nodeList[i].getAttribute("href");
     }
   }
-  return favicon
+  const explodedPath = favicon.split('/');
+  return explodedPath[explodedPath.length-1]
 };
 
 class SolanaMobileWalletAdapter {
