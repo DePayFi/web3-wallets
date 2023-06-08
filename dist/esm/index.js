@@ -804,8 +804,8 @@ class SolanaMobileWalletAdapter {
       identity: getIdentity(),
     });
     if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
-    this.authToken = authorization.auth_token;
-    this.account = base64StringToPublicKey(authorization.accounts[0].address).toString();
+    this._authToken = authorization.auth_token;
+    this._account = base64StringToPublicKey(authorization.accounts[0].address).toString();
     return authorization
   }
 
@@ -815,26 +815,26 @@ class SolanaMobileWalletAdapter {
       identity: getIdentity()
     });
     if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
-    this.authToken = authorization.auth_token;
-    this.account = base64StringToPublicKey(authorization.accounts[0].address).toString();
+    this._authToken = authorization.auth_token;
+    this._account = base64StringToPublicKey(authorization.accounts[0].address).toString();
     return authorization
   }
 
   disconnect() {}
 
   async account() {
-    return this.account
+    return this._account
   }
 
   async connect(options) {
     await transact(
       async (wallet) => this.authorize(wallet)
     );
-    return this.account
+    return this._account
   }
 
   static __initStatic2() {this.isAvailable = async()=>{
-    return !!this.authToken
+    return !!this._authToken
   };}
 
   async connectedTo(input) {
@@ -868,7 +868,7 @@ class SolanaMobileWalletAdapter {
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message);
     const signedMessage = await transact(async (wallet) => {
-      const authorization = await this.reauthorize(wallet, this.authToken);
+      const authorization = await this.reauthorize(wallet, this._authToken);
       const signedMessages = await wallet.signMessages({
         addresses: [authorization.accounts[0].address],
         payloads: [encodedMessage],
@@ -880,7 +880,7 @@ class SolanaMobileWalletAdapter {
 
   async _sendTransaction(transaction) {
     const signature = await transact(async (wallet) => {
-      await this.reauthorize(wallet, this.authToken);
+      await this.reauthorize(wallet, this._authToken);
       const transactionSignatures = await wallet.signAndSendTransactions({
         transactions: [transaction]
       });
