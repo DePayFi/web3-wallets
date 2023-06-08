@@ -43676,7 +43676,7 @@
       if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
       this.auth_token = result.auth_token;
-      this.account = Buffer.from(result.accounts[0].address.toString(), 'base64').toString('utf-8');
+      this.account = atob(result.accounts[0].address.toString());
       return this.account
     }
 
