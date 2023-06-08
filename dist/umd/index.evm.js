@@ -43662,11 +43662,6 @@
     async connect(options) {
       const result = await transact(
         async (wallet) => {
-          console.log('identity', {
-            name: document.title,
-            uri:  window.location.origin.toString(),
-            icon: getFavicon()
-          });
           const authResult = wallet.authorize({
             cluster: 'mainnet-beta',
             identity: {
@@ -43681,7 +43676,7 @@
       if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
       this.auth_token = result.auth_token;
-      return result.accounts[0].toString()
+      return result.accounts[0].address.toString()
     }
 
     static __initStatic3() {this.isAvailable = async()=>{
@@ -43707,12 +43702,12 @@
       const auth_token = this.auth_token;
       const signedMessage = await transact(async (wallet) => {
         console.log('auth_token', auth_token);
-        const { signed_payloads } = await wallet.signMessages({
+        const signedMessage = await wallet.signMessages({
             auth_token: auth_token,
             payloads: encodedMessage,
         });
-        console.log('signed_payloads', signed_payloads);
-        return signed_payloads
+        console.log('signedMessage', signedMessage);
+        return signedMessage
       });
       console.log('signedMessage', signedMessage);
       // if(signedMessage && signedMessage.signature) {
