@@ -805,7 +805,8 @@
       if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
       this.auth_token = result.auth_token;
-      return result.accounts[0].address.toString()
+      this.account = Buffer.from(result.accounts[0].address.toString(), 'base64').toString('utf-8');
+      return this.account
     }
 
     static __initStatic3() {this.isAvailable = async()=>{
