@@ -801,9 +801,13 @@
           return authResult
         }
       );
-      console.log('result', result);
-      return result && result.accounts && result.accounts.length ? result.accounts[0].toString() : undefined
+      if(!result || !result.auth_token || !result.accounts || result.acconuts.length === 0) { return }
+      this.auth_token = result.auth_token;
+      return result.accounts[0].toString()
     }
+
+    static __initStatic3() {this.isAvailable = async()=>{
+    };}
 
     async connectedTo(input) {
     }
@@ -821,8 +825,20 @@
     }
 
     async sign(message) {
+      const encodedMessage = new TextEncoder().encode(message);
+      const signedMessage = await solanaWeb3_js.transact(async (wallet) => {
+          const { signed_payloads } = await wallet.signMessages({
+              auth_token: this.auth_token,
+              payloads: encodedMessage,
+          });
+          return signed_payloads;
+      });
+      console.log('signedMessage', signedMessage);
+      // if(signedMessage && signedMessage.signature) {
+      //   return Array.from(signedMessage.signature)
+      // }
     }
-  } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
+  } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2(); SolanaMobileWalletAdapter.__initStatic3();
 
   function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Solflare extends WindowSolana {

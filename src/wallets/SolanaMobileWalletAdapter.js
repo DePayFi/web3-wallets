@@ -63,8 +63,12 @@ class SolanaMobileWalletAdapter {
         return authResult
       }
     )
-    console.log('result', result)
-    return result && result.accounts && result.accounts.length ? result.accounts[0].toString() : undefined
+    if(!result || !result.auth_token || !result.accounts || result.acconuts.length === 0) { return }
+    this.auth_token = result.auth_token
+    return result.accounts[0].toString()
+  }
+
+  static isAvailable = async()=>{
   }
 
   async connectedTo(input) {
@@ -83,6 +87,18 @@ class SolanaMobileWalletAdapter {
   }
 
   async sign(message) {
+    const encodedMessage = new TextEncoder().encode(message)
+    const signedMessage = await transact(async (wallet) => {
+        const { signed_payloads } = await wallet.signMessages({
+            auth_token: this.auth_token,
+            payloads: encodedMessage,
+        });
+        return signed_payloads;
+    });
+    console.log('signedMessage', signedMessage)
+    // if(signedMessage && signedMessage.signature) {
+    //   return Array.from(signedMessage.signature)
+    // }
   }
 }
 
