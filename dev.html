@@ -176,6 +176,43 @@
         <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
+              <div>
+                <h5 class="px-4">Solana Pay</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test Solana Pay</div>
+                  <div id="solanaPayQR">
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.testSolanaPay = async()=>{
+                    wallet = new Web3Wallets.wallets.SolanaPay()
+                    let account = await wallet.connect({
+                      reconnect: true,
+                      connect: ({ uri })=>{
+                        copyTextToClipboard(uri)
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("solanaPayQR"));
+                      }
+                    })
+                    console.log('ACCOUNT', account)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='testSolanaPay()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Coinbase WalletLink connect</h5>
                 <div class="px-4">
@@ -199,16 +236,18 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
-                <h5 class="px-4">Solana MWA</h5>
+                <h5 class="px-4">Connect Solana MWA</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test connecting Solana MWA.</div>
                 </div>
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.connectSolanaMobileWalletAdapter = ()=> {
+                  window.connectSolanaMobileWalletAdapter = async()=> {
                     wallet = new Web3Wallets.wallets.SolanaMobileWalletAdapter()
-                    wallet.connect()
+                    let account = await wallet.connect()
+                    console.log('account', account)
+                    window.wallet = wallet
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectSolanaMobileWalletAdapter()'>Try it</button>

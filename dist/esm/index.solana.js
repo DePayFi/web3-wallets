@@ -1598,13 +1598,9 @@ class SolanaMobileWalletAdapter {
     })
   }
 
-  on(event, callback) {
+  on(event, callback) {}
 
-  }
-
-  off(event, callback) {
-
-  }
+  off(event, callback) {}
 
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message);
@@ -1627,7 +1623,6 @@ class SolanaMobileWalletAdapter {
       });
       return transactionSignatures[0]
     });
-    console.log('signature', signature);
     return signature
   }
 } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
@@ -2410,7 +2405,6 @@ const supported = [
   wallets.Backpack,
   wallets.Glow,
   wallets.Solflare,
-  wallets.SolanaMobileWalletAdapter,
   wallets.WalletConnectV1,
   wallets.WalletLink,
 ];

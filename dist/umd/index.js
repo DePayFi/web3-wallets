@@ -860,13 +860,9 @@
       })
     }
 
-    on(event, callback) {
+    on(event, callback) {}
 
-    }
-
-    off(event, callback) {
-
-    }
+    off(event, callback) {}
 
     async sign(message) {
       const encodedMessage = new TextEncoder().encode(message);
@@ -889,7 +885,6 @@
         });
         return transactionSignatures[0]
       });
-      console.log('signature', signature);
       return signature
     }
   } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
@@ -1682,7 +1677,6 @@
     wallets.Coin98,
     wallets.CryptoCom,
     wallets.HyperPay,
-    wallets.SolanaMobileWalletAdapter,
     wallets.WalletConnectV1,
     wallets.WalletLink,
     wallets.WindowEthereum,

@@ -26,7 +26,6 @@ const supported = [
   wallets.Backpack,
   wallets.Glow,
   wallets.Solflare,
-  wallets.SolanaMobileWalletAdapter,
   wallets.WalletConnectV1,
   wallets.WalletLink,
 ]
@@ -48,7 +47,6 @@ const supported = [
   wallets.Coin98,
   wallets.CryptoCom,
   wallets.HyperPay,
-  wallets.SolanaMobileWalletAdapter,
   wallets.WalletConnectV1,
   wallets.WalletLink,
   wallets.WindowEthereum,
