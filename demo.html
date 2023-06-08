@@ -208,7 +208,7 @@
                 <script>
                   window.connectSolanaMobileWalletAdapter = ()=> {
                     wallet = new Web3Wallets.wallets.SolanaMobileWalletAdapter()
-                    let account = wallet.connect()
+                    let account = await wallet.connect()
                     console.log('account', account)
                     window.wallet = wallet
                   }
