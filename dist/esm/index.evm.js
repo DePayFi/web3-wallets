@@ -42253,7 +42253,7 @@ function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[
 const POLL_SPEED = 500; // 0.5 seconds
 const MAX_POLLS = 240; // 120 seconds
 
-const sendTransaction$3 = async ({ transaction, wallet })=> {
+const sendTransaction$4 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   await transaction.prepare({ wallet });
   await submit$3({ transaction, wallet }).then((signature)=>{
@@ -42390,7 +42390,7 @@ class WindowSolana {
     this.logo = this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{ 
-      return sendTransaction$3({
+      return sendTransaction$4({
         wallet: this,
         transaction
       })
@@ -43251,7 +43251,7 @@ class Backpack extends WindowSolana {
   }
 } Backpack.__initStatic(); Backpack.__initStatic2();
 
-const sendTransaction$2 = async ({ transaction, wallet })=> {
+const sendTransaction$3 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
@@ -43358,7 +43358,7 @@ class WindowEthereum {
     this.logo = this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{
-      return sendTransaction$2({
+      return sendTransaction$3({
         wallet: this,
         transaction
       })
@@ -43634,20 +43634,6 @@ const getIdentity = ()=>{
   })
 };
 
-const authorize = (wallet)=>{
-  return wallet.authorize({
-    cluster: 'mainnet-beta',
-    identity: getIdentity(),
-  })
-};
-
-const reauthorize = (wallet, authToken)=>{
-  return wallet.reauthorize({
-    auth_token: authToken,
-    identity: getIdentity()
-  })
-};
-
 var getFavicon = function(){
   var favicon = 'favicon.ico';
   var nodeList = document.getElementsByTagName("link");
@@ -43670,70 +43656,110 @@ class SolanaMobileWalletAdapter {
     blockchains: ['solana']
   };}
 
-  static __initStatic2() {this.isAvailable = async()=>{
-  };}
-
   constructor() {
     this.name = (localStorage[KEY$1+'_name'] && localStorage[KEY$1+'_name'] != 'undefined') ? localStorage[KEY$1+'_name'] : this.constructor.info.name;
     this.logo = (localStorage[KEY$1+'_logo'] && localStorage[KEY$1+'_logo'] != 'undefined') ? localStorage[KEY$1+'_logo'] : this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{ 
+      return sendTransaction({
+        wallet: this,
+        transaction
+      })
     };
   }
 
-  disconnect() {
+  async authorize(wallet) {
+    let authorization = await wallet.authorize({
+      cluster: 'mainnet-beta',
+      identity: getIdentity(),
+    });
+    if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
+    this.authToken = authorization.auth_token;
+    this.account = base64StringToPublicKey(authorization.accounts[0].address).toString();
+    return authorization
   }
+
+  async reauthorize(wallet, authToken) {
+    let authorization = await wallet.reauthorize({
+      auth_token: authToken,
+      identity: getIdentity()
+    });
+    if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
+    this.authToken = authorization.auth_token;
+    this.account = base64StringToPublicKey(authorization.accounts[0].address).toString();
+    return authorization
+  }
+
+  disconnect() {}
 
   async account() {
-  }
-
-  async connect(options) {
-    const result = await transact(
-      async (wallet) => authorize(wallet)
-    );
-    if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
-    console.log('result', result);
-    this.authToken = result.auth_token;
-    this.account = base64StringToPublicKey(result.accounts[0].address).toString();
     return this.account
   }
 
-  static __initStatic3() {this.isAvailable = async()=>{
+  async connect(options) {
+    await transact(
+      async (wallet) => this.authorize(wallet)
+    );
+    return this.account
+  }
+
+  static __initStatic2() {this.isAvailable = async()=>{
+    return !!this.authToken
   };}
 
   async connectedTo(input) {
+    if(input) {
+      return input == 'solana'
+    } else {
+      return 'solana'
+    }
   }
 
   switchTo(blockchainName) {
+    return new Promise((resolve, reject)=>{
+      reject({ code: 'NOT_SUPPORTED' });
+    })
   }
 
   addNetwork(blockchainName) {
+    return new Promise((resolve, reject)=>{
+      reject({ code: 'NOT_SUPPORTED' });
+    })
   }
 
   on(event, callback) {
+
   }
 
   off(event, callback) {
+
   }
 
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message);
     const signedMessage = await transact(async (wallet) => {
-      const authResult = await reauthorize(wallet, this.authToken);
-      console.log('authResult', authResult);
-      const signedMessage = await wallet.signMessages({
-        addresses: [authResult.accounts[0].address],
+      const authorization = await this.reauthorize(wallet, this.authToken);
+      const signedMessages = await wallet.signMessages({
+        addresses: [authorization.accounts[0].address],
         payloads: [encodedMessage],
       });
-      console.log('signedMessage', signedMessage);
-      return signedMessage
+      return signedMessages[0]
     });
-    console.log('signedMessage', signedMessage);
-    // if(signedMessage && signedMessage.signature) {
-    //   return Array.from(signedMessage.signature)
-    // }
+    return signedMessage
   }
-} SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2(); SolanaMobileWalletAdapter.__initStatic3();
+
+  async _sendTransaction(transaction) {
+    const signature = await transact(async (wallet) => {
+      await this.reauthorize(wallet, this.authToken);
+      const transactionSignatures = await wallet.signAndSendTransactions({
+        transactions: [transaction]
+      });
+      return transactionSignatures[0]
+    });
+    console.log('signature', signature);
+    return signature
+  }
+} SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
 
 function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 class Solflare extends WindowSolana {
@@ -43857,7 +43883,7 @@ const getSmartContractWallet = async(blockchain, address)=> {
   }
 };
 
-const sendTransaction$1 = async ({ transaction, wallet })=> {
+const sendTransaction$2 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     throw({ code: 'WRONG_NETWORK' })
@@ -44048,7 +44074,7 @@ class WalletConnectV1 {
     this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != 'undefined') ? localStorage[KEY+'_logo'] : this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
     this.sendTransaction = (transaction)=>{ 
-      return sendTransaction$1({
+      return sendTransaction$2({
         wallet: this,
         transaction
       })
@@ -44241,7 +44267,7 @@ class WalletConnectV1 {
 WalletConnectV1.getConnectedInstance = getConnectedInstance$1;
 WalletConnectV1.setConnectedInstance = setConnectedInstance$1;
 
-const sendTransaction = async ({ transaction, wallet })=> {
+const sendTransaction$1 = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction);
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     await wallet.switchTo(transaction.blockchain);
@@ -44340,7 +44366,7 @@ class WalletLink {
     this.blockchains = this.constructor.info.blockchains;
     this.connector = WalletLink.instance || this.newWalletLinkInstance();
     this.sendTransaction = (transaction)=>{
-      return sendTransaction({
+      return sendTransaction$1({
         wallet: this,
         transaction
       })

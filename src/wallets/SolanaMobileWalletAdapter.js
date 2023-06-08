@@ -1,10 +1,12 @@
 /*#if _EVM
 /*#elif _SOLANA
 
+import { sendTransaction } from './WindowSolana/transaction'
 import { transact, PublicKey } from '@depay/solana-web3.js'
 
 //#else */
 
+import { sendTransaction } from './WindowSolana/transaction'
 import { transact, PublicKey } from '@depay/solana-web3.js'
 
 //#endif
@@ -26,20 +28,6 @@ const getIdentity = ()=>{
     name: document.title,
     uri:  window.location.origin.toString(),
     icon: getFavicon()
-  })
-}
-
-const authorize = (wallet)=>{
-  return wallet.authorize({
-    cluster: 'mainnet-beta',
-    identity: getIdentity(),
-  })
-}
-
-const reauthorize = (wallet, authToken)=>{
-  return wallet.reauthorize({
-    auth_token: authToken,
-    identity: getIdentity()
   })
 }
 
@@ -65,68 +53,108 @@ class SolanaMobileWalletAdapter {
     blockchains: ['solana']
   }
 
-  static isAvailable = async()=>{
-  }
-
   constructor() {
     this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != 'undefined') ? localStorage[KEY+'_name'] : this.constructor.info.name
     this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != 'undefined') ? localStorage[KEY+'_logo'] : this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
     this.sendTransaction = (transaction)=>{ 
+      return sendTransaction({
+        wallet: this,
+        transaction
+      })
     }
   }
 
-  disconnect() {
+  async authorize(wallet) {
+    let authorization = await wallet.authorize({
+      cluster: 'mainnet-beta',
+      identity: getIdentity(),
+    })
+    if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
+    this.authToken = authorization.auth_token
+    this.account = base64StringToPublicKey(authorization.accounts[0].address).toString()
+    return authorization
   }
 
+  async reauthorize(wallet, authToken) {
+    let authorization = await wallet.reauthorize({
+      auth_token: authToken,
+      identity: getIdentity()
+    })
+    if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
+    this.authToken = authorization.auth_token
+    this.account = base64StringToPublicKey(authorization.accounts[0].address).toString()
+    return authorization
+  }
+
+  disconnect() {}
+
   async account() {
+    return this.account
   }
 
   async connect(options) {
     const result = await transact(
-      async (wallet) => authorize(wallet)
+      async (wallet) => this.authorize(wallet)
     )
-    if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
-    console.log('result', result)
-    this.authToken = result.auth_token
-    this.account = base64StringToPublicKey(result.accounts[0].address).toString()
     return this.account
   }
 
   static isAvailable = async()=>{
+    return !!this.authToken
   }
 
   async connectedTo(input) {
+    if(input) {
+      return input == 'solana'
+    } else {
+      return 'solana'
+    }
   }
 
   switchTo(blockchainName) {
+    return new Promise((resolve, reject)=>{
+      reject({ code: 'NOT_SUPPORTED' })
+    })
   }
 
   addNetwork(blockchainName) {
+    return new Promise((resolve, reject)=>{
+      reject({ code: 'NOT_SUPPORTED' })
+    })
   }
 
   on(event, callback) {
+
   }
 
   off(event, callback) {
+
   }
 
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message)
     const signedMessage = await transact(async (wallet) => {
-      const authResult = await reauthorize(wallet, this.authToken)
-      console.log('authResult', authResult)
-      const signedMessage = await wallet.signMessages({
-        addresses: [authResult.accounts[0].address],
+      const authorization = await this.reauthorize(wallet, this.authToken)
+      const signedMessages = await wallet.signMessages({
+        addresses: [authorization.accounts[0].address],
         payloads: [encodedMessage],
       })
-      console.log('signedMessage', signedMessage)
-      return signedMessage
+      return signedMessages[0]
     })
-    console.log('signedMessage', signedMessage)
-    // if(signedMessage && signedMessage.signature) {
-    //   return Array.from(signedMessage.signature)
-    // }
+    return signedMessage
+  }
+
+  async _sendTransaction(transaction) {
+    const signature = await transact(async (wallet) => {
+      const authorization = await this.reauthorize(wallet, this.authToken)
+      const transactionSignatures = await wallet.signAndSendTransactions({
+        transactions: [transaction]
+      })
+      return transactionSignatures[0]
+    })
+    console.log('signature', signature)
+    return signature
   }
 }
 
