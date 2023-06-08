@@ -97,7 +97,11 @@ class SolanaMobileWalletAdapter {
 
   async connect(options) {
     const result = await transact(
-      async (wallet) => this.authorize(wallet)
+      async (wallet) => {
+        await this.authorize(wallet)
+        if(options?.name) { localStorage[KEY+'_name'] = this.name = options.name }
+        if(options?.logo) { localStorage[KEY+'_logo'] = this.logo = options.logo }
+      }
     )
     return this._account
   }
