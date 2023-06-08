@@ -43655,6 +43655,7 @@ class SolanaMobileWalletAdapter {
       }
     );
     if(!result || !result.auth_token || !result.accounts || result.acconuts.length === 0) { return }
+    console.log('result', result);
     this.auth_token = result.auth_token;
     return result.accounts[0].toString()
   }
@@ -43679,13 +43680,11 @@ class SolanaMobileWalletAdapter {
 
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message);
+    const auth_token = this.auth_token;
     const signedMessage = await transact(async (wallet) => {
-      console.log('wallet', wallet);
-      console.log('wallet.signMessages', wallet.signMessages);
-      console.log('auth_token', this.auth_token);
-      console.log('encodedMessage', encodedMessage);
+      console.log('auth_token', auth_token);
       const { signed_payloads } = await wallet.signMessages({
-          auth_token: this.auth_token,
+          auth_token: auth_token,
           payloads: encodedMessage,
       });
       console.log('signed_payloads', signed_payloads);
