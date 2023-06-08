@@ -13,6 +13,7 @@ import Solflare from './wallets/Solflare'
 import Backpack from './wallets/Backpack'
 import Rabby from './wallets/Rabby'
 import WalletConnectV1 from './wallets/WalletConnectV1'
+import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
 import WindowSolana from './wallets/WindowSolana'
@@ -35,5 +36,6 @@ export default {
   WindowEthereum,
   WindowSolana,
   WalletConnectV1,
+  WalletConnectV2,
   WalletLink
 }
