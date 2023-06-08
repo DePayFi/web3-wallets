@@ -18950,7 +18950,7 @@
 
   _Symbol$toStringTag = Symbol.toStringTag;
 
-  var PublicKey = /*#__PURE__*/function (_Struct2, _Symbol$toStringTag2) {
+  var PublicKey$1 = /*#__PURE__*/function (_Struct2, _Symbol$toStringTag2) {
     _inherits(PublicKey, _Struct2);
 
     var _super2 = _createSuper(PublicKey);
@@ -19239,8 +19239,8 @@
     return PublicKey;
   }(Struct, _Symbol$toStringTag);
 
-  PublicKey["default"] = new PublicKey('11111111111111111111111111111111');
-  SOLANA_SCHEMA.set(PublicKey, {
+  PublicKey$1["default"] = new PublicKey$1('11111111111111111111111111111111');
+  SOLANA_SCHEMA.set(PublicKey$1, {
     kind: 'struct',
     fields: [['_bn', 'u256']]
   });
@@ -19291,7 +19291,7 @@
     _createClass(Account, [{
       key: "publicKey",
       get: function get() {
-        return new PublicKey(this._publicKey);
+        return new PublicKey$1(this._publicKey);
       }
       /**
        * The **unencrypted** secret key for this account. The first 32 bytes
@@ -19309,7 +19309,7 @@
     return Account;
   }();
 
-  var BPF_LOADER_DEPRECATED_PROGRAM_ID = new PublicKey('BPFLoader1111111111111111111111111111111111');
+  var BPF_LOADER_DEPRECATED_PROGRAM_ID = new PublicKey$1('BPFLoader1111111111111111111111111111111111');
   /**
    * Maximum over-the-wire size of a Transaction
    *
@@ -19694,22 +19694,22 @@
           var _ref10 = _slicedToArray(_ref9, 1),
               address = _ref10[0];
 
-          return new PublicKey(address);
+          return new PublicKey$1(address);
         })), _toConsumableArray(readonlySigners.map(function (_ref11) {
           var _ref12 = _slicedToArray(_ref11, 1),
               address = _ref12[0];
 
-          return new PublicKey(address);
+          return new PublicKey$1(address);
         })), _toConsumableArray(writableNonSigners.map(function (_ref13) {
           var _ref14 = _slicedToArray(_ref13, 1),
               address = _ref14[0];
 
-          return new PublicKey(address);
+          return new PublicKey$1(address);
         })), _toConsumableArray(readonlyNonSigners.map(function (_ref15) {
           var _ref16 = _slicedToArray(_ref15, 1),
               address = _ref16[0];
 
-          return new PublicKey(address);
+          return new PublicKey$1(address);
         })));
         return [header, staticAccountKeys];
       }
@@ -19764,7 +19764,7 @@
                 keyMeta = _step2$value[1];
 
             if (keyMetaFilter(keyMeta)) {
-              var key = new PublicKey(address);
+              var key = new PublicKey$1(address);
               var lookupTableIndex = lookupTableEntries.findIndex(function (entry) {
                 return entry.equals(key);
               });
@@ -19877,7 +19877,7 @@
       this.indexToProgramIds = new Map();
       this.header = args.header;
       this.accountKeys = args.accountKeys.map(function (account) {
-        return new PublicKey(account);
+        return new PublicKey$1(account);
       });
       this.recentBlockhash = args.recentBlockhash;
       this.instructions = args.instructions;
@@ -20054,7 +20054,7 @@
         for (var i = 0; i < accountCount; i++) {
           var account = byteArray.slice(0, PUBLIC_KEY_LENGTH);
           byteArray = byteArray.slice(PUBLIC_KEY_LENGTH);
-          accountKeys.push(new PublicKey(Buffer$1.from(account)));
+          accountKeys.push(new PublicKey$1(Buffer$1.from(account)));
         }
 
         var recentBlockhash = byteArray.slice(0, PUBLIC_KEY_LENGTH);
@@ -20431,7 +20431,7 @@
         var staticAccountKeysLength = decodeLength(byteArray);
 
         for (var i = 0; i < staticAccountKeysLength; i++) {
-          staticAccountKeys.push(new PublicKey(byteArray.splice(0, PUBLIC_KEY_LENGTH)));
+          staticAccountKeys.push(new PublicKey$1(byteArray.splice(0, PUBLIC_KEY_LENGTH)));
         }
 
         var recentBlockhash = bs58$3.encode(byteArray.splice(0, PUBLIC_KEY_LENGTH));
@@ -20455,7 +20455,7 @@
         var addressTableLookups = [];
 
         for (var _i6 = 0; _i6 < addressTableLookupsCount; _i6++) {
-          var accountKey = new PublicKey(byteArray.splice(0, PUBLIC_KEY_LENGTH));
+          var accountKey = new PublicKey$1(byteArray.splice(0, PUBLIC_KEY_LENGTH));
           var writableIndexesLength = decodeLength(byteArray);
           var writableIndexes = byteArray.splice(0, writableIndexesLength);
           var readonlyIndexesLength = decodeLength(byteArray);
@@ -20785,7 +20785,7 @@
 
         programIds.forEach(function (programId) {
           accountMetas.push({
-            pubkey: new PublicKey(programId),
+            pubkey: new PublicKey$1(programId),
             isSigner: false,
             isWritable: false
           });
@@ -21606,15 +21606,15 @@
     return VersionedTransaction;
   }();
 
-  var SYSVAR_CLOCK_PUBKEY = new PublicKey('SysvarC1ock11111111111111111111111111111111');
-  var SYSVAR_EPOCH_SCHEDULE_PUBKEY = new PublicKey('SysvarEpochSchedu1e111111111111111111111111');
-  var SYSVAR_INSTRUCTIONS_PUBKEY = new PublicKey('Sysvar1nstructions1111111111111111111111111');
-  var SYSVAR_RECENT_BLOCKHASHES_PUBKEY = new PublicKey('SysvarRecentB1ockHashes11111111111111111111');
-  var SYSVAR_RENT_PUBKEY = new PublicKey('SysvarRent111111111111111111111111111111111');
-  var SYSVAR_REWARDS_PUBKEY = new PublicKey('SysvarRewards111111111111111111111111111111');
-  var SYSVAR_SLOT_HASHES_PUBKEY = new PublicKey('SysvarS1otHashes111111111111111111111111111');
-  var SYSVAR_SLOT_HISTORY_PUBKEY = new PublicKey('SysvarS1otHistory11111111111111111111111111');
-  var SYSVAR_STAKE_HISTORY_PUBKEY = new PublicKey('SysvarStakeHistory1111111111111111111111111');
+  var SYSVAR_CLOCK_PUBKEY = new PublicKey$1('SysvarC1ock11111111111111111111111111111111');
+  var SYSVAR_EPOCH_SCHEDULE_PUBKEY = new PublicKey$1('SysvarEpochSchedu1e111111111111111111111111');
+  var SYSVAR_INSTRUCTIONS_PUBKEY = new PublicKey$1('Sysvar1nstructions1111111111111111111111111');
+  var SYSVAR_RECENT_BLOCKHASHES_PUBKEY = new PublicKey$1('SysvarRecentB1ockHashes11111111111111111111');
+  var SYSVAR_RENT_PUBKEY = new PublicKey$1('SysvarRent111111111111111111111111111111111');
+  var SYSVAR_REWARDS_PUBKEY = new PublicKey$1('SysvarRewards111111111111111111111111111111');
+  var SYSVAR_SLOT_HASHES_PUBKEY = new PublicKey$1('SysvarS1otHashes111111111111111111111111111');
+  var SYSVAR_SLOT_HISTORY_PUBKEY = new PublicKey$1('SysvarS1otHistory11111111111111111111111111');
+  var SYSVAR_STAKE_HISTORY_PUBKEY = new PublicKey$1('SysvarStakeHistory1111111111111111111111111');
   /**
    * Sign, send and confirm a transaction.
    *
@@ -21819,8 +21819,8 @@
       value: function fromAccountData(buffer) {
         var nonceAccount = NonceAccountLayout.decode(toBuffer(buffer), 0);
         return new NonceAccount({
-          authorizedPubkey: new PublicKey(nonceAccount.authorizedPubkey),
-          nonce: new PublicKey(nonceAccount.nonce).toString(),
+          authorizedPubkey: new PublicKey$1(nonceAccount.authorizedPubkey),
+          nonce: new PublicKey$1(nonceAccount.nonce).toString(),
           feeCalculator: nonceAccount.feeCalculator
         });
       }
@@ -21928,7 +21928,7 @@
           newAccountPubkey: instruction.keys[1].pubkey,
           lamports: lamports,
           space: space,
-          programId: new PublicKey(programId)
+          programId: new PublicKey$1(programId)
         };
       }
       /**
@@ -21971,7 +21971,7 @@
           toPubkey: instruction.keys[2].pubkey,
           lamports: lamports,
           seed: seed,
-          programId: new PublicKey(programId)
+          programId: new PublicKey$1(programId)
         };
       }
       /**
@@ -22010,10 +22010,10 @@
 
         return {
           accountPubkey: instruction.keys[0].pubkey,
-          basePubkey: new PublicKey(base),
+          basePubkey: new PublicKey$1(base),
           seed: seed,
           space: space,
-          programId: new PublicKey(programId)
+          programId: new PublicKey$1(programId)
         };
       }
       /**
@@ -22031,7 +22031,7 @@
 
         return {
           accountPubkey: instruction.keys[0].pubkey,
-          programId: new PublicKey(programId)
+          programId: new PublicKey$1(programId)
         };
       }
       /**
@@ -22051,9 +22051,9 @@
 
         return {
           accountPubkey: instruction.keys[0].pubkey,
-          basePubkey: new PublicKey(base),
+          basePubkey: new PublicKey$1(base),
           seed: seed,
-          programId: new PublicKey(programId)
+          programId: new PublicKey$1(programId)
         };
       }
       /**
@@ -22076,11 +22076,11 @@
         return {
           fromPubkey: instruction.keys[0].pubkey,
           newAccountPubkey: instruction.keys[1].pubkey,
-          basePubkey: new PublicKey(base),
+          basePubkey: new PublicKey$1(base),
           seed: seed,
           lamports: lamports,
           space: space,
-          programId: new PublicKey(programId)
+          programId: new PublicKey$1(programId)
         };
       }
       /**
@@ -22098,7 +22098,7 @@
 
         return {
           noncePubkey: instruction.keys[0].pubkey,
-          authorizedPubkey: new PublicKey(authorized)
+          authorizedPubkey: new PublicKey$1(authorized)
         };
       }
       /**
@@ -22152,7 +22152,7 @@
         return {
           noncePubkey: instruction.keys[0].pubkey,
           authorizedPubkey: instruction.keys[1].pubkey,
-          newAuthorizedPubkey: new PublicKey(authorized)
+          newAuthorizedPubkey: new PublicKey$1(authorized)
         };
       }
       /**
@@ -22631,7 +22631,7 @@
     return SystemProgram;
   }();
 
-  SystemProgram.programId = new PublicKey('11111111111111111111111111111111'); // Keep program chunks under PACKET_DATA_SIZE, leaving enough room for the
+  SystemProgram.programId = new PublicKey$1('11111111111111111111111111111111'); // Keep program chunks under PACKET_DATA_SIZE, leaving enough room for the
   // rest of the Transaction fields
   //
   // TODO: replace 300 with a proper constant for the size of the other
@@ -22867,7 +22867,7 @@
   }();
 
   Loader.chunkSize = CHUNK_SIZE$2;
-  var BPF_LOADER_PROGRAM_ID = new PublicKey('BPFLoader2111111111111111111111111111111111');
+  var BPF_LOADER_PROGRAM_ID = new PublicKey$1('BPFLoader2111111111111111111111111111111111');
   /**
    * Factory class for transactions to interact with a program loader
    */
@@ -23342,9 +23342,9 @@
           deactivationSlot: meta.deactivationSlot,
           lastExtendedSlot: meta.lastExtendedSlot,
           lastExtendedSlotStartIndex: meta.lastExtendedStartIndex,
-          authority: meta.authority.length !== 0 ? new PublicKey(meta.authority[0]) : undefined,
+          authority: meta.authority.length !== 0 ? new PublicKey$1(meta.authority[0]) : undefined,
           addresses: addresses.map(function (address) {
-            return new PublicKey(address);
+            return new PublicKey$1(address);
           })
         };
       }
@@ -23386,8 +23386,8 @@
     return "".concat(protocol, "//").concat(hostish).concat(websocketPort).concat(rest);
   }
 
-  var PublicKeyFromString = coerce(instance(PublicKey), string(), function (value) {
-    return new PublicKey(value);
+  var PublicKeyFromString = coerce(instance(PublicKey$1), string(), function (value) {
+    return new PublicKey$1(value);
   });
   var RawAccountDataResult = tuple([string(), literal('base64')]);
   var BufferFromRawAccountData = coerce(instance(Buffer$1), RawAccountDataResult, function (value) {
@@ -23510,7 +23510,7 @@
       return new MessageV0({
         header: response.header,
         staticAccountKeys: response.accountKeys.map(function (accountKey) {
-          return new PublicKey(accountKey);
+          return new PublicKey$1(accountKey);
         }),
         recentBlockhash: response.recentBlockhash,
         compiledInstructions: response.instructions.map(function (ix) {
@@ -30812,7 +30812,7 @@
        * The public key for this keypair
        */
       function get() {
-        return new PublicKey(this._keypair.publicKey);
+        return new PublicKey$1(this._keypair.publicKey);
       }
       /**
        * The raw secret key for this keypair
@@ -30982,7 +30982,7 @@
           authority: instruction.keys[1].pubkey,
           payer: instruction.keys.length > 2 ? instruction.keys[2].pubkey : undefined,
           addresses: addresses.map(function (buffer) {
-            return new PublicKey(buffer);
+            return new PublicKey$1(buffer);
           })
         };
       }
@@ -31055,7 +31055,7 @@
     _createClass(AddressLookupTableProgram, null, [{
       key: "createLookupTable",
       value: function createLookupTable(params) {
-        var _PublicKey$findProgra = PublicKey.findProgramAddressSync([params.authority.toBuffer(), toBufferLE_1(BigInt(params.recentSlot), 8)], this.programId),
+        var _PublicKey$findProgra = PublicKey$1.findProgramAddressSync([params.authority.toBuffer(), toBufferLE_1(BigInt(params.recentSlot), 8)], this.programId),
             _PublicKey$findProgra2 = _slicedToArray(_PublicKey$findProgra, 2),
             lookupTableAddress = _PublicKey$findProgra2[0],
             bumpSeed = _PublicKey$findProgra2[1];
@@ -31194,7 +31194,7 @@
     return AddressLookupTableProgram;
   }();
 
-  AddressLookupTableProgram.programId = new PublicKey('AddressLookupTab1e1111111111111111111111111');
+  AddressLookupTableProgram.programId = new PublicKey$1('AddressLookupTab1e1111111111111111111111111');
   /**
    * Compute Budget Instruction class
    */
@@ -31416,7 +31416,7 @@
     return ComputeBudgetProgram;
   }();
 
-  ComputeBudgetProgram.programId = new PublicKey('ComputeBudget111111111111111111111111111111');
+  ComputeBudgetProgram.programId = new PublicKey$1('ComputeBudget111111111111111111111111111111');
   var PRIVATE_KEY_BYTES$1 = 64;
   var PUBLIC_KEY_BYTES$1 = 32;
   var SIGNATURE_BYTES = 64;
@@ -31515,7 +31515,7 @@
     return Ed25519Program;
   }();
 
-  Ed25519Program.programId = new PublicKey('Ed25519SigVerify111111111111111111111111111'); // Supply a synchronous hashing algorithm to make this
+  Ed25519Program.programId = new PublicKey$1('Ed25519SigVerify111111111111111111111111111'); // Supply a synchronous hashing algorithm to make this
   // library interoperable with the synchronous APIs in web3.js.
 
   utils.hmacSha256Sync = function (key) {
@@ -31696,13 +31696,13 @@
     return Secp256k1Program;
   }();
 
-  Secp256k1Program.programId = new PublicKey('KeccakSecp256k11111111111111111111111111111');
+  Secp256k1Program.programId = new PublicKey$1('KeccakSecp256k11111111111111111111111111111');
   /**
    * Address of the stake config account which configures the rate
    * of stake warmup and cooldown as well as the slashing penalty.
    */
 
-  var STAKE_CONFIG_ID = new PublicKey('StakeConfig11111111111111111111111111111111');
+  var STAKE_CONFIG_ID = new PublicKey$1('StakeConfig11111111111111111111111111111111');
   /**
    * Stake account authority info
    */
@@ -31755,7 +31755,7 @@
    */
   );
 
-  Lockup["default"] = new Lockup(0, 0, PublicKey["default"]);
+  Lockup["default"] = new Lockup(0, 0, PublicKey$1["default"]);
   /**
    * Stake Instruction class
    */
@@ -31813,8 +31813,8 @@
 
         return {
           stakePubkey: instruction.keys[0].pubkey,
-          authorized: new Authorized(new PublicKey(authorized.staker), new PublicKey(authorized.withdrawer)),
-          lockup: new Lockup(lockup.unixTimestamp, lockup.epoch, new PublicKey(lockup.custodian))
+          authorized: new Authorized(new PublicKey$1(authorized.staker), new PublicKey$1(authorized.withdrawer)),
+          lockup: new Lockup(lockup.unixTimestamp, lockup.epoch, new PublicKey$1(lockup.custodian))
         };
       }
       /**
@@ -31850,7 +31850,7 @@
         var o = {
           stakePubkey: instruction.keys[0].pubkey,
           authorizedPubkey: instruction.keys[2].pubkey,
-          newAuthorizedPubkey: new PublicKey(newAuthorized),
+          newAuthorizedPubkey: new PublicKey$1(newAuthorized),
           stakeAuthorizationType: {
             index: stakeAuthorizationType
           }
@@ -31882,8 +31882,8 @@
           stakePubkey: instruction.keys[0].pubkey,
           authorityBase: instruction.keys[1].pubkey,
           authoritySeed: authoritySeed,
-          authorityOwner: new PublicKey(authorityOwner),
-          newAuthorizedPubkey: new PublicKey(newAuthorized),
+          authorityOwner: new PublicKey$1(authorityOwner),
+          newAuthorizedPubkey: new PublicKey$1(newAuthorized),
           stakeAuthorizationType: {
             index: stakeAuthorizationType
           }
@@ -32506,7 +32506,7 @@
     return StakeProgram;
   }();
 
-  StakeProgram.programId = new PublicKey('Stake11111111111111111111111111111111111111');
+  StakeProgram.programId = new PublicKey$1('Stake11111111111111111111111111111111111111');
   StakeProgram.space = 200;
   /**
    * Vote account info
@@ -32588,7 +32588,7 @@
         return {
           votePubkey: instruction.keys[0].pubkey,
           nodePubkey: instruction.keys[3].pubkey,
-          voteInit: new VoteInit(new PublicKey(voteInit.nodePubkey), new PublicKey(voteInit.authorizedVoter), new PublicKey(voteInit.authorizedWithdrawer), voteInit.commission)
+          voteInit: new VoteInit(new PublicKey$1(voteInit.nodePubkey), new PublicKey$1(voteInit.authorizedVoter), new PublicKey$1(voteInit.authorizedWithdrawer), voteInit.commission)
         };
       }
       /**
@@ -32608,7 +32608,7 @@
         return {
           votePubkey: instruction.keys[0].pubkey,
           authorizedPubkey: instruction.keys[2].pubkey,
-          newAuthorizedPubkey: new PublicKey(newAuthorized),
+          newAuthorizedPubkey: new PublicKey$1(newAuthorized),
           voteAuthorizationType: {
             index: voteAuthorizationType
           }
@@ -32633,9 +32633,9 @@
 
         return {
           currentAuthorityDerivedKeyBasePubkey: instruction.keys[2].pubkey,
-          currentAuthorityDerivedKeyOwnerPubkey: new PublicKey(currentAuthorityDerivedKeyOwnerPubkey),
+          currentAuthorityDerivedKeyOwnerPubkey: new PublicKey$1(currentAuthorityDerivedKeyOwnerPubkey),
           currentAuthorityDerivedKeySeed: currentAuthorityDerivedKeySeed,
-          newAuthorizedPubkey: new PublicKey(newAuthorized),
+          newAuthorizedPubkey: new PublicKey$1(newAuthorized),
           voteAuthorizationType: {
             index: voteAuthorizationType
           },
@@ -32940,9 +32940,9 @@
     return VoteProgram;
   }();
 
-  VoteProgram.programId = new PublicKey('Vote111111111111111111111111111111111111111');
+  VoteProgram.programId = new PublicKey$1('Vote111111111111111111111111111111111111111');
   VoteProgram.space = 3731;
-  var VALIDATOR_INFO_KEY = new PublicKey('Va1idator1nfo111111111111111111111111111111');
+  var VALIDATOR_INFO_KEY = new PublicKey$1('Va1idator1nfo111111111111111111111111111111');
   /**
    * @internal
    */
@@ -32999,7 +32999,7 @@
         var configKeys = [];
 
         for (var i = 0; i < 2; i++) {
-          var _publicKey4 = new PublicKey(byteArray.slice(0, PUBLIC_KEY_LENGTH));
+          var _publicKey4 = new PublicKey$1(byteArray.slice(0, PUBLIC_KEY_LENGTH));
 
           byteArray = byteArray.slice(PUBLIC_KEY_LENGTH);
           var isSigner = byteArray.slice(0, 1)[0] === 1;
@@ -33026,7 +33026,7 @@
     return ValidatorInfo;
   }();
 
-  var VOTE_PROGRAM_ID = new PublicKey('Vote111111111111111111111111111111111111111');
+  var VOTE_PROGRAM_ID = new PublicKey$1('Vote111111111111111111111111111111111111111');
   /**
    * See https://github.com/solana-labs/solana/blob/8a12ed029cfa38d4a45400916c2463fb82bbec8c/programs/vote_api/src/vote_state.rs#L68-L88
    *
@@ -33087,8 +33087,8 @@
         }
 
         return new VoteAccount({
-          nodePubkey: new PublicKey(va.nodePubkey),
-          authorizedWithdrawer: new PublicKey(va.authorizedWithdrawer),
+          nodePubkey: new PublicKey$1(va.nodePubkey),
+          authorizedWithdrawer: new PublicKey$1(va.authorizedWithdrawer),
           commission: va.commission,
           votes: va.votes,
           rootSlot: rootSlot,
@@ -33108,7 +33108,7 @@
         epoch = _ref46.epoch;
     return {
       epoch: epoch,
-      authorizedVoter: new PublicKey(authorizedVoter)
+      authorizedVoter: new PublicKey$1(authorizedVoter)
     };
   }
 
@@ -33117,7 +33117,7 @@
         epochOfLastAuthorizedSwitch = _ref47.epochOfLastAuthorizedSwitch,
         targetEpoch = _ref47.targetEpoch;
     return {
-      authorizedPubkey: new PublicKey(authorizedPubkey),
+      authorizedPubkey: new PublicKey$1(authorizedPubkey),
       epochOfLastAuthorizedSwitch: epochOfLastAuthorizedSwitch,
       targetEpoch: targetEpoch
     };
@@ -33281,7 +33281,7 @@
   	NonceAccount: NonceAccount,
   	PACKET_DATA_SIZE: PACKET_DATA_SIZE,
   	PUBLIC_KEY_LENGTH: PUBLIC_KEY_LENGTH,
-  	PublicKey: PublicKey,
+  	PublicKey: PublicKey$1,
   	SIGNATURE_LENGTH_IN_BYTES: SIGNATURE_LENGTH_IN_BYTES,
   	SOLANA_SCHEMA: SOLANA_SCHEMA,
   	STAKE_CONFIG_ID: STAKE_CONFIG_ID,
@@ -42328,8 +42328,8 @@
   };
 
   const submitSimpleTransfer$3 = async ({ transaction, wallet })=> {
-    let fromPubkey = new PublicKey(await wallet.account());
-    let toPubkey = new PublicKey(transaction.to);
+    let fromPubkey = new PublicKey$1(await wallet.account());
+    let toPubkey = new PublicKey$1(transaction.to);
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
     const instructions = [
@@ -42349,7 +42349,7 @@
   };
 
   const submitInstructions = async ({ transaction, wallet })=> {
-    let fromPubkey = new PublicKey(await wallet.account());
+    let fromPubkey = new PublicKey$1(await wallet.account());
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
     const messageV0 = new TransactionMessage({
@@ -42358,7 +42358,7 @@
       instructions: transaction.instructions,
     }).compileToV0Message(
       transaction.alts ? await Promise.all(transaction.alts.map(async(alt)=>{
-        return (await web3ClientEvm.getProvider('solana')).getAddressLookupTable(new PublicKey(alt)).then((res) => res.value)
+        return (await web3ClientEvm.getProvider('solana')).getAddressLookupTable(new PublicKey$1(alt)).then((res) => res.value)
       })) : undefined);
     const transactionV0 = new VersionedTransaction(messageV0);
     if(transaction.signers && transaction.signers.length) {
@@ -43089,12 +43089,12 @@
   };
 
   const accountInfo = async ({ address, api, method, params, provider, block }) => {
-    const info = await provider.getAccountInfo(new PublicKey(address));
+    const info = await provider.getAccountInfo(new PublicKey$1(address));
     return api.decode(info.data)
   };
 
   const balance = ({ address, provider }) => {
-    return provider.getBalance(new PublicKey(address))
+    return provider.getBalance(new PublicKey$1(address))
   };
 
   const singleRequest = async({ blockchain, address, api, method, params, block, provider, providers })=> {
@@ -43107,7 +43107,7 @@
         }
         return await accountInfo({ address, api, method, params, provider, block })
       } else if(method === 'getProgramAccounts') {
-        return await provider.getProgramAccounts(new PublicKey(address), params).then((accounts)=>{
+        return await provider.getProgramAccounts(new PublicKey$1(address), params).then((accounts)=>{
           if(api){
             return accounts.map((account)=>{
               account.data = api.decode(account.account.data);
@@ -43118,7 +43118,7 @@
           }
         })
       } else if(method === 'getTokenAccountBalance') {
-        return await provider.getTokenAccountBalance(new PublicKey(address))
+        return await provider.getTokenAccountBalance(new PublicKey$1(address))
       } else if (method === 'latestBlockNumber') {
         return await provider.getBlockHeight()  
       } else if (method === 'balance') {
@@ -43620,20 +43620,22 @@
 
   const KEY$1 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
 
-  const decodeWithKey = (encodedString, key)=> {
-    // Convert the encoded string to a Uint8Array
-    const encodedBytes = Uint8Array.from(atob(encodedString), c => c.charCodeAt(0));
+  const base64StringToPublicKey = (base64String)=> {
+    const binaryString = window.atob(base64String);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    return new PublicKey(bytes)
+  };
 
-    // Convert the key to a Uint8Array
-    const keyBytes = new TextEncoder().encode(key);
-
-    // Perform XOR operation between the encoded bytes and key bytes
-    const decodedBytes = encodedBytes.map((byte, index) => byte ^ keyBytes[index % keyBytes.length]);
-
-    // Convert the decoded bytes to a string
-    const decodedString = new TextDecoder().decode(decodedBytes);
-
-    return decodedString;
+  const authorize = (wallet)=>{
+    return wallet.authorize({
+      cluster: 'mainnet-beta',
+      identity: {
+        name: document.title,
+        uri:  window.location.origin.toString(),
+        icon: getFavicon()
+      },
+    })
   };
 
   var getFavicon = function(){
@@ -43677,22 +43679,12 @@
 
     async connect(options) {
       const result = await transact(
-        async (wallet) => {
-          const authResult = wallet.authorize({
-            cluster: 'mainnet-beta',
-            identity: {
-              name: document.title,
-              uri:  window.location.origin.toString(),
-              icon: getFavicon()
-            },
-          });
-          return authResult
-        }
+        async (wallet) => authorize(wallet)
       );
       if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
       this.authToken = result.auth_token;
-      this.account = decodeWithKey(result.accounts[0].address.toString(), this.authToken);
+      this.account = base64StringToPublicKey(result.accounts[0].address).toString();
       return this.account
     }
 
@@ -43715,12 +43707,12 @@
     }
 
     async sign(message) {
-      const encodedMessage = btoa(message);
+      const encodedMessage = new TextEncoder().encode(message);
       const signedMessage = await transact(async (wallet) => {
-        console.log('sign with this.account', this.account);
-        console.log('encodedMessage', encodedMessage);
+        const authResult = authorize(wallet);
+        console.log('authResult', authResult);
         const signedMessage = await wallet.signMessages({
-          addresses: [btoa(this.account)],
+          addresses: [authResult.accounts[0].address],
           payloads: [encodedMessage],
         });
         console.log('signedMessage', signedMessage);

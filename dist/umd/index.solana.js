@@ -1490,20 +1490,22 @@
 
   const KEY$1 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
 
-  const decodeWithKey = (encodedString, key)=> {
-    // Convert the encoded string to a Uint8Array
-    const encodedBytes = Uint8Array.from(atob(encodedString), c => c.charCodeAt(0));
+  const base64StringToPublicKey = (base64String)=> {
+    const binaryString = window.atob(base64String);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    return new solanaWeb3_js.PublicKey(bytes)
+  };
 
-    // Convert the key to a Uint8Array
-    const keyBytes = new TextEncoder().encode(key);
-
-    // Perform XOR operation between the encoded bytes and key bytes
-    const decodedBytes = encodedBytes.map((byte, index) => byte ^ keyBytes[index % keyBytes.length]);
-
-    // Convert the decoded bytes to a string
-    const decodedString = new TextDecoder().decode(decodedBytes);
-
-    return decodedString;
+  const authorize = (wallet)=>{
+    return wallet.authorize({
+      cluster: 'mainnet-beta',
+      identity: {
+        name: document.title,
+        uri:  window.location.origin.toString(),
+        icon: getFavicon()
+      },
+    })
   };
 
   var getFavicon = function(){
@@ -1547,22 +1549,12 @@
 
     async connect(options) {
       const result = await solanaWeb3_js.transact(
-        async (wallet) => {
-          const authResult = wallet.authorize({
-            cluster: 'mainnet-beta',
-            identity: {
-              name: document.title,
-              uri:  window.location.origin.toString(),
-              icon: getFavicon()
-            },
-          });
-          return authResult
-        }
+        async (wallet) => authorize(wallet)
       );
       if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
       this.authToken = result.auth_token;
-      this.account = decodeWithKey(result.accounts[0].address.toString(), this.authToken);
+      this.account = base64StringToPublicKey(result.accounts[0].address).toString();
       return this.account
     }
 
@@ -1585,12 +1577,12 @@
     }
 
     async sign(message) {
-      const encodedMessage = btoa(message);
+      const encodedMessage = new TextEncoder().encode(message);
       const signedMessage = await solanaWeb3_js.transact(async (wallet) => {
-        console.log('sign with this.account', this.account);
-        console.log('encodedMessage', encodedMessage);
+        const authResult = authorize(wallet);
+        console.log('authResult', authResult);
         const signedMessage = await wallet.signMessages({
-          addresses: [btoa(this.account)],
+          addresses: [authResult.accounts[0].address],
           payloads: [encodedMessage],
         });
         console.log('signedMessage', signedMessage);
