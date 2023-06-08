@@ -43694,11 +43694,16 @@ class SolanaMobileWalletAdapter {
   async sign(message) {
     const encodedMessage = new TextEncoder().encode(message);
     const signedMessage = await transact(async (wallet) => {
-        const { signed_payloads } = await wallet.signMessages({
-            auth_token: this.auth_token,
-            payloads: encodedMessage,
-        });
-        return signed_payloads;
+      console.log('wallet', wallet);
+      console.log('wallet.signMessages', wallet.signMessages);
+      console.log('auth_token', this.auth_token);
+      console.log('encodedMessage', encodedMessage);
+      const { signed_payloads } = await wallet.signMessages({
+          auth_token: this.auth_token,
+          payloads: encodedMessage,
+      });
+      console.log('signed_payloads', signed_payloads);
+      return signed_payloads
     });
     console.log('signedMessage', signedMessage);
     // if(signedMessage && signedMessage.signature) {
