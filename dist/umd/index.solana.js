@@ -1522,6 +1522,8 @@
     return explodedPath[explodedPath.length-1]
   };
 
+  let authToken;
+
   class SolanaMobileWalletAdapter {
 
     static __initStatic() {this.info = {
@@ -1548,7 +1550,7 @@
         identity: getIdentity(),
       });
       if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
-      this._authToken = authorization.auth_token;
+      authToken = authorization.auth_token;
       this._account = base64StringToPublicKey(authorization.accounts[0].address).toString();
       return authorization
     }
@@ -1559,7 +1561,7 @@
         identity: getIdentity()
       });
       if(!authorization || !authorization.auth_token || !authorization.accounts || authorization.accounts.length === 0) { return }
-      this._authToken = authorization.auth_token;
+      authToken = authorization.auth_token;
       this._account = base64StringToPublicKey(authorization.accounts[0].address).toString();
       return authorization
     }
@@ -1578,7 +1580,7 @@
     }
 
     static __initStatic2() {this.isAvailable = async()=>{
-      return !!this._authToken
+      return authToken
     };}
 
     async connectedTo(input) {
@@ -1608,7 +1610,7 @@
     async sign(message) {
       const encodedMessage = new TextEncoder().encode(message);
       const signedMessage = await solanaWeb3_js.transact(async (wallet) => {
-        const authorization = await this.reauthorize(wallet, this._authToken);
+        const authorization = await this.reauthorize(wallet, authToken);
         const signedMessages = await wallet.signMessages({
           addresses: [authorization.accounts[0].address],
           payloads: [encodedMessage],
@@ -1620,7 +1622,7 @@
 
     async _sendTransaction(transaction) {
       const signature = await solanaWeb3_js.transact(async (wallet) => {
-        await this.reauthorize(wallet, this._authToken);
+        await this.reauthorize(wallet, authToken);
         const transactionSignatures = await wallet.signAndSendTransactions({
           transactions: [transaction]
         });
@@ -2409,6 +2411,7 @@
     wallets.Glow,
     wallets.Solflare,
     wallets.WalletConnectV1,
+    wallets.SolanaMobileWalletAdapter,
     wallets.WalletLink,
   ];
 
