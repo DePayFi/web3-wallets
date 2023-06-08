@@ -43670,6 +43670,7 @@ class SolanaMobileWalletAdapter {
       }
     );
     if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
+    console.log('result', result);
     this.account = atob(result.accounts[0].address.toString());
     return this.account
   }
