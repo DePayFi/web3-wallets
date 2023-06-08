@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.css">
     <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" type="application/javascript"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@uiw/copy-to-clipboard/dist/copy-to-clipboard.umd.js"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/solana-web3.js@1"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/solana-web3.js@1.24.0"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-blockchains@7"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-client@10"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/walletconnect-v1@1"></script>
@@ -16,7 +16,7 @@
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/coinbase-wallet-sdk@3"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-tokens@9"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/qr-code-styling@1"></script>
-    <script src="dist/umd/index.js"></script>
+    <script src="dist/umd/index.js?7"></script>
     <style>
       .btn-primary {
         color: #fff;
@@ -53,19 +53,7 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='Web3Wallets.getWallets().then((wallets)=>{
-                  // alert(2)
-                  // alert(wallets.map((w)=>w.name))
-                  // alert(window.glow)
-                  // alert(window.glowSolana)
-                  // alert(window.phantom)
-                  // alert(window.phantom.solana)
-                  // alert(Object.keys(window))
-                  // alert(Object.keys(window.phantom))
-                  // alert(Object.keys(window.phantom.solana))
-                  // alert(Object.keys(window.solana))
-                  console.log(wallets)
-                })'>Try it</button>
+                <button class='btn btn-primary' onClick='Web3Wallets.getWallets().then(console.log)'>Try it</button>
               </div>
             </div>
           </div>
@@ -101,7 +89,6 @@
                       let accounts = await wallet.connect()
                       window.wallet = wallet
                       console.log(accounts)
-                      alert(accounts)
                     }
                   </script>
                 </div>
@@ -212,6 +199,30 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Connect Solana MWA</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting Solana MWA.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.connectSolanaMobileWalletAdapter = async()=> {
+                    wallet = new Web3Wallets.wallets.SolanaMobileWalletAdapter()
+                    let account = await wallet.connect()
+                    console.log('account', account)
+                    window.wallet = wallet
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='connectSolanaMobileWalletAdapter()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Connected account</h5>
                 <div class="px-4">
                   <div class="text-secondary">Provides connected account via wallet</div>
@@ -297,7 +308,7 @@
                       from,
                       instructions: [await Web3Tokens.Token.solana.createTransferInstruction({
                         token: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 
-                        amount: '1000000',
+                        amount: '10000',
                         from,
                         to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'
                       })],

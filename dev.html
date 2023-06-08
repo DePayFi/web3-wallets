@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.css">
     <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" type="application/javascript"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@uiw/copy-to-clipboard/dist/copy-to-clipboard.umd.js"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/solana-web3.js@1.21.1"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/solana-web3.js@1.24.0"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-blockchains@8"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-client@10"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/walletconnect-v1@1"></script>
@@ -176,6 +176,43 @@
         <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
+              <div>
+                <h5 class="px-4">Solana Pay</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test Solana Pay</div>
+                  <div id="solanaPayQR">
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.testSolanaPay = async()=>{
+                    wallet = new Web3Wallets.wallets.SolanaPay()
+                    let account = await wallet.connect({
+                      reconnect: true,
+                      connect: ({ uri })=>{
+                        copyTextToClipboard(uri)
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("solanaPayQR"));
+                      }
+                    })
+                    console.log('ACCOUNT', account)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='testSolanaPay()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Coinbase WalletLink connect</h5>
                 <div class="px-4">
@@ -190,6 +227,30 @@
                   }
                 </script>
                 <button class='btn btn-primary' onClick='connectWalletLink()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Connect Solana MWA</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting Solana MWA.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.connectSolanaMobileWalletAdapter = async()=> {
+                    wallet = new Web3Wallets.wallets.SolanaMobileWalletAdapter()
+                    let account = await wallet.connect()
+                    console.log('account', account)
+                    window.wallet = wallet
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='connectSolanaMobileWalletAdapter()'>Try it</button>
               </div>
             </div>
           </div>
