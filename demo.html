@@ -206,7 +206,7 @@
               </div>
               <div class="px-4 pt-3">
                 <script>
-                  window.connectSolanaMobileWalletAdapter = ()=> {
+                  window.connectSolanaMobileWalletAdapter = async()=> {
                     wallet = new Web3Wallets.wallets.SolanaMobileWalletAdapter()
                     let account = await wallet.connect()
                     console.log('account', account)
