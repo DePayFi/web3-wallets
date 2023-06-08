@@ -43664,8 +43664,8 @@
     };}
 
     constructor() {
-      this.name = (localStorage[KEY$1+'_name'] && localStorage[KEY$1+'_name'] != 'undefined') ? localStorage[KEY$1+'_name'] : this.constructor.info.name;
-      this.logo = (localStorage[KEY$1+'_logo'] && localStorage[KEY$1+'_logo'] != 'undefined') ? localStorage[KEY$1+'_logo'] : this.constructor.info.logo;
+      this.name = (localStorage[KEY$1+'_name'] && localStorage[KEY$1+'_name'] != undefined) ? localStorage[KEY$1+'_name'] : this.constructor.info.name;
+      this.logo = (localStorage[KEY$1+'_logo'] && localStorage[KEY$1+'_logo'] != undefined) ? localStorage[KEY$1+'_logo'] : this.constructor.info.logo;
       this.blockchains = this.constructor.info.blockchains;
       this.sendTransaction = (transaction)=>{ 
         return sendTransaction({
@@ -44076,8 +44076,8 @@
     };}
 
     constructor() {
-      this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != 'undefined') ? localStorage[KEY+'_name'] : this.constructor.info.name;
-      this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != 'undefined') ? localStorage[KEY+'_logo'] : this.constructor.info.logo;
+      this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != undefined) ? localStorage[KEY+'_name'] : this.constructor.info.name;
+      this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != undefined) ? localStorage[KEY+'_logo'] : this.constructor.info.logo;
       this.blockchains = this.constructor.info.blockchains;
       this.sendTransaction = (transaction)=>{ 
         return sendTransaction$2({

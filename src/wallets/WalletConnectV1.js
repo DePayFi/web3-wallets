@@ -93,8 +93,8 @@ class WalletConnectV1 {
   }
 
   constructor() {
-    this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != 'undefined') ? localStorage[KEY+'_name'] : this.constructor.info.name
-    this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != 'undefined') ? localStorage[KEY+'_logo'] : this.constructor.info.logo
+    this.name = (localStorage[KEY+'_name'] && localStorage[KEY+'_name'] != undefined) ? localStorage[KEY+'_name'] : this.constructor.info.name
+    this.logo = (localStorage[KEY+'_logo'] && localStorage[KEY+'_logo'] != undefined) ? localStorage[KEY+'_logo'] : this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
     this.sendTransaction = (transaction)=>{ 
       return sendTransaction({
