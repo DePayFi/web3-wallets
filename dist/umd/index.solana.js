@@ -1490,6 +1490,22 @@
 
   const KEY$1 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
 
+  const decodeWithKey = (encodedString, key)=> {
+    // Convert the encoded string to a Uint8Array
+    const encodedBytes = Uint8Array.from(atob(encodedString), c => c.charCodeAt(0));
+
+    // Convert the key to a Uint8Array
+    const keyBytes = new TextEncoder().encode(key);
+
+    // Perform XOR operation between the encoded bytes and key bytes
+    const decodedBytes = encodedBytes.map((byte, index) => byte ^ keyBytes[index % keyBytes.length]);
+
+    // Convert the decoded bytes to a string
+    const decodedString = new TextDecoder().decode(decodedBytes);
+
+    return decodedString;
+  };
+
   var getFavicon = function(){
     var favicon = 'favicon.ico';
     var nodeList = document.getElementsByTagName("link");
@@ -1545,7 +1561,8 @@
       );
       if(!result || !result.auth_token || !result.accounts || result.accounts.length === 0) { return }
       console.log('result', result);
-      this.account = atob(result.accounts[0].address.toString());
+      this.authToken = result.auth_token;
+      this.account = decodeWithKey(result.accounts[0].address.toString(), this.authToken);
       return this.account
     }
 
