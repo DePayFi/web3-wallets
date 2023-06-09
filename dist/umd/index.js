@@ -534,6 +534,7 @@
 
     async connectedTo(input) {
       const blockchain = Blockchains__default['default'].findById(await this.getProvider().request({ method: 'eth_chainId' }));
+      if(!blockchain) { return false }
       if(input) {
         return input === blockchain.name
       } else {
@@ -1293,6 +1294,7 @@
     async connectedTo(input) {
       let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
       const blockchain = Blockchains__default['default'].findById(chainId);
+      if(!blockchain) { return false }
       if(input) {
         return input === blockchain.name
       } else {
@@ -1536,6 +1538,7 @@
     async connectedTo(input) {
       let chainId = await this.connector.getChainId();
       const blockchain = Blockchains__default['default'].findByNetworkId(chainId);
+      if(!blockchain) { return false }
       if(input) {
         return input === blockchain.name
       } else {

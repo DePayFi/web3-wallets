@@ -76,6 +76,7 @@ export default class WindowEthereum {
 
   async connectedTo(input) {
     const blockchain = Blockchains.findById(await this.getProvider().request({ method: 'eth_chainId' }))
+    if(!blockchain) { return false }
     if(input) {
       return input === blockchain.name
     } else {

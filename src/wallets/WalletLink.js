@@ -63,6 +63,7 @@ class WalletLink {
   async connectedTo(input) {
     let chainId = await this.connector.getChainId()
     const blockchain = Blockchains.findByNetworkId(chainId)
+    if(!blockchain) { return false }
     if(input) {
       return input === blockchain.name
     } else {

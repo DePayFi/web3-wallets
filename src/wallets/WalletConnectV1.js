@@ -179,6 +179,7 @@ class WalletConnectV1 {
   async connectedTo(input) {
     let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' })
     const blockchain = Blockchains.findById(chainId)
+    if(!blockchain) { return false }
     if(input) {
       return input === blockchain.name
     } else {

@@ -531,6 +531,7 @@ class WindowEthereum {
 
   async connectedTo(input) {
     const blockchain = Blockchains.findById(await this.getProvider().request({ method: 'eth_chainId' }));
+    if(!blockchain) { return false }
     if(input) {
       return input === blockchain.name
     } else {
@@ -1290,6 +1291,7 @@ class WalletConnectV1 {
   async connectedTo(input) {
     let chainId = await this.connector.sendCustomRequest({ method: 'eth_chainId' });
     const blockchain = Blockchains.findById(chainId);
+    if(!blockchain) { return false }
     if(input) {
       return input === blockchain.name
     } else {
@@ -1533,6 +1535,7 @@ class WalletLink {
   async connectedTo(input) {
     let chainId = await this.connector.getChainId();
     const blockchain = Blockchains.findByNetworkId(chainId);
+    if(!blockchain) { return false }
     if(input) {
       return input === blockchain.name
     } else {
