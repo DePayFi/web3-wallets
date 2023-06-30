@@ -58,7 +58,14 @@ const submit = ({ transaction, provider, signer }) => {
 const submitContractInteraction = ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider)
   let contractArguments = transaction.getContractArguments({ contract })
-  let method = contract.connect(signer)[transaction.method]
+  let method = transaction.method
+  if(contract[method] === undefined){
+    let fragment = contract.interface.fragments.find((fragment) => {
+      return fragment.name == transaction.method
+    })
+    method = `${method}(${fragment.inputs.map((input)=>input.type).join(',')})`;
+  }
+  method = contract.connect(signer)[method]
   if(contractArguments) {
     return method(...contractArguments, {
       value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
