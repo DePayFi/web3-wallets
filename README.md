@@ -36,30 +36,14 @@ This library supports the following blockchains:
 - [Polygon](https://polygon.technology)
 - [Solana](https://solana.com)
 - [Fantom](https://fantom.foundation)
-- [Velas](https://velas.com)
+- [Arbitrum](https://arbitrum.io)
+- [Avalanche](https://www.avax.network)
+- [Gnosis](https://gnosis.io)
+- [Optimism](https://www.optimism.io)
 
-This library supports the following wallets:
+This library supports most crypto wallets:
 
-- [MetaMask](https://metamask.io)
-- [Coinbase Wallet](https://wallet.coinbase.com)
-- [Phantom](https://phantom.app)
-- [WalletConnect](https://walletconnect.org)
-
-100+ different wallets via [WalletConnect](https://walletconnect.org), such as:
-- [Trust Wallet](https://trustwallet.com)
-- [DeFi Wallet by crypto.com](https://crypto.com/defi-wallet)
-- [1inch Wallet](https://1inch.io/wallet/)
-- [imToken Wallet](https://www.token.im)
-- [TokenPocket](https://www.tokenpocket.pro/en)
-- [Pillar](https://www.pillar.fi/)
-- [Math Wallet](https://mathwallet.org/)
-- [Ledger Live](https://www.ledger.com/ledger-live)
-- [Argent Wallet](https://www.argent.xyz)
-- [AlphaWallet](https://alphawallet.com/)
-- [Unstoppable Wallet](https://unstoppable.money)
-- [Atomic Wallet](https://atomicwallet.io)
-- [Rainbow](https://rainbow.me/)
-- and more...
+See https://depay.com/wallets for more details
 
 ## Platform specific packaging
 
@@ -354,7 +338,7 @@ let sentTransaction = await wallet.sendTransaction({
 e.g. Send 1 USDC:
 
 ```javascript
-import { Token } from '@depay/web3-tokens'
+import Token from '@depay/web3-tokens'
 
 let sentTransaction = await wallet.sendTransaction({
   blockchain: 'solana',
@@ -380,7 +364,7 @@ you can pass `signers` as part of the transaction passed to `sendTransaction`:
 
 ```javascript
 import { getProvider } from '@depay/web3-client'
-import { Token } from '@depay/web3-tokens'
+import Token from '@depay/web3-tokens'
 import { PublicKey, SystemProgram, Keypair } from '@depay/solana-web3.js'
 
 const wallets = await getWallets()
@@ -417,7 +401,7 @@ you can pass `alts` as part of the transaction passed to `sendTransaction`:
 
 ```javascript
 import { getProvider } from '@depay/web3-client'
-import { Token } from '@depay/web3-tokens'
+import Token from '@depay/web3-tokens'
 import { PublicKey, SystemProgram, Keypair } from '@depay/solana-web3.js'
 
 const wallets = await getWallets()

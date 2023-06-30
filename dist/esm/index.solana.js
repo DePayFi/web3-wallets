@@ -81,12 +81,19 @@ class Transaction {
   async getData() {
     let contractArguments = this.getContractArguments();
     let populatedTransaction;
+    let method = this.method;
+    if(this.getContract()[method] === undefined){
+      let fragment = this.getContract().interface.fragments.find((fragment) => {
+        return fragment.name == this.method
+      });
+      method = `${method}(${fragment.inputs.map((input)=>input.type).join(',')})`;
+    }
     if(contractArguments) {
-      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
+      populatedTransaction = await this.getContract().populateTransaction[method].apply(
         null, contractArguments
       );
     } else {
-      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(null);
+      populatedTransaction = await this.getContract().populateTransaction[method].apply(null);
     }
      
     return populatedTransaction.data
@@ -599,35 +606,39 @@ class StaticJsonRpcSequentialProvider extends Connection {
 
     const batch = chunk.map((inflight) => inflight.request);
 
-    return this._provider._rpcBatchRequest(batch)
-      .then((result) => {
-        // For each result, feed it to the correct Promise, depending
-        // on whether it was a success or error
-        chunk.forEach((inflightRequest, index) => {
-          const payload = result[index];
-          if (payload.error) {
-            const error = new Error(payload.error.message);
-            error.code = payload.error.code;
-            error.data = payload.error.data;
-            inflightRequest.reject(error);
-          } else {
-            inflightRequest.resolve(payload);
-          }
+    const handleError = (error)=>{
+      if(error && [
+        'Failed to fetch', 'limit reached', '504', '503', '502', '500', '429', '426', '422', '413', '409', '408', '406', '405', '404', '403', '402', '401', '400'
+      ].some((errorType)=>error.toString().match(errorType))) {
+        const index = this._endpoints.indexOf(this._endpoint)+1;
+        this._endpoint = index >= this._endpoints.length ? this._endpoints[0] : this._endpoints[index];
+        this._provider = new Connection(this._endpoint);
+        this.requestChunk(chunk);
+      } else {
+        chunk.forEach((inflightRequest) => {
+          inflightRequest.reject(error);
         });
-      }).catch((error) => {
-        if(error && [
-          'Failed to fetch', '504', '503', '502', '500', '429', '426', '422', '413', '409', '408', '406', '405', '404', '403', '402', '401', '400'
-        ].some((errorType)=>error.toString().match(errorType))) {
-          const index = this._endpoints.indexOf(this._endpoint)+1;
-          this._endpoint = index >= this._endpoints.length ? this._endpoints[0] : this._endpoints[index];
-          this._provider = new Connection(this._endpoint);
-          this.requestChunk(chunk);
-        } else {
-          chunk.forEach((inflightRequest) => {
-            inflightRequest.reject(error);
+      }
+    };
+
+    try {
+      return this._provider._rpcBatchRequest(batch)
+        .then((result) => {
+          // For each result, feed it to the correct Promise, depending
+          // on whether it was a success or error
+          chunk.forEach((inflightRequest, index) => {
+            const payload = result[index];
+            if (payload.error) {
+              const error = new Error(payload.error.message);
+              error.code = payload.error.code;
+              error.data = payload.error.data;
+              inflightRequest.reject(error);
+            } else {
+              inflightRequest.resolve(payload);
+            }
           });
-        }
-      })
+        }).catch(handleError)
+    } catch (error){ return handleError(error) }
   }
     
   _rpcRequestReplacement(methodName, args) {
@@ -780,8 +791,8 @@ var Solana = {
   setProvider: setProvider$1,
 };
 
-let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'velas'];
-supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
+let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism'];
+supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism'];
 supported$1.solana = ['solana'];
 
 function _optionalChain$1$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -897,9 +908,17 @@ let paramsToContractArgs = ({ contract, method, params }) => {
 };
 
 const contractCall = ({ address, api, method, params, provider, block }) => {
-  let contract = new ethers.Contract(address, api, provider);
-  let args = paramsToContractArgs({ contract, method, params });
-  return contract[method](...args, { blockTag: block })
+  const contract = new ethers.Contract(address, api, provider);
+  const args = paramsToContractArgs({ contract, method, params });
+  const fragment = contract.interface.fragments.find((fragment)=>fragment.name === method);
+  if(contract[method] === undefined) {
+    method = `${method}(${fragment.inputs.map((input)=>input.type).join(',')})`;
+  }
+  if(fragment && fragment.stateMutability === 'nonpayable') {
+    return contract.callStatic[method](...args, { blockTag: block })
+  } else {
+    return contract[method](...args, { blockTag: block })
+  }
 };
 
 const balance$1 = ({ address, provider }) => {
@@ -929,17 +948,25 @@ var requestEVM = async ({ blockchain, address, api, method, params, block, timeo
 
   if(strategy === 'fastest') {
 
-    return Promise.race((await EVM.getProviders(blockchain)).map((provider)=>{
-
-      const request = singleRequest$1({ blockchain, address, api, method, params, block, provider });
+    const providers = await EVM.getProviders(blockchain);
     
-      if(timeout) {
-        const timeoutPromise = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout));
-        return Promise.race([request, timeoutPromise])
-      } else {
-        return request
-      }
-    }))
+    let allRequestsFailed = [];
+
+    const allRequestsInParallel = providers.map((provider)=>{
+      return new Promise((resolve)=>{
+        allRequestsFailed.push(
+          singleRequest$1({ blockchain, address, api, method, params, block, provider }).then(resolve)
+        );
+      })
+    });
+    
+    const timeoutPromise = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout || 10000));
+
+    allRequestsFailed = Promise.all(allRequestsFailed.map((request)=>{
+      return new Promise((resolve)=>{ request.catch(resolve); })
+    })).then(()=>{ return });
+
+    return Promise.race([...allRequestsInParallel, timeoutPromise, allRequestsFailed])
 
   } else { // failover
 
@@ -957,6 +984,7 @@ var requestEVM = async ({ blockchain, address, api, method, params, block, timeo
 
 const accountInfo = async ({ address, api, method, params, provider, block }) => {
   const info = await provider.getAccountInfo(new PublicKey(address));
+  if(!info || !info.data) { return }
   return api.decode(info.data)
 };
 
@@ -987,14 +1015,14 @@ const singleRequest = async({ blockchain, address, api, method, params, block, p
     } else if(method === 'getTokenAccountBalance') {
       return await provider.getTokenAccountBalance(new PublicKey(address))
     } else if (method === 'latestBlockNumber') {
-      return await provider.getBlockHeight()  
+      return await provider.getSlot(params ? params : undefined)
     } else if (method === 'balance') {
       return await balance({ address, provider })
     }
 
   } catch (error){
     if(providers && error && [
-      'Failed to fetch', '504', '503', '502', '500', '429', '426', '422', '413', '409', '408', '406', '405', '404', '403', '402', '401', '400'
+      'Failed to fetch', 'limit reached', '504', '503', '502', '500', '429', '426', '422', '413', '409', '408', '406', '405', '404', '403', '402', '401', '400'
     ].some((errorType)=>error.toString().match(errorType))) {
       let nextProvider = providers[providers.indexOf(provider)+1] || providers[0];
       return singleRequest({ blockchain, address, api, method, params, block, provider: nextProvider, providers })
@@ -1013,17 +1041,24 @@ var requestSolana = async ({ blockchain, address, api, method, params, block, ti
 
   if(strategy === 'fastest') {
 
-    return Promise.race(providers.map((provider)=>{
+    let allRequestsFailed = [];
 
-      const succeedingRequest = new Promise((resolve)=>{
-        singleRequest({ blockchain, address, api, method, params, block, provider }).then(resolve);
-      }); // failing requests are ignored during race/fastest
+    const allRequestsInParallel = providers.map((provider)=>{
+      return new Promise((resolve)=>{
+        allRequestsFailed.push(
+          singleRequest({ blockchain, address, api, method, params, block, provider }).then(resolve)
+        );
+      })
+    });
     
-      const timeoutPromise = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout || 10000));
-        
-      return Promise.race([succeedingRequest, timeoutPromise])
-    }))
-    
+    const timeoutPromise = new Promise((_, reject)=>setTimeout(()=>{ reject(new Error("Web3ClientTimeout")); }, timeout || 10000));
+
+    allRequestsFailed = Promise.all(allRequestsFailed.map((request)=>{
+      return new Promise((resolve)=>{ request.catch(resolve); })
+    })).then(()=>{ return });
+
+    return Promise.race([...allRequestsInParallel, timeoutPromise, allRequestsFailed])
+
   } else { // failover
 
     const provider = await Solana.getProvider(blockchain);
@@ -1068,11 +1103,11 @@ var parseUrl = (url) => {
 const request = async function (url, options) {
   
   const { blockchain, address, method } = parseUrl(url);
-  const { api, params, cache: cache$1, block, timeout, strategy } = (typeof(url) == 'object' ? url : options) || {};
+  const { api, params, cache: cache$1, block, timeout, strategy, cacheKey } = (typeof(url) == 'object' ? url : options) || {};
 
   return await cache({
     expires: cache$1 || 0,
-    key: [blockchain, address, method, params, block],
+    key: cacheKey || [blockchain, address, method, params, block],
     call: async()=>{
       if(supported$1.evm.includes(blockchain)) {
 

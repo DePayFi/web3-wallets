@@ -81,12 +81,19 @@ class Transaction {
   async getData() {
     let contractArguments = this.getContractArguments();
     let populatedTransaction;
+    let method = this.method;
+    if(this.getContract()[method] === undefined){
+      let fragment = this.getContract().interface.fragments.find((fragment) => {
+        return fragment.name == this.method
+      });
+      method = `${method}(${fragment.inputs.map((input)=>input.type).join(',')})`;
+    }
     if(contractArguments) {
-      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
+      populatedTransaction = await this.getContract().populateTransaction[method].apply(
         null, contractArguments
       );
     } else {
-      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(null);
+      populatedTransaction = await this.getContract().populateTransaction[method].apply(null);
     }
      
     return populatedTransaction.data
@@ -234,8 +241,8 @@ const submitInstructions = async ({ transaction, wallet })=> {
   return wallet._sendTransaction(transactionV0)
 };
 
-let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'velas'];
-supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
+let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism'];
+supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism'];
 supported$1.solana = ['solana'];
 
 function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }

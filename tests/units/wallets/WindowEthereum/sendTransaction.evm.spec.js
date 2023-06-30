@@ -147,7 +147,10 @@ describe('window.ethereum wallet sendTransaction (evm)', () => {
             'fantom': 'https://ftmscan.com/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
-            'velas': 'https://evmexplorer.velas.com/tx/',
+            'arbitrum': 'https://arbiscan.io/tx/',
+            'avalanche': 'https://snowtrace.io/tx/',
+            'gnosis': 'https://gnosisscan.io/tx/',
+            'optimism': 'https://optimistic.etherscan.io/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -290,7 +293,10 @@ describe('window.ethereum wallet sendTransaction (evm)', () => {
             'fantom': 'https://ftmscan.com/tx/',
             'bsc': 'https://bscscan.com/tx/',
             'polygon': 'https://polygonscan.com/tx/',
-            'velas': 'https://evmexplorer.velas.com/tx/',
+            'arbitrum': 'https://arbiscan.io/tx/',
+            'avalanche': 'https://snowtrace.io/tx/',
+            'gnosis': 'https://gnosisscan.io/tx/',
+            'optimism': 'https://optimistic.etherscan.io/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })

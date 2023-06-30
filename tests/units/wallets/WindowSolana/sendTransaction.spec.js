@@ -4,7 +4,7 @@ import { mock, connect, resetMocks, confirm, increaseBlock, fail } from '@depay/
 import { getProvider, resetCache } from '@depay/web3-client'
 import { supported as supportedBlockchains } from 'src/blockchains'
 import { SystemProgram, PublicKey, struct, u8, u32, u64 } from '@depay/solana-web3.js'
-import { Token } from '@depay/web3-tokens'
+import Token from '@depay/web3-tokens'
 
 describe('window.solana wallet sendTransaction', () => {
 
