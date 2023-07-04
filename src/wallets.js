@@ -14,6 +14,7 @@ import SolanaMobileWalletAdapter from './wallets/SolanaMobileWalletAdapter'
 import Solflare from './wallets/Solflare'
 import Trust from './wallets/Trust'
 import WalletConnectV1 from './wallets/WalletConnectV1'
+import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
 import WindowSolana from './wallets/WindowSolana'
@@ -37,5 +38,6 @@ export default {
   WindowSolana,
   SolanaMobileWalletAdapter,
   WalletConnectV1,
+  WalletConnectV2,
   WalletLink
 }

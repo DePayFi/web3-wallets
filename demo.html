@@ -176,6 +176,82 @@
         <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
+              <div>
+                <h5 class="px-4">WalletConnect V2 connect</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test connecting WalletConnect V2</div>
+                  <input placeholder="projectId WalletConnect v2" id="walletConnectV2ProjectId" type="text"/>
+                  <div id="walletConnectV2QRCode">
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.connectWalletConnectV2 = async()=>{
+                    localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectId").value
+                    let wallet = new Web3Wallets.wallets.WalletConnectV2()
+                    let account = await wallet.connect({
+                      connect: ({ uri })=>{
+                        copyTextToClipboard(uri)
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("walletConnectV2QRCode"));
+                      }
+                    })
+                    console.log('ACCOUNT', account)
+                    window.wallet = wallet
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='connectWalletConnectV2()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
+                <h5 class="px-4">Solana Pay</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test Solana Pay</div>
+                  <div id="solanaPayQR">
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.testSolanaPay = async()=>{
+                    wallet = new Web3Wallets.wallets.SolanaPay()
+                    let account = await wallet.connect({
+                      reconnect: true,
+                      connect: ({ uri })=>{
+                        copyTextToClipboard(uri)
+                        const qrCode = new QRCodeStyling({
+                          width: 300,
+                          height: 300,
+                          type: "svg",
+                          data: uri,
+                        });
+                        qrCode.append(document.getElementById("solanaPayQR"));
+                      }
+                    })
+                    console.log('ACCOUNT', account)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='testSolanaPay()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Coinbase WalletLink connect</h5>
                 <div class="px-4">
@@ -337,7 +413,7 @@
                     wallet.sendTransaction({ 
                       blockchain: "bsc",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
-                      value: "1000000000000000",
+                      value: "10000000000",
                       sent: function(transaction){ console.log("sent callback", transaction) },
                       succeeded: function(transaction){ console.log("succeeded callback", transaction) },
                       failed: function(transaction){ console.log("failed callback", transaction) } 
