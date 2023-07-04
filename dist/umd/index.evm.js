@@ -44520,7 +44520,7 @@
   const getConnectedChainId = async(signClient, session)=>{
     let results = (await Promise.all(session.namespaces.eip155.chains.map((identifier)=>{
       return Promise.race([
-        new Promise((resolve)=>{setTimeout(resolve, 500);}),
+        new Promise((resolve)=>{setTimeout(resolve, 1500);}),
         signClient.request({
           topic: session.topic,
           chainId: identifier,
@@ -44727,7 +44727,7 @@
         }, 4000);
         this.session.namespaces.eip155.chains.map((identifier)=>{
           return Promise.race([
-            new Promise((resolve)=>{setTimeout(resolve, 500);}),
+            new Promise((resolve)=>{setTimeout(resolve, 1500);}),
             this.signClient.request({
               topic: this.session.topic,
               chainId: identifier,
