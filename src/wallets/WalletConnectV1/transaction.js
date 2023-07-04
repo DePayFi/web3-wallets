@@ -94,7 +94,12 @@ const submit = ({ transaction, wallet }) => {
 
 const submitContractInteraction = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
-  const gasPrice = await provider.getGasPrice()
+  let gasPrice = await provider.getGasPrice()
+  if(wallet.session?.peerMeta?.name === 'Uniswap Wallet') {
+    gasPrice = undefined
+  } else {
+    gasPrice = gasPrice.toHexString()
+  }
   let gas = await estimate(transaction)
   const data = await transaction.getData()
   const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined
@@ -106,14 +111,19 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
     value,
     data,
     gas: gas.toHexString(),
-    gasPrice: gasPrice.toHexString(),
+    gasPrice,
     nonce,
   })
 }
 
 const submitSimpleTransfer = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
-  const gasPrice = await provider.getGasPrice()
+  let gasPrice = await provider.getGasPrice()
+  if(wallet.session?.peerMeta?.name === 'Uniswap Wallet') {
+    gasPrice = undefined
+  } else {
+    gasPrice = gasPrice.toHexString()
+  }
   const gas = await estimate(transaction)
   const value = ethers.utils.hexlify(ethers.BigNumber.from(transaction.value))
   const nonce = ethers.utils.hexlify(transaction.nonce)
@@ -123,7 +133,7 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
     value,
     data: '0x',
     gas: gas.toHexString(),
-    gasPrice: gasPrice.toHexString(),
+    gasPrice,
     nonce,
   })
 }

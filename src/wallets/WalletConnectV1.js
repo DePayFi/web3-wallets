@@ -109,6 +109,7 @@ class WalletConnectV1 {
     localStorage[KEY+'_name'] = undefined
     localStorage[KEY+'_logo'] = undefined
     currentPlainInstance = undefined
+    this.session = undefined
   }
 
   newWalletConnectInstance(connect) {
@@ -122,6 +123,7 @@ class WalletConnectV1 {
     instance.on("modal_closed", ()=>{
       setConnectedInstance(undefined)
       this.connector = undefined
+      this.session = undefined
     })
 
     return instance
@@ -155,16 +157,15 @@ class WalletConnectV1 {
         return await this.account()
       } else {
 
-        let { accounts, chainId } = await this.connector.connect()
+        let session = await this.connector.connect()
+        this.session = session
 
         if(options?.name) { localStorage[KEY+'_name'] = this.name = options.name }
         if(options?.logo) { localStorage[KEY+'_logo'] = this.logo = options.logo }
 
-        if(accounts instanceof Array && accounts.length) {
+        if(session.accounts instanceof Array && session.accounts.length) {
           setConnectedInstance(this)
-          accounts = accounts.map((account)=>ethers.utils.getAddress(account))
-
-          return accounts[0]
+          return ethers.utils.getAddress(session.accounts[0])
         } else {
           return
         }
