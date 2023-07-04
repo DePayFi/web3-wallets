@@ -155,6 +155,7 @@ class WalletConnectV2 {
 
       this.signClient.on("session_update", async(session)=> {
         if(session?.topic === this.session?.topic) {
+          this.session = this.signClient.session.get(session.topic)
         }
       })
 
