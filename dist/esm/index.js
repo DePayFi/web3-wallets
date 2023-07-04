@@ -3,7 +3,7 @@ import Blockchains from '@depay/web3-blockchains';
 import { PublicKey, SystemProgram, TransactionMessage, VersionedTransaction, transact } from '@depay/solana-web3.js';
 import { ethers } from 'ethers';
 import { WalletConnectClient } from '@depay/walletconnect-v1';
-import { Core, SignClient } from '@depay/walletconnect-v2';
+import { SignClient, Core } from '@depay/walletconnect-v2';
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk';
 
 function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -1552,7 +1552,7 @@ const KEY = 'depay:wallets:wc2';
 
 const getLastSession = async()=>{
   if(!localStorage[KEY+":projectId"]) { return }
-  let signClient = await getSignClient(new Core({ projectId: localStorage[KEY+":projectId"] }));
+  let signClient = await getSignClient();
   const existingSessions = signClient.find(getWalletConnectV2Config());
   const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined;
   if(lastSession && lastSession.expiry > Math.ceil(Date.now()/1000)) {
@@ -1620,16 +1620,22 @@ const getWalletConnectV2Config = ()=>{
   return { requiredNamespaces, optionalNamespaces }
 };
 
-const getSignClient = async(core)=>{
-  return await SignClient.init({
-    core,
-    metadata: {
-      name: document.title || 'dApp',
-      description: _optionalChain([document, 'access', _ => _.querySelector, 'call', _2 => _2('meta[name="description"]'), 'optionalAccess', _3 => _3.getAttribute, 'call', _4 => _4('content')]) || document.title || 'dApp',
-      url: location.href,
-      icons: [_optionalChain([document, 'access', _5 => _5.querySelector, 'call', _6 => _6("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _7 => _7.href]) || `${location.origin}/favicon.ico`]
-    }
-  })
+const getSignClient = ()=>{
+  if(window.getSignClientPromise) { return window.getSignClientPromise }
+  window.getSignClientPromise = new Promise(async(resolve)=>{
+    const signClient = await SignClient.init({
+      core: new Core({ projectId: localStorage[KEY+":projectId"] }),
+      metadata: {
+        name: document.title || 'dApp',
+        description: _optionalChain([document, 'access', _ => _.querySelector, 'call', _2 => _2('meta[name="description"]'), 'optionalAccess', _3 => _3.getAttribute, 'call', _4 => _4('content')]) || document.title || 'dApp',
+        url: location.href,
+        icons: [_optionalChain([document, 'access', _5 => _5.querySelector, 'call', _6 => _6("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _7 => _7.href]) || `${location.origin}/favicon.ico`]
+      }
+    });
+    resolve(signClient);
+  });
+
+  return window.getSignClientPromise  
 };
 
 class WalletConnectV2 {
@@ -1648,19 +1654,12 @@ class WalletConnectV2 {
     this.name = (localStorage[KEY+':name'] && localStorage[KEY+':name'] != undefined) ? localStorage[KEY+':name'] : this.constructor.info.name;
     this.logo = (localStorage[KEY+':logo'] && localStorage[KEY+':logo'] != undefined) ? localStorage[KEY+':logo'] : this.constructor.info.logo;
     this.blockchains = this.constructor.info.blockchains;
-    this.connector = WalletConnect.instance || this.newWalletConnectInstance();
-    WalletConnect.instance = this.connector;
     this.sendTransaction = (transaction)=>{
       return sendTransaction$1({
         wallet: this,
         transaction
       })
     };
-  }
-
-  newWalletConnectInstance() { 
-    if(!localStorage[KEY+":projectId"]) { throw(`localStorage['${KEY+":projectId"}'] is not set!`) }
-    return new Core({ projectId: localStorage[KEY+":projectId"] })
   }
 
   async account() {
@@ -1684,13 +1683,12 @@ class WalletConnectV2 {
     try {
 
       // delete localStorage[`wc@2:client:0.3//session`] // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
-      this.signClient = await getSignClient(this.connector);
+      this.signClient = await getSignClient();
 
       this.signClient.on("session_delete", (session)=> {
         if(_optionalChain([session, 'optionalAccess', _8 => _8.topic]) === _optionalChain([this, 'access', _9 => _9.session, 'optionalAccess', _10 => _10.topic])) {
           localStorage[KEY+':name'] = undefined;
           localStorage[KEY+':logo'] = undefined;
-          this.connector = undefined;
           WalletConnect.instance = undefined;
           this.signClient = undefined;
           this.session = undefined;
