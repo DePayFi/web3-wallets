@@ -2105,10 +2105,10 @@
             
             if(wallet.getConnectedInstance) {
               instance = await wallet.getConnectedInstance();
-              if(drip) { drip(instance); }
+              if(drip && instance) { drip(instance); }
               return instance
             } else {
-              if(drip) { drip(wallet); }
+              if(drip && wallet) { drip(wallet); }
               return new wallet
             }
           }
