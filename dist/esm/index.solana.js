@@ -2564,6 +2564,8 @@ class WalletConnectV2 {
           localStorage[KEY+':logo'] = this.logo;
         }
       }
+      if(_optionalChain([options, 'optionalAccess', _21 => _21.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+      if(_optionalChain([options, 'optionalAccess', _22 => _22.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
       let connectedChainId;
       for(var i = 0; i<3; i++) {
@@ -2634,7 +2636,7 @@ class WalletConnectV2 {
     switch (event) {
       case 'account':
         internalCallback = async(event)=> {
-          if(_optionalChain([event, 'optionalAccess', _21 => _21.topic]) === _optionalChain([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.topic]) && event.params.event.name === 'accountsChanged') {
+          if(_optionalChain([event, 'optionalAccess', _23 => _23.topic]) === _optionalChain([this, 'access', _24 => _24.session, 'optionalAccess', _25 => _25.topic]) && event.params.event.name === 'accountsChanged') {
             callback(await this.account());
           }
         };

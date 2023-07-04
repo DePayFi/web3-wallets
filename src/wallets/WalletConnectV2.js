@@ -184,6 +184,8 @@ class WalletConnectV2 {
           localStorage[KEY+':logo'] = this.logo
         }
       }
+      if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
+      if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
 
       let connectedChainId
       for(var i = 0; i<3; i++) {
