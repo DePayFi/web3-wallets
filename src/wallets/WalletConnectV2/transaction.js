@@ -1,12 +1,9 @@
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { Transaction } from '../../Transaction'
 import { request, estimate, getProvider } from '@depay/web3-client'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
-  if((await wallet.connectedTo(transaction.blockchain)) == false) {
-    await wallet.switchTo(transaction.blockchain)
-  }
   if((await wallet.connectedTo(transaction.blockchain)) == false) {
     throw({ code: 'WRONG_NETWORK' })
   }
@@ -15,7 +12,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then(async (response)=>{
     if(typeof response == 'string') {
-      let blockchain = Blockchain.findByName(transaction.blockchain)
+      let blockchain = Blockchains[transaction.blockchain]
       transaction.id = response
       transaction.url = blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
@@ -77,9 +74,12 @@ const submit = ({ transaction, wallet }) => {
 
 const submitContractInteraction = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
+  const blockchain = Blockchains[transaction.blockchain]
+  const gas = await estimate(transaction)
+  const gasPrice = await provider.getGasPrice()
   return wallet.signClient.request({
     topic: wallet.session.topic,
-    chainId: wallet.session.chainId,
+    chainId: `${blockchain.namespace}:${blockchain.networkId}`,
     request: {
       method: 'eth_sendTransaction',
       params: [{
@@ -87,8 +87,8 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
         to: transaction.to,
         value: transaction.value?.toString(),
         data: await transaction.getData(),
-        gas: (await estimate(transaction)).toString(),
-        gasPrice: (await provider.getGasPrice()).toString(),
+        gas: gas.toHexString(),
+        gasPrice: gasPrice.toHexString(),
         nonce: transaction.nonce,
       }]
     }
@@ -97,19 +97,20 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
 
 const submitSimpleTransfer = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
-  let blockchain = Blockchain.findByName(transaction.blockchain)
+  let blockchain = Blockchains[transaction.blockchain]
+  const gas = await estimate(transaction)
+  const gasPrice = await provider.getGasPrice()
   return wallet.signClient.request({
     topic: wallet.session.topic,
-    chainId: wallet.session.chainId,
+    chainId: `${blockchain.namespace}:${blockchain.networkId}`,
     request: {
       method: 'eth_sendTransaction',
       params: [{
-        chainId: blockchain.id,
         from: transaction.from,
         to: transaction.to,
         value: transaction.value?.toString(),
-        gas: (await estimate(transaction)).toString(),
-        gasPrice: (await provider.getGasPrice()).toString(),
+        gas: gas.toHexString(),
+        gasPrice: gasPrice.toHexString(),
         nonce: transaction.nonce
       }]
     }

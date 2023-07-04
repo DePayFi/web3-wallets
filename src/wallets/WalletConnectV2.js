@@ -1,4 +1,4 @@
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { Core, SignClient } from "@depay/walletconnect-v2"
 import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnectV2/transaction'
@@ -32,7 +32,7 @@ class WalletConnectV2 {
     this.blockchains = this.constructor.info.blockchains
     this.connector = WalletConnect.instance || this.newWalletConnectInstance()
     WalletConnect.instance = this.connector
-    this.sendTransaction = (transaction)=>{ 
+    this.sendTransaction = (transaction)=>{
       return sendTransaction({
         wallet: this,
         transaction
@@ -49,16 +49,25 @@ class WalletConnectV2 {
     return this.connectedAccount
   }
 
-  async connect({ connect, blockchain }) {
+  async connect({ connect, projectId }) {
     
-    if(!connect || typeof connect != 'function') { throw('Provided connect paremeters is not present or not a function!') }
+    if(!connect || typeof connect != 'function') { throw('"connect" paremeters is not present or not a function!') }
+    if(!projectId) { throw('WalletConnectV2 "projectId" is provided!') }
     
     try {
 
       delete localStorage[`wc@2:core:${this.connector.pairing.version}//subscription`] // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
-      this.signClient = await SignClient.init({ core: this.connector })
+      this.signClient = await SignClient.init({
+        projectId,
+        metadata: {
+          name: document.title || 'dApp',
+          description: document.querySelector('meta[name="description"]')?.getAttribute('content') || document.title || 'dApp',
+          url: location.href,
+          icons: [document.querySelector("link[rel~='icon'], link[rel~='shortcut icon']")?.href || `${location.origin}/favicon.ico`]
+        }
+      })
 
-      this.signClient.on("session_delete", () => {
+      this.signClient.on("session_delete", ()=> {
         console.log('WALLETCONNECT DISCONNECT')
         this.connector = undefined
         WalletConnect.instance = undefined
@@ -67,26 +76,34 @@ class WalletConnectV2 {
         this.session = undefined
       })
 
-      blockchain = Blockchain.findByName(blockchain)
+      this.signClient.on("session_update", (session)=> {
+        console.log('session', session)
+        if(session.topic === this.session.topic) {
+          console.log('CURRENT SESSION UPDATE', session)
+        }
+      })
 
-      let namespaces = {}
+      this.signClient.on("session_event", ()=> {
+        console.log('SESSION EVENT')
+      })
 
-      namespaces[blockchain.namespace] = {
+      let requiredNamespaces = {}
+
+      requiredNamespaces['eip155'] = {
         methods: [
           "eth_sendTransaction",
           "personal_sign",
           "eth_chainId",
           "wallet_switchEthereumChain",
         ],
-        chains: [`${blockchain.namespace}:${blockchain.networkId}`],
+        chains: [`eip155:1`],
         events: [],
       }
 
-      const { uri, approval } = await this.signClient.connect({ requiredNamespaces: namespaces })
+      const { uri, approval } = await this.signClient.connect({ requiredNamespaces })
 
       await connect({ uri })
       this.session = await approval()
-      this.session.chainId = `${blockchain.namespace}:${blockchain.networkId}`
       
       let meta = this.session?.peer?.metadata
       if(meta && meta.name) {
@@ -94,9 +111,35 @@ class WalletConnectV2 {
         if(meta?.icons && meta.icons.length) { this.logo = meta.icons[0] }
       }
 
-      const account = Object.values(this.session.namespaces)[0].accounts[0].split(":")[2]
+      let getConnectedChainId = async()=>{
+        let results = (await Promise.all(this.session.namespaces.eip155.chains.map((identifier)=>{
+          return Promise.race([
+            new Promise((resolve)=>{setTimeout(resolve, 500)}),
+            this.signClient.request({
+              topic: this.session.topic,
+              chainId: identifier,
+              request: {
+                method: 'eth_chainId'
+              }
+            })
+          ])
+        })))
+        return results.filter(Boolean)[0]
+      }
+
+      let connectedChainId
+      for(var i = 0; i<3; i++) {
+        await new Promise((resolve)=>{setTimeout(resolve, 500)})
+        connectedChainId = await getConnectedChainId()
+        if(connectedChainId){ break }
+      }
+      
+      let connectedBlockchain = Blockchains.findById(connectedChainId)
+      this.connectedBlockchain = connectedBlockchain.name
+      this.session.chainId = `${connectedBlockchain.namespace}:${connectedBlockchain.networkId}`
+
+      const account = Object.values(this.session.namespaces)[0].accounts.find((account)=>account.match(`:${connectedBlockchain.networkId}:`)).split(":")[2]
       this.connectedAccount = account
-      this.connectedBlockchain = blockchain.name
       
       return account
 
@@ -106,10 +149,18 @@ class WalletConnectV2 {
   }
 
   async connectedTo(input) {
+    let chainId = await this.signClient.request({
+      topic: this.session.topic,
+      chainId: this.session.chainId,
+      request: {
+        method: 'eth_chainId'
+      }
+    })
+    const blockchain = Blockchains.findById(chainId)
+    if(!blockchain) { return false }
     if(input) {
-      return input === this.connectedBlockchain
+      return input === blockchain.name
     } else {
-      const blockchain = Blockchain.findByName(this.connectedBlockchain)
       return blockchain.name
     }
   }
@@ -117,7 +168,7 @@ class WalletConnectV2 {
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
       let resolved, rejected
-      const blockchain = Blockchain.findByName(blockchainName)
+      const blockchain = Blockchains[blockchainName]
       setTimeout(async()=>{
         if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
           reject({ code: 'NOT_SUPPORTED' })
@@ -125,7 +176,6 @@ class WalletConnectV2 {
           resolve()
         }
       }, 4000)
-      this.connectedBlockchain = blockchain.name
       this.signClient.request({
         topic: this.session.topic,
         chainId: this.session.chainId,
@@ -134,7 +184,7 @@ class WalletConnectV2 {
           params: [{ chainId: blockchain.id }],
         }
       }).then((result)=>{
-        console.log('RESULT ', result)
+        this.session.chainId = `${blockchain.namespace}:${blockchain.networkId}`
         resolved = true
         resolve()
       })
@@ -148,11 +198,11 @@ class WalletConnectV2 {
   }
 
   on(event, callback) {
-    // currently not supported
+    // not yet supported
   }
 
   off(event, callback) {
-    // currently not supported
+    // not yet supported
   }
 
   async sign(message) {
@@ -162,8 +212,6 @@ class WalletConnectV2 {
       topic: this.session.topic,
       chainId: this.session.chainId,
       request:{
-        id: 1,
-        jsonrpc: '2.0',
         method: 'personal_sign',
         params
       }

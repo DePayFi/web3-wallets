@@ -76,12 +76,19 @@ class Transaction {
   async getData() {
     let contractArguments = this.getContractArguments()
     let populatedTransaction
+    let method = this.method
+    if(this.getContract()[method] === undefined){
+      let fragment = this.getContract().interface.fragments.find((fragment) => {
+        return fragment.name == this.method
+      })
+      method = `${method}(${fragment.inputs.map((input)=>input.type).join(',')})`;
+    }
     if(contractArguments) {
-      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(
+      populatedTransaction = await this.getContract().populateTransaction[method].apply(
         null, contractArguments
       )
     } else {
-      populatedTransaction = await this.getContract().populateTransaction[this.method].apply(null)
+      populatedTransaction = await this.getContract().populateTransaction[method].apply(null)
     }
      
     return populatedTransaction.data

@@ -29,6 +29,7 @@ const supported = [
   wallets.Solflare,
   wallets.WalletConnectV1,
   wallets.WalletConnectV2,
+  wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,
 ]
 
@@ -51,6 +52,7 @@ const supported = [
   wallets.HyperPay,
   wallets.WalletConnectV1,
   wallets.WalletConnectV2,
+  wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,
   wallets.WindowEthereum,
 ]
