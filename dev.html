@@ -180,7 +180,7 @@
                 <h5 class="px-4">WalletConnect V2 connect</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test connecting WalletConnect V2</div>
-                  <input id="walletConnectV2ProjectId" type="text"/>
+                  <input placeholder="projectId WalletConnect v2" id="walletConnectV2ProjectId" type="text"/>
                   <div id="walletConnectV2QRCode">
                   </div>
                 </div>
@@ -188,9 +188,9 @@
               <div class="px-4 pt-3">
                 <script>
                   window.connectWalletConnectV2 = async()=>{
+                    localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectId").value
                     let wallet = new Web3Wallets.wallets.WalletConnectV2()
                     let account = await wallet.connect({
-                      projectId: document.getElementById("walletConnectV2ProjectId").value,
                       connect: ({ uri })=>{
                         copyTextToClipboard(uri)
                         const qrCode = new QRCodeStyling({
