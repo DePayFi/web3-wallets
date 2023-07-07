@@ -104,7 +104,7 @@ Pass a `drip` callback to `getWallets` to receive available wallet as soon as th
 
 getWallets({
   drip: (wallet)=>{
-    setAvaialbleWallets(
+    setAvailableWallets(
       availableWallets.concat([wallet])
     )
   }
