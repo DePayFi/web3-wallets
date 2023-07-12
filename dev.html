@@ -679,6 +679,67 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Sign typed data</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test signing typed data with the connected wallet.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                    window.signTypedData = async ()=> {
+                      console.log('signTypedData')
+
+                      let signature = await window.wallet.sign({
+                        types: {
+                          Domain: [
+                            { name: "name", type: "string" },
+                            { name: "version", type: "string" },
+                            { name: "chainId", type: "uint256" },
+                            { name: "verifyingContract", type: "address" }
+                          ],
+                          PermitSingle: [
+                            { name: "details", type: "PermitDetails" },
+                            { name: "spender", type: "address" },
+                            { name: "sigDeadline", type: "uint256" }
+                          ],
+                          PermitDetails: [
+                            { name: "token", type: "address" },
+                            { name: "amount", type: "uint160" },
+                            { name: "expiration", type: "uint48" },
+                            { name: "nonce", type: "uint48" }
+                          ]
+                        },
+                        primaryType: "PermitSingle",
+                        domain: {
+                          chainId: 1,
+                          name: "Permit2",
+                          verifyingContract: "0x000000000022d473030f116ddee9f6b43ac78ba3",
+                          version: "1"
+                        },
+                        message: {
+                          details: {
+                            token: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+                            amount: "1461501637330902918203684832716283019655932542975",
+                            expiration: Math.floor(Date.now() / 1000) + 86400,
+                            nonce: 0
+                          },
+                          spender: "0x000000000022d473030f116ddee9f6b43ac78ba3",
+                          sigDeadline: Math.floor(Date.now() / 1000) + 86400
+                        }
+                      })
+                      console.log('signature', signature)
+                    }
+                  </script>
+                <button class='btn btn-primary' onClick='window.signTypedData()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
                 <h5 class="px-4">Switch network</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test switching network.</div>

@@ -135,11 +135,25 @@ class WalletLink {
   }
 
   async sign(message) {
-    let address = await this.account()
-    let provider = new ethers.providers.Web3Provider(this.connector, 'any')
-    let signer = provider.getSigner(0)
-    let signature = await signer.signMessage(message)
-    return signature
+    if(typeof message === 'object') {
+      let provider = this.connector
+      let account = await this.account()
+      if((await this.connectedTo(Blockchains.findByNetworkId(message.domain.chainId).name)) === false) {
+        throw({ code: 'WRONG_NETWORK' })
+      }
+      let signature = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [account, message],
+        from: account,
+      })
+      return signature
+    } else if (typeof message === 'string') {
+      let address = await this.account()
+      let provider = new ethers.providers.Web3Provider(this.connector, 'any')
+      let signer = provider.getSigner(0)
+      let signature = await signer.signMessage(message)
+      return signature
+    }
   }
 }
 

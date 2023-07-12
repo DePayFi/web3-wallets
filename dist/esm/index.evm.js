@@ -43563,11 +43563,25 @@ class WindowEthereum {
   }
 
   async sign(message) {
-    await this.account();
-    let provider = new ethers.providers.Web3Provider(this.getProvider(), 'any');
-    let signer = provider.getSigner(0);
-    let signature = await signer.signMessage(message);
-    return signature
+    if(typeof message === 'object') {
+      let provider = this.getProvider();
+      let account = await this.account();
+      if((await this.connectedTo(Blockchains.findByNetworkId(message.domain.chainId).name)) === false) {
+        throw({ code: 'WRONG_NETWORK' })
+      }
+      let signature = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [account, message],
+        from: account,
+      });
+      return signature
+    } else if (typeof message === 'string') {
+      await this.account();
+      let provider = new ethers.providers.Web3Provider(this.getProvider(), 'any');
+      let signer = provider.getSigner(0);
+      let signature = await signer.signMessage(message);
+      return signature
+    }
   }
 } WindowEthereum.__initStatic(); WindowEthereum.__initStatic2();
 
@@ -44381,13 +44395,26 @@ class WalletConnectV1 {
   }
 
   async sign(message) {
-    let blockchain = await this.connectedTo();
-    let address = await this.account();
-    const smartContractWallet = await getSmartContractWallet(blockchain, address);
-    if(smartContractWallet){ throw({ message: 'Smart contract wallets are not supported for signing!', code: "SMART_CONTRACT_WALLET_NOT_SUPPORTED" }) }
-    var params = [ethers.utils.toUtf8Bytes(message), address];
-    let signature = await this.connector.signPersonalMessage(params);
-    return signature
+    if(typeof message === 'object') {
+      let account = await this.account();
+      if((await this.connectedTo(Blockchains.findByNetworkId(message.domain.chainId).name)) === false) {
+        throw({ code: 'WRONG_NETWORK' })
+      }
+      let signature = await this.connector.sendCustomRequest({
+        jsonrpc: '2.0',
+        method: 'eth_signTypedData_v4',
+        params: [account, JSON.stringify(message)],
+      });
+      return signature
+    } else if (typeof message === 'string') {
+      let blockchain = await this.connectedTo();
+      let address = await this.account();
+      const smartContractWallet = await getSmartContractWallet(blockchain, address);
+      if(smartContractWallet){ throw({ message: 'Smart contract wallets are not supported for signing!', code: "SMART_CONTRACT_WALLET_NOT_SUPPORTED" }) }
+      var params = [ethers.utils.toUtf8Bytes(message), address];
+      let signature = await this.connector.signPersonalMessage(params);
+      return signature
+    }
   }
 } WalletConnectV1.__initStatic(); WalletConnectV1.__initStatic2();
 
@@ -44559,6 +44586,7 @@ const getWalletConnectV2Config = ()=>{
   const methods = [
     "eth_sendTransaction",
     "personal_sign",
+    "eth_signTypedData_v4",
     "eth_chainId",
     "eth_accounts",
     "wallet_switchEthereumChain",
@@ -44782,22 +44810,39 @@ class WalletConnectV2 {
   }
 
   async sign(message) {
-    const address = await this.account();
-    const params = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)), address];
-    const connectedChainId = await getConnectedChainId(this.signClient, this.session);
-    const blockchain = Blockchains.findById(connectedChainId);
-    let signature = await this.signClient.request({
-      topic: this.session.topic,
-      chainId: `${blockchain.namespace}:${blockchain.networkId}`,
-      request:{
-        method: 'personal_sign',
-        params
+    if(typeof message === 'object') {
+      let account = await this.account();
+      const blockchain = Blockchains.findByNetworkId(message.domain.chainId);
+      if((await this.connectedTo(blockchain.name)) === false) {
+        throw({ code: 'WRONG_NETWORK' })
       }
-    });
-    if(typeof signature == 'object') {
-      signature = ethers.utils.hexlify(signature);
+      let signature = await this.signClient.request({
+        topic: this.session.topic,
+        chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+        request:{
+          method: 'eth_signTypedData_v4',
+          params: [account, JSON.stringify(message)],
+        }
+      });
+      return signature
+    } else if (typeof message === 'string') {
+      const address = await this.account();
+      const params = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)), address];
+      const connectedChainId = await getConnectedChainId(this.signClient, this.session);
+      const blockchain = Blockchains.findById(connectedChainId);
+      let signature = await this.signClient.request({
+        topic: this.session.topic,
+        chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+        request:{
+          method: 'personal_sign',
+          params
+        }
+      });
+      if(typeof signature == 'object') {
+        signature = ethers.utils.hexlify(signature);
+      }
+      return signature
     }
-    return signature
   }
 } WalletConnectV2.__initStatic(); WalletConnectV2.__initStatic2();
 
@@ -45015,11 +45060,25 @@ class WalletLink {
   }
 
   async sign(message) {
-    await this.account();
-    let provider = new ethers.providers.Web3Provider(this.connector, 'any');
-    let signer = provider.getSigner(0);
-    let signature = await signer.signMessage(message);
-    return signature
+    if(typeof message === 'object') {
+      let provider = this.connector;
+      let account = await this.account();
+      if((await this.connectedTo(Blockchains.findByNetworkId(message.domain.chainId).name)) === false) {
+        throw({ code: 'WRONG_NETWORK' })
+      }
+      let signature = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [account, message],
+        from: account,
+      });
+      return signature
+    } else if (typeof message === 'string') {
+      await this.account();
+      let provider = new ethers.providers.Web3Provider(this.connector, 'any');
+      let signer = provider.getSigner(0);
+      let signature = await signer.signMessage(message);
+      return signature
+    }
   }
 } WalletLink.__initStatic(); WalletLink.__initStatic2();
 

@@ -52,6 +52,7 @@ const getWalletConnectV2Config = ()=>{
   const methods = [
     "eth_sendTransaction",
     "personal_sign",
+    "eth_signTypedData_v4",
     "eth_chainId",
     "eth_accounts",
     "wallet_switchEthereumChain",
@@ -275,22 +276,39 @@ class WalletConnectV2 {
   }
 
   async sign(message) {
-    const address = await this.account()
-    const params = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)), address]
-    const connectedChainId = await getConnectedChainId(this.signClient, this.session)
-    const blockchain = Blockchains.findById(connectedChainId)
-    let signature = await this.signClient.request({
-      topic: this.session.topic,
-      chainId: `${blockchain.namespace}:${blockchain.networkId}`,
-      request:{
-        method: 'personal_sign',
-        params
+    if(typeof message === 'object') {
+      let account = await this.account()
+      const blockchain = Blockchains.findByNetworkId(message.domain.chainId)
+      if((await this.connectedTo(blockchain.name)) === false) {
+        throw({ code: 'WRONG_NETWORK' })
       }
-    })
-    if(typeof signature == 'object') {
-      signature = ethers.utils.hexlify(signature)
+      let signature = await this.signClient.request({
+        topic: this.session.topic,
+        chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+        request:{
+          method: 'eth_signTypedData_v4',
+          params: [account, JSON.stringify(message)],
+        }
+      })
+      return signature
+    } else if (typeof message === 'string') {
+      const address = await this.account()
+      const params = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)), address]
+      const connectedChainId = await getConnectedChainId(this.signClient, this.session)
+      const blockchain = Blockchains.findById(connectedChainId)
+      let signature = await this.signClient.request({
+        topic: this.session.topic,
+        chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+        request:{
+          method: 'personal_sign',
+          params
+        }
+      })
+      if(typeof signature == 'object') {
+        signature = ethers.utils.hexlify(signature)
+      }
+      return signature
     }
-    return signature
   }
 }
 
