@@ -55,16 +55,29 @@ class Transaction {
     }
   }
 
+  findFragment() {
+    return this.getContract().interface.fragments.find((fragment) => {
+      return(
+        fragment.name == this.method &&
+        (fragment.inputs && this.params && typeof(this.params) === 'object' ? fragment.inputs.length == Object.keys(this.params).length : true)
+      )
+    })
+  }
+
+  getMethodNameWithSignature() {
+    let fragment = this.findFragment()
+    if(fragment.inputs) {
+      return `${this.method}(${fragment.inputs.map((input)=>input.type).join(',')})`
+    } else {
+      return this.method
+    }
+  }
+
   getContractArguments() {
     if(this.params instanceof Array) {
       return this.params
     } else if (this.params instanceof Object) {
-      let fragment = this.getContract().interface.fragments.find((fragment) => {
-        return(
-          fragment.name == this.method &&
-          fragment.inputs.length == Object.keys(this.params).length
-        )
-      })
+      let fragment = this.findFragment()
 
       return fragment.inputs.map((input) => {
         return this.params[input.name]
@@ -79,19 +92,12 @@ class Transaction {
   async getData() {
     let contractArguments = this.getContractArguments()
     let populatedTransaction
-    let method = this.method
-    if(this.getContract()[method] === undefined){
-      let fragment = this.getContract().interface.fragments.find((fragment) => {
-        return fragment.name == this.method
-      })
-      method = `${method}(${fragment.inputs.map((input)=>input.type).join(',')})`;
-    }
     if(contractArguments) {
-      populatedTransaction = await this.getContract().populateTransaction[method].apply(
+      populatedTransaction = await this.getContract().populateTransaction[this.getMethodNameWithSignature()].apply(
         null, contractArguments
       )
     } else {
-      populatedTransaction = await this.getContract().populateTransaction[method].apply(null)
+      populatedTransaction = await this.getContract().populateTransaction[this.getMethodNameWithSignature()].apply(null)
     }
      
     return populatedTransaction.data
