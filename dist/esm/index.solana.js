@@ -63,7 +63,10 @@ class Transaction {
 
   getContractArguments() {
     let fragment = this.getContract().interface.fragments.find((fragment) => {
-      return fragment.name == this.method
+      return(
+        fragment.name == this.method &&
+        fragment.inputs.length == this.params.length
+      )
     });
 
     if(this.params instanceof Array) {
