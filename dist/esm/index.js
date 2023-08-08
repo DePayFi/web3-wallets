@@ -62,16 +62,16 @@ class Transaction {
   }
 
   getContractArguments() {
-    let fragment = this.getContract().interface.fragments.find((fragment) => {
-      return(
-        fragment.name == this.method &&
-        fragment.inputs.length == this.params.length
-      )
-    });
-
     if(this.params instanceof Array) {
       return this.params
     } else if (this.params instanceof Object) {
+      let fragment = this.getContract().interface.fragments.find((fragment) => {
+        return(
+          fragment.name == this.method &&
+          fragment.inputs.length == Object.keys(this.params).length
+        )
+      });
+
       return fragment.inputs.map((input) => {
         return this.params[input.name]
       })
