@@ -7,21 +7,36 @@ import { supported } from '../blockchains'
 const KEY = 'depay:wallets:wc2'
 
 const getLastSession = async()=>{
-  if(!localStorage[KEY+":projectId"]) { return }
   let signClient = await getSignClient()
   const existingSessions = signClient.find(getWalletConnectV2Config())
   const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined
   if(lastSession && lastSession.expiry > Math.ceil(Date.now()/1000)) {
     try {
-      if(await getConnectedChainId(signClient, lastSession)) {
-        return lastSession
-      }
+      console.log('CHECK LAST SESSION', lastSession)
+      let connectedChainId = await signClient.request({
+        topic: lastSession.topic,
+        chainId: lastSession.namespaces.eip155.chains[0],
+        request: {
+          method: 'eth_chainId'
+        }
+      })
+      console.log('connectedChainId', connectedChainId)
     } catch {}
   }
 }
 
 const getConnectedChainId = async(signClient, session)=>{
+  console.log('getConnectedChainId')
+  console.log('signClient', signClient)
+  console.log('session.namespaces.eip155.chains', session.namespaces.eip155.chains)
   let results = (await Promise.all(session.namespaces.eip155.chains.map((identifier)=>{
+    console.log('signClient.request', {
+      topic: session.topic,
+      chainId: identifier,
+      request: {
+        method: 'eth_chainId'
+      }
+    })
     return Promise.race([
       new Promise((resolve)=>{setTimeout(resolve, 1500)}),
       signClient.request({
@@ -33,15 +48,16 @@ const getConnectedChainId = async(signClient, session)=>{
       })
     ])
   })))
+  console.log('RESULTS', results)
   return results.filter(Boolean)[0]
 }
 
 const getConnectedInstance = async()=>{
   if(localStorage[KEY+":projectId"]) {
-    const lastSession = await getLastSession()
-    if(lastSession) {
-      return new WalletConnectV2()
-    }
+    // const lastSession = await getLastSession()
+    // if(lastSession) {
+    //   return new WalletConnectV2()
+    // }
   }
 }
 
@@ -81,7 +97,8 @@ const getSignClient = ()=>{
   if(window.getSignClientPromise) { return window.getSignClientPromise }
   window.getSignClientPromise = new Promise(async(resolve)=>{
     const signClient = await SignClient.init({
-      core: new Core({ projectId: localStorage[KEY+":projectId"] }),
+      // core: new Core({ projectId: localStorage[KEY+":projectId"] }),
+      projectId: localStorage[KEY+":projectId"],
       metadata: {
         name: document.title || 'dApp',
         description: document.querySelector('meta[name="description"]')?.getAttribute('content') || document.title || 'dApp',
@@ -92,7 +109,7 @@ const getSignClient = ()=>{
     resolve(signClient)
   })
 
-  return window.getSignClientPromise  
+  return window.getSignClientPromise
 }
 
 class WalletConnectV2 {
@@ -120,17 +137,9 @@ class WalletConnectV2 {
   }
 
   async account() {
-    const connectedChainId = await getConnectedChainId(this.signClient, this.session)
-    const connectedBlockchain = Blockchains.findById(connectedChainId)
-    const accounts = await this.signClient.request({
-      topic: this.session.topic,
-      chainId: `${connectedBlockchain.namespace}:${connectedBlockchain.networkId}`,
-      request:{
-        method: 'eth_accounts',
-        params: [{ chainId: connectedBlockchain.id }],
-      }
-    })
-    return accounts ? accounts[0] : undefined
+    if(this.session?.namespaces?.eip155?.accounts?.length) {
+      return this.session.namespaces.eip155.accounts[0].split(':')[2]
+    }
   }
 
   async connect(options) {
@@ -146,7 +155,6 @@ class WalletConnectV2 {
         if(session?.topic === this.session?.topic) {
           localStorage[KEY+':name'] = undefined
           localStorage[KEY+':logo'] = undefined
-          WalletConnect.instance = undefined
           this.signClient = undefined
           this.session = undefined
         }
@@ -159,47 +167,41 @@ class WalletConnectV2 {
       })
 
       this.signClient.on("session_event", (event)=> {
-        if(event?.topic === this.session?.topic) {
-        }
+        if(event?.topic === this.session?.topic) {}
       })
 
-      const lastSession = await getLastSession()
-      if(lastSession) {
-        this.session = lastSession
-      }
-      
       const connectWallet = async()=>{
         const { uri, approval } = await this.signClient.connect(getWalletConnectV2Config())
         await connect({ uri })
         this.session = await approval()
+        console.log('SESSION!', this.session)
       }
 
-      if(!this.session){ await connectWallet() }
+      const lastSession = await getLastSession()
+      console.log('lastSessionFound?', lastSession)
+      // if(lastSession) {
+      //   this.session = lastSession
+      // }
 
-      let meta = this.session?.peer?.metadata
-      if(meta && meta.name) {
-        this.name = meta.name
-        localStorage[KEY+':name'] = meta.name
-        if(meta?.icons && meta.icons.length) {
-          this.logo = meta.icons[0]
-          localStorage[KEY+':logo'] = this.logo
-        }
-      }
-      if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
-      if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
+      // if(!this.session){ await connectWallet() }
 
-      let connectedChainId
-      for(var i = 0; i<3; i++) {
-        await new Promise((resolve)=>{setTimeout(resolve, 500)})
-        connectedChainId = await getConnectedChainId(this.signClient, this.session)
-        if(connectedChainId){ break }
-      }
+      // let meta = this.session?.peer?.metadata
+      // if(meta && meta.name) {
+      //   this.name = meta.name
+      //   localStorage[KEY+':name'] = meta.name
+      //   if(meta?.icons && meta.icons.length) {
+      //     this.logo = meta.icons[0]
+      //     localStorage[KEY+':logo'] = this.logo
+      //   }
+      // }
+      // if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
+      // if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
 
-      if(!connectedChainId) { await connectWallet() }
+      // // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+      // //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
+      // // })
 
-      let connectedBlockchain = Blockchains.findById(connectedChainId)
-
-      return await this.account()
+      // return await this.account()
 
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error)
@@ -207,14 +209,19 @@ class WalletConnectV2 {
   }
 
   async connectedTo(input) {
-    let chainId = await getConnectedChainId(this.signClient, this.session)
-    if(!chainId) { return false }
-    const blockchain = Blockchains.findById(chainId)
-    if(!blockchain) { return false }
     if(input) {
-      return input === blockchain.name
+      if(this.session?.namespaces?.eip155?.chains?.length) {
+        return !!this.session.namespaces.eip155.chains.some((chainIdentifier)=>{
+          let blockchain = Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
+          return blockchain && blockchain.name === input
+        })
+      }
     } else {
-      return blockchain.name
+      if(this.session?.namespaces?.eip155?.chains?.length) {
+        return this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+          return Blockchains.findByNetworkId(chainIdentifier.split(':')[1]).name
+        })
+      }
     }
   }
 
