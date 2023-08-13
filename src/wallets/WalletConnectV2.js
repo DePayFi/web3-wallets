@@ -183,25 +183,25 @@ class WalletConnectV2 {
       //   this.session = lastSession
       // }
 
-      // if(!this.session){ await connectWallet() }
+      if(!this.session){ await connectWallet() }
 
-      // let meta = this.session?.peer?.metadata
-      // if(meta && meta.name) {
-      //   this.name = meta.name
-      //   localStorage[KEY+':name'] = meta.name
-      //   if(meta?.icons && meta.icons.length) {
-      //     this.logo = meta.icons[0]
-      //     localStorage[KEY+':logo'] = this.logo
-      //   }
-      // }
-      // if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
-      // if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
+      let meta = this.session?.peer?.metadata
+      if(meta && meta.name) {
+        this.name = meta.name
+        localStorage[KEY+':name'] = meta.name
+        if(meta?.icons && meta.icons.length) {
+          this.logo = meta.icons[0]
+          localStorage[KEY+':logo'] = this.logo
+        }
+      }
+      if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
+      if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
 
-      // // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-      // //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
-      // // })
+      // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+      //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
+      // })
 
-      // return await this.account()
+      return await this.account()
 
     } catch (error) {
       console.log('WALLETCONNECT ERROR', error)

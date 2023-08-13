@@ -44716,25 +44716,25 @@
         //   this.session = lastSession
         // }
 
-        // if(!this.session){ await connectWallet() }
+        if(!this.session){ await connectWallet(); }
 
-        // let meta = this.session?.peer?.metadata
-        // if(meta && meta.name) {
-        //   this.name = meta.name
-        //   localStorage[KEY+':name'] = meta.name
-        //   if(meta?.icons && meta.icons.length) {
-        //     this.logo = meta.icons[0]
-        //     localStorage[KEY+':logo'] = this.logo
-        //   }
-        // }
-        // if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
-        // if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
+        let meta = _optionalChain([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.peer, 'optionalAccess', _24 => _24.metadata]);
+        if(meta && meta.name) {
+          this.name = meta.name;
+          localStorage[KEY+':name'] = meta.name;
+          if(_optionalChain([meta, 'optionalAccess', _25 => _25.icons]) && meta.icons.length) {
+            this.logo = meta.icons[0];
+            localStorage[KEY+':logo'] = this.logo;
+          }
+        }
+        if(_optionalChain([options, 'optionalAccess', _26 => _26.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+        if(_optionalChain([options, 'optionalAccess', _27 => _27.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
-        // // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-        // //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
-        // // })
+        // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+        //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
+        // })
 
-        // return await this.account()
+        return await this.account()
 
       } catch (error) {
         console.log('WALLETCONNECT ERROR', error);
@@ -44743,14 +44743,14 @@
 
     async connectedTo(input) {
       if(input) {
-        if(_optionalChain([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.namespaces, 'optionalAccess', _24 => _24.eip155, 'optionalAccess', _25 => _25.chains, 'optionalAccess', _26 => _26.length])) {
+        if(_optionalChain([this, 'access', _28 => _28.session, 'optionalAccess', _29 => _29.namespaces, 'optionalAccess', _30 => _30.eip155, 'optionalAccess', _31 => _31.chains, 'optionalAccess', _32 => _32.length])) {
           return !!this.session.namespaces.eip155.chains.some((chainIdentifier)=>{
             let blockchain = Blockchains__default['default'].findByNetworkId(chainIdentifier.split(':')[1]);
             return blockchain && blockchain.name === input
           })
         }
       } else {
-        if(_optionalChain([this, 'access', _27 => _27.session, 'optionalAccess', _28 => _28.namespaces, 'optionalAccess', _29 => _29.eip155, 'optionalAccess', _30 => _30.chains, 'optionalAccess', _31 => _31.length])) {
+        if(_optionalChain([this, 'access', _33 => _33.session, 'optionalAccess', _34 => _34.namespaces, 'optionalAccess', _35 => _35.eip155, 'optionalAccess', _36 => _36.chains, 'optionalAccess', _37 => _37.length])) {
           return this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
             return Blockchains__default['default'].findByNetworkId(chainIdentifier.split(':')[1]).name
           })
@@ -44797,7 +44797,7 @@
       switch (event) {
         case 'account':
           internalCallback = async(event)=> {
-            if(_optionalChain([event, 'optionalAccess', _32 => _32.topic]) === _optionalChain([this, 'access', _33 => _33.session, 'optionalAccess', _34 => _34.topic]) && event.params.event.name === 'accountsChanged') {
+            if(_optionalChain([event, 'optionalAccess', _38 => _38.topic]) === _optionalChain([this, 'access', _39 => _39.session, 'optionalAccess', _40 => _40.topic]) && event.params.event.name === 'accountsChanged') {
               callback(await this.account());
             }
           };
