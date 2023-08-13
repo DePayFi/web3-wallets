@@ -2600,9 +2600,9 @@ class WalletConnectV2 {
       if(_optionalChain([options, 'optionalAccess', _26 => _26.name])) { localStorage[KEY+':name'] = this.name = options.name; }
       if(_optionalChain([options, 'optionalAccess', _27 => _27.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
-      // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-      //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
-      // })
+      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+        return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
+      });
 
       return await this.account()
 

@@ -197,9 +197,9 @@ class WalletConnectV2 {
       if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
       if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
 
-      // this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-      //   return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
-      // })
+      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+        return Blockchains.findByNetworkId(chainIdentifier.split(':')[1])
+      })
 
       return await this.account()
 
