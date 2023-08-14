@@ -52,9 +52,11 @@ class WalletLink {
 
     await connect({ uri: this.connector.qrUrl })
     
-    document.querySelector('.-cbwsdk-extension-dialog-container').setAttribute('style', 'display: none;')
+    document.querySelector('.-cbwsdk-extension-dialog-container')?.setAttribute('style', 'display: none;')
     setTimeout(()=>{
-      this.connector._relay.ui.linkFlow.isOpen = false
+      if(this?.connector?._relay?.ui?.linkFlow?.isOpen){
+        this.connector._relay.ui.linkFlow.isOpen = false
+      }
     }, 10)
 
     let relay = await this.connector._relayProvider()
