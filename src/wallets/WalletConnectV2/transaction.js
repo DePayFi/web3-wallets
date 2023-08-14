@@ -92,7 +92,7 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
         nonce: transaction.nonce,
       }]
     }
-  })
+  }).catch((e)=>{console.log('ERROR', e)})
 }
 
 const submitSimpleTransfer = async ({ transaction, wallet })=>{

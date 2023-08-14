@@ -166,6 +166,12 @@ If no param is given it well tell you to which blockchain the wallet is connecte
 await wallet.connectedTo() // 'bsc'
 ```
 
+can provide an array if connected to multiple blockchains:
+
+```javascript
+await wallet.connectedTo() // ['ethereum', 'bsc']
+```
+
 ### Receive wallet events
 
 `on(string, function):undefined`: Register a callback function for given events.

@@ -48,8 +48,20 @@ class WalletLink {
   }
 
   async connect(options) {
+    let connect = (options && options.connect) ? options.connect : ({uri})=>{}
+
+    await connect({ uri: this.connector.qrUrl })
+    
+    document.querySelector('.-cbwsdk-extension-dialog-container')?.setAttribute('style', 'display: none;')
+    setTimeout(()=>{
+      if(this?.connector?._relay?.ui?.linkFlow?.isOpen){
+        this.connector._relay.ui.linkFlow.isOpen = false
+      }
+    }, 10)
+
     let relay = await this.connector._relayProvider()
     relay.setConnectDisabled(false)
+
     let accounts = await this.connector.enable()
     if(accounts instanceof Array && accounts.length) {
       setConnectedInstance(this)

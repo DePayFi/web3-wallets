@@ -1,77 +1,107 @@
 import Blockchains from '@depay/web3-blockchains'
-import { Core, SignClient } from "@depay/walletconnect-v2"
+import { SignClient } from "@depay/walletconnect-v2"
 import { ethers } from 'ethers'
 import { sendTransaction } from './WalletConnectV2/transaction'
 import { supported } from '../blockchains'
 
 const KEY = 'depay:wallets:wc2'
 
-const getLastSession = async()=>{
-  if(!localStorage[KEY+":projectId"]) { return }
-  let signClient = await getSignClient()
-  const existingSessions = signClient.find(getWalletConnectV2Config())
-  const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined
-  if(lastSession && lastSession.expiry > Math.ceil(Date.now()/1000)) {
-    try {
-      if(await getConnectedChainId(signClient, lastSession)) {
-        return lastSession
+// configurations for wallets that require special handling
+const CONFIGURATIONS = {
+
+  "MetaMask": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_chainId", // only add eth_chainId if you do not trust the wallet provided chainIds!
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+      "wallet_switchEthereumChain"
+    ]
+  },
+
+  "Uniswap Wallet": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+    ],
+    requiredNamespaces: {
+      eip155: {
+        chains: ['ethereum', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
       }
-    } catch {}
-  }
+    },
+    optionalNamespaces: {},
+  },
+
+  "Enjin Wallet": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+    ]
+  },
+
 }
 
-const getConnectedChainId = async(signClient, session)=>{
-  let results = (await Promise.all(session.namespaces.eip155.chains.map((identifier)=>{
-    return Promise.race([
-      new Promise((resolve)=>{setTimeout(resolve, 1500)}),
-      signClient.request({
-        topic: session.topic,
-        chainId: identifier,
-        request: {
-          method: 'eth_chainId'
-        }
-      })
-    ])
-  })))
-  return results.filter(Boolean)[0]
+const DEFAULT_CONFIGURATION = {
+  events: ['accountsChanged'],
+  methods: [
+    "eth_sendTransaction",
+    "personal_sign",
+    "eth_signTypedData",
+    "eth_signTypedData_v4",
+  ]
 }
 
 const getConnectedInstance = async()=>{
-  if(localStorage[KEY+":projectId"]) {
-    const lastSession = await getLastSession()
-    if(lastSession) {
-      return new WalletConnectV2()
+  if(await WalletConnectV2.isAvailable()) { return new WalletConnectV2() }
+}
+
+const getLastSession = async(walletName)=>{
+  if(!localStorage[KEY+":projectId"]) { return }
+  if(walletName !== localStorage[KEY+":lastSessionWalletName"]) { return }
+  let signClient = await getSignClient()
+  const existingSessions = signClient.find(getWalletConnectV2Config(walletName))
+  const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined
+  if(lastSession && localStorage[KEY+":lastExpiredSessionTopic"] !== lastSession.topic && lastSession.expiry > Math.ceil(Date.now()/1000)) {
+    const result = await Promise.race([signClient.ping({ topic: lastSession.topic }), new Promise((resolve)=>setTimeout(resolve, 1500))])
+    if(result) {
+      return lastSession
+    } else {
+      localStorage[KEY+":lastExpiredSessionTopic"] = lastSession.topic
+      return
     }
   }
 }
 
-const setConnectedInstance = (value)=>{
-}
-
-const getWalletConnectV2Config = ()=>{
-  const methods = [
-    "eth_sendTransaction",
-    "personal_sign",
-    "eth_signTypedData_v4",
-    "eth_chainId",
-    "eth_accounts",
-    "wallet_switchEthereumChain",
-  ]
-
-  const events = ['accountsChanged']
+const getWalletConnectV2Config = (walletName)=>{
+  const methods = CONFIGURATIONS[walletName]?.methods || DEFAULT_CONFIGURATION.methods
+  const events = CONFIGURATIONS[walletName]?.events || DEFAULT_CONFIGURATION.events
 
   let requiredNamespaces = {}
-  requiredNamespaces['eip155'] = {
-    methods,
-    events,
-    chains: [`eip155:1`],
+  if(CONFIGURATIONS[walletName]?.requiredNamespaces) {
+    requiredNamespaces = CONFIGURATIONS[walletName].requiredNamespaces
+  } else {
+    requiredNamespaces['eip155'] = {
+      chains: [`eip155:1`],
+    }
   }
+  requiredNamespaces['eip155'].methods = methods
+  requiredNamespaces['eip155'].events = events
 
   let optionalNamespaces = {}
-  optionalNamespaces['eip155'] = {
-    methods,
-    events,
-    chains: supported.evm.map((blockchain)=>`${Blockchains[blockchain].namespace}:${Blockchains[blockchain].networkId}`),
+  if(CONFIGURATIONS[walletName]?.optionalNamespaces) {
+    optionalNamespaces = CONFIGURATIONS[walletName].optionalNamespaces
+  } else {
+    optionalNamespaces['eip155'] = {
+      chains: supported.evm.map((blockchain)=>`${Blockchains[blockchain].namespace}:${Blockchains[blockchain].networkId}`),
+    }
+  }
+  if(optionalNamespaces?.eip155 && optionalNamespaces?.eip155?.chains?.length) {
+    optionalNamespaces['eip155'].methods = methods
+    optionalNamespaces['eip155'].events = events
   }
 
   return { requiredNamespaces, optionalNamespaces }
@@ -81,7 +111,7 @@ const getSignClient = ()=>{
   if(window.getSignClientPromise) { return window.getSignClientPromise }
   window.getSignClientPromise = new Promise(async(resolve)=>{
     const signClient = await SignClient.init({
-      core: new Core({ projectId: localStorage[KEY+":projectId"] }),
+      projectId: localStorage[KEY+":projectId"],
       metadata: {
         name: document.title || 'dApp',
         description: document.querySelector('meta[name="description"]')?.getAttribute('content') || document.title || 'dApp',
@@ -92,7 +122,7 @@ const getSignClient = ()=>{
     resolve(signClient)
   })
 
-  return window.getSignClientPromise  
+  return window.getSignClientPromise
 }
 
 class WalletConnectV2 {
@@ -103,14 +133,13 @@ class WalletConnectV2 {
     blockchains: supported.evm
   }
 
-  static isAvailable = ()=>{ 
-    return getConnectedInstance() != undefined 
+  static isAvailable = async(options)=>{ 
+    return !! await getLastSession(options?.walletName)
   }
 
   constructor() {
     this.name = (localStorage[KEY+':name'] && localStorage[KEY+':name'] != undefined) ? localStorage[KEY+':name'] : this.constructor.info.name
     this.logo = (localStorage[KEY+':logo'] && localStorage[KEY+':logo'] != undefined) ? localStorage[KEY+':logo'] : this.constructor.info.logo
-    this.blockchains = this.constructor.info.blockchains
     this.sendTransaction = (transaction)=>{
       return sendTransaction({
         wallet: this,
@@ -120,17 +149,57 @@ class WalletConnectV2 {
   }
 
   async account() {
-    const connectedChainId = await getConnectedChainId(this.signClient, this.session)
-    const connectedBlockchain = Blockchains.findById(connectedChainId)
-    const accounts = await this.signClient.request({
-      topic: this.session.topic,
-      chainId: `${connectedBlockchain.namespace}:${connectedBlockchain.networkId}`,
-      request:{
-        method: 'eth_accounts',
-        params: [{ chainId: connectedBlockchain.id }],
-      }
-    })
-    return accounts ? accounts[0] : undefined
+    if(this.session?.namespaces?.eip155?.accounts?.length) {
+      return this.session.namespaces.eip155.accounts[0].split(':')[2]
+    }
+  }
+
+  async getAllAvailableBlockchains() {
+    let timeTillResponse = new Date()
+    await Promise.race([...
+      this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+        return new Promise((resolve)=>{
+          try {
+            this.signClient.request({
+              topic: this.session.topic,
+              chainId: chainIdentifier,
+              request:{
+                method: 'eth_chainId',
+              }
+            }).then(resolve)
+          } catch {}
+        })
+      }),
+      new Promise(resolve=>setTimeout(resolve, 6000))
+    ])
+    timeTillResponse = new Date() - timeTillResponse
+
+    let blockchains = []
+    await Promise.race([
+      Promise.all(this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+        try {
+          return this.signClient.request({
+            topic: this.session.topic,
+            chainId: chainIdentifier,
+            request:{
+              method: 'eth_chainId',
+            }
+          }).then(()=> blockchains.push(Blockchains.findByNetworkId(chainIdentifier.split(':')[1]).name))
+        } catch {}
+      })),
+      new Promise(resolve => setTimeout(resolve, timeTillResponse*2))
+    ])
+    return blockchains
+  }
+
+  async setSessionBlockchains() {
+    if(CONFIGURATIONS[this.walletName]?.methods?.includes('eth_chainId')) {
+      this.blockchains = await this.getAllAvailableBlockchains()
+    } else if(this.session.namespaces.eip155.chains) {
+      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
+    } else if(this.session.namespaces.eip155.accounts) {
+      this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>Blockchains.findByNetworkId(accountIdentifier.split(':')[1])?.name).filter(Boolean)
+    }
   }
 
   async connect(options) {
@@ -139,14 +208,15 @@ class WalletConnectV2 {
     
     try {
 
-      // delete localStorage[`wc@2:client:0.3//session`] // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
+      this.walletName = options?.walletName
+
+      // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
       this.signClient = await getSignClient()
 
       this.signClient.on("session_delete", (session)=> {
         if(session?.topic === this.session?.topic) {
           localStorage[KEY+':name'] = undefined
           localStorage[KEY+':logo'] = undefined
-          WalletConnect.instance = undefined
           this.signClient = undefined
           this.session = undefined
         }
@@ -155,26 +225,28 @@ class WalletConnectV2 {
       this.signClient.on("session_update", async(session)=> {
         if(session?.topic === this.session?.topic) {
           this.session = this.signClient.session.get(session.topic)
+          await this.setSessionBlockchains()
         }
       })
 
       this.signClient.on("session_event", (event)=> {
-        if(event?.topic === this.session?.topic) {
-        }
+        if(event?.topic === this.session?.topic) {}
       })
 
-      const lastSession = await getLastSession()
-      if(lastSession) {
-        this.session = lastSession
-      }
-      
       const connectWallet = async()=>{
-        const { uri, approval } = await this.signClient.connect(getWalletConnectV2Config())
+        const { uri, approval } = await this.signClient.connect(getWalletConnectV2Config(this.walletName))
         await connect({ uri })
         this.session = await approval()
+        localStorage[KEY+":lastSessionWalletName"] = this.walletName
+        await new Promise(resolve=>setTimeout(resolve, 500)) // to prevent race condition within WalletConnect
       }
 
-      if(!this.session){ await connectWallet() }
+      const lastSession = this?.walletName?.length ? await getLastSession(this.walletName) : undefined
+      if(lastSession) {
+        this.session = lastSession
+      } else {
+        await connectWallet()
+      }
 
       let meta = this.session?.peer?.metadata
       if(meta && meta.name) {
@@ -188,16 +260,7 @@ class WalletConnectV2 {
       if(options?.name) { localStorage[KEY+':name'] = this.name = options.name }
       if(options?.logo) { localStorage[KEY+':logo'] = this.logo = options.logo }
 
-      let connectedChainId
-      for(var i = 0; i<3; i++) {
-        await new Promise((resolve)=>{setTimeout(resolve, 500)})
-        connectedChainId = await getConnectedChainId(this.signClient, this.session)
-        if(connectedChainId){ break }
-      }
-
-      if(!connectedChainId) { await connectWallet() }
-
-      let connectedBlockchain = Blockchains.findById(connectedChainId)
+      await this.setSessionBlockchains()
 
       return await this.account()
 
@@ -207,42 +270,37 @@ class WalletConnectV2 {
   }
 
   async connectedTo(input) {
-    let chainId = await getConnectedChainId(this.signClient, this.session)
-    if(!chainId) { return false }
-    const blockchain = Blockchains.findById(chainId)
-    if(!blockchain) { return false }
     if(input) {
-      return input === blockchain.name
+      return this.blockchains.indexOf(input) > -1
     } else {
-      return blockchain.name
+      return this.blockchains
     }
+  }
+
+  getValidChainId() {
+    return `eip155:${Blockchains[this.blockchains[0]].networkId}`
   }
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
-      let resolved, rejected
+      
       const blockchain = Blockchains[blockchainName]
-      setTimeout(async()=>{
-        if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
-          reject({ code: 'NOT_SUPPORTED' })
-        } else {
-          this.connectedChainId = `${blockchain.namespace}:${blockchain.networkId}`
-          resolve()
-        }
-      }, 4000)
-      this.session.namespaces.eip155.chains.map((identifier)=>{
-        return Promise.race([
-          new Promise((resolve)=>{setTimeout(resolve, 1500)}),
-          this.signClient.request({
-            topic: this.session.topic,
-            chainId: identifier,
-            request:{
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: blockchain.id }],
-            }
-          })
-        ])
-      })
+
+      Promise.race([
+        this.signClient.request({
+          topic: this.session.topic,
+          chainId: this.getValidChainId(),
+          request:{
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: blockchain.id }],
+          }
+        }),
+        new Promise((resolve, reject)=>setTimeout(()=>{
+          if(this.blockchains.indexOf(blockchainName) === -1) {
+            reject({ code: 'NOT_SUPPORTED' })
+          }
+        } , 8000))
+      ]).catch(reject)
     })
   }
 
@@ -278,13 +336,9 @@ class WalletConnectV2 {
   async sign(message) {
     if(typeof message === 'object') {
       let account = await this.account()
-      const blockchain = Blockchains.findByNetworkId(message.domain.chainId)
-      if((await this.connectedTo(blockchain.name)) === false) {
-        throw({ code: 'WRONG_NETWORK' })
-      }
       let signature = await this.signClient.request({
         topic: this.session.topic,
-        chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+        chainId: this.getValidChainId(),
         request:{
           method: 'eth_signTypedData_v4',
           params: [account, JSON.stringify(message)],
@@ -294,11 +348,9 @@ class WalletConnectV2 {
     } else if (typeof message === 'string') {
       const address = await this.account()
       const params = [ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message)), address]
-      const connectedChainId = await getConnectedChainId(this.signClient, this.session)
-      const blockchain = Blockchains.findById(connectedChainId)
       let signature = await this.signClient.request({
         topic: this.session.topic,
-        chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+        chainId: this.getValidChainId(),
         request:{
           method: 'personal_sign',
           params
@@ -313,6 +365,5 @@ class WalletConnectV2 {
 }
 
 WalletConnectV2.getConnectedInstance = getConnectedInstance
-WalletConnectV2.setConnectedInstance = setConnectedInstance
 
 export default WalletConnectV2
