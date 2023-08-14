@@ -1604,7 +1604,7 @@
       ],
       requiredNamespaces: {
         eip155: {
-          chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: ['ethereum', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
         }
       },
       optionalNamespaces: {},
