@@ -44514,7 +44514,7 @@ const submitContractInteraction$1 = async ({ transaction, wallet })=>{
         nonce: transaction.nonce,
       }]
     }
-  })
+  }).catch((e)=>{console.log('ERROR', e);})
 };
 
 const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
@@ -44542,64 +44542,103 @@ const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 const KEY = 'depay:wallets:wc2';
 
+// configurations for wallets that require special handling
+const CONFIGURATIONS = {
+
+  "MetaMask": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_chainId", // only add eth_chainId if you do not trust the wallet provided chainIds!
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+      "wallet_switchEthereumChain"
+    ]
+  },
+
+  "Uniswap Wallet": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+    ],
+    requiredNamespaces: {
+      eip155: {
+        chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
+      }
+    },
+    optionalNamespaces: {},
+  },
+
+  "Enjin Wallet": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+    ]
+  },
+
+};
+
+const DEFAULT_CONFIGURATION = {
+  events: ['accountsChanged'],
+  methods: [
+    "eth_sendTransaction",
+    "personal_sign",
+    "eth_signTypedData",
+    "eth_signTypedData_v4",
+  ]
+};
+
 const getConnectedInstance$1 = async()=>{
   if(await WalletConnectV2.isAvailable()) { return new WalletConnectV2() }
 };
 
-const getConnectedChainId = (signClient, lastSession)=>{
-  return Promise.race([...
-    Blockchains.all.filter((blockchain)=>blockchain.namespace === 'eip155').map((blockchain)=>{
-      return new Promise((resolve)=>{
-        try {
-          return signClient.request({
-            topic: lastSession.topic,
-            chainId: `eip155:${blockchain.networkId}`,
-            request:{ method: 'eth_chainId' }
-          }).then(resolve)
-        } catch (e) {}
-      })
-    }),
-    new Promise((resolve)=>{ setTimeout(resolve, 1500); })
-  ])
-};
-
-const getLastSession = async()=>{
+const getLastSession = async(walletName)=>{
   if(!localStorage[KEY+":projectId"]) { return }
+  if(walletName !== localStorage[KEY+":lastSessionWalletName"]) { return }
   let signClient = await getSignClient();
-  const existingSessions = signClient.find(getWalletConnectV2Config());
+  const existingSessions = signClient.find(getWalletConnectV2Config(walletName));
   const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined;
-  if(lastSession && lastSession.expiry > Math.ceil(Date.now()/1000)) {
-    if(await getConnectedChainId(signClient, lastSession)) {
+  if(lastSession && localStorage[KEY+":lastExpiredSessionTopic"] !== lastSession.topic && lastSession.expiry > Math.ceil(Date.now()/1000)) {
+    const result = await Promise.race([signClient.ping({ topic: lastSession.topic }), new Promise((resolve)=>setTimeout(resolve, 1500))]);
+    if(result) {
       return lastSession
+    } else {
+      localStorage[KEY+":lastExpiredSessionTopic"] = lastSession.topic;
+      return
     }
   }
 };
 
-const getWalletConnectV2Config = ()=>{
-  const methods = [
-    "eth_sendTransaction",
-    "personal_sign",
-    "eth_signTypedData_v4",
-    "eth_chainId",
-    "eth_accounts",
-    "wallet_switchEthereumChain",
-  ];
-
-  const events = ['accountsChanged'];
+const getWalletConnectV2Config = (walletName)=>{
+  const methods = _optionalChain$1([CONFIGURATIONS, 'access', _ => _[walletName], 'optionalAccess', _2 => _2.methods]) || DEFAULT_CONFIGURATION.methods;
+  const events = _optionalChain$1([CONFIGURATIONS, 'access', _3 => _3[walletName], 'optionalAccess', _4 => _4.events]) || DEFAULT_CONFIGURATION.events;
 
   let requiredNamespaces = {};
-  requiredNamespaces['eip155'] = {
-    methods,
-    events,
-    chains: [`eip155:1`],
-  };
+  if(_optionalChain$1([CONFIGURATIONS, 'access', _5 => _5[walletName], 'optionalAccess', _6 => _6.requiredNamespaces])) {
+    requiredNamespaces = CONFIGURATIONS[walletName].requiredNamespaces;
+  } else {
+    requiredNamespaces['eip155'] = {
+      chains: [`eip155:1`],
+    };
+  }
+  requiredNamespaces['eip155'].methods = methods;
+  requiredNamespaces['eip155'].events = events;
 
   let optionalNamespaces = {};
-  optionalNamespaces['eip155'] = {
-    methods,
-    events,
-    chains: supported$2.evm.map((blockchain)=>`${Blockchains[blockchain].namespace}:${Blockchains[blockchain].networkId}`),
-  };
+  if(_optionalChain$1([CONFIGURATIONS, 'access', _7 => _7[walletName], 'optionalAccess', _8 => _8.optionalNamespaces])) {
+    optionalNamespaces = CONFIGURATIONS[walletName].optionalNamespaces;
+  } else {
+    optionalNamespaces['eip155'] = {
+      chains: supported$2.evm.map((blockchain)=>`${Blockchains[blockchain].namespace}:${Blockchains[blockchain].networkId}`),
+    };
+  }
+  if(_optionalChain$1([optionalNamespaces, 'optionalAccess', _9 => _9.eip155]) && _optionalChain$1([optionalNamespaces, 'optionalAccess', _10 => _10.eip155, 'optionalAccess', _11 => _11.chains, 'optionalAccess', _12 => _12.length])) {
+    optionalNamespaces['eip155'].methods = methods;
+    optionalNamespaces['eip155'].events = events;
+  }
 
   return { requiredNamespaces, optionalNamespaces }
 };
@@ -44611,9 +44650,9 @@ const getSignClient = ()=>{
       projectId: localStorage[KEY+":projectId"],
       metadata: {
         name: document.title || 'dApp',
-        description: _optionalChain$1([document, 'access', _ => _.querySelector, 'call', _2 => _2('meta[name="description"]'), 'optionalAccess', _3 => _3.getAttribute, 'call', _4 => _4('content')]) || document.title || 'dApp',
+        description: _optionalChain$1([document, 'access', _13 => _13.querySelector, 'call', _14 => _14('meta[name="description"]'), 'optionalAccess', _15 => _15.getAttribute, 'call', _16 => _16('content')]) || document.title || 'dApp',
         url: location.href,
-        icons: [_optionalChain$1([document, 'access', _5 => _5.querySelector, 'call', _6 => _6("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _7 => _7.href]) || `${location.origin}/favicon.ico`]
+        icons: [_optionalChain$1([document, 'access', _17 => _17.querySelector, 'call', _18 => _18("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _19 => _19.href]) || `${location.origin}/favicon.ico`]
       }
     });
     resolve(signClient);
@@ -44630,8 +44669,8 @@ class WalletConnectV2 {
     blockchains: supported$2.evm
   };}
 
-  static __initStatic2() {this.isAvailable = async()=>{ 
-    return !! await getLastSession()
+  static __initStatic2() {this.isAvailable = async(options)=>{ 
+    return !! await getLastSession(_optionalChain$1([options, 'optionalAccess', _21 => _21.walletName]))
   };}
 
   constructor() {
@@ -44646,7 +44685,7 @@ class WalletConnectV2 {
   }
 
   async account() {
-    if(_optionalChain$1([this, 'access', _8 => _8.session, 'optionalAccess', _9 => _9.namespaces, 'optionalAccess', _10 => _10.eip155, 'optionalAccess', _11 => _11.accounts, 'optionalAccess', _12 => _12.length])) {
+    if(_optionalChain$1([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.namespaces, 'optionalAccess', _24 => _24.eip155, 'optionalAccess', _25 => _25.accounts, 'optionalAccess', _26 => _26.length])) {
       return this.session.namespaces.eip155.accounts[0].split(':')[2]
     }
   }
@@ -44664,7 +44703,7 @@ class WalletConnectV2 {
                 method: 'eth_chainId',
               }
             }).then(resolve);
-          } catch (e2) {}
+          } catch (e) {}
         })
       }),
       new Promise(resolve=>setTimeout(resolve, 6000))
@@ -44682,11 +44721,21 @@ class WalletConnectV2 {
               method: 'eth_chainId',
             }
           }).then(()=> blockchains.push(Blockchains.findByNetworkId(chainIdentifier.split(':')[1]).name))
-        } catch (e3) {}
+        } catch (e2) {}
       })),
       new Promise(resolve => setTimeout(resolve, timeTillResponse*2))
     ]);
     return blockchains
+  }
+
+  async setSessionBlockchains() {
+    if(_optionalChain$1([CONFIGURATIONS, 'access', _27 => _27[this.walletName], 'optionalAccess', _28 => _28.methods, 'optionalAccess', _29 => _29.includes, 'call', _30 => _30('eth_chainId')])) {
+      this.blockchains = await this.getAllAvailableBlockchains();
+    } else if(this.session.namespaces.eip155.chains) {
+      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains, 'access', _31 => _31.findByNetworkId, 'call', _32 => _32(chainIdentifier.split(':')[1]), 'optionalAccess', _33 => _33.name])).filter(Boolean);
+    } else if(this.session.namespaces.eip155.accounts) {
+      this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$1([Blockchains, 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(accountIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
+    }
   }
 
   async connect(options) {
@@ -44695,11 +44744,13 @@ class WalletConnectV2 {
     
     try {
 
+      this.walletName = _optionalChain$1([options, 'optionalAccess', _37 => _37.walletName]);
+
       // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
       this.signClient = await getSignClient();
 
       this.signClient.on("session_delete", (session)=> {
-        if(_optionalChain$1([session, 'optionalAccess', _13 => _13.topic]) === _optionalChain$1([this, 'access', _14 => _14.session, 'optionalAccess', _15 => _15.topic])) {
+        if(_optionalChain$1([session, 'optionalAccess', _38 => _38.topic]) === _optionalChain$1([this, 'access', _39 => _39.session, 'optionalAccess', _40 => _40.topic])) {
           localStorage[KEY+':name'] = undefined;
           localStorage[KEY+':logo'] = undefined;
           this.signClient = undefined;
@@ -44708,43 +44759,44 @@ class WalletConnectV2 {
       });
 
       this.signClient.on("session_update", async(session)=> {
-        if(_optionalChain$1([session, 'optionalAccess', _16 => _16.topic]) === _optionalChain$1([this, 'access', _17 => _17.session, 'optionalAccess', _18 => _18.topic])) {
+        if(_optionalChain$1([session, 'optionalAccess', _41 => _41.topic]) === _optionalChain$1([this, 'access', _42 => _42.session, 'optionalAccess', _43 => _43.topic])) {
           this.session = this.signClient.session.get(session.topic);
-          this.blockchains = await this.getAllAvailableBlockchains();
+          await this.setSessionBlockchains();
         }
       });
 
       this.signClient.on("session_event", (event)=> {
-        if(_optionalChain$1([event, 'optionalAccess', _19 => _19.topic]) === _optionalChain$1([this, 'access', _20 => _20.session, 'optionalAccess', _21 => _21.topic])) {}
+        if(_optionalChain$1([event, 'optionalAccess', _44 => _44.topic]) === _optionalChain$1([this, 'access', _45 => _45.session, 'optionalAccess', _46 => _46.topic])) {}
       });
 
       const connectWallet = async()=>{
-        const { uri, approval } = await this.signClient.connect(getWalletConnectV2Config());
+        const { uri, approval } = await this.signClient.connect(getWalletConnectV2Config(this.walletName));
         await connect({ uri });
         this.session = await approval();
+        localStorage[KEY+":lastSessionWalletName"] = this.walletName;
         await new Promise(resolve=>setTimeout(resolve, 500)); // to prevent race condition within WalletConnect
       };
 
-      const lastSession = await getLastSession();
+      const lastSession = _optionalChain$1([this, 'optionalAccess', _47 => _47.walletName, 'optionalAccess', _48 => _48.length]) ? await getLastSession(this.walletName) : undefined;
       if(lastSession) {
         this.session = lastSession;
       } else {
         await connectWallet();
       }
 
-      let meta = _optionalChain$1([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.peer, 'optionalAccess', _24 => _24.metadata]);
+      let meta = _optionalChain$1([this, 'access', _49 => _49.session, 'optionalAccess', _50 => _50.peer, 'optionalAccess', _51 => _51.metadata]);
       if(meta && meta.name) {
         this.name = meta.name;
         localStorage[KEY+':name'] = meta.name;
-        if(_optionalChain$1([meta, 'optionalAccess', _25 => _25.icons]) && meta.icons.length) {
+        if(_optionalChain$1([meta, 'optionalAccess', _52 => _52.icons]) && meta.icons.length) {
           this.logo = meta.icons[0];
           localStorage[KEY+':logo'] = this.logo;
         }
       }
-      if(_optionalChain$1([options, 'optionalAccess', _26 => _26.name])) { localStorage[KEY+':name'] = this.name = options.name; }
-      if(_optionalChain$1([options, 'optionalAccess', _27 => _27.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
+      if(_optionalChain$1([options, 'optionalAccess', _53 => _53.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+      if(_optionalChain$1([options, 'optionalAccess', _54 => _54.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
-      this.blockchains = await this.getAllAvailableBlockchains();
+      await this.setSessionBlockchains();
 
       return await this.account()
 
@@ -44799,7 +44851,7 @@ class WalletConnectV2 {
     switch (event) {
       case 'account':
         internalCallback = async(event)=> {
-          if(_optionalChain$1([event, 'optionalAccess', _28 => _28.topic]) === _optionalChain$1([this, 'access', _29 => _29.session, 'optionalAccess', _30 => _30.topic]) && event.params.event.name === 'accountsChanged') {
+          if(_optionalChain$1([event, 'optionalAccess', _55 => _55.topic]) === _optionalChain$1([this, 'access', _56 => _56.session, 'optionalAccess', _57 => _57.topic]) && event.params.event.name === 'accountsChanged') {
             callback(await this.account());
           }
         };
