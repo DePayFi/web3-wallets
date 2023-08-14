@@ -258,9 +258,7 @@
                     console.log('connectWalletConnectV2ViaRedirect')
                     localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectIdRedirect").value
                     let wallet = new Web3Wallets.wallets.WalletConnectV2()
-                    if(['ledgerlive:'].include(document.getElementById("walletConnectV2ProjectIdHref").value)) {
-                      localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href: "ledgerlive://", name: "LedgerLive" }))
-                    }
+                    localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href: "ledgerlive://", name: "LedgerLive" }))
                     let account = await wallet.connect({
                       connect: ({ uri })=>{
                         const href = document.getElementById("walletConnectV2ProjectIdHref").value

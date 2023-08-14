@@ -13,7 +13,6 @@ const CONFIGURATIONS = {
     methods: [
       "eth_sendTransaction",
       "personal_sign",
-      "eth_chainId", // only add eth_chainId if you do not trust the wallet provided chainIds!
       "eth_signTypedData",
       "eth_signTypedData_v4",
       "wallet_switchEthereumChain"
@@ -42,17 +41,6 @@ const CONFIGURATIONS = {
       "eth_signTypedData",
     ]
   },
-}
-
-const isMobile = ()=> {
-  if (typeof window !== 'undefined') {
-    return Boolean(
-      window.matchMedia('(pointer:coarse)').matches ||
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|Opera Mini/u.test(navigator.userAgent)
-    )
-  }
-
-  return false
 }
 
 const DEFAULT_CONFIGURATION = {
@@ -164,47 +152,9 @@ class WalletConnectV2 {
     }
   }
 
-  async getAllAvailableBlockchains() {
-    let timeTillResponse = new Date()
-    await Promise.race([...
-      this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-        return new Promise((resolve)=>{
-          try {
-            this.signClient.request({
-              topic: this.session.topic,
-              chainId: chainIdentifier,
-              request:{
-                method: 'eth_chainId',
-              }
-            }).then(resolve)
-          } catch {}
-        })
-      }),
-      new Promise(resolve=>setTimeout(resolve, 6000))
-    ])
-    timeTillResponse = new Date() - timeTillResponse
-
-    let blockchains = []
-    await Promise.race([
-      Promise.all(this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-        try {
-          return this.signClient.request({
-            topic: this.session.topic,
-            chainId: chainIdentifier,
-            request:{
-              method: 'eth_chainId',
-            }
-          }).then(()=> blockchains.push(Blockchains.findByNetworkId(chainIdentifier.split(':')[1]).name))
-        } catch {}
-      })),
-      new Promise(resolve => setTimeout(resolve, timeTillResponse*2))
-    ])
-    return blockchains
-  }
-
   async setSessionBlockchains() {
-    if(CONFIGURATIONS[this.walletName]?.methods?.includes('eth_chainId') && !isMobile()) {
-      this.blockchains = await this.getAllAvailableBlockchains()
+    if(CONFIGURATIONS[this.walletName]?.methods?.includes('wallet_switchEthereumChain')) {
+      this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
     } else if(this.session.namespaces.eip155.chains) {
       this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
     } else if(this.session.namespaces.eip155.accounts) {

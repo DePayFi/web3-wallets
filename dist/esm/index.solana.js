@@ -2422,7 +2422,6 @@ const CONFIGURATIONS = {
     methods: [
       "eth_sendTransaction",
       "personal_sign",
-      "eth_chainId", // only add eth_chainId if you do not trust the wallet provided chainIds!
       "eth_signTypedData",
       "eth_signTypedData_v4",
       "wallet_switchEthereumChain"
@@ -2451,17 +2450,6 @@ const CONFIGURATIONS = {
       "eth_signTypedData",
     ]
   },
-};
-
-const isMobile = ()=> {
-  if (typeof window !== 'undefined') {
-    return Boolean(
-      window.matchMedia('(pointer:coarse)').matches ||
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|Opera Mini/u.test(navigator.userAgent)
-    )
-  }
-
-  return false
 };
 
 const DEFAULT_CONFIGURATION = {
@@ -2573,51 +2561,13 @@ class WalletConnectV2 {
     }
   }
 
-  async getAllAvailableBlockchains() {
-    let timeTillResponse = new Date();
-    await Promise.race([...
-      this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-        return new Promise((resolve)=>{
-          try {
-            this.signClient.request({
-              topic: this.session.topic,
-              chainId: chainIdentifier,
-              request:{
-                method: 'eth_chainId',
-              }
-            }).then(resolve);
-          } catch (e) {}
-        })
-      }),
-      new Promise(resolve=>setTimeout(resolve, 6000))
-    ]);
-    timeTillResponse = new Date() - timeTillResponse;
-
-    let blockchains = [];
-    await Promise.race([
-      Promise.all(this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-        try {
-          return this.signClient.request({
-            topic: this.session.topic,
-            chainId: chainIdentifier,
-            request:{
-              method: 'eth_chainId',
-            }
-          }).then(()=> blockchains.push(Blockchains.findByNetworkId(chainIdentifier.split(':')[1]).name))
-        } catch (e2) {}
-      })),
-      new Promise(resolve => setTimeout(resolve, timeTillResponse*2))
-    ]);
-    return blockchains
-  }
-
   async setSessionBlockchains() {
-    if(_optionalChain$1([CONFIGURATIONS, 'access', _27 => _27[this.walletName], 'optionalAccess', _28 => _28.methods, 'optionalAccess', _29 => _29.includes, 'call', _30 => _30('eth_chainId')]) && !isMobile()) {
-      this.blockchains = await this.getAllAvailableBlockchains();
+    if(_optionalChain$1([CONFIGURATIONS, 'access', _27 => _27[this.walletName], 'optionalAccess', _28 => _28.methods, 'optionalAccess', _29 => _29.includes, 'call', _30 => _30('wallet_switchEthereumChain')])) {
+      this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>_optionalChain$1([Blockchains, 'access', _31 => _31.findByNetworkId, 'call', _32 => _32(chainIdentifier.split(':')[1]), 'optionalAccess', _33 => _33.name])).filter(Boolean);
     } else if(this.session.namespaces.eip155.chains) {
-      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains, 'access', _31 => _31.findByNetworkId, 'call', _32 => _32(chainIdentifier.split(':')[1]), 'optionalAccess', _33 => _33.name])).filter(Boolean);
+      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains, 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(chainIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
     } else if(this.session.namespaces.eip155.accounts) {
-      this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$1([Blockchains, 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(accountIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
+      this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$1([Blockchains, 'access', _37 => _37.findByNetworkId, 'call', _38 => _38(accountIdentifier.split(':')[1]), 'optionalAccess', _39 => _39.name])).filter(Boolean);
     }
   }
 
@@ -2627,13 +2577,13 @@ class WalletConnectV2 {
     
     try {
 
-      this.walletName = _optionalChain$1([options, 'optionalAccess', _37 => _37.name]);
+      this.walletName = _optionalChain$1([options, 'optionalAccess', _40 => _40.name]);
 
       // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
       this.signClient = await getSignClient();
 
       this.signClient.on("session_delete", (session)=> {
-        if(_optionalChain$1([session, 'optionalAccess', _38 => _38.topic]) === _optionalChain$1([this, 'access', _39 => _39.session, 'optionalAccess', _40 => _40.topic])) {
+        if(_optionalChain$1([session, 'optionalAccess', _41 => _41.topic]) === _optionalChain$1([this, 'access', _42 => _42.session, 'optionalAccess', _43 => _43.topic])) {
           localStorage[KEY+':name'] = undefined;
           localStorage[KEY+':logo'] = undefined;
           this.signClient = undefined;
@@ -2642,14 +2592,14 @@ class WalletConnectV2 {
       });
 
       this.signClient.on("session_update", async(session)=> {
-        if(_optionalChain$1([session, 'optionalAccess', _41 => _41.topic]) === _optionalChain$1([this, 'access', _42 => _42.session, 'optionalAccess', _43 => _43.topic])) {
+        if(_optionalChain$1([session, 'optionalAccess', _44 => _44.topic]) === _optionalChain$1([this, 'access', _45 => _45.session, 'optionalAccess', _46 => _46.topic])) {
           this.session = this.signClient.session.get(session.topic);
           await this.setSessionBlockchains();
         }
       });
 
       this.signClient.on("session_event", (event)=> {
-        if(_optionalChain$1([event, 'optionalAccess', _44 => _44.topic]) === _optionalChain$1([this, 'access', _45 => _45.session, 'optionalAccess', _46 => _46.topic])) {}
+        if(_optionalChain$1([event, 'optionalAccess', _47 => _47.topic]) === _optionalChain$1([this, 'access', _48 => _48.session, 'optionalAccess', _49 => _49.topic])) {}
       });
 
       const connectWallet = async()=>{
@@ -2660,24 +2610,24 @@ class WalletConnectV2 {
         await new Promise(resolve=>setTimeout(resolve, 500)); // to prevent race condition within WalletConnect
       };
 
-      const lastSession = _optionalChain$1([this, 'optionalAccess', _47 => _47.walletName, 'optionalAccess', _48 => _48.length]) ? await getLastSession(this.walletName) : undefined;
+      const lastSession = _optionalChain$1([this, 'optionalAccess', _50 => _50.walletName, 'optionalAccess', _51 => _51.length]) ? await getLastSession(this.walletName) : undefined;
       if(lastSession) {
         this.session = lastSession;
       } else {
         await connectWallet();
       }
 
-      let meta = _optionalChain$1([this, 'access', _49 => _49.session, 'optionalAccess', _50 => _50.peer, 'optionalAccess', _51 => _51.metadata]);
+      let meta = _optionalChain$1([this, 'access', _52 => _52.session, 'optionalAccess', _53 => _53.peer, 'optionalAccess', _54 => _54.metadata]);
       if(meta && meta.name) {
         this.name = meta.name;
         localStorage[KEY+':name'] = meta.name;
-        if(_optionalChain$1([meta, 'optionalAccess', _52 => _52.icons]) && meta.icons.length) {
+        if(_optionalChain$1([meta, 'optionalAccess', _55 => _55.icons]) && meta.icons.length) {
           this.logo = meta.icons[0];
           localStorage[KEY+':logo'] = this.logo;
         }
       }
-      if(_optionalChain$1([options, 'optionalAccess', _53 => _53.name])) { localStorage[KEY+':name'] = this.name = options.name; }
-      if(_optionalChain$1([options, 'optionalAccess', _54 => _54.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
+      if(_optionalChain$1([options, 'optionalAccess', _56 => _56.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+      if(_optionalChain$1([options, 'optionalAccess', _57 => _57.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
       await this.setSessionBlockchains();
 
@@ -2734,7 +2684,7 @@ class WalletConnectV2 {
     switch (event) {
       case 'account':
         internalCallback = async(event)=> {
-          if(_optionalChain$1([event, 'optionalAccess', _55 => _55.topic]) === _optionalChain$1([this, 'access', _56 => _56.session, 'optionalAccess', _57 => _57.topic]) && event.params.event.name === 'accountsChanged') {
+          if(_optionalChain$1([event, 'optionalAccess', _58 => _58.topic]) === _optionalChain$1([this, 'access', _59 => _59.session, 'optionalAccess', _60 => _60.topic]) && event.params.event.name === 'accountsChanged') {
             callback(await this.account());
           }
         };
