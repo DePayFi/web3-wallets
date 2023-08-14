@@ -189,10 +189,20 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div>
-                <h5 class="px-4">WalletConnect V2 connect</h5>
+                <h5 class="px-4">WalletConnect V2 connect QR</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test connecting WalletConnect V2</div>
-                  <input placeholder="projectId WalletConnect v2" id="walletConnectV2ProjectId" type="text"/>
+                  <div>
+                    <input placeholder="projectId WalletConnect v2" id="walletConnectV2ProjectId" type="text"/>
+                  </div>
+                  <div>
+                    <select id="walletConnectV2WalletName">
+                      <option value="">Unknown</option>
+                      <option value="MetaMask">MetaMask</option>
+                      <option value="Uniswap Wallet">Uniswap Wallet</option>
+                      <option value="Enjin Wallet">Enjin Wallet</option>
+                    </select>
+                  </div>
                   <div id="walletConnectV2QRCode">
                   </div>
                 </div>
@@ -203,6 +213,7 @@
                     localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectId").value
                     let wallet = new Web3Wallets.wallets.WalletConnectV2()
                     let account = await wallet.connect({
+                      name: document.getElementById("walletConnectV2WalletName").value,
                       connect: ({ uri })=>{
                         copyTextToClipboard(uri)
                         const qrCode = new QRCodeStyling({
@@ -247,6 +258,9 @@
                     console.log('connectWalletConnectV2ViaRedirect')
                     localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectIdRedirect").value
                     let wallet = new Web3Wallets.wallets.WalletConnectV2()
+                    if(['ledgerlive:'].include(document.getElementById("walletConnectV2ProjectIdHref").value)) {
+                      localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href: "ledgerlive://", name: "LedgerLive" }))
+                    }
                     let account = await wallet.connect({
                       connect: ({ uri })=>{
                         const href = document.getElementById("walletConnectV2ProjectIdHref").value

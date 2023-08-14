@@ -44744,7 +44744,7 @@ class WalletConnectV2 {
     
     try {
 
-      this.walletName = _optionalChain$1([options, 'optionalAccess', _37 => _37.walletName]);
+      this.walletName = _optionalChain$1([options, 'optionalAccess', _37 => _37.name]);
 
       // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
       this.signClient = await getSignClient();

@@ -208,7 +208,7 @@ class WalletConnectV2 {
     
     try {
 
-      this.walletName = options?.walletName
+      this.walletName = options?.name
 
       // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
       this.signClient = await getSignClient()

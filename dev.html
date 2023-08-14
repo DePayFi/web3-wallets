@@ -213,7 +213,7 @@
                     localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectId").value
                     let wallet = new Web3Wallets.wallets.WalletConnectV2()
                     let account = await wallet.connect({
-                      walletName: document.getElementById("walletConnectV2WalletName").value,
+                      name: document.getElementById("walletConnectV2WalletName").value,
                       connect: ({ uri })=>{
                         copyTextToClipboard(uri)
                         const qrCode = new QRCodeStyling({
