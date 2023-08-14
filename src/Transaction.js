@@ -64,10 +64,18 @@ class Transaction {
     })
   }
 
+  getParamType(param) {
+    if(param?.components?.length) {
+      return `(${param.components.map((param)=>this.getParamType(param)).join(',')})`
+    } else {
+      return param.type
+    }
+  }
+
   getMethodNameWithSignature() {
     let fragment = this.findFragment()
     if(fragment.inputs) {
-      return `${this.method}(${fragment.inputs.map((input)=>input.type).join(',')})`
+      return `${this.method}(${fragment.inputs.map((param)=>this.getParamType(param)).join(',')})`
     } else {
       return this.method
     }
