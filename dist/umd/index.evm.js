@@ -44187,7 +44187,7 @@
     if(await isConnected()) { return new WalletConnectV1() }
   };
 
-  const setConnectedInstance$2 = (value)=>{
+  const setConnectedInstance$1 = (value)=>{
     window[KEY$1] = value;
   };
 
@@ -44226,7 +44226,7 @@
     }
 
     disconnect() {
-      setConnectedInstance$2(undefined);
+      setConnectedInstance$1(undefined);
       localStorage[KEY$1+'_name'] = undefined;
       localStorage[KEY$1+'_logo'] = undefined;
       currentPlainInstance = undefined;
@@ -44242,7 +44242,7 @@
       });
 
       instance.on("modal_closed", ()=>{
-        setConnectedInstance$2(undefined);
+        setConnectedInstance$1(undefined);
         this.connector = undefined;
         this.session = undefined;
       });
@@ -44285,7 +44285,7 @@
           if(_optionalChain$2([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1+'_logo'] = this.logo = options.logo; }
 
           if(session.accounts instanceof Array && session.accounts.length) {
-            setConnectedInstance$2(this);
+            setConnectedInstance$1(this);
             return ethers.ethers.utils.getAddress(session.accounts[0])
           } else {
             return
@@ -44424,7 +44424,7 @@
   } WalletConnectV1.__initStatic(); WalletConnectV1.__initStatic2();
 
   WalletConnectV1.getConnectedInstance = getConnectedInstance$2;
-  WalletConnectV1.setConnectedInstance = setConnectedInstance$2;
+  WalletConnectV1.setConnectedInstance = setConnectedInstance$1;
 
   function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const sendTransaction$2 = async ({ transaction, wallet })=> {
@@ -44545,56 +44545,37 @@
   function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const KEY = 'depay:wallets:wc2';
 
+  const getConnectedInstance$1 = async()=>{
+    if(await WalletConnectV2.isAvailable()) { return new WalletConnectV2() }
+  };
+
+  const getConnectedChainId = (signClient, lastSession)=>{
+    return Promise.race([...
+      Blockchains__default['default'].all.filter((blockchain)=>blockchain.namespace === 'eip155').map((blockchain)=>{
+        return new Promise((resolve)=>{
+          try {
+            return signClient.request({
+              topic: lastSession.topic,
+              chainId: `eip155:${blockchain.networkId}`,
+              request:{ method: 'eth_chainId' }
+            }).then(resolve)
+          } catch (e) {}
+        })
+      }),
+      new Promise((resolve)=>{ setTimeout(resolve, 1500); })
+    ])
+  };
+
   const getLastSession = async()=>{
+    if(!localStorage[KEY+":projectId"]) { return }
     let signClient = await getSignClient();
     const existingSessions = signClient.find(getWalletConnectV2Config());
     const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined;
     if(lastSession && lastSession.expiry > Math.ceil(Date.now()/1000)) {
-      try {
-        console.log('CHECK LAST SESSION', lastSession);
-        let connectedChainId = await signClient.request({
-          topic: lastSession.topic,
-          chainId: lastSession.namespaces.eip155.chains[0],
-          request: {
-            method: 'eth_chainId'
-          }
-        });
-        console.log('connectedChainId', connectedChainId);
-      } catch (e) {}
+      if(await getConnectedChainId(signClient, lastSession)) {
+        return lastSession
+      }
     }
-  };
-
-  const getConnectedChainId = async(signClient, session)=>{
-    console.log('getConnectedChainId');
-    console.log('signClient', signClient);
-    console.log('session.namespaces.eip155.chains', session.namespaces.eip155.chains);
-    let results = (await Promise.all(session.namespaces.eip155.chains.map((identifier)=>{
-      console.log('signClient.request', {
-        topic: session.topic,
-        chainId: identifier,
-        request: {
-          method: 'eth_chainId'
-        }
-      });
-      return Promise.race([
-        new Promise((resolve)=>{setTimeout(resolve, 1500);}),
-        signClient.request({
-          topic: session.topic,
-          chainId: identifier,
-          request: {
-            method: 'eth_chainId'
-          }
-        })
-      ])
-    })));
-    console.log('RESULTS', results);
-    return results.filter(Boolean)[0]
-  };
-
-  const getConnectedInstance$1 = async()=>{
-  };
-
-  const setConnectedInstance$1 = (value)=>{
   };
 
   const getWalletConnectV2Config = ()=>{
@@ -44630,7 +44611,6 @@
     if(window.getSignClientPromise) { return window.getSignClientPromise }
     window.getSignClientPromise = new Promise(async(resolve)=>{
       const signClient = await walletconnectV2.SignClient.init({
-        // core: new Core({ projectId: localStorage[KEY+":projectId"] }),
         projectId: localStorage[KEY+":projectId"],
         metadata: {
           name: document.title || 'dApp',
@@ -44653,14 +44633,13 @@
       blockchains: supported$2.evm
     };}
 
-    static __initStatic2() {this.isAvailable = ()=>{ 
-      return getConnectedInstance$1() != undefined 
+    static __initStatic2() {this.isAvailable = async()=>{ 
+      return !! await getLastSession()
     };}
 
     constructor() {
       this.name = (localStorage[KEY+':name'] && localStorage[KEY+':name'] != undefined) ? localStorage[KEY+':name'] : this.constructor.info.name;
       this.logo = (localStorage[KEY+':logo'] && localStorage[KEY+':logo'] != undefined) ? localStorage[KEY+':logo'] : this.constructor.info.logo;
-      this.blockchains = this.constructor.info.blockchains;
       this.sendTransaction = (transaction)=>{
         return sendTransaction$2({
           wallet: this,
@@ -44675,13 +44654,51 @@
       }
     }
 
+    async getAllAvailableBlockchains() {
+      let timeTillResponse = new Date();
+      await Promise.race([...
+        this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+          return new Promise((resolve)=>{
+            try {
+              this.signClient.request({
+                topic: this.session.topic,
+                chainId: chainIdentifier,
+                request:{
+                  method: 'eth_chainId',
+                }
+              }).then(resolve);
+            } catch (e2) {}
+          })
+        }),
+        new Promise(resolve=>setTimeout(resolve, 6000))
+      ]);
+      timeTillResponse = new Date() - timeTillResponse;
+
+      let blockchains = [];
+      await Promise.race([
+        Promise.all(this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
+          try {
+            return this.signClient.request({
+              topic: this.session.topic,
+              chainId: chainIdentifier,
+              request:{
+                method: 'eth_chainId',
+              }
+            }).then(()=> blockchains.push(Blockchains__default['default'].findByNetworkId(chainIdentifier.split(':')[1]).name))
+          } catch (e3) {}
+        })),
+        new Promise(resolve => setTimeout(resolve, timeTillResponse*2))
+      ]);
+      return blockchains
+    }
+
     async connect(options) {
       
       let connect = (options && options.connect) ? options.connect : ({uri})=>{};
       
       try {
 
-        // delete localStorage[`wc@2:client:0.3//session`] // DO NOT RECOVER AN OTHER SUBSCRIPTION!!!
+        // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
         this.signClient = await getSignClient();
 
         this.signClient.on("session_delete", (session)=> {
@@ -44696,6 +44713,7 @@
         this.signClient.on("session_update", async(session)=> {
           if(_optionalChain([session, 'optionalAccess', _16 => _16.topic]) === _optionalChain([this, 'access', _17 => _17.session, 'optionalAccess', _18 => _18.topic])) {
             this.session = this.signClient.session.get(session.topic);
+            this.blockchains = await this.getAllAvailableBlockchains();
           }
         });
 
@@ -44707,16 +44725,15 @@
           const { uri, approval } = await this.signClient.connect(getWalletConnectV2Config());
           await connect({ uri });
           this.session = await approval();
-          console.log('SESSION!', this.session);
+          await new Promise(resolve=>setTimeout(resolve, 500)); // to prevent race condition within WalletConnect
         };
 
         const lastSession = await getLastSession();
-        console.log('lastSessionFound?', lastSession);
-        // if(lastSession) {
-        //   this.session = lastSession
-        // }
-
-        if(!this.session){ await connectWallet(); }
+        if(lastSession) {
+          this.session = lastSession;
+        } else {
+          await connectWallet();
+        }
 
         let meta = _optionalChain([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.peer, 'optionalAccess', _24 => _24.metadata]);
         if(meta && meta.name) {
@@ -44730,9 +44747,7 @@
         if(_optionalChain([options, 'optionalAccess', _26 => _26.name])) { localStorage[KEY+':name'] = this.name = options.name; }
         if(_optionalChain([options, 'optionalAccess', _27 => _27.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
-        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-          return Blockchains__default['default'].findByNetworkId(chainIdentifier.split(':')[1])
-        });
+        this.blockchains = await this.getAllAvailableBlockchains();
 
         return await this.account()
 
@@ -44743,46 +44758,36 @@
 
     async connectedTo(input) {
       if(input) {
-        if(_optionalChain([this, 'access', _28 => _28.session, 'optionalAccess', _29 => _29.namespaces, 'optionalAccess', _30 => _30.eip155, 'optionalAccess', _31 => _31.chains, 'optionalAccess', _32 => _32.length])) {
-          return !!this.session.namespaces.eip155.chains.some((chainIdentifier)=>{
-            let blockchain = Blockchains__default['default'].findByNetworkId(chainIdentifier.split(':')[1]);
-            return blockchain && blockchain.name === input
-          })
-        }
+        return this.blockchains.indexOf(input) > -1
       } else {
-        if(_optionalChain([this, 'access', _33 => _33.session, 'optionalAccess', _34 => _34.namespaces, 'optionalAccess', _35 => _35.eip155, 'optionalAccess', _36 => _36.chains, 'optionalAccess', _37 => _37.length])) {
-          return this.session.namespaces.eip155.chains.map((chainIdentifier)=>{
-            return Blockchains__default['default'].findByNetworkId(chainIdentifier.split(':')[1]).name
-          })
-        }
+        return this.blockchains
       }
+    }
+
+    getValidChainId() {
+      return `eip155:${Blockchains__default['default'][this.blockchains[0]].networkId}`
     }
 
     switchTo(blockchainName) {
       return new Promise((resolve, reject)=>{
-        let resolved, rejected;
+        
         const blockchain = Blockchains__default['default'][blockchainName];
-        setTimeout(async()=>{
-          if(!(await this.connectedTo(blockchainName)) && !resolved && !rejected){
-            reject({ code: 'NOT_SUPPORTED' });
-          } else {
-            this.connectedChainId = `${blockchain.namespace}:${blockchain.networkId}`;
-            resolve();
-          }
-        }, 4000);
-        this.session.namespaces.eip155.chains.map((identifier)=>{
-          return Promise.race([
-            new Promise((resolve)=>{setTimeout(resolve, 1500);}),
-            this.signClient.request({
-              topic: this.session.topic,
-              chainId: identifier,
-              request:{
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: blockchain.id }],
-              }
-            })
-          ])
-        });
+
+        Promise.race([
+          this.signClient.request({
+            topic: this.session.topic,
+            chainId: this.getValidChainId(),
+            request:{
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: blockchain.id }],
+            }
+          }),
+          new Promise((resolve, reject)=>setTimeout(()=>{
+            if(this.blockchains.indexOf(blockchainName) === -1) {
+              reject({ code: 'NOT_SUPPORTED' });
+            }
+          } , 8000))
+        ]).catch(reject);
       })
     }
 
@@ -44797,7 +44802,7 @@
       switch (event) {
         case 'account':
           internalCallback = async(event)=> {
-            if(_optionalChain([event, 'optionalAccess', _38 => _38.topic]) === _optionalChain([this, 'access', _39 => _39.session, 'optionalAccess', _40 => _40.topic]) && event.params.event.name === 'accountsChanged') {
+            if(_optionalChain([event, 'optionalAccess', _28 => _28.topic]) === _optionalChain([this, 'access', _29 => _29.session, 'optionalAccess', _30 => _30.topic]) && event.params.event.name === 'accountsChanged') {
               callback(await this.account());
             }
           };
@@ -44818,13 +44823,9 @@
     async sign(message) {
       if(typeof message === 'object') {
         let account = await this.account();
-        const blockchain = Blockchains__default['default'].findByNetworkId(message.domain.chainId);
-        if((await this.connectedTo(blockchain.name)) === false) {
-          throw({ code: 'WRONG_NETWORK' })
-        }
         let signature = await this.signClient.request({
           topic: this.session.topic,
-          chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+          chainId: this.getValidChainId(),
           request:{
             method: 'eth_signTypedData_v4',
             params: [account, JSON.stringify(message)],
@@ -44834,11 +44835,9 @@
       } else if (typeof message === 'string') {
         const address = await this.account();
         const params = [ethers.ethers.utils.hexlify(ethers.ethers.utils.toUtf8Bytes(message)), address];
-        const connectedChainId = await getConnectedChainId(this.signClient, this.session);
-        const blockchain = Blockchains__default['default'].findById(connectedChainId);
         let signature = await this.signClient.request({
           topic: this.session.topic,
-          chainId: `${blockchain.namespace}:${blockchain.networkId}`,
+          chainId: this.getValidChainId(),
           request:{
             method: 'personal_sign',
             params
@@ -44853,7 +44852,6 @@
   } WalletConnectV2.__initStatic(); WalletConnectV2.__initStatic2();
 
   WalletConnectV2.getConnectedInstance = getConnectedInstance$1;
-  WalletConnectV2.setConnectedInstance = setConnectedInstance$1;
 
   const sendTransaction$1 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
@@ -44962,7 +44960,18 @@
     }
 
     newWalletLinkInstance() {
-      let instance = new coinbaseWalletSdk.CoinbaseWalletSDK({}).makeWeb3Provider();
+      let instance = new coinbaseWalletSdk.CoinbaseWalletSDK({
+        uiConstructor: ()=>{ 
+          return {
+            attach: ()=>{},
+            setConnectDisabled: ()=>{},
+            inlineAccountsResponse: ()=>{},
+            requestEthereumAccounts: ()=>{},
+            isStandalone: ()=>{},
+            hideRequestEthereumAccounts: ()=>{},
+          }
+        } 
+      }).makeWeb3Provider();
       return instance
     }
 
@@ -44972,9 +44981,16 @@
     }
 
     async connect(options) {
+      let connect = (options && options.connect) ? options.connect : ({uri})=>{};
+
+      await connect({ uri: this.connector.qrUrl });
+      console.log('connected?!');
+
       let relay = await this.connector._relayProvider();
       relay.setConnectDisabled(false);
+
       let accounts = await this.connector.enable();
+      console.log('accounts', accounts);
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this);
       }

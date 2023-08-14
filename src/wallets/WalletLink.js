@@ -38,7 +38,18 @@ class WalletLink {
   }
 
   newWalletLinkInstance() {
-    let instance = new CoinbaseWalletSDK({}).makeWeb3Provider()
+    let instance = new CoinbaseWalletSDK({
+      uiConstructor: ()=>{ 
+        return {
+          attach: ()=>{},
+          setConnectDisabled: ()=>{},
+          inlineAccountsResponse: ()=>{},
+          requestEthereumAccounts: ()=>{},
+          isStandalone: ()=>{},
+          hideRequestEthereumAccounts: ()=>{},
+        }
+      } 
+    }).makeWeb3Provider()
     return instance
   }
 
@@ -48,9 +59,16 @@ class WalletLink {
   }
 
   async connect(options) {
+    let connect = (options && options.connect) ? options.connect : ({uri})=>{}
+
+    await connect({ uri: this.connector.qrUrl })
+    console.log('connected?!')
+
     let relay = await this.connector._relayProvider()
     relay.setConnectDisabled(false)
+
     let accounts = await this.connector.enable()
+    console.log('accounts', accounts)
     if(accounts instanceof Array && accounts.length) {
       setConnectedInstance(this)
     }
