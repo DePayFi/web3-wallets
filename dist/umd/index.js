@@ -1996,18 +1996,7 @@
     }
 
     newWalletLinkInstance() {
-      let instance = new coinbaseWalletSdk.CoinbaseWalletSDK({
-        uiConstructor: ()=>{ 
-          return {
-            attach: ()=>{},
-            setConnectDisabled: ()=>{},
-            inlineAccountsResponse: ()=>{},
-            requestEthereumAccounts: ()=>{},
-            isStandalone: ()=>{},
-            hideRequestEthereumAccounts: ()=>{},
-          }
-        } 
-      }).makeWeb3Provider();
+      let instance = new coinbaseWalletSdk.CoinbaseWalletSDK({}).makeWeb3Provider();
       return instance
     }
 
@@ -2020,13 +2009,16 @@
       let connect = (options && options.connect) ? options.connect : ({uri})=>{};
 
       await connect({ uri: this.connector.qrUrl });
-      console.log('connected?!');
+      
+      document.querySelector('.-cbwsdk-extension-dialog-container').setAttribute('style', 'display: none;');
+      setTimeout(()=>{
+        this.connector._relay.ui.linkFlow.isOpen = false;
+      }, 10);
 
       let relay = await this.connector._relayProvider();
       relay.setConnectDisabled(false);
 
       let accounts = await this.connector.enable();
-      console.log('accounts', accounts);
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this);
       }
