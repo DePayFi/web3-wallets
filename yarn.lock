@@ -926,7 +926,7 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@depay/coinbase-wallet-sdk@^3.7.1":
+"@depay/coinbase-wallet-sdk@^3.6.4":
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/@depay/coinbase-wallet-sdk/-/coinbase-wallet-sdk-3.7.1.tgz#6fb014e303b274656dc2d370b37a347c7ddebe7c"
   integrity sha512-fCJA5WLeqaCPzWhJ3e0HcASNaHsqej0dANYdGe+LqkrcFfL+fpAAQfApN/3BKIp80O23I9cOXUVu23y9USbUpw==
