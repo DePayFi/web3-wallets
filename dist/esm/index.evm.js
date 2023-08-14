@@ -44578,7 +44578,17 @@ const CONFIGURATIONS = {
       "eth_signTypedData",
     ]
   },
+};
 
+const isMobile = ()=> {
+  if (typeof window !== 'undefined') {
+    return Boolean(
+      window.matchMedia('(pointer:coarse)').matches ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|Opera Mini/u.test(navigator.userAgent)
+    )
+  }
+
+  return false
 };
 
 const DEFAULT_CONFIGURATION = {
@@ -44729,7 +44739,7 @@ class WalletConnectV2 {
   }
 
   async setSessionBlockchains() {
-    if(_optionalChain$1([CONFIGURATIONS, 'access', _27 => _27[this.walletName], 'optionalAccess', _28 => _28.methods, 'optionalAccess', _29 => _29.includes, 'call', _30 => _30('eth_chainId')])) {
+    if(_optionalChain$1([CONFIGURATIONS, 'access', _27 => _27[this.walletName], 'optionalAccess', _28 => _28.methods, 'optionalAccess', _29 => _29.includes, 'call', _30 => _30('eth_chainId')]) && !isMobile()) {
       this.blockchains = await this.getAllAvailableBlockchains();
     } else if(this.session.namespaces.eip155.chains) {
       this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains, 'access', _31 => _31.findByNetworkId, 'call', _32 => _32(chainIdentifier.split(':')[1]), 'optionalAccess', _33 => _33.name])).filter(Boolean);

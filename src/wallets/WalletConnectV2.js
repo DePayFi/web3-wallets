@@ -42,7 +42,17 @@ const CONFIGURATIONS = {
       "eth_signTypedData",
     ]
   },
+}
 
+const isMobile = ()=> {
+  if (typeof window !== 'undefined') {
+    return Boolean(
+      window.matchMedia('(pointer:coarse)').matches ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|Opera Mini/u.test(navigator.userAgent)
+    )
+  }
+
+  return false
 }
 
 const DEFAULT_CONFIGURATION = {
@@ -193,7 +203,7 @@ class WalletConnectV2 {
   }
 
   async setSessionBlockchains() {
-    if(CONFIGURATIONS[this.walletName]?.methods?.includes('eth_chainId')) {
+    if(CONFIGURATIONS[this.walletName]?.methods?.includes('eth_chainId') && !isMobile()) {
       this.blockchains = await this.getAllAvailableBlockchains()
     } else if(this.session.namespaces.eip155.chains) {
       this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
