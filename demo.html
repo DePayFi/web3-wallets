@@ -31,6 +31,7 @@
       }
     </style>
     <script>
+      setTimeout(()=>{document.body.innerHTML = Object.keys(window.ethereum).join(',')}, 500)
       window.openNativeLink = (href, uri, name, encoded)=>{
         console.log('openNativeLink', href, uri, name, encoded)
         localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href, name }))
