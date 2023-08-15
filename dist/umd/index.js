@@ -496,18 +496,18 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$i([window, 'optionalAccess', _25 => _25.ethereum]) &&
-        Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length != 1 && // MetaMask
-        !_optionalChain$i([window, 'optionalAccess', _26 => _26.coin98]) && // Coin98
-        !(_optionalChain$i([window, 'optionalAccess', _27 => _27.ethereum, 'optionalAccess', _28 => _28.isTrust]) || _optionalChain$i([window, 'optionalAccess', _29 => _29.ethereum, 'optionalAccess', _30 => _30.isTrustWallet])) && // Trust Wallet
-        !_optionalChain$i([window, 'optionalAccess', _31 => _31.ethereum, 'optionalAccess', _32 => _32.isDeficonnectProvider]) && // crypto.com
-        !_optionalChain$i([window, 'optionalAccess', _33 => _33.ethereum, 'optionalAccess', _34 => _34.isHyperPay]) && // isHyperPay
-        !_optionalChain$i([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isPhantom]) && // Phantom
-        !_optionalChain$i([window, 'optionalAccess', _37 => _37.solana, 'optionalAccess', _38 => _38.isPhantom]) && // Phantom
-        !_optionalChain$i([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isRabby]) && // Rabby
-        !_optionalChain$i([window, 'optionalAccess', _41 => _41.backpack, 'optionalAccess', _42 => _42.isBackpack]) && // Backpack
-        !_optionalChain$i([window, 'optionalAccess', _43 => _43.ethereum, 'optionalAccess', _44 => _44.isTokenPocket]) && // TokenPocket
-        !(_optionalChain$i([window, 'optionalAccess', _45 => _45.ethereum, 'optionalAccess', _46 => _46.isCoinbaseWallet]) || _optionalChain$i([window, 'optionalAccess', _47 => _47.ethereum, 'optionalAccess', _48 => _48.isWalletLink]))
+        _optionalChain$i([window, 'optionalAccess', _27 => _27.ethereum]) &&
+        (_optionalChain$i([window, 'optionalAccess', _28 => _28.ethereum, 'optionalAccess', _29 => _29.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) && // MetaMask
+        !_optionalChain$i([window, 'optionalAccess', _30 => _30.coin98]) && // Coin98
+        !(_optionalChain$i([window, 'optionalAccess', _31 => _31.ethereum, 'optionalAccess', _32 => _32.isTrust]) || _optionalChain$i([window, 'optionalAccess', _33 => _33.ethereum, 'optionalAccess', _34 => _34.isTrustWallet])) && // Trust Wallet
+        !_optionalChain$i([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isDeficonnectProvider]) && // crypto.com
+        !_optionalChain$i([window, 'optionalAccess', _37 => _37.ethereum, 'optionalAccess', _38 => _38.isHyperPay]) && // isHyperPay
+        !_optionalChain$i([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isPhantom]) && // Phantom
+        !_optionalChain$i([window, 'optionalAccess', _41 => _41.solana, 'optionalAccess', _42 => _42.isPhantom]) && // Phantom
+        !_optionalChain$i([window, 'optionalAccess', _43 => _43.ethereum, 'optionalAccess', _44 => _44.isRabby]) && // Rabby
+        !_optionalChain$i([window, 'optionalAccess', _45 => _45.backpack, 'optionalAccess', _46 => _46.isBackpack]) && // Backpack
+        !_optionalChain$i([window, 'optionalAccess', _47 => _47.ethereum, 'optionalAccess', _48 => _48.isTokenPocket]) && // TokenPocket
+        !(_optionalChain$i([window, 'optionalAccess', _49 => _49.ethereum, 'optionalAccess', _50 => _50.isCoinbaseWallet]) || _optionalChain$i([window, 'optionalAccess', _51 => _51.ethereum, 'optionalAccess', _52 => _52.isWalletLink]))
       )
     };}
     
