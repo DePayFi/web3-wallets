@@ -44617,7 +44617,7 @@
       ],
       requiredNamespaces: {
         eip155: {
-          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
         }
       },
       optionalNamespaces: {},
@@ -44632,7 +44632,7 @@
       ],
       requiredNamespaces: {
         eip155: {
-          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
         }
       },
       optionalNamespaces: {},
