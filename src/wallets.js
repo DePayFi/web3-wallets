@@ -12,6 +12,7 @@ import Phantom from './wallets/Phantom'
 import Rabby from './wallets/Rabby'
 import SolanaMobileWalletAdapter from './wallets/SolanaMobileWalletAdapter'
 import Solflare from './wallets/Solflare'
+import TokenPocket from './wallets/TokenPocket'
 import Trust from './wallets/Trust'
 import WalletConnectV1 from './wallets/WalletConnectV1'
 import WalletConnectV2 from './wallets/WalletConnectV2'
@@ -34,6 +35,7 @@ export default {
   Coin98,
   CryptoCom,
   HyperPay,
+  TokenPocket,
   WindowEthereum,
   WindowSolana,
   SolanaMobileWalletAdapter,

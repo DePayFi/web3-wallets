@@ -9,5 +9,10 @@ export default class Trust extends WindowEthereum {
     blockchains: supported.evm
   }
 
-  static isAvailable = async()=>{ return (window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) }
+  static isAvailable = async()=>{
+    return (
+      (window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) &&
+      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!Debug)(?!TrustWallet)(?!MetaMask)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
+    )
+  }
 }
