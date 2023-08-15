@@ -281,6 +281,66 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div>
+                <h5 class="px-4">Debug window.ethereum</h5>
+                <div class="px-4">
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.debugWindowEthereum = async()=>{
+                    setTimeout(()=>{document.body.innerHTML = Object.keys(window.ethereum).join(',')}, 500)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='debugWindowEthereum()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
+                <h5 class="px-4">Debug window.solana</h5>
+                <div class="px-4">
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.debugWindowSolana = async()=>{
+                    setTimeout(()=>{document.body.innerHTML = Object.keys(window.solana).join(',')}, 500)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='debugWindowSolana()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
+                <h5 class="px-4">Debug window.phantom</h5>
+                <div class="px-4">
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.debugWindowPhantom = async()=>{
+                    setTimeout(()=>{document.body.innerHTML = Object.keys(window.phantom).join(',')}, 500)
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='debugWindowPhantom()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
                 <h5 class="px-4">Solana Pay</h5>
                 <div class="px-4">
                   <div class="text-secondary ">Test Solana Pay</div>
