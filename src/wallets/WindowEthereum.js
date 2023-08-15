@@ -26,7 +26,7 @@ export default class WindowEthereum {
       // not HyperPay
       !window?.ethereum?.isHyperPay &&
       // not Phantom
-      !(window.phantom && !window.glow && !window.solana.isGlow) &&
+      !(window.phantom && !window.glow && !window.solana.isGlow && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
       // not Rabby
       !window?.ethereum?.isRabby &&
       // not Backpack
