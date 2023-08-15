@@ -15,16 +15,25 @@ export default class WindowEthereum {
   static isAvailable = async()=>{ 
     return (
       window?.ethereum &&
-      Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length != 1 && // MetaMask
-      !window?.coin98 && // Coin98
-      !(window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) && // Trust Wallet
-      !window?.ethereum?.isDeficonnectProvider && // crypto.com
-      !window?.ethereum?.isHyperPay && // isHyperPay
-      !window?.ethereum?.isPhantom && // Phantom
-      !window?.solana?.isPhantom && // Phantom
-      !window?.ethereum?.isRabby && // Rabby
-      !window?.backpack?.isBackpack && // Backpack
-      !window?.ethereum?.isTokenPocket && // TokenPocket
+      // not MetaMask
+      !(window?.ethereum?.isMetaMask && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
+      // not Coin98
+      !window?.coin98 &&
+      // not Trust Wallet
+      !(window?.ethereum?.isTrust || window?.ethereum?.isTrustWallet) &&
+      // not crypto.com
+      !window?.ethereum?.isDeficonnectProvider &&
+      // not HyperPay
+      !window?.ethereum?.isHyperPay &&
+      // not Phantom
+      !(window.phantom && !window.glow && !window?.solana?.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
+      // not Rabby
+      !window?.ethereum?.isRabby &&
+      // not Backpack
+      !window?.backpack?.isBackpack &&
+      // not TokenPocket
+      !window?.ethereum?.isTokenPocket && 
+      // not Coinbase
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
     )
   }

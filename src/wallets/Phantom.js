@@ -10,7 +10,10 @@ export default class Phantom extends WindowSolana {
 
   static isAvailable = async()=>{
     return (
-      window.phantom && !window.glow && !window.solana.isGlow
+      window.phantom &&
+      !window.glow &&
+      !window?.solana?.isGlow &&
+      !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
     )
   }
 }
