@@ -19,6 +19,36 @@ const CONFIGURATIONS = {
     ]
   },
 
+  "BitGet (BitKeep)": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+    ],
+    requiredNamespaces: {
+      eip155: {
+        chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
+      }
+    },
+    optionalNamespaces: {},
+  },
+
+  "BitGet": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+    ],
+    requiredNamespaces: {
+      eip155: {
+        chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
+      }
+    },
+    optionalNamespaces: {},
+  },
+
   "Uniswap Wallet": {
     methods: [
       "eth_sendTransaction",
@@ -153,6 +183,7 @@ class WalletConnectV2 {
   }
 
   async setSessionBlockchains() {
+    if(!this.session) { return }
     if(CONFIGURATIONS[this.walletName]?.methods?.includes('wallet_switchEthereumChain')) {
       this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
     } else if(this.session.namespaces.eip155.chains) {

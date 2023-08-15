@@ -33,6 +33,8 @@ export default class WindowEthereum {
       !window?.backpack?.isBackpack &&
       // not TokenPocket
       !window?.ethereum?.isTokenPocket && 
+      // not BitKeep
+      !window?.ethereum?.isBitKeep && 
       // not Coinbase
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
     )

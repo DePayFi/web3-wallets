@@ -276,11 +276,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$l([window, 'optionalAccess', _2 => _2.solana]) &&
+        _optionalChain$l([window, 'optionalAccess', _5 => _5.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
+        // not BitKeep
+        !(_optionalChain$l([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$l([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow
       )
@@ -329,7 +331,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$l([publicKey, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]));
+          internalCallback = (publicKey) => callback(_optionalChain$l([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }
@@ -499,27 +501,29 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$j([window, 'optionalAccess', _25 => _25.ethereum]) &&
+        _optionalChain$j([window, 'optionalAccess', _27 => _27.ethereum]) &&
         // not MetaMask
-        !(_optionalChain$j([window, 'optionalAccess', _26 => _26.ethereum, 'optionalAccess', _27 => _27.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
+        !(_optionalChain$j([window, 'optionalAccess', _28 => _28.ethereum, 'optionalAccess', _29 => _29.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
         // not Coin98
-        !_optionalChain$j([window, 'optionalAccess', _28 => _28.coin98]) &&
+        !_optionalChain$j([window, 'optionalAccess', _30 => _30.coin98]) &&
         // not Trust Wallet
-        !(_optionalChain$j([window, 'optionalAccess', _29 => _29.ethereum, 'optionalAccess', _30 => _30.isTrust]) || _optionalChain$j([window, 'optionalAccess', _31 => _31.ethereum, 'optionalAccess', _32 => _32.isTrustWallet])) &&
+        !(_optionalChain$j([window, 'optionalAccess', _31 => _31.ethereum, 'optionalAccess', _32 => _32.isTrust]) || _optionalChain$j([window, 'optionalAccess', _33 => _33.ethereum, 'optionalAccess', _34 => _34.isTrustWallet])) &&
         // not crypto.com
-        !_optionalChain$j([window, 'optionalAccess', _33 => _33.ethereum, 'optionalAccess', _34 => _34.isDeficonnectProvider]) &&
+        !_optionalChain$j([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isDeficonnectProvider]) &&
         // not HyperPay
-        !_optionalChain$j([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isHyperPay]) &&
+        !_optionalChain$j([window, 'optionalAccess', _37 => _37.ethereum, 'optionalAccess', _38 => _38.isHyperPay]) &&
         // not Phantom
-        !(window.phantom && !window.glow && !_optionalChain$j([window, 'optionalAccess', _37 => _37.solana, 'optionalAccess', _38 => _38.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
+        !(window.phantom && !window.glow && !_optionalChain$j([window, 'optionalAccess', _39 => _39.solana, 'optionalAccess', _40 => _40.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Rabby
-        !_optionalChain$j([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isRabby]) &&
+        !_optionalChain$j([window, 'optionalAccess', _41 => _41.ethereum, 'optionalAccess', _42 => _42.isRabby]) &&
         // not Backpack
-        !_optionalChain$j([window, 'optionalAccess', _41 => _41.backpack, 'optionalAccess', _42 => _42.isBackpack]) &&
+        !_optionalChain$j([window, 'optionalAccess', _43 => _43.backpack, 'optionalAccess', _44 => _44.isBackpack]) &&
         // not TokenPocket
-        !_optionalChain$j([window, 'optionalAccess', _43 => _43.ethereum, 'optionalAccess', _44 => _44.isTokenPocket]) && 
+        !_optionalChain$j([window, 'optionalAccess', _45 => _45.ethereum, 'optionalAccess', _46 => _46.isTokenPocket]) && 
+        // not BitKeep
+        !_optionalChain$j([window, 'optionalAccess', _47 => _47.ethereum, 'optionalAccess', _48 => _48.isBitKeep]) && 
         // not Coinbase
-        !(_optionalChain$j([window, 'optionalAccess', _45 => _45.ethereum, 'optionalAccess', _46 => _46.isCoinbaseWallet]) || _optionalChain$j([window, 'optionalAccess', _47 => _47.ethereum, 'optionalAccess', _48 => _48.isWalletLink]))
+        !(_optionalChain$j([window, 'optionalAccess', _49 => _49.ethereum, 'optionalAccess', _50 => _50.isCoinbaseWallet]) || _optionalChain$j([window, 'optionalAccess', _51 => _51.ethereum, 'optionalAccess', _52 => _52.isWalletLink]))
       )
     };}
     
@@ -1640,6 +1644,36 @@
       ]
     },
 
+    "BitGet (BitKeep)": {
+      methods: [
+        "eth_sendTransaction",
+        "personal_sign",
+        "eth_signTypedData",
+        "eth_signTypedData_v4",
+      ],
+      requiredNamespaces: {
+        eip155: {
+          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+        }
+      },
+      optionalNamespaces: {},
+    },
+
+    "BitGet": {
+      methods: [
+        "eth_sendTransaction",
+        "personal_sign",
+        "eth_signTypedData",
+        "eth_signTypedData_v4",
+      ],
+      requiredNamespaces: {
+        eip155: {
+          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+        }
+      },
+      optionalNamespaces: {},
+    },
+
     "Uniswap Wallet": {
       methods: [
         "eth_sendTransaction",
@@ -1774,6 +1808,7 @@
     }
 
     async setSessionBlockchains() {
+      if(!this.session) { return }
       if(_optionalChain$1([CONFIGURATIONS, 'access', _27 => _27[this.walletName], 'optionalAccess', _28 => _28.methods, 'optionalAccess', _29 => _29.includes, 'call', _30 => _30('wallet_switchEthereumChain')])) {
         this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _31 => _31.findByNetworkId, 'call', _32 => _32(chainIdentifier.split(':')[1]), 'optionalAccess', _33 => _33.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.chains) {
