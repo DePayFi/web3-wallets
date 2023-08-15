@@ -12,8 +12,11 @@ export default class WindowSolana {
   static isAvailable = async()=>{ 
     return (
       window?.solana &&
-      !(window.phantom && !window.glow && !window.solana.isGlow) &&
+      // not Phantom
+      !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
+      // not Coin98
       !window.coin98 &&
+      // not Glow
       !window.solana.isGlow
     )
   }
