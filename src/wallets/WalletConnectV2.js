@@ -1,7 +1,22 @@
+/*#if _EVM
+
+import { request } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { request } from '@depay/web3-client-solana'
+
+//#else */
+
+import { request } from '@depay/web3-client'
+
+//#endif
+
 import Blockchains from '@depay/web3-blockchains'
-import { SignClient } from "@depay/walletconnect-v2"
 import { ethers } from 'ethers'
+import { getSmartContractWallet } from './MultiSig'
 import { sendTransaction } from './WalletConnectV2/transaction'
+import { SignClient } from "@depay/walletconnect-v2"
 import { supported } from '../blockchains'
 
 const KEY = 'depay:wallets:wc2'
@@ -321,6 +336,15 @@ class WalletConnectV2 {
       case 'account':
         this.signClient.off("session_event", callback)
         break
+    }
+  }
+
+  async transactionCount({ blockchain, address }) {
+    const smartContractWallet = await getSmartContractWallet(blockchain, address)
+    if(smartContractWallet) {
+      return await smartContractWallet.transactionCount()
+    } else {
+      return await request({ blockchain, method: 'transactionCount', address })
     }
   }
 
