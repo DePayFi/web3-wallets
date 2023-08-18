@@ -8126,6 +8126,451 @@
 
   var BN$1 = bn$1.exports;
 
+  var safeBuffer$1 = {exports: {}};
+
+  /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+  (function (module, exports) {
+    /* eslint-disable node/no-deprecated-api */
+    var buffer = require$$1$1;
+    var Buffer = buffer.Buffer; // alternative to using Object.keys for old browsers
+
+    function copyProps(src, dst) {
+      for (var key in src) {
+        dst[key] = src[key];
+      }
+    }
+
+    if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+      module.exports = buffer;
+    } else {
+      // Copy properties from require('buffer')
+      copyProps(buffer, exports);
+      exports.Buffer = SafeBuffer;
+    }
+
+    function SafeBuffer(arg, encodingOrOffset, length) {
+      return Buffer(arg, encodingOrOffset, length);
+    }
+
+    SafeBuffer.prototype = Object.create(Buffer.prototype); // Copy static methods from Buffer
+
+    copyProps(Buffer, SafeBuffer);
+
+    SafeBuffer.from = function (arg, encodingOrOffset, length) {
+      if (typeof arg === 'number') {
+        throw new TypeError('Argument must not be a number');
+      }
+
+      return Buffer(arg, encodingOrOffset, length);
+    };
+
+    SafeBuffer.alloc = function (size, fill, encoding) {
+      if (typeof size !== 'number') {
+        throw new TypeError('Argument must be a number');
+      }
+
+      var buf = Buffer(size);
+
+      if (fill !== undefined) {
+        if (typeof encoding === 'string') {
+          buf.fill(fill, encoding);
+        } else {
+          buf.fill(fill);
+        }
+      } else {
+        buf.fill(0);
+      }
+
+      return buf;
+    };
+
+    SafeBuffer.allocUnsafe = function (size) {
+      if (typeof size !== 'number') {
+        throw new TypeError('Argument must be a number');
+      }
+
+      return Buffer(size);
+    };
+
+    SafeBuffer.allocUnsafeSlow = function (size) {
+      if (typeof size !== 'number') {
+        throw new TypeError('Argument must be a number');
+      }
+
+      return buffer.SlowBuffer(size);
+    };
+  })(safeBuffer$1, safeBuffer$1.exports);
+
+  // Copyright (c) 2018 base-x contributors
+  // Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
+  // Distributed under the MIT software license, see the accompanying
+  // file LICENSE or http://www.opensource.org/licenses/mit-license.php.
+  // @ts-ignore
+
+
+  var _Buffer$1 = safeBuffer$1.exports.Buffer;
+
+  function base$2(ALPHABET) {
+    if (ALPHABET.length >= 255) {
+      throw new TypeError('Alphabet too long');
+    }
+
+    var BASE_MAP = new Uint8Array(256);
+
+    for (var j = 0; j < BASE_MAP.length; j++) {
+      BASE_MAP[j] = 255;
+    }
+
+    for (var i = 0; i < ALPHABET.length; i++) {
+      var x = ALPHABET.charAt(i);
+      var xc = x.charCodeAt(0);
+
+      if (BASE_MAP[xc] !== 255) {
+        throw new TypeError(x + ' is ambiguous');
+      }
+
+      BASE_MAP[xc] = i;
+    }
+
+    var BASE = ALPHABET.length;
+    var LEADER = ALPHABET.charAt(0);
+    var FACTOR = Math.log(BASE) / Math.log(256); // log(BASE) / log(256), rounded up
+
+    var iFACTOR = Math.log(256) / Math.log(BASE); // log(256) / log(BASE), rounded up
+
+    function encode(source) {
+      if (Array.isArray(source) || source instanceof Uint8Array) {
+        source = _Buffer$1.from(source);
+      }
+
+      if (!_Buffer$1.isBuffer(source)) {
+        throw new TypeError('Expected Buffer');
+      }
+
+      if (source.length === 0) {
+        return '';
+      } // Skip & count leading zeroes.
+
+
+      var zeroes = 0;
+      var length = 0;
+      var pbegin = 0;
+      var pend = source.length;
+
+      while (pbegin !== pend && source[pbegin] === 0) {
+        pbegin++;
+        zeroes++;
+      } // Allocate enough space in big-endian base58 representation.
+
+
+      var size = (pend - pbegin) * iFACTOR + 1 >>> 0;
+      var b58 = new Uint8Array(size); // Process the bytes.
+
+      while (pbegin !== pend) {
+        var carry = source[pbegin]; // Apply "b58 = b58 * 256 + ch".
+
+        var i = 0;
+
+        for (var it1 = size - 1; (carry !== 0 || i < length) && it1 !== -1; it1--, i++) {
+          carry += 256 * b58[it1] >>> 0;
+          b58[it1] = carry % BASE >>> 0;
+          carry = carry / BASE >>> 0;
+        }
+
+        if (carry !== 0) {
+          throw new Error('Non-zero carry');
+        }
+
+        length = i;
+        pbegin++;
+      } // Skip leading zeroes in base58 result.
+
+
+      var it2 = size - length;
+
+      while (it2 !== size && b58[it2] === 0) {
+        it2++;
+      } // Translate the result into a string.
+
+
+      var str = LEADER.repeat(zeroes);
+
+      for (; it2 < size; ++it2) {
+        str += ALPHABET.charAt(b58[it2]);
+      }
+
+      return str;
+    }
+
+    function decodeUnsafe(source) {
+      if (typeof source !== 'string') {
+        throw new TypeError('Expected String');
+      }
+
+      if (source.length === 0) {
+        return _Buffer$1.alloc(0);
+      }
+
+      var psz = 0; // Skip and count leading '1's.
+
+      var zeroes = 0;
+      var length = 0;
+
+      while (source[psz] === LEADER) {
+        zeroes++;
+        psz++;
+      } // Allocate enough space in big-endian base256 representation.
+
+
+      var size = (source.length - psz) * FACTOR + 1 >>> 0; // log(58) / log(256), rounded up.
+
+      var b256 = new Uint8Array(size); // Process the characters.
+
+      while (source[psz]) {
+        // Decode character
+        var carry = BASE_MAP[source.charCodeAt(psz)]; // Invalid character
+
+        if (carry === 255) {
+          return;
+        }
+
+        var i = 0;
+
+        for (var it3 = size - 1; (carry !== 0 || i < length) && it3 !== -1; it3--, i++) {
+          carry += BASE * b256[it3] >>> 0;
+          b256[it3] = carry % 256 >>> 0;
+          carry = carry / 256 >>> 0;
+        }
+
+        if (carry !== 0) {
+          throw new Error('Non-zero carry');
+        }
+
+        length = i;
+        psz++;
+      } // Skip leading zeroes in b256.
+
+
+      var it4 = size - length;
+
+      while (it4 !== size && b256[it4] === 0) {
+        it4++;
+      }
+
+      var vch = _Buffer$1.allocUnsafe(zeroes + (size - it4));
+
+      vch.fill(0x00, 0, zeroes);
+      var j = zeroes;
+
+      while (it4 !== size) {
+        vch[j++] = b256[it4++];
+      }
+
+      return vch;
+    }
+
+    function decode(string) {
+      var buffer = decodeUnsafe(string);
+
+      if (buffer) {
+        return buffer;
+      }
+
+      throw new Error('Non-base' + BASE + ' character');
+    }
+
+    return {
+      encode: encode,
+      decodeUnsafe: decodeUnsafe,
+      decode: decode
+    };
+  }
+
+  var src$2 = base$2;
+
+  var basex$2 = src$2;
+  var ALPHABET$2 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  var bs58$4 = basex$2(ALPHABET$2);
+  var bs58$5 = bs58$4;
+
+  var Chi = function Chi(a, b, c) {
+    return a & b ^ ~a & c;
+  }; // Majority function, true if any two inpust is true
+
+
+  var Maj = function Maj(a, b, c) {
+    return a & b ^ a & c ^ b & c;
+  }; // Round constants:
+  // first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311)
+  // prettier-ignore
+
+
+  var SHA256_K = new Uint32Array([0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]); // Initial state (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
+  // prettier-ignore
+
+  var IV = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]); // Temporary buffer, not used to store anything between runs
+  // Named this way because it matches specification.
+
+  var SHA256_W = new Uint32Array(64);
+
+  var SHA256 = /*#__PURE__*/function (_SHA) {
+    _inherits(SHA256, _SHA);
+
+    var _super = _createSuper(SHA256);
+
+    function SHA256() {
+      var _this;
+
+      _classCallCheck(this, SHA256);
+
+      _this = _super.call(this, 64, 32, 8, false); // We cannot use array here since array allows indexing by variable
+      // which means optimizer/compiler cannot use registers.
+
+      _this.A = IV[0] | 0;
+      _this.B = IV[1] | 0;
+      _this.C = IV[2] | 0;
+      _this.D = IV[3] | 0;
+      _this.E = IV[4] | 0;
+      _this.F = IV[5] | 0;
+      _this.G = IV[6] | 0;
+      _this.H = IV[7] | 0;
+      return _this;
+    }
+
+    _createClass(SHA256, [{
+      key: "get",
+      value: function get() {
+        var A = this.A,
+            B = this.B,
+            C = this.C,
+            D = this.D,
+            E = this.E,
+            F = this.F,
+            G = this.G,
+            H = this.H;
+        return [A, B, C, D, E, F, G, H];
+      } // prettier-ignore
+
+    }, {
+      key: "set",
+      value: function set(A, B, C, D, E, F, G, H) {
+        this.A = A | 0;
+        this.B = B | 0;
+        this.C = C | 0;
+        this.D = D | 0;
+        this.E = E | 0;
+        this.F = F | 0;
+        this.G = G | 0;
+        this.H = H | 0;
+      }
+    }, {
+      key: "process",
+      value: function process(view, offset) {
+        // Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array
+        for (var i = 0; i < 16; i++, offset += 4) SHA256_W[i] = view.getUint32(offset, false);
+
+        for (var _i2 = 16; _i2 < 64; _i2++) {
+          var W15 = SHA256_W[_i2 - 15];
+          var W2 = SHA256_W[_i2 - 2];
+          var s0 = rotr(W15, 7) ^ rotr(W15, 18) ^ W15 >>> 3;
+          var s1 = rotr(W2, 17) ^ rotr(W2, 19) ^ W2 >>> 10;
+          SHA256_W[_i2] = s1 + SHA256_W[_i2 - 7] + s0 + SHA256_W[_i2 - 16] | 0;
+        } // Compression function main loop, 64 rounds
+
+
+        var A = this.A,
+            B = this.B,
+            C = this.C,
+            D = this.D,
+            E = this.E,
+            F = this.F,
+            G = this.G,
+            H = this.H;
+
+        for (var _i4 = 0; _i4 < 64; _i4++) {
+          var sigma1 = rotr(E, 6) ^ rotr(E, 11) ^ rotr(E, 25);
+          var T1 = H + sigma1 + Chi(E, F, G) + SHA256_K[_i4] + SHA256_W[_i4] | 0;
+          var sigma0 = rotr(A, 2) ^ rotr(A, 13) ^ rotr(A, 22);
+          var T2 = sigma0 + Maj(A, B, C) | 0;
+          H = G;
+          G = F;
+          F = E;
+          E = D + T1 | 0;
+          D = C;
+          C = B;
+          B = A;
+          A = T1 + T2 | 0;
+        } // Add the compressed chunk to the current hash value
+
+
+        A = A + this.A | 0;
+        B = B + this.B | 0;
+        C = C + this.C | 0;
+        D = D + this.D | 0;
+        E = E + this.E | 0;
+        F = F + this.F | 0;
+        G = G + this.G | 0;
+        H = H + this.H | 0;
+        this.set(A, B, C, D, E, F, G, H);
+      }
+    }, {
+      key: "roundClean",
+      value: function roundClean() {
+        SHA256_W.fill(0);
+      }
+    }, {
+      key: "destroy",
+      value: function destroy() {
+        this.set(0, 0, 0, 0, 0, 0, 0, 0);
+        this.buffer.fill(0);
+      }
+    }]);
+
+    return SHA256;
+  }(SHA2); // Constants from https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+
+
+  var SHA224 = /*#__PURE__*/function (_SHA2) {
+    _inherits(SHA224, _SHA2);
+
+    var _super2 = _createSuper(SHA224);
+
+    function SHA224() {
+      var _this2;
+
+      _classCallCheck(this, SHA224);
+
+      _this2 = _super2.call(this);
+      _this2.A = 0xc1059ed8 | 0;
+      _this2.B = 0x367cd507 | 0;
+      _this2.C = 0x3070dd17 | 0;
+      _this2.D = 0xf70e5939 | 0;
+      _this2.E = 0xffc00b31 | 0;
+      _this2.F = 0x68581511 | 0;
+      _this2.G = 0x64f98fa7 | 0;
+      _this2.H = 0xbefa4fa4 | 0;
+      _this2.outputLen = 28;
+      return _this2;
+    }
+
+    return _createClass(SHA224);
+  }(SHA256);
+  /**
+   * SHA2-256 hash function
+   * @param message - data that would be hashed
+   */
+
+
+  var sha256 = wrapConstructor(function () {
+    return new SHA256();
+  });
+  wrapConstructor(function () {
+    return new SHA224();
+  });
+
+  var lib$1 = {};
+
   var safeBuffer = {exports: {}};
 
   /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
@@ -8391,185 +8836,7 @@
 
   var basex$1 = src$1;
   var ALPHABET$1 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-  var bs58$2 = basex$1(ALPHABET$1);
-  var bs58$3 = bs58$2;
-
-  var Chi = function Chi(a, b, c) {
-    return a & b ^ ~a & c;
-  }; // Majority function, true if any two inpust is true
-
-
-  var Maj = function Maj(a, b, c) {
-    return a & b ^ a & c ^ b & c;
-  }; // Round constants:
-  // first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311)
-  // prettier-ignore
-
-
-  var SHA256_K = new Uint32Array([0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]); // Initial state (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
-  // prettier-ignore
-
-  var IV = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]); // Temporary buffer, not used to store anything between runs
-  // Named this way because it matches specification.
-
-  var SHA256_W = new Uint32Array(64);
-
-  var SHA256 = /*#__PURE__*/function (_SHA) {
-    _inherits(SHA256, _SHA);
-
-    var _super = _createSuper(SHA256);
-
-    function SHA256() {
-      var _this;
-
-      _classCallCheck(this, SHA256);
-
-      _this = _super.call(this, 64, 32, 8, false); // We cannot use array here since array allows indexing by variable
-      // which means optimizer/compiler cannot use registers.
-
-      _this.A = IV[0] | 0;
-      _this.B = IV[1] | 0;
-      _this.C = IV[2] | 0;
-      _this.D = IV[3] | 0;
-      _this.E = IV[4] | 0;
-      _this.F = IV[5] | 0;
-      _this.G = IV[6] | 0;
-      _this.H = IV[7] | 0;
-      return _this;
-    }
-
-    _createClass(SHA256, [{
-      key: "get",
-      value: function get() {
-        var A = this.A,
-            B = this.B,
-            C = this.C,
-            D = this.D,
-            E = this.E,
-            F = this.F,
-            G = this.G,
-            H = this.H;
-        return [A, B, C, D, E, F, G, H];
-      } // prettier-ignore
-
-    }, {
-      key: "set",
-      value: function set(A, B, C, D, E, F, G, H) {
-        this.A = A | 0;
-        this.B = B | 0;
-        this.C = C | 0;
-        this.D = D | 0;
-        this.E = E | 0;
-        this.F = F | 0;
-        this.G = G | 0;
-        this.H = H | 0;
-      }
-    }, {
-      key: "process",
-      value: function process(view, offset) {
-        // Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array
-        for (var i = 0; i < 16; i++, offset += 4) SHA256_W[i] = view.getUint32(offset, false);
-
-        for (var _i2 = 16; _i2 < 64; _i2++) {
-          var W15 = SHA256_W[_i2 - 15];
-          var W2 = SHA256_W[_i2 - 2];
-          var s0 = rotr(W15, 7) ^ rotr(W15, 18) ^ W15 >>> 3;
-          var s1 = rotr(W2, 17) ^ rotr(W2, 19) ^ W2 >>> 10;
-          SHA256_W[_i2] = s1 + SHA256_W[_i2 - 7] + s0 + SHA256_W[_i2 - 16] | 0;
-        } // Compression function main loop, 64 rounds
-
-
-        var A = this.A,
-            B = this.B,
-            C = this.C,
-            D = this.D,
-            E = this.E,
-            F = this.F,
-            G = this.G,
-            H = this.H;
-
-        for (var _i4 = 0; _i4 < 64; _i4++) {
-          var sigma1 = rotr(E, 6) ^ rotr(E, 11) ^ rotr(E, 25);
-          var T1 = H + sigma1 + Chi(E, F, G) + SHA256_K[_i4] + SHA256_W[_i4] | 0;
-          var sigma0 = rotr(A, 2) ^ rotr(A, 13) ^ rotr(A, 22);
-          var T2 = sigma0 + Maj(A, B, C) | 0;
-          H = G;
-          G = F;
-          F = E;
-          E = D + T1 | 0;
-          D = C;
-          C = B;
-          B = A;
-          A = T1 + T2 | 0;
-        } // Add the compressed chunk to the current hash value
-
-
-        A = A + this.A | 0;
-        B = B + this.B | 0;
-        C = C + this.C | 0;
-        D = D + this.D | 0;
-        E = E + this.E | 0;
-        F = F + this.F | 0;
-        G = G + this.G | 0;
-        H = H + this.H | 0;
-        this.set(A, B, C, D, E, F, G, H);
-      }
-    }, {
-      key: "roundClean",
-      value: function roundClean() {
-        SHA256_W.fill(0);
-      }
-    }, {
-      key: "destroy",
-      value: function destroy() {
-        this.set(0, 0, 0, 0, 0, 0, 0, 0);
-        this.buffer.fill(0);
-      }
-    }]);
-
-    return SHA256;
-  }(SHA2); // Constants from https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
-
-
-  var SHA224 = /*#__PURE__*/function (_SHA2) {
-    _inherits(SHA224, _SHA2);
-
-    var _super2 = _createSuper(SHA224);
-
-    function SHA224() {
-      var _this2;
-
-      _classCallCheck(this, SHA224);
-
-      _this2 = _super2.call(this);
-      _this2.A = 0xc1059ed8 | 0;
-      _this2.B = 0x367cd507 | 0;
-      _this2.C = 0x3070dd17 | 0;
-      _this2.D = 0xf70e5939 | 0;
-      _this2.E = 0xffc00b31 | 0;
-      _this2.F = 0x68581511 | 0;
-      _this2.G = 0x64f98fa7 | 0;
-      _this2.H = 0xbefa4fa4 | 0;
-      _this2.outputLen = 28;
-      return _this2;
-    }
-
-    return _createClass(SHA224);
-  }(SHA256);
-  /**
-   * SHA2-256 hash function
-   * @param message - data that would be hashed
-   */
-
-
-  var sha256 = wrapConstructor(function () {
-    return new SHA256();
-  });
-  wrapConstructor(function () {
-    return new SHA224();
-  });
-
-  var lib$1 = {};
+  var bs58$3 = basex$1(ALPHABET$1);
 
   function inRange(a, min, max) {
     return min <= a && a <= max;
@@ -9227,7 +9494,7 @@
 
   var bn_js_1 = __importDefault(bn$1.exports);
 
-  var bs58_1 = __importDefault(bs58$2); // TODO: Make sure this polyfill not included when not required
+  var bs58_1 = __importDefault(bs58$3); // TODO: Make sure this polyfill not included when not required
 
 
   var encoding = __importStar(require$$2);
@@ -18974,7 +19241,7 @@
       } else {
         if (typeof value === 'string') {
           // assume base 58 encoding by default
-          var decoded = bs58$3.decode(value);
+          var decoded = bs58$5.decode(value);
 
           if (decoded.length != PUBLIC_KEY_LENGTH) {
             throw new Error("Invalid public key input");
@@ -19018,7 +19285,7 @@
     }, {
       key: "toBase58",
       value: function toBase58() {
-        return bs58$3.encode(this.toBytes());
+        return bs58$5.encode(this.toBytes());
       }
     }, {
       key: "toJSON",
@@ -19903,7 +20170,7 @@
           return {
             programIdIndex: ix.programIdIndex,
             accountKeyIndexes: ix.accounts,
-            data: bs58$3.decode(ix.data)
+            data: bs58$5.decode(ix.data)
           };
         });
       }
@@ -19965,7 +20232,7 @@
         var instructions = this.instructions.map(function (instruction) {
           var accounts = instruction.accounts,
               programIdIndex = instruction.programIdIndex;
-          var data = Array.from(bs58$3.decode(instruction.data));
+          var data = Array.from(bs58$5.decode(instruction.data));
           var keyIndicesCount = [];
           encodeLength(keyIndicesCount, accounts.length);
           var dataCount = [];
@@ -19998,7 +20265,7 @@
           keys: this.accountKeys.map(function (key) {
             return toBuffer(key.toBytes());
           }),
-          recentBlockhash: bs58$3.decode(this.recentBlockhash)
+          recentBlockhash: bs58$5.decode(this.recentBlockhash)
         };
         var signData = Buffer$1.alloc(2048);
         var length = signDataLayout.encode(transaction, signData);
@@ -20024,7 +20291,7 @@
           return {
             programIdIndex: ix.programIdIndex,
             accounts: ix.accountKeyIndexes,
-            data: bs58$3.encode(ix.data)
+            data: bs58$5.encode(ix.data)
           };
         });
         return new Message({
@@ -20071,7 +20338,7 @@
           byteArray = byteArray.slice(_accountCount);
           var dataLength = decodeLength(byteArray);
           var dataSlice = byteArray.slice(0, dataLength);
-          var data = bs58$3.encode(Buffer$1.from(dataSlice));
+          var data = bs58$5.encode(Buffer$1.from(dataSlice));
           byteArray = byteArray.slice(dataLength);
           instructions.push({
             programIdIndex: programIdIndex,
@@ -20086,7 +20353,7 @@
             numReadonlySignedAccounts: numReadonlySignedAccounts,
             numReadonlyUnsignedAccounts: numReadonlyUnsignedAccounts
           },
-          recentBlockhash: bs58$3.encode(Buffer$1.from(recentBlockhash)),
+          recentBlockhash: bs58$5.encode(Buffer$1.from(recentBlockhash)),
           accountKeys: accountKeys,
           instructions: instructions
         };
@@ -20282,7 +20549,7 @@
           staticAccountKeys: this.staticAccountKeys.map(function (key) {
             return key.toBytes();
           }),
-          recentBlockhash: bs58$3.decode(this.recentBlockhash),
+          recentBlockhash: bs58$5.decode(this.recentBlockhash),
           instructionsLength: new Uint8Array(encodedInstructionsLength),
           serializedInstructions: serializedInstructions,
           addressTableLookupsLength: new Uint8Array(encodedAddressTableLookupsLength),
@@ -20434,7 +20701,7 @@
           staticAccountKeys.push(new PublicKey$1(byteArray.splice(0, PUBLIC_KEY_LENGTH)));
         }
 
-        var recentBlockhash = bs58$3.encode(byteArray.splice(0, PUBLIC_KEY_LENGTH));
+        var recentBlockhash = bs58$5.encode(byteArray.splice(0, PUBLIC_KEY_LENGTH));
         var instructionCount = decodeLength(byteArray);
         var compiledInstructions = [];
 
@@ -20906,7 +21173,7 @@
             accounts: instruction.keys.map(function (meta) {
               return accountKeys.indexOf(meta.pubkey.toString());
             }),
-            data: bs58$3.encode(data)
+            data: bs58$5.encode(data)
           };
         });
         compiledInstructions.forEach(function (instruction) {
@@ -21319,7 +21586,7 @@
           var _signature2 = byteArray.slice(0, SIGNATURE_LENGTH_IN_BYTES);
 
           byteArray = byteArray.slice(SIGNATURE_LENGTH_IN_BYTES);
-          signatures.push(bs58$3.encode(Buffer$1.from(_signature2)));
+          signatures.push(bs58$5.encode(Buffer$1.from(_signature2)));
         }
 
         return Transaction.populate(Message.from(byteArray), signatures);
@@ -21341,7 +21608,7 @@
 
         signatures.forEach(function (signature, index) {
           var sigPubkeyPair = {
-            signature: signature == bs58$3.encode(DEFAULT_SIGNATURE) ? null : bs58$3.decode(signature),
+            signature: signature == bs58$5.encode(DEFAULT_SIGNATURE) ? null : bs58$5.decode(signature),
             publicKey: message.accountKeys[index]
           };
           transaction.signatures.push(sigPubkeyPair);
@@ -21360,7 +21627,7 @@
           transaction.instructions.push(new TransactionInstruction({
             keys: keys,
             programId: message.accountKeys[instruction.programIdIndex],
-            data: bs58$3.decode(instruction.data)
+            data: bs58$5.decode(instruction.data)
           }));
         });
         transaction._message = message;
@@ -23517,7 +23784,7 @@
           return {
             programIdIndex: ix.programIdIndex,
             accountKeyIndexes: ix.accounts,
-            data: bs58$3.decode(ix.data)
+            data: bs58$5.decode(ix.data)
           };
         }),
         addressTableLookups: response.addressTableLookups
@@ -25803,7 +26070,7 @@
 
               case 8:
                 _context31.prev = 8;
-                decodedSignature = bs58$3.decode(rawSignature);
+                decodedSignature = bs58$5.decode(rawSignature);
                 _context31.next = 15;
                 break;
 
@@ -34509,14 +34776,14 @@
 
   var basex = src;
   var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-  var bs58$1 = basex(ALPHABET);
+  var bs58$2 = basex(ALPHABET);
 
   Object.defineProperty(cjs$1, '__esModule', {
     value: true
   });
   var web3_js = require$$1;
   var mobileWalletAdapterProtocol = cjs;
-  var bs58 = bs58$1;
+  var bs58$1 = bs58$2;
 
   function _interopDefaultLegacy$1(e) {
     return e && _typeof$1(e) === 'object' && 'default' in e ? e : {
@@ -34524,7 +34791,7 @@
     };
   }
 
-  var bs58__default = /*#__PURE__*/_interopDefaultLegacy$1(bs58);
+  var bs58__default = /*#__PURE__*/_interopDefaultLegacy$1(bs58$1);
   /******************************************************************************
   Copyright (c) Microsoft Corporation.
 
