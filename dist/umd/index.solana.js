@@ -816,8 +816,8 @@
     setProvider: setProvider$1,
   };
 
-  let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism'];
-  supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism'];
+  let supported$1 = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base'];
+  supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base'];
   supported$1.solana = ['solana'];
 
   function _optionalChain$1$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -2490,7 +2490,7 @@
       ],
       requiredNamespaces: {
         eip155: {
-          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'base'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
         }
       },
       optionalNamespaces: {},
@@ -2505,7 +2505,7 @@
       ],
       requiredNamespaces: {
         eip155: {
-          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'base'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
         }
       },
       optionalNamespaces: {},
@@ -2520,7 +2520,7 @@
       ],
       requiredNamespaces: {
         eip155: {
-          chains: ['ethereum', 'polygon', 'arbitrum', 'optimism'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
         }
       },
       optionalNamespaces: {},
