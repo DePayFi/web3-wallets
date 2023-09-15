@@ -1581,6 +1581,7 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
       console.log('after retrieveTransaction', sentTransaction);
       transaction.nonce = sentTransaction.nonce || transactionCount;
       if(!sentTransaction) {
+        console.log('no sentTransaction');
         transaction._failed = true;
         if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
       } else {
