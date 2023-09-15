@@ -1104,7 +1104,9 @@ const sendTransaction$1 = async ({ transaction, wallet })=> {
       transaction.id = response;
       transaction.url = blockchain.explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
+      console.log('before retrieveTransaction');
       let sentTransaction = await retrieveTransaction(transaction.id, transaction.blockchain);
+      console.log('after retrieveTransaction', sentTransaction);
       transaction.nonce = sentTransaction.nonce || transactionCount;
       if(!sentTransaction) {
         transaction._failed = true;
