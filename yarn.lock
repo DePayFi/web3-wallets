@@ -966,20 +966,20 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.2.5.tgz#a428f898dfa04aa7b6b4ccfe20c68807c7326077"
   integrity sha512-4AxGC1vyEydvk4WF1cxInY51JrTg8qND8mdZCJAZzKSNZI/d1+aRczzCn/yYXSwEHdPQCKUmXKzybQp1k/m7pw==
 
-"@depay/web3-client-evm@^10.18.3":
-  version "10.18.3"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-10.18.3.tgz#c4790bedc2615809f0b912c5a5029c64fcb50a88"
-  integrity sha512-UDnqTU7FJfKnssP7wvh++G6WbFzDfB5xc2x+HNHymV0UDW8IYCDT4A9U0/U2N3pwuMN+RoMUd9j4JZXxPjUfqA==
+"@depay/web3-client-evm@^10.18.4":
+  version "10.18.4"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-10.18.4.tgz#568dd937a49a09e03eb335ad3eadc2154542db57"
+  integrity sha512-ZPl8TPFvvtmkUh45A2MDba7DlQoaqOrX7VDsgSWla8uwyzEbMfXJMCafDogAYeaZZaYCU8hTrgA4Tj7wZGKmMg==
 
-"@depay/web3-client-solana@^10.18.3":
-  version "10.18.3"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client-solana/-/web3-client-solana-10.18.3.tgz#102d575c7ccc185b55ae1b78603108c0a15a1ce4"
-  integrity sha512-MtRLfEgNeAz60uUMaZ7CqUJoM+TCBIjDpNTQ8Nm341fiAQk37IiOJVDwdn1ADMozAQzD+ejJPA4Oea6oGk+0Mw==
+"@depay/web3-client-solana@^10.18.4":
+  version "10.18.4"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-solana/-/web3-client-solana-10.18.4.tgz#c4f862656e90895136586e48b79ba58c10f70da8"
+  integrity sha512-Mw4RZM/e6pMniE/adz/bcdsyv9FTNZhSbMARJizX5gFEshlJ0P5Bq2U8IxZ/IB+JFk9JRXCBs8dms7plHxo7YQ==
 
-"@depay/web3-client@^10.18.3":
-  version "10.18.3"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.18.3.tgz#793e56c8e2d549ed4d8b1d10e347f86ac7e7b8d1"
-  integrity sha512-kBL70FhGBjtjF3iIZbMpJWevy+EkvS9iRwnmqTcMT4lkmCqnzr45I3rq0uxMfiUe9WTFRqIKHe4LWvvi7CwHYQ==
+"@depay/web3-client@^10.18.4":
+  version "10.18.4"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.18.4.tgz#94a3b07c6fa837ca414e6ac7f0adb30ceba43e91"
+  integrity sha512-MkxXkHZpfnMXeXvON+Biz+ZwoQYFd/ZA+wvLK2f2YejNLrjWk8dBryBBULkSeNpJKiLi7awkAD2nBp5sK4WQjQ==
 
 "@depay/web3-mock-evm@^14.17.0":
   version "14.17.0"

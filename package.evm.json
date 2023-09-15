@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-wallets-evm",
   "moduleName": "Web3Wallets",
-  "version": "16.2.1",
+  "version": "16.2.2",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/umd/index.evm.js",
   "module": "dist/esm/index.evm.js",
@@ -28,7 +28,7 @@
     "@depay/walletconnect-v1": "^1.8.0",
     "@depay/walletconnect-v2": "^2.9.2",
     "@depay/web3-blockchains": "^9.1.4",
-    "@depay/web3-client-evm": "^10.18.3",
+    "@depay/web3-client-evm": "^10.18.4",
     "ethers": "^5.7.1"
   },
   "engines": {
