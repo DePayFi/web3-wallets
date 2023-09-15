@@ -1,6 +1,19 @@
+/*#if _EVM
+
+import { request } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { request } from '@depay/web3-client-solana'
+
+//#else */
+
+import { request } from '@depay/web3-client'
+
+//#endif
+
 import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
-import { request } from '@depay/web3-client'
 import { sendTransaction } from './WindowEthereum/transaction'
 import { supported } from '../blockchains'
 

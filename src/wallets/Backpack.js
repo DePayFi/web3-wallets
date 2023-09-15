@@ -1,5 +1,18 @@
-import WindowSolana from './WindowSolana'
+/*#if _EVM
+
+import { getProvider as getConnection } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { getProvider as getConnection } from '@depay/web3-client-solana'
+
+//#else */
+
 import { getProvider as getConnection } from '@depay/web3-client'
+
+//#endif
+
+import WindowSolana from './WindowSolana'
 
 export default class Backpack extends WindowSolana {
 

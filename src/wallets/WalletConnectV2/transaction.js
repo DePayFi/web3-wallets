@@ -1,6 +1,19 @@
+/*#if _EVM
+
+import { request, estimate, getProvider } from '@depay/web3-client-evm'
+
+/*#elif _SOLANA
+
+import { request, estimate, getProvider } from '@depay/web3-client-solana'
+
+//#else */
+
+import { request, estimate, getProvider } from '@depay/web3-client'
+
+//#endif
+
 import Blockchains from '@depay/web3-blockchains'
 import { Transaction } from '../../Transaction'
-import { request, estimate, getProvider } from '@depay/web3-client'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
