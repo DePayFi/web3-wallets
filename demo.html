@@ -248,9 +248,9 @@
                   </div>
                   <div>
                     <select id="walletConnectV2ProjectIdHref">
-                      <option value="uniswap:">uniswap</option>
-                      <option value="ledgerlive:">Ledger Live</option>
-                      <option value="metamask:">MetaMask</option>
+                      <option value="uniswap://">uniswap</option>
+                      <option value="ledgerlive://">Ledger Live</option>
+                      <option value="metamask://">MetaMask</option>
                     </select>
                   </div>
                 </div>
@@ -258,15 +258,12 @@
               <div class="px-4 pt-3">
                 <script>
                   window.connectWalletConnectV2ViaRedirect = async()=>{
-                    console.log('connectWalletConnectV2ViaRedirect')
                     localStorage['depay:wallets:wc2:projectId'] = document.getElementById("walletConnectV2ProjectIdRedirect").value
+                    const href = document.getElementById("walletConnectV2ProjectIdHref").value
                     let wallet = new Web3Wallets.wallets.WalletConnectV2()
-                    localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href: "ledgerlive://", name: "LedgerLive" }))
                     let account = await wallet.connect({
                       connect: ({ uri })=>{
-                        const href = document.getElementById("walletConnectV2ProjectIdHref").value
-                        copyTextToClipboard(uri)
-                        window.openNativeLink(href, uri, "LEDGER")
+                        window.openNativeLink(href, uri, "TEST")
                       }
                     })
                     console.log('ACCOUNT', account)
