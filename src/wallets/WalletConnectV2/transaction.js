@@ -14,6 +14,7 @@ import { request, estimate, getProvider } from '@depay/web3-client'
 
 import Blockchains from '@depay/web3-blockchains'
 import { Transaction } from '../../Transaction'
+import { ethers } from 'ethers'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
@@ -115,7 +116,7 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
       params: [{
         from: transaction.from,
         to: transaction.to,
-        value: transaction.value?.toString(),
+        value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
         data: await transaction.getData(),
         gas: gas.toHexString(),
         gasPrice: gasPrice.toHexString(),
@@ -138,7 +139,7 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
       params: [{
         from: transaction.from,
         to: transaction.to,
-        value: transaction.value?.toString(),
+        value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
         gas: gas.toHexString(),
         gasPrice: gasPrice.toHexString(),
         nonce: transaction.nonce

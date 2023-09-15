@@ -1664,7 +1664,7 @@
         params: [{
           from: transaction.from,
           to: transaction.to,
-          value: _optionalChain$3([transaction, 'access', _3 => _3.value, 'optionalAccess', _4 => _4.toString, 'call', _5 => _5()]),
+          value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           data: await transaction.getData(),
           gas: gas.toHexString(),
           gasPrice: gasPrice.toHexString(),
@@ -1687,7 +1687,7 @@
         params: [{
           from: transaction.from,
           to: transaction.to,
-          value: _optionalChain$3([transaction, 'access', _6 => _6.value, 'optionalAccess', _7 => _7.toString, 'call', _8 => _8()]),
+          value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           gas: gas.toHexString(),
           gasPrice: gasPrice.toHexString(),
           nonce: transaction.nonce
