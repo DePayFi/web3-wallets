@@ -1354,8 +1354,10 @@
         chains: [`eip155:1`],
       };
     }
-    requiredNamespaces['eip155'].methods = methods;
-    requiredNamespaces['eip155'].events = events;
+    if(requiredNamespaces['eip155']) {
+      requiredNamespaces['eip155'].methods = methods;
+      requiredNamespaces['eip155'].events = events;
+    }
 
     let optionalNamespaces = {};
     if(_optionalChain$2([CONFIGURATIONS, 'access', _7 => _7[walletName], 'optionalAccess', _8 => _8.optionalNamespaces])) {

@@ -146,8 +146,10 @@ const getWalletConnectV2Config = (walletName)=>{
       chains: [`eip155:1`],
     }
   }
-  requiredNamespaces['eip155'].methods = methods
-  requiredNamespaces['eip155'].events = events
+  if(requiredNamespaces['eip155']) {
+    requiredNamespaces['eip155'].methods = methods
+    requiredNamespaces['eip155'].events = events
+  }
 
   let optionalNamespaces = {}
   if(CONFIGURATIONS[walletName]?.optionalNamespaces) {
