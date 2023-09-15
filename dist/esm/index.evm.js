@@ -1284,6 +1284,21 @@ const CONFIGURATIONS = {
     optionalNamespaces: {},
   },
 
+  "Ledger Live": {
+    methods: [
+      "eth_sendTransaction",
+      "personal_sign",
+      "eth_signTypedData",
+      "eth_signTypedData_v4",
+    ],
+    requiredNamespaces: {},
+    optionalNamespaces: {
+      eip155: {
+        chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
+      }
+    },
+  },
+
   "Enjin Wallet": {
     methods: [
       "eth_sendTransaction",
