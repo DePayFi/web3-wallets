@@ -1107,16 +1107,12 @@
         transaction.id = response;
         transaction.url = blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
-        console.log('retrieveTransaction');
         let sentTransaction = await retrieveTransaction(transaction.id, transaction.blockchain);
-        console.log('sentTransaction', sentTransaction);
         transaction.nonce = sentTransaction.nonce || transactionCount;
         if(!sentTransaction) {
           transaction._failed = true;
-          console.log('Error retrieving transaction');
           if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
         } else {
-          console.log('before retrieveConfirmedTransaction', sentTransaction);
           retrieveConfirmedTransaction$1(sentTransaction).then(() => {
             transaction._succeeded = true;
             if (transaction.succeeded) transaction.succeeded(transaction);
@@ -1145,11 +1141,9 @@
   };
 
   const retrieveConfirmedTransaction$1 = (sentTransaction)=>{
-    console.log('attempt retrieveConfirmedTransaction', sentTransaction);
     return new Promise((resolve, reject)=>{
 
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        console.log('error', error);
         if(_optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
           setTimeout(()=>{
             retrieveConfirmedTransaction$1(sentTransaction)
@@ -1163,18 +1157,30 @@
     })
   };
 
-  const retrieveTransaction = async (tx, blockchain)=>{
-    let sentTransaction;
-    const provider = await web3ClientEvm.getProvider(blockchain);
-    sentTransaction = await provider.getTransaction(tx);
-    const maxRetries = 120;
-    let attempt = 1;
-    while (attempt <= maxRetries && !sentTransaction) {
-      sentTransaction = await provider.getTransaction(tx);
-      await (new Promise((resolve)=>setTimeout(resolve, 5000)));
-      attempt++;
-    }
-    return sentTransaction
+  const retrieveTransaction = (tx, blockchain)=>{
+    return new Promise(async(resolve, reject)=>{
+      try {
+        let sentTransaction;
+        const provider = await web3ClientEvm.getProvider(blockchain);
+        sentTransaction = await provider.getTransaction(tx);
+        const maxRetries = 120;
+        let attempt = 1;
+        while (attempt <= maxRetries && !sentTransaction) {
+          sentTransaction = await provider.getTransaction(tx);
+          await (new Promise((resolve)=>setTimeout(resolve, 5000)));
+          attempt++;
+        }
+        return sentTransaction
+      } catch (error) {
+        if(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
+          retrieveTransaction(tx, blockchain)
+            .then(resolve)
+            .catch(reject);
+        } else {
+          reject(error);
+        }
+      }
+    })
   };
 
   const submit$1 = ({ transaction, wallet }) => {
