@@ -1297,7 +1297,7 @@
       requiredNamespaces: {},
       optionalNamespaces: {
         eip155: {
-          chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains__default['default'][blockchainName].networkId}`)
+          chains: Blockchains__default['default'].map((blockchain)=>`eip155:${blockchain.networkId}`)
         }
       },
     },

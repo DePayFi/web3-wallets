@@ -1294,7 +1294,7 @@ const CONFIGURATIONS = {
     requiredNamespaces: {},
     optionalNamespaces: {
       eip155: {
-        chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
+        chains: Blockchains.map((blockchain)=>`eip155:${blockchain.networkId}`)
       }
     },
   },
