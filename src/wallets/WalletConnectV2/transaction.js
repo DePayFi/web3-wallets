@@ -42,6 +42,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
           transaction._succeeded = true
           if (transaction.succeeded) transaction.succeeded(transaction)
         }).catch((error)=>{
+          console.log('OUTER ERROR', error)
           if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
             if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
               transaction.id = error.replacement.hash
@@ -67,8 +68,8 @@ const sendTransaction = async ({ transaction, wallet })=> {
 
 const retrieveConfirmedTransaction = (sentTransaction)=>{
   return new Promise((resolve, reject)=>{
-
     sentTransaction.wait(1).then(resolve).catch((error)=>{
+      console.log('error', error)
       if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
         setTimeout(()=>{
           retrieveConfirmedTransaction(sentTransaction)
@@ -96,7 +97,7 @@ const retrieveTransaction = (tx, blockchain)=>{
         await (new Promise((resolve)=>setTimeout(resolve, 5000)))
         attempt++;
       }
-      return resolve(sentTransaction)
+      resolve(sentTransaction)
     } catch (error) {
       console.log('ERROR', error)
       if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')"){

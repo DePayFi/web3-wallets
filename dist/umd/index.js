@@ -1590,6 +1590,7 @@
             transaction._succeeded = true;
             if (transaction.succeeded) transaction.succeeded(transaction);
           }).catch((error)=>{
+            console.log('OUTER ERROR', error);
             if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
               if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
                 transaction.id = error.replacement.hash;
@@ -1615,8 +1616,8 @@
 
   const retrieveConfirmedTransaction$1 = (sentTransaction)=>{
     return new Promise((resolve, reject)=>{
-
       sentTransaction.wait(1).then(resolve).catch((error)=>{
+        console.log('error', error);
         if(_optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
           setTimeout(()=>{
             retrieveConfirmedTransaction$1(sentTransaction)
@@ -1644,7 +1645,7 @@
           await (new Promise((resolve)=>setTimeout(resolve, 5000)));
           attempt++;
         }
-        return resolve(sentTransaction)
+        resolve(sentTransaction);
       } catch (error) {
         console.log('ERROR', error);
         if(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
