@@ -49,7 +49,9 @@ export default class WindowEthereum {
       // not BitKeep
       !window?.ethereum?.isBitKeep && 
       // not Coinbase
-      !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink)
+      !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink) &&
+      // MetaMask through ProviderMap
+      !window?.ethereum?.providerMap?.has('MetaMask')
     )
   }
   

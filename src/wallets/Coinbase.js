@@ -9,5 +9,21 @@ export default class Coinbase extends WindowEthereum {
     blockchains: supported.evm
   }
 
-  static isAvailable = async()=>{ return (window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink) }
+  getProvider() { 
+    if(window?.ethereum?.providerMap?.has('CoinbaseWallet')) {
+      return window?.ethereum?.providerMap?.get('CoinbaseWallet')
+    } else {
+      return window.ethereum
+    }
+  }
+
+  static isAvailable = async()=>{ 
+    return(
+      (
+        window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink
+      ) || (
+        window?.ethereum?.providerMap?.has('CoinbaseWallet')
+      )
+    )
+  }
 }

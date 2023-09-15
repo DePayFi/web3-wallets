@@ -27,6 +27,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
   let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from })
   transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then((tx)=>{
+    console.log('tx', tx)
     if (tx) {
       let blockchain = Blockchains.findByName(transaction.blockchain)
       transaction.id = tx
@@ -36,7 +37,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
         transaction.id = sentTransaction.hash || transaction.id
         transaction.url = blockchain.explorerUrlFor({ transaction })
         transaction.nonce = sentTransaction.nonce || transactionCount
-        sentTransaction.wait(1).then(() => {
+        retrieveConfirmedTransaction(sentTransaction).then(()=>{
           transaction._succeeded = true
           if (transaction.succeeded) transaction.succeeded(transaction)
         }).catch((error)=>{
@@ -61,6 +62,23 @@ const sendTransaction = async ({ transaction, wallet })=> {
     }
   })
   return transaction
+}
+
+const retrieveConfirmedTransaction = (sentTransaction)=>{
+  return new Promise((resolve, reject)=>{
+
+    sentTransaction.wait(1).then(resolve).catch((error)=>{
+      if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        setTimeout(()=>{
+          retrieveConfirmedTransaction(sentTransaction)
+            .then(resolve)
+            .catch(reject)
+        }, 500)
+      } else {
+        reject(error)
+      }
+    })
+  })
 }
 
 const retrieveTransaction = async ({ blockchain, tx, smartContractWallet })=>{
