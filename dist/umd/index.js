@@ -8,7 +8,7 @@
 
   var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
-  function _optionalChain$o(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$p(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
     constructor({
@@ -33,7 +33,7 @@
       this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
-      this.value = _optionalChain$o([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+      this.value = _optionalChain$p([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
       this.api = api;
       this.method = method;
       this.params = params;
@@ -73,7 +73,7 @@
     }
 
     getParamType(param) {
-      if(_optionalChain$o([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
+      if(_optionalChain$p([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
         return `(${param.components.map((param)=>this.getParamType(param)).join(',')})`
       } else {
         return param.type
@@ -146,7 +146,7 @@
     }
   }
 
-  function _optionalChain$n(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$o(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const POLL_SPEED = 500; // 0.5 seconds
   const MAX_POLLS = 240; // 120 seconds
@@ -167,14 +167,14 @@
 
           const provider = await web3Client.getProvider(transaction.blockchain);
           const { value } = await provider.getSignatureStatus(signature);
-          const confirmationStatus = _optionalChain$n([value, 'optionalAccess', _ => _.confirmationStatus]);
+          const confirmationStatus = _optionalChain$o([value, 'optionalAccess', _ => _.confirmationStatus]);
           if(confirmationStatus) {
             const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
             if (hasReachedSufficientCommitment) {
               if(value.err) {
                 transaction._failed = true;
                 const confirmedTransaction = await provider.getConfirmedTransaction(signature);
-                const failedReason = _optionalChain$n([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
+                const failedReason = _optionalChain$o([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
                 if(transaction.failed) transaction.failed(transaction, failedReason);
               } else {
                 transaction._succeeded = true;
@@ -265,7 +265,7 @@
   supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base'];
   supported$1.solana = ['solana'];
 
-  function _optionalChain$m(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$n(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class WindowSolana {
 
     static __initStatic() {this.info = {
@@ -276,13 +276,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$m([window, 'optionalAccess', _5 => _5.solana]) &&
+        _optionalChain$n([window, 'optionalAccess', _5 => _5.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
         // not BitKeep
-        !(_optionalChain$m([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$m([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
+        !(_optionalChain$n([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$n([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow
       )
@@ -331,7 +331,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$m([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
+          internalCallback = (publicKey) => callback(_optionalChain$n([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }
@@ -384,7 +384,7 @@
     }
   } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
-  function _optionalChain$l(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$m(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class Backpack extends WindowSolana {
 
@@ -396,7 +396,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$l([window, 'optionalAccess', _2 => _2.backpack]) &&
+        _optionalChain$m([window, 'optionalAccess', _2 => _2.backpack]) &&
         window.backpack.isBackpack
       )
     };}
@@ -413,6 +413,8 @@
       return this.getProvider().sendAndConfirm(transaction)
     }
   } Backpack.__initStatic(); Backpack.__initStatic2();
+
+  function _optionalChain$l(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const sendTransaction$3 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
@@ -433,7 +435,7 @@
         transaction.nonce = sentTransaction.nonce || transactionCount;
         transaction.url = Blockchains__default['default'].findByName(transaction.blockchain).explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
-        sentTransaction.wait(1).then(() => {
+        retrieveConfirmedTransaction$3(sentTransaction).then(() => {
           transaction._succeeded = true;
           if (transaction.succeeded) transaction.succeeded(transaction);
         }).catch((error)=>{
@@ -459,6 +461,35 @@
       }
     });
     return transaction
+  };
+
+  const retrieveConfirmedTransaction$3 = (sentTransaction)=>{
+    return new Promise((resolve, reject)=>{
+      try {
+
+        sentTransaction.wait(1).then(resolve).catch((error)=>{
+          if(_optionalChain$l([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+            setTimeout(()=>{
+              retrieveConfirmedTransaction$3(sentTransaction)
+                .then(resolve)
+                .catch(reject);
+            }, 500);
+          } else {
+            reject(error);
+          }
+        });
+      } catch(error) {
+        if(_optionalChain$l([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          setTimeout(()=>{
+            retrieveConfirmedTransaction$3(sentTransaction)
+              .then(resolve)
+              .catch(reject);
+          }, 500);
+        } else {
+          reject(error);
+        }
+      }
+    })
   };
 
   const submit$3 = ({ transaction, provider, signer }) => {
@@ -2169,9 +2200,21 @@
 
   const retrieveConfirmedTransaction = (sentTransaction)=>{
     return new Promise((resolve, reject)=>{
+      try {
 
-      sentTransaction.wait(1).then(resolve).catch((error)=>{
-        if(_optionalChain$1([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        sentTransaction.wait(1).then(resolve).catch((error)=>{
+          if(_optionalChain$1([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+            setTimeout(()=>{
+              retrieveConfirmedTransaction(sentTransaction)
+                .then(resolve)
+                .catch(reject);
+            }, 500);
+          } else {
+            reject(error);
+          }
+        });
+      } catch(error) {
+        if(_optionalChain$1([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -2180,7 +2223,7 @@
         } else {
           reject(error);
         }
-      });
+      }
     })
   };
 

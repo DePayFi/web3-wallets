@@ -49,8 +49,20 @@ const sendTransaction = async ({ transaction, wallet })=> {
 
 const retrieveConfirmedTransaction = (sentTransaction)=>{
   return new Promise((resolve, reject)=>{
+    try {
 
-    sentTransaction.wait(1).then(resolve).catch((error)=>{
+      sentTransaction.wait(1).then(resolve).catch((error)=>{
+        if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          setTimeout(()=>{
+            retrieveConfirmedTransaction(sentTransaction)
+              .then(resolve)
+              .catch(reject)
+          }, 500)
+        } else {
+          reject(error)
+        }
+      })
+    } catch(error) {
       if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
         setTimeout(()=>{
           retrieveConfirmedTransaction(sentTransaction)
@@ -60,7 +72,7 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
       } else {
         reject(error)
       }
-    })
+    }
   })
 }
 
