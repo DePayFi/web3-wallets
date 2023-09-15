@@ -89,7 +89,7 @@ const CONFIGURATIONS = {
     requiredNamespaces: {},
     optionalNamespaces: {
       eip155: {
-        chains: Blockchains.map((blockchain)=>`eip155:${blockchain.networkId}`)
+        chains: Blockchains.all.map((blockchain)=>`eip155:${blockchain.networkId}`)
       }
     },
   },

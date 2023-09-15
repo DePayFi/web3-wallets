@@ -1297,7 +1297,7 @@
       requiredNamespaces: {},
       optionalNamespaces: {
         eip155: {
-          chains: Blockchains__default['default'].map((blockchain)=>`eip155:${blockchain.networkId}`)
+          chains: Blockchains__default['default'].all.map((blockchain)=>`eip155:${blockchain.networkId}`)
         }
       },
     },
