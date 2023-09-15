@@ -1800,7 +1800,8 @@
     if(!localStorage[KEY+":projectId"]) { return }
     if(walletName !== localStorage[KEY+":lastSessionWalletName"]) { return }
     let signClient = await getSignClient();
-    const existingSessions = signClient.find(getWalletConnectV2Config(walletName));
+    let existingSessions;
+    try { existingSessions = signClient.find(getWalletConnectV2Config(walletName)); } catch (e) {}
     const lastSession = existingSessions ? existingSessions[existingSessions.length-1] : undefined;
     if(lastSession && localStorage[KEY+":lastExpiredSessionTopic"] !== lastSession.topic && lastSession.expiry > Math.ceil(Date.now()/1000)) {
       const result = await Promise.race([signClient.ping({ topic: lastSession.topic }), new Promise((resolve)=>setTimeout(resolve, 1500))]);
