@@ -30,12 +30,9 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.id = response
       transaction.url = blockchain.explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
-      console.log('before retrieveTransaction')
       let sentTransaction = await retrieveTransaction(transaction.id, transaction.blockchain)
-      console.log('after retrieveTransaction', sentTransaction)
       transaction.nonce = sentTransaction.nonce || transactionCount
       if(!sentTransaction) {
-        console.log('no sentTransaction')
         transaction._failed = true
         if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction')
       } else {
@@ -43,7 +40,6 @@ const sendTransaction = async ({ transaction, wallet })=> {
           transaction._succeeded = true
           if (transaction.succeeded) transaction.succeeded(transaction)
         }).catch((error)=>{
-          console.log('OUTER ERROR', error)
           if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
             if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
               transaction.id = error.replacement.hash
@@ -68,11 +64,9 @@ const sendTransaction = async ({ transaction, wallet })=> {
 }
 
 const retrieveConfirmedTransaction = (sentTransaction)=>{
-  console.log('attempt retrieveConfirmedTransaction', sentTransaction)
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        console.log('1 error?.toString()', error?.toString())
         if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
@@ -84,7 +78,6 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch (error) {
-      console.log('2 error?.toString()', error?.toString())
       if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
         setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
@@ -99,7 +92,6 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
 }
 
 const retrieveTransaction = (tx, blockchain)=>{
-  console.log('attempt retrieveTransaction', tx)
   return new Promise(async(resolve, reject)=>{
     try {
       let sentTransaction

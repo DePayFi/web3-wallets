@@ -1176,7 +1176,6 @@
     let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from });
     transaction.nonce = transactionCount;
     await submit$2({ transaction, wallet }).then((tx)=>{
-      console.log('tx', tx);
       if (tx) {
         let blockchain = Blockchains__default['default'].findByName(transaction.blockchain);
         transaction.id = tx;
@@ -1621,12 +1620,9 @@
         transaction.id = response;
         transaction.url = blockchain.explorerUrlFor({ transaction });
         if (transaction.sent) transaction.sent(transaction);
-        console.log('before retrieveTransaction');
         let sentTransaction = await retrieveTransaction(transaction.id, transaction.blockchain);
-        console.log('after retrieveTransaction', sentTransaction);
         transaction.nonce = sentTransaction.nonce || transactionCount;
         if(!sentTransaction) {
-          console.log('no sentTransaction');
           transaction._failed = true;
           if(transaction.failed) transaction.failed(transaction, 'Error retrieving transaction');
         } else {
@@ -1634,7 +1630,6 @@
             transaction._succeeded = true;
             if (transaction.succeeded) transaction.succeeded(transaction);
           }).catch((error)=>{
-            console.log('OUTER ERROR', error);
             if(error && error.code && error.code == 'TRANSACTION_REPLACED') {
               if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 1) {
                 transaction.id = error.replacement.hash;
@@ -1659,12 +1654,10 @@
   };
 
   const retrieveConfirmedTransaction$1 = (sentTransaction)=>{
-    console.log('attempt retrieveConfirmedTransaction', sentTransaction);
     return new Promise((resolve, reject)=>{
       try {
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          console.log('1 error?.toString()', _optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]));
-          if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]))) {
+          if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]))) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$1(sentTransaction)
                 .then(resolve)
@@ -1675,8 +1668,7 @@
           }
         });
       } catch (error) {
-        console.log('2 error?.toString()', _optionalChain$3([error, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]));
-        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _7 => _7.toString, 'call', _8 => _8()]))) {
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]))) {
           setTimeout(()=>{
               retrieveConfirmedTransaction$1(sentTransaction)
                 .then(resolve)
@@ -1690,7 +1682,6 @@
   };
 
   const retrieveTransaction = (tx, blockchain)=>{
-    console.log('attempt retrieveTransaction', tx);
     return new Promise(async(resolve, reject)=>{
       try {
         let sentTransaction;
@@ -1705,7 +1696,7 @@
         }
         resolve(sentTransaction);
       } catch (error) {
-        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]))) {
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]))) {
           setTimeout(()=>{
             retrieveTransaction(tx, blockchain)
               .then(resolve)

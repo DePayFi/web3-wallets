@@ -27,7 +27,6 @@ const sendTransaction = async ({ transaction, wallet })=> {
   let transactionCount = await wallet.transactionCount({ blockchain: transaction.blockchain, address: transaction.from })
   transaction.nonce = transactionCount
   await submit({ transaction, wallet }).then((tx)=>{
-    console.log('tx', tx)
     if (tx) {
       let blockchain = Blockchains.findByName(transaction.blockchain)
       transaction.id = tx
