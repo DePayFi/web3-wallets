@@ -1155,6 +1155,7 @@ const retrieveConfirmedTransaction$1 = (sentTransaction)=>{
 };
 
 const retrieveTransaction = (tx, blockchain)=>{
+  console.log('attempt retrieveTransaction', tx);
   return new Promise(async(resolve, reject)=>{
     try {
       let sentTransaction;
@@ -1167,8 +1168,9 @@ const retrieveTransaction = (tx, blockchain)=>{
         await (new Promise((resolve)=>setTimeout(resolve, 5000)));
         attempt++;
       }
-      return sentTransaction
+      return resolve(sentTransaction)
     } catch (error) {
+      console.log('ERROR', error);
       if(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
         retrieveTransaction(tx, blockchain)
           .then(resolve)
