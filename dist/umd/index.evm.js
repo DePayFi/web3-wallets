@@ -1144,6 +1144,7 @@
   };
 
   const retrieveConfirmedTransaction$1 = (sentTransaction)=>{
+    console.log('attempt retrieveConfirmedTransaction', sentTransaction);
     return new Promise((resolve, reject)=>{
       sentTransaction.wait(1).then(resolve).catch((error)=>{
         console.log('error', error);
