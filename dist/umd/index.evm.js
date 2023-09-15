@@ -713,9 +713,21 @@
 
   const retrieveConfirmedTransaction$2 = (sentTransaction)=>{
     return new Promise((resolve, reject)=>{
+      try {
 
-      sentTransaction.wait(1).then(resolve).catch((error)=>{
-        if(_optionalChain$5([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        sentTransaction.wait(1).then(resolve).catch((error)=>{
+          if(_optionalChain$5([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+            setTimeout(()=>{
+              retrieveConfirmedTransaction$2(sentTransaction)
+                .then(resolve)
+                .catch(reject);
+            }, 500);
+          } else {
+            reject(error);
+          }
+        });
+      } catch (error) {
+        if(_optionalChain$5([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
           setTimeout(()=>{
             retrieveConfirmedTransaction$2(sentTransaction)
               .then(resolve)
@@ -724,7 +736,7 @@
         } else {
           reject(error);
         }
-      });
+      }
     })
   };
 
@@ -760,7 +772,7 @@
   const submitContractInteraction$2 = async ({ transaction, wallet })=>{
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     let gasPrice = await provider.getGasPrice();
-    if(_optionalChain$5([wallet, 'access', _3 => _3.session, 'optionalAccess', _4 => _4.peerMeta, 'optionalAccess', _5 => _5.name]) === 'Uniswap Wallet') {
+    if(_optionalChain$5([wallet, 'access', _5 => _5.session, 'optionalAccess', _6 => _6.peerMeta, 'optionalAccess', _7 => _7.name]) === 'Uniswap Wallet') {
       gasPrice = undefined;
     } else {
       gasPrice = gasPrice.toHexString();
@@ -784,7 +796,7 @@
   const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     let gasPrice = await provider.getGasPrice();
-    if(_optionalChain$5([wallet, 'access', _6 => _6.session, 'optionalAccess', _7 => _7.peerMeta, 'optionalAccess', _8 => _8.name]) === 'Uniswap Wallet') {
+    if(_optionalChain$5([wallet, 'access', _8 => _8.session, 'optionalAccess', _9 => _9.peerMeta, 'optionalAccess', _10 => _10.name]) === 'Uniswap Wallet') {
       gasPrice = undefined;
     } else {
       gasPrice = gasPrice.toHexString();
@@ -1147,18 +1159,30 @@
   const retrieveConfirmedTransaction$1 = (sentTransaction)=>{
     console.log('attempt retrieveConfirmedTransaction', sentTransaction);
     return new Promise((resolve, reject)=>{
-      sentTransaction.wait(1).then(resolve).catch((error)=>{
-        console.log('error', error);
-        if(_optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+      try {
+        sentTransaction.wait(1).then(resolve).catch((error)=>{
+          console.log('error', error);
+          if(_optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+            setTimeout(()=>{
+              retrieveConfirmedTransaction$1(sentTransaction)
+                .then(resolve)
+                .catch(reject);
+            }, 500);
+          } else {
+            reject(error);
+          }
+        });
+      } catch (error) {
+        if(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
           setTimeout(()=>{
-            retrieveConfirmedTransaction$1(sentTransaction)
-              .then(resolve)
-              .catch(reject);
-          }, 500);
+              retrieveConfirmedTransaction$1(sentTransaction)
+                .then(resolve)
+                .catch(reject);
+            }, 500);
         } else {
           reject(error);
         }
-      });
+      } 
     })
   };
 
@@ -1178,11 +1202,12 @@
         }
         resolve(sentTransaction);
       } catch (error) {
-        console.log('ERROR', error);
-        if(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
-          retrieveTransaction(tx, blockchain)
-            .then(resolve)
-            .catch(reject);
+        if(_optionalChain$3([error, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
+          setTimeout(()=>{
+            retrieveTransaction(tx, blockchain)
+              .then(resolve)
+              .catch(reject);
+          }, 500);
         } else {
           reject(error);
         }

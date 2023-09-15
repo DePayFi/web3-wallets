@@ -70,18 +70,30 @@ const sendTransaction = async ({ transaction, wallet })=> {
 const retrieveConfirmedTransaction = (sentTransaction)=>{
   console.log('attempt retrieveConfirmedTransaction', sentTransaction)
   return new Promise((resolve, reject)=>{
-    sentTransaction.wait(1).then(resolve).catch((error)=>{
-      console.log('error', error)
+    try {
+      sentTransaction.wait(1).then(resolve).catch((error)=>{
+        console.log('error', error)
+        if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          setTimeout(()=>{
+            retrieveConfirmedTransaction(sentTransaction)
+              .then(resolve)
+              .catch(reject)
+          }, 500)
+        } else {
+          reject(error)
+        }
+      })
+    } catch (error) {
       if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
         setTimeout(()=>{
-          retrieveConfirmedTransaction(sentTransaction)
-            .then(resolve)
-            .catch(reject)
-        }, 500)
+            retrieveConfirmedTransaction(sentTransaction)
+              .then(resolve)
+              .catch(reject)
+          }, 500)
       } else {
         reject(error)
       }
-    })
+    } 
   })
 }
 
@@ -101,11 +113,12 @@ const retrieveTransaction = (tx, blockchain)=>{
       }
       resolve(sentTransaction)
     } catch (error) {
-      console.log('ERROR', error)
       if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')"){
-        retrieveTransaction(tx, blockchain)
-          .then(resolve)
-          .catch(reject)
+        setTimeout(()=>{
+          retrieveTransaction(tx, blockchain)
+            .then(resolve)
+            .catch(reject)
+        }, 500)
       } else {
         reject(error)
       }
