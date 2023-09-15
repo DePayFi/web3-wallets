@@ -72,8 +72,8 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        console.log('error', error)
-        if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        console.log('1 error?.toString()', error?.toString())
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -84,7 +84,8 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch (error) {
-      if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
+      console.log('2 error?.toString()', error?.toString())
+      if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
         setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -113,7 +114,7 @@ const retrieveTransaction = (tx, blockchain)=>{
       }
       resolve(sentTransaction)
     } catch (error) {
-      if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')"){
+      if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
         setTimeout(()=>{
           retrieveTransaction(tx, blockchain)
             .then(resolve)

@@ -69,7 +69,7 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
     try {
 
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -80,7 +80,7 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch (error) {
-      if(error?.toString() === "TypeError: Cannot read properties of undefined (reading 'message')"){
+      if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(error?.toString())) {
         setTimeout(()=>{
           retrieveConfirmedTransaction(sentTransaction)
             .then(resolve)

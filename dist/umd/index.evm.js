@@ -204,7 +204,7 @@
       try {
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(_optionalChain$i([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$i([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]))) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$3(sentTransaction)
                 .then(resolve)
@@ -215,7 +215,7 @@
           }
         });
       } catch(error) {
-        if(_optionalChain$i([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$i([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]))) {
           setTimeout(()=>{
             retrieveConfirmedTransaction$3(sentTransaction)
               .then(resolve)
@@ -747,7 +747,7 @@
       try {
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(_optionalChain$5([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$5([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]))) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$2(sentTransaction)
                 .then(resolve)
@@ -758,7 +758,7 @@
           }
         });
       } catch (error) {
-        if(_optionalChain$5([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$5([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]))) {
           setTimeout(()=>{
             retrieveConfirmedTransaction$2(sentTransaction)
               .then(resolve)
@@ -1192,8 +1192,8 @@
     return new Promise((resolve, reject)=>{
       try {
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          console.log('error', error);
-          if(_optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          console.log('1 error?.toString()', _optionalChain$3([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]));
+          if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]))) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$1(sentTransaction)
                 .then(resolve)
@@ -1204,7 +1204,8 @@
           }
         });
       } catch (error) {
-        if(_optionalChain$3([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        console.log('2 error?.toString()', _optionalChain$3([error, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]));
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _7 => _7.toString, 'call', _8 => _8()]))) {
           setTimeout(()=>{
               retrieveConfirmedTransaction$1(sentTransaction)
                 .then(resolve)
@@ -1233,7 +1234,7 @@
         }
         resolve(sentTransaction);
       } catch (error) {
-        if(_optionalChain$3([error, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]) === "TypeError: Cannot read properties of undefined (reading 'message')"){
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$3([error, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]))) {
           setTimeout(()=>{
             retrieveTransaction(tx, blockchain)
               .then(resolve)
@@ -1732,7 +1733,7 @@
       try {
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(_optionalChain$1([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+          if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$1([error, 'optionalAccess', _ => _.toString, 'call', _2 => _2()]))) {
             setTimeout(()=>{
               retrieveConfirmedTransaction(sentTransaction)
                 .then(resolve)
@@ -1743,7 +1744,7 @@
           }
         });
       } catch(error) {
-        if(_optionalChain$1([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]) === "TypeError: Cannot read properties of undefined (reading 'message')") {
+        if(["TypeError: undefined is not an object (evaluating 'error.message')", "TypeError: Cannot read properties of undefined (reading 'message')"].includes(_optionalChain$1([error, 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]))) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
