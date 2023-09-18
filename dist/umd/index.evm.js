@@ -606,12 +606,22 @@
     'ethereum': 'mainnet',
     'bsc': 'bsc',
     'polygon': 'polygon',
+    'arbitrum': 'arbitrum',
+    'base': 'base',
+    'avalanche': 'avalanche',
+    'gnosis': 'gnosis-chain',
+    'optimism': 'optimism',
   };
 
   const explorerBlockchainNames = {
     'ethereum': 'eth',
     'bsc': 'bnb',
     'polygon': 'matic',
+    'arbitrum': 'arb1',
+    'base': 'base',
+    'avalanche': 'avax',
+    'gnosis': 'gno',
+    'optimism': 'oeth',
   };
 
   class Safe {
