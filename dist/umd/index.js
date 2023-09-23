@@ -1969,7 +1969,7 @@
     async setSessionBlockchains() {
       if(!this.session || !_optionalChain$1([this, 'access', _27 => _27.session, 'optionalAccess', _28 => _28.namespaces, 'optionalAccess', _29 => _29.eip155])) { return }
       if(_optionalChain$1([CONFIGURATIONS, 'access', _30 => _30[this.walletName], 'optionalAccess', _31 => _31.methods, 'optionalAccess', _32 => _32.includes, 'call', _33 => _33('wallet_switchEthereumChain')])) {
-        this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(chainIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
+        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(chainIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.chains) {
         this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _37 => _37.findByNetworkId, 'call', _38 => _38(chainIdentifier.split(':')[1]), 'optionalAccess', _39 => _39.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.accounts) {

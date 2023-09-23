@@ -218,7 +218,7 @@ class WalletConnectV2 {
   async setSessionBlockchains() {
     if(!this.session || !this.session?.namespaces?.eip155) { return }
     if(CONFIGURATIONS[this.walletName]?.methods?.includes('wallet_switchEthereumChain')) {
-      this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
+      this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
     } else if(this.session.namespaces.eip155.chains) {
       this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
     } else if(this.session.namespaces.eip155.accounts) {
