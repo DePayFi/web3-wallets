@@ -145,6 +145,14 @@ await wallet.account() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 await wallet.connect() // '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 ```
 
+### Platform
+
+`platform:string`: Platform of the identified wallet. If a wallet has multiplatform support (e.g. EVM + SVM), it will provide 1 wallet instance per platform (e.g. Phantom, Exodus, etc.)
+
+```javascript
+wallet.platform // 'evm'
+```
+
 ### Supported Blockchains
 
 `blockchains:Array`: Array containing the names of supported blockchains

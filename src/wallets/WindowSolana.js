@@ -19,7 +19,9 @@ export default class WindowSolana {
       // not BitKeep
       !(window?.solana && window?.solana.isBitKeep) && 
       // not Glow
-      !window.solana.isGlow
+      !window.solana.isGlow &&
+      // not trust
+      !window.trustwallet
     )
   }
   
