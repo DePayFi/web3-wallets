@@ -1175,7 +1175,7 @@
     static __initStatic() {this.info = {
       name: 'Trust Wallet',
       logo: logos.trust,
-      blockchains: supported$1.svm,
+      blockchains: supported$1.solana,
       platform: 'svm',
     };}
 
