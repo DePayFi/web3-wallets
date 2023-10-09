@@ -11,7 +11,8 @@ export default class Binance extends WindowEthereum {
 
   static isAvailable = async()=>{
     return window?.BinanceChain &&
-      !window.coin98
+      !window.coin98 &&
+      !window.trustwallet
   }
 
   getProvider() { return window.BinanceChain }

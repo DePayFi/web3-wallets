@@ -5,16 +5,20 @@ import wallets from './wallets'
 
 const supported = [
   wallets.MetaMask,
-  wallets.Coinbase,
+  wallets.CoinbaseEVM,
   wallets.Binance,
-  wallets.Trust,
+  wallets.TrustEVM,
   wallets.Rabby,
+  wallets.PhantomEVM,
   wallets.Brave,
   wallets.Opera,
   wallets.Coin98,
   wallets.CryptoCom,
   wallets.HyperPay,
   wallets.TokenPocket,
+  wallets.ExodusEVM,
+
+  // standards (not concrete wallets)
   wallets.WalletConnectV1,
   wallets.WalletConnectV2,
   wallets.WalletLink,
@@ -24,10 +28,15 @@ const supported = [
 /*#elif _SOLANA
 
 const supported = [
-  wallets.Phantom,
+  wallets.PhantomSVM,
   wallets.Backpack,
   wallets.Glow,
   wallets.Solflare,
+  wallets.CoinbaseSVM,
+  wallets.TrustSVM,
+  wallets.ExodusSVM,
+
+  // standards (not concrete wallets)
   wallets.WalletConnectV1,
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,
@@ -38,10 +47,13 @@ const supported = [
 
 const supported = [
   wallets.MetaMask,
-  wallets.Phantom,
-  wallets.Coinbase,
+  wallets.PhantomEVM,
+  wallets.PhantomSVM,
+  wallets.CoinbaseEVM,
+  wallets.CoinbaseSVM,
   wallets.Binance,
-  wallets.Trust,
+  wallets.TrustEVM,
+  wallets.TrustSVM,
   wallets.Backpack,
   wallets.Glow,
   wallets.Solflare,
@@ -52,6 +64,10 @@ const supported = [
   wallets.CryptoCom,
   wallets.HyperPay,
   wallets.TokenPocket,
+  wallets.ExodusEVM,
+  wallets.ExodusSVM,
+
+  // standards (not concrete wallets)
   wallets.WalletConnectV1,
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,

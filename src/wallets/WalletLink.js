@@ -12,7 +12,7 @@ import { request } from '@depay/web3-client'
 
 //#endif
 
-import Coinbase from './Coinbase'
+import logos from '../logos'
 import Blockchains from '@depay/web3-blockchains'
 import { CoinbaseWalletSDK } from '@depay/coinbase-wallet-sdk'
 import { ethers } from 'ethers'
@@ -31,7 +31,7 @@ class WalletLink {
 
   static info = {
     name: 'Coinbase',
-    logo: Coinbase.info.logo,
+    logo: logos.coinbase,
     blockchains: supported.evm
   }
 
