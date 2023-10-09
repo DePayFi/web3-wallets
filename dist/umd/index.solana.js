@@ -749,6 +749,7 @@
     wallets.CoinbaseSVM,
     wallets.TrustSVM,
     wallets.ExodusSVM,
+    wallets.Coin98SVM,
 
     // standards (not concrete wallets)
     wallets.WalletConnectV1,

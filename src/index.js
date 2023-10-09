@@ -12,7 +12,8 @@ const supported = [
   wallets.PhantomEVM,
   wallets.Brave,
   wallets.Opera,
-  wallets.Coin98,
+  wallets.Coin98EVM,
+  wallets.Coin98SVM,
   wallets.CryptoCom,
   wallets.HyperPay,
   wallets.TokenPocket,
@@ -35,6 +36,7 @@ const supported = [
   wallets.CoinbaseSVM,
   wallets.TrustSVM,
   wallets.ExodusSVM,
+  wallets.Coin98SVM,
 
   // standards (not concrete wallets)
   wallets.WalletConnectV1,
@@ -60,7 +62,8 @@ const supported = [
   wallets.Rabby,
   wallets.Brave,
   wallets.Opera,
-  wallets.Coin98,
+  wallets.Coin98EVM,
+  wallets.Coin98SVM,
   wallets.CryptoCom,
   wallets.HyperPay,
   wallets.TokenPocket,
