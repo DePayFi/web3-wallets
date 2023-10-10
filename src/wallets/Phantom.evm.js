@@ -7,7 +7,7 @@ export default class PhantomEVM extends WindowEthereum {
   static info = {
     name: 'Phantom',
     logo: logos.phantom,
-    blockchains: supported.evm,
+    blockchains: ['ethereum', 'polygon'],
     platform: 'evm',
   }
 

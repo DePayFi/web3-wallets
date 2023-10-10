@@ -912,7 +912,7 @@ class PhantomEVM extends WindowEthereum {
   static __initStatic() {this.info = {
     name: 'Phantom',
     logo: logos.phantom,
-    blockchains: supported$1.evm,
+    blockchains: ['ethereum', 'polygon'],
     platform: 'evm',
   };}
 
