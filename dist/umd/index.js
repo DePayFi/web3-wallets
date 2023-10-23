@@ -8,7 +8,7 @@
 
   var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
-  function _optionalChain$q(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$t(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
     constructor({
@@ -33,7 +33,7 @@
       this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
-      this.value = _optionalChain$q([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+      this.value = _optionalChain$t([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
       this.api = api;
       this.method = method;
       this.params = params;
@@ -73,7 +73,7 @@
     }
 
     getParamType(param) {
-      if(_optionalChain$q([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
+      if(_optionalChain$t([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
         return `(${param.components.map((param)=>this.getParamType(param)).join(',')})`
       } else {
         return param.type
@@ -146,7 +146,7 @@
     }
   }
 
-  function _optionalChain$p(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$s(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const POLL_SPEED = 500; // 0.5 seconds
   const MAX_POLLS = 240; // 120 seconds
@@ -167,14 +167,14 @@
 
           const provider = await web3Client.getProvider(transaction.blockchain);
           const { value } = await provider.getSignatureStatus(signature);
-          const confirmationStatus = _optionalChain$p([value, 'optionalAccess', _ => _.confirmationStatus]);
+          const confirmationStatus = _optionalChain$s([value, 'optionalAccess', _ => _.confirmationStatus]);
           if(confirmationStatus) {
             const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
             if (hasReachedSufficientCommitment) {
               if(value.err) {
                 transaction._failed = true;
                 const confirmedTransaction = await provider.getConfirmedTransaction(signature);
-                const failedReason = _optionalChain$p([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
+                const failedReason = _optionalChain$s([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
                 if(transaction.failed) transaction.failed(transaction, failedReason);
               } else {
                 transaction._succeeded = true;
@@ -265,7 +265,7 @@
   supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base'];
   supported$1.solana = ['solana'];
 
-  function _optionalChain$o(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$r(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class WindowSolana {
 
     static __initStatic() {this.info = {
@@ -276,13 +276,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$o([window, 'optionalAccess', _5 => _5.solana]) &&
+        _optionalChain$r([window, 'optionalAccess', _5 => _5.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
         // not BitKeep
-        !(_optionalChain$o([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$o([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
+        !(_optionalChain$r([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$r([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow &&
         // not trust
@@ -333,7 +333,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$o([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
+          internalCallback = (publicKey) => callback(_optionalChain$r([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }
@@ -386,7 +386,7 @@
     }
   } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
-  function _optionalChain$n(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$q(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class Backpack extends WindowSolana {
 
@@ -398,7 +398,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$n([window, 'optionalAccess', _2 => _2.backpack]) &&
+        _optionalChain$q([window, 'optionalAccess', _2 => _2.backpack]) &&
         window.backpack.isBackpack
       )
     };}
@@ -415,6 +415,8 @@
       return this.getProvider().sendAndConfirm(transaction)
     }
   } Backpack.__initStatic(); Backpack.__initStatic2();
+
+  function _optionalChain$p(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const sendTransaction$3 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
@@ -468,7 +470,10 @@
       try {
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(error && error.toString().match('undefined')) {
+          if(
+            (error && _optionalChain$p([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && error.toString().match('undefined'))
+          ) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$3(sentTransaction)
                 .then(resolve)
@@ -479,7 +484,10 @@
           }
         });
       } catch(error) {
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && _optionalChain$p([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
             retrieveConfirmedTransaction$3(sentTransaction)
               .then(resolve)
@@ -522,7 +530,7 @@
     })
   };
 
-  function _optionalChain$m(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$o(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class WindowEthereum {
 
@@ -534,31 +542,31 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$m([window, 'optionalAccess', _31 => _31.ethereum]) &&
+        _optionalChain$o([window, 'optionalAccess', _31 => _31.ethereum]) &&
         // not MetaMask
-        !(_optionalChain$m([window, 'optionalAccess', _32 => _32.ethereum, 'optionalAccess', _33 => _33.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
+        !(_optionalChain$o([window, 'optionalAccess', _32 => _32.ethereum, 'optionalAccess', _33 => _33.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
         // not Coin98
-        !_optionalChain$m([window, 'optionalAccess', _34 => _34.coin98]) &&
+        !_optionalChain$o([window, 'optionalAccess', _34 => _34.coin98]) &&
         // not Trust Wallet
-        !(_optionalChain$m([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isTrust]) || _optionalChain$m([window, 'optionalAccess', _37 => _37.ethereum, 'optionalAccess', _38 => _38.isTrustWallet])) &&
+        !(_optionalChain$o([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isTrust]) || _optionalChain$o([window, 'optionalAccess', _37 => _37.ethereum, 'optionalAccess', _38 => _38.isTrustWallet])) &&
         // not crypto.com
-        !_optionalChain$m([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isDeficonnectProvider]) &&
+        !_optionalChain$o([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isDeficonnectProvider]) &&
         // not HyperPay
-        !_optionalChain$m([window, 'optionalAccess', _41 => _41.ethereum, 'optionalAccess', _42 => _42.isHyperPay]) &&
+        !_optionalChain$o([window, 'optionalAccess', _41 => _41.ethereum, 'optionalAccess', _42 => _42.isHyperPay]) &&
         // not Phantom
-        !(window.phantom && !window.glow && !_optionalChain$m([window, 'optionalAccess', _43 => _43.solana, 'optionalAccess', _44 => _44.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
+        !(window.phantom && !window.glow && !_optionalChain$o([window, 'optionalAccess', _43 => _43.solana, 'optionalAccess', _44 => _44.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Rabby
-        !_optionalChain$m([window, 'optionalAccess', _45 => _45.ethereum, 'optionalAccess', _46 => _46.isRabby]) &&
+        !_optionalChain$o([window, 'optionalAccess', _45 => _45.ethereum, 'optionalAccess', _46 => _46.isRabby]) &&
         // not Backpack
-        !_optionalChain$m([window, 'optionalAccess', _47 => _47.backpack, 'optionalAccess', _48 => _48.isBackpack]) &&
+        !_optionalChain$o([window, 'optionalAccess', _47 => _47.backpack, 'optionalAccess', _48 => _48.isBackpack]) &&
         // not TokenPocket
-        !_optionalChain$m([window, 'optionalAccess', _49 => _49.ethereum, 'optionalAccess', _50 => _50.isTokenPocket]) && 
+        !_optionalChain$o([window, 'optionalAccess', _49 => _49.ethereum, 'optionalAccess', _50 => _50.isTokenPocket]) && 
         // not BitKeep
-        !_optionalChain$m([window, 'optionalAccess', _51 => _51.ethereum, 'optionalAccess', _52 => _52.isBitKeep]) && 
+        !_optionalChain$o([window, 'optionalAccess', _51 => _51.ethereum, 'optionalAccess', _52 => _52.isBitKeep]) && 
         // not Coinbase
-        !(_optionalChain$m([window, 'optionalAccess', _53 => _53.ethereum, 'optionalAccess', _54 => _54.isCoinbaseWallet]) || _optionalChain$m([window, 'optionalAccess', _55 => _55.ethereum, 'optionalAccess', _56 => _56.isWalletLink])) &&
+        !(_optionalChain$o([window, 'optionalAccess', _53 => _53.ethereum, 'optionalAccess', _54 => _54.isCoinbaseWallet]) || _optionalChain$o([window, 'optionalAccess', _55 => _55.ethereum, 'optionalAccess', _56 => _56.isWalletLink])) &&
         // MetaMask through ProviderMap
-        !_optionalChain$m([window, 'optionalAccess', _57 => _57.ethereum, 'optionalAccess', _58 => _58.providerMap, 'optionalAccess', _59 => _59.has, 'call', _60 => _60('MetaMask')])
+        !_optionalChain$o([window, 'optionalAccess', _57 => _57.ethereum, 'optionalAccess', _58 => _58.providerMap, 'optionalAccess', _59 => _59.has, 'call', _60 => _60('MetaMask')])
       )
     };}
     
@@ -684,7 +692,7 @@
     }
   } WindowEthereum.__initStatic(); WindowEthereum.__initStatic2();
 
-  function _optionalChain$l(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$n(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Binance extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -694,7 +702,7 @@
     };}
 
     static __initStatic2() {this.isAvailable = async()=>{
-      return _optionalChain$l([window, 'optionalAccess', _2 => _2.BinanceChain]) &&
+      return _optionalChain$n([window, 'optionalAccess', _2 => _2.BinanceChain]) &&
         !window.coin98 &&
         !window.trustwallet
     };}
@@ -703,7 +711,7 @@
 
   } Binance.__initStatic(); Binance.__initStatic2();
 
-  function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$m(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Brave extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -712,7 +720,7 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$k([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isBraveWallet]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$m([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isBraveWallet]) };}
   } Brave.__initStatic(); Brave.__initStatic2();
 
   var logos = {
@@ -723,7 +731,7 @@
     trust: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA5Ni41IDk2LjUiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDk2LjUgOTYuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgZmlsbD0iI0ZGRkZGRiIgd2lkdGg9Ijk2LjUiIGhlaWdodD0iOTYuNSIvPgo8cGF0aCBzdHJva2U9IiMzMzc1QkIiIHN0cm9rZS13aWR0aD0iNi4wNjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQgPSIxMCIgZmlsbD0ibm9uZSIgZD0ibTQ4LjUgMjAuMWM5LjYgOCAyMC42IDcuNSAyMy43IDcuNS0wLjcgNDUuNS01LjkgMzYuNS0yMy43IDQ5LjMtMTcuOC0xMi44LTIzLTMuNy0yMy43LTQ5LjMgMy4yIDAgMTQuMSAwLjUgMjMuNy03LjV6Ii8+Cjwvc3ZnPgo=",
   };
 
-  function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$l(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Coin98EVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -733,13 +741,13 @@
       platform: 'evm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$j([window, 'optionalAccess', _2 => _2.coin98]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$l([window, 'optionalAccess', _2 => _2.coin98]) };}
 
     getProvider() { return window.coin98.provider }
     
   } Coin98EVM.__initStatic(); Coin98EVM.__initStatic2();
 
-  function _optionalChain$i(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Coin98SVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -749,13 +757,13 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$i([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$k([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
 
     getProvider() { return window.coin98.sol }
 
   } Coin98SVM.__initStatic(); Coin98SVM.__initStatic2();
 
-  function _optionalChain$h(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class CoinbaseEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -766,8 +774,8 @@
     };}
 
     getProvider() { 
-      if(_optionalChain$h([window, 'optionalAccess', _9 => _9.ethereum, 'optionalAccess', _10 => _10.providerMap, 'optionalAccess', _11 => _11.has, 'call', _12 => _12('CoinbaseWallet')])) {
-        return _optionalChain$h([window, 'optionalAccess', _13 => _13.ethereum, 'optionalAccess', _14 => _14.providerMap, 'optionalAccess', _15 => _15.get, 'call', _16 => _16('CoinbaseWallet')])
+      if(_optionalChain$j([window, 'optionalAccess', _9 => _9.ethereum, 'optionalAccess', _10 => _10.providerMap, 'optionalAccess', _11 => _11.has, 'call', _12 => _12('CoinbaseWallet')])) {
+        return _optionalChain$j([window, 'optionalAccess', _13 => _13.ethereum, 'optionalAccess', _14 => _14.providerMap, 'optionalAccess', _15 => _15.get, 'call', _16 => _16('CoinbaseWallet')])
       } else {
         return window.ethereum
       }
@@ -776,9 +784,9 @@
     static __initStatic2() {this.isAvailable = async()=>{ 
       return(
         (
-          _optionalChain$h([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isCoinbaseWallet]) || _optionalChain$h([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isWalletLink])
+          _optionalChain$j([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isCoinbaseWallet]) || _optionalChain$j([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isWalletLink])
         ) || (
-          _optionalChain$h([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.providerMap, 'optionalAccess', _23 => _23.has, 'call', _24 => _24('CoinbaseWallet')])
+          _optionalChain$j([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.providerMap, 'optionalAccess', _23 => _23.has, 'call', _24 => _24('CoinbaseWallet')])
         )
       )
     };}
@@ -802,7 +810,7 @@
     };}
   } CoinbaseSVM.__initStatic(); CoinbaseSVM.__initStatic2();
 
-  function _optionalChain$g(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$i(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class CryptoCom extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -811,10 +819,10 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$g([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isDeficonnectProvider]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$i([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isDeficonnectProvider]) };}
   } CryptoCom.__initStatic(); CryptoCom.__initStatic2();
 
-  function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$h(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class ExodusEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -824,10 +832,10 @@
       platform: 'evm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$f([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isExodus]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$h([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isExodus]) };}
   } ExodusEVM.__initStatic(); ExodusEVM.__initStatic2();
 
-  function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$g(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class ExodusSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -837,7 +845,7 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$e([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$g([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
   } ExodusSVM.__initStatic(); ExodusSVM.__initStatic2();
 
   class Glow extends WindowSolana {
@@ -856,7 +864,7 @@
     };}
   } Glow.__initStatic(); Glow.__initStatic2();
 
-  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class HyperPay extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -865,10 +873,10 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$d([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isHyperPay]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$f([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isHyperPay]) };}
   } HyperPay.__initStatic(); HyperPay.__initStatic2();
 
-  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class MetaMask extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -878,8 +886,8 @@
     };}
 
     getProvider() { 
-      if(_optionalChain$c([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.providerMap, 'optionalAccess', _9 => _9.has, 'call', _10 => _10('MetaMask')])) {
-        return _optionalChain$c([window, 'optionalAccess', _11 => _11.ethereum, 'optionalAccess', _12 => _12.providerMap, 'optionalAccess', _13 => _13.get, 'call', _14 => _14('MetaMask')])
+      if(_optionalChain$e([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.providerMap, 'optionalAccess', _9 => _9.has, 'call', _10 => _10('MetaMask')])) {
+        return _optionalChain$e([window, 'optionalAccess', _11 => _11.ethereum, 'optionalAccess', _12 => _12.providerMap, 'optionalAccess', _13 => _13.get, 'call', _14 => _14('MetaMask')])
       } else {
         return window.ethereum
       }
@@ -888,16 +896,16 @@
     static __initStatic2() {this.isAvailable = async()=>{
       return(
         (
-          _optionalChain$c([window, 'optionalAccess', _15 => _15.ethereum, 'optionalAccess', _16 => _16.isMetaMask]) &&
+          _optionalChain$e([window, 'optionalAccess', _15 => _15.ethereum, 'optionalAccess', _16 => _16.isMetaMask]) &&
           Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
         ) || (
-          _optionalChain$c([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.providerMap, 'optionalAccess', _19 => _19.has, 'call', _20 => _20('MetaMask')])
+          _optionalChain$e([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.providerMap, 'optionalAccess', _19 => _19.has, 'call', _20 => _20('MetaMask')])
         )
       )
     };}
   } MetaMask.__initStatic(); MetaMask.__initStatic2();
 
-  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Opera extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -906,7 +914,7 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$b([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isOpera]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$d([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isOpera]) };}
   } Opera.__initStatic(); Opera.__initStatic2();
 
   class PhantomEVM extends WindowEthereum {
@@ -926,7 +934,7 @@
     };}
   } PhantomEVM.__initStatic(); PhantomEVM.__initStatic2();
 
-  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class PhantomSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -940,14 +948,14 @@
       return (
         window.phantom &&
         !window.glow &&
-        !_optionalChain$a([window, 'optionalAccess', _5 => _5.solana, 'optionalAccess', _6 => _6.isGlow]) &&
-        !_optionalChain$a([window, 'optionalAccess', _7 => _7.solana, 'optionalAccess', _8 => _8.isExodus]) &&
+        !_optionalChain$c([window, 'optionalAccess', _5 => _5.solana, 'optionalAccess', _6 => _6.isGlow]) &&
+        !_optionalChain$c([window, 'optionalAccess', _7 => _7.solana, 'optionalAccess', _8 => _8.isExodus]) &&
         !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
       )
     };}
   } PhantomSVM.__initStatic(); PhantomSVM.__initStatic2();
 
-  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Rabby extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -958,12 +966,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return(
-        _optionalChain$9([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isRabby])
+        _optionalChain$b([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isRabby])
       )
     };}
   } Rabby.__initStatic(); Rabby.__initStatic2();
 
-  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 
   const KEY$2 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
@@ -1054,8 +1062,8 @@
       await solanaWeb3_js.transact(
         async (wallet) => {
           await this.authorize(wallet);
-          if(_optionalChain$8([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$2+'_name'] = this.name = options.name; }
-          if(_optionalChain$8([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$2+'_logo'] = this.logo = options.logo; }
+          if(_optionalChain$a([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$2+'_name'] = this.name = options.name; }
+          if(_optionalChain$a([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$2+'_logo'] = this.logo = options.logo; }
         }
       );
       return this._account
@@ -1114,7 +1122,7 @@
     }
   } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
 
-  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Solflare extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -1125,7 +1133,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$7([window, 'optionalAccess', _2 => _2.solflare]) &&
+        _optionalChain$9([window, 'optionalAccess', _2 => _2.solflare]) &&
         window.solflare.isSolflare
       )
     };}
@@ -1135,7 +1143,7 @@
     _sendTransaction(transaction) { return this.getProvider().signTransaction(transaction) }
   } Solflare.__initStatic(); Solflare.__initStatic2();
 
-  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TokenPocket extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1146,12 +1154,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$6([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isTokenPocket])
+        _optionalChain$8([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isTokenPocket])
       )
     };}
   } TokenPocket.__initStatic(); TokenPocket.__initStatic2();
 
-  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TrustEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1163,13 +1171,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        (_optionalChain$5([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$5([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) &&
+        (_optionalChain$7([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$7([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) &&
         Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!Debug)(?!TrustWallet)(?!MetaMask)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
       )
     };}
   } TrustEVM.__initStatic(); TrustEVM.__initStatic2();
 
-  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TrustSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -1180,7 +1188,7 @@
     };}
 
     static __initStatic2() {this.isAvailable = async()=>{
-      return _optionalChain$4([window, 'access', _3 => _3.solana, 'optionalAccess', _4 => _4.isTrustWallet])
+      return _optionalChain$6([window, 'access', _3 => _3.solana, 'optionalAccess', _4 => _4.isTrustWallet])
     };}
   } TrustSVM.__initStatic(); TrustSVM.__initStatic2();
 
@@ -1283,7 +1291,7 @@
     }
   };
 
-  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const sendTransaction$2 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
@@ -1336,7 +1344,10 @@
       try {
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(error && error.toString().match('undefined')) {
+          if(
+            (error && _optionalChain$5([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && error.toString().match('undefined'))
+          ) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$2(sentTransaction)
                 .then(resolve)
@@ -1347,7 +1358,10 @@
           }
         });
       } catch (error) {
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && _optionalChain$5([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
             retrieveConfirmedTransaction$2(sentTransaction)
               .then(resolve)
@@ -1392,7 +1406,7 @@
   const submitContractInteraction$2 = async ({ transaction, wallet })=>{
     const provider = await web3Client.getProvider(transaction.blockchain);
     let gasPrice = await provider.getGasPrice();
-    if(_optionalChain$3([wallet, 'access', _ => _.session, 'optionalAccess', _2 => _2.peerMeta, 'optionalAccess', _3 => _3.name]) === 'Uniswap Wallet') {
+    if(_optionalChain$5([wallet, 'access', _7 => _7.session, 'optionalAccess', _8 => _8.peerMeta, 'optionalAccess', _9 => _9.name]) === 'Uniswap Wallet') {
       gasPrice = undefined;
     } else {
       gasPrice = gasPrice.toHexString();
@@ -1416,7 +1430,7 @@
   const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
     const provider = await web3Client.getProvider(transaction.blockchain);
     let gasPrice = await provider.getGasPrice();
-    if(_optionalChain$3([wallet, 'access', _4 => _4.session, 'optionalAccess', _5 => _5.peerMeta, 'optionalAccess', _6 => _6.name]) === 'Uniswap Wallet') {
+    if(_optionalChain$5([wallet, 'access', _10 => _10.session, 'optionalAccess', _11 => _11.peerMeta, 'optionalAccess', _12 => _12.name]) === 'Uniswap Wallet') {
       gasPrice = undefined;
     } else {
       gasPrice = gasPrice.toHexString();
@@ -1435,7 +1449,7 @@
     })
   };
 
-  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const KEY$1 = '_DePayWeb3WalletsConnectedWalletConnectV1Instance';
 
@@ -1578,8 +1592,8 @@
           let session = await this.connector.connect();
           this.session = session;
 
-          if(_optionalChain$2([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$1+'_name'] = this.name = options.name; }
-          if(_optionalChain$2([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1+'_logo'] = this.logo = options.logo; }
+          if(_optionalChain$4([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$1+'_name'] = this.name = options.name; }
+          if(_optionalChain$4([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1+'_logo'] = this.logo = options.logo; }
 
           if(session.accounts instanceof Array && session.accounts.length) {
             setConnectedInstance$1(this);
@@ -1723,6 +1737,8 @@
   WalletConnectV1.getConnectedInstance = getConnectedInstance$2;
   WalletConnectV1.setConnectedInstance = setConnectedInstance$1;
 
+  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+
   const sendTransaction$1 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
@@ -1774,7 +1790,10 @@
     return new Promise((resolve, reject)=>{
       try {
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(error && error.toString().match('undefined')) {
+          if(
+            (error && _optionalChain$3([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && error.toString().match('undefined'))
+          ) {
             setTimeout(()=>{
               retrieveConfirmedTransaction$1(sentTransaction)
                 .then(resolve)
@@ -1785,7 +1804,10 @@
           }
         });
       } catch (error) {
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && _optionalChain$3([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
               retrieveConfirmedTransaction$1(sentTransaction)
                 .then(resolve)
@@ -1813,7 +1835,10 @@
         }
         resolve(sentTransaction);
       } catch (error) {
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && _optionalChain$3([error, 'optionalAccess', _7 => _7.stack, 'optionalAccess', _8 => _8.match, 'call', _9 => _9('JSON-RPC error')])) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
             retrieveTransaction(tx, blockchain)
               .then(resolve)
@@ -1879,7 +1904,7 @@
     }).catch((e)=>{console.log('ERROR', e);})
   };
 
-  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const KEY = 'depay:wallets:wc2';
 
@@ -1998,11 +2023,11 @@
   };
 
   const getWalletConnectV2Config = (walletName)=>{
-    const methods = _optionalChain$1([CONFIGURATIONS, 'access', _ => _[walletName], 'optionalAccess', _2 => _2.methods]) || DEFAULT_CONFIGURATION.methods;
-    const events = _optionalChain$1([CONFIGURATIONS, 'access', _3 => _3[walletName], 'optionalAccess', _4 => _4.events]) || DEFAULT_CONFIGURATION.events;
+    const methods = _optionalChain$2([CONFIGURATIONS, 'access', _ => _[walletName], 'optionalAccess', _2 => _2.methods]) || DEFAULT_CONFIGURATION.methods;
+    const events = _optionalChain$2([CONFIGURATIONS, 'access', _3 => _3[walletName], 'optionalAccess', _4 => _4.events]) || DEFAULT_CONFIGURATION.events;
 
     let requiredNamespaces = {};
-    if(_optionalChain$1([CONFIGURATIONS, 'access', _5 => _5[walletName], 'optionalAccess', _6 => _6.requiredNamespaces])) {
+    if(_optionalChain$2([CONFIGURATIONS, 'access', _5 => _5[walletName], 'optionalAccess', _6 => _6.requiredNamespaces])) {
       requiredNamespaces = CONFIGURATIONS[walletName].requiredNamespaces;
     } else {
       requiredNamespaces['eip155'] = {
@@ -2015,14 +2040,14 @@
     }
 
     let optionalNamespaces = {};
-    if(_optionalChain$1([CONFIGURATIONS, 'access', _7 => _7[walletName], 'optionalAccess', _8 => _8.optionalNamespaces])) {
+    if(_optionalChain$2([CONFIGURATIONS, 'access', _7 => _7[walletName], 'optionalAccess', _8 => _8.optionalNamespaces])) {
       optionalNamespaces = CONFIGURATIONS[walletName].optionalNamespaces;
     } else {
       optionalNamespaces['eip155'] = {
         chains: supported$1.evm.map((blockchain)=>`${Blockchains__default['default'][blockchain].namespace}:${Blockchains__default['default'][blockchain].networkId}`),
       };
     }
-    if(_optionalChain$1([optionalNamespaces, 'optionalAccess', _9 => _9.eip155]) && _optionalChain$1([optionalNamespaces, 'optionalAccess', _10 => _10.eip155, 'optionalAccess', _11 => _11.chains, 'optionalAccess', _12 => _12.length])) {
+    if(_optionalChain$2([optionalNamespaces, 'optionalAccess', _9 => _9.eip155]) && _optionalChain$2([optionalNamespaces, 'optionalAccess', _10 => _10.eip155, 'optionalAccess', _11 => _11.chains, 'optionalAccess', _12 => _12.length])) {
       optionalNamespaces['eip155'].methods = methods;
       optionalNamespaces['eip155'].events = events;
     }
@@ -2037,9 +2062,9 @@
         projectId: localStorage[KEY+":projectId"],
         metadata: {
           name: document.title || 'dApp',
-          description: _optionalChain$1([document, 'access', _13 => _13.querySelector, 'call', _14 => _14('meta[name="description"]'), 'optionalAccess', _15 => _15.getAttribute, 'call', _16 => _16('content')]) || document.title || 'dApp',
+          description: _optionalChain$2([document, 'access', _13 => _13.querySelector, 'call', _14 => _14('meta[name="description"]'), 'optionalAccess', _15 => _15.getAttribute, 'call', _16 => _16('content')]) || document.title || 'dApp',
           url: location.href,
-          icons: [_optionalChain$1([document, 'access', _17 => _17.querySelector, 'call', _18 => _18("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _19 => _19.href]) || `${location.origin}/favicon.ico`]
+          icons: [_optionalChain$2([document, 'access', _17 => _17.querySelector, 'call', _18 => _18("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _19 => _19.href]) || `${location.origin}/favicon.ico`]
         }
       });
       resolve(signClient);
@@ -2057,7 +2082,7 @@
     };}
 
     static __initStatic2() {this.isAvailable = async(options)=>{ 
-      return !! await getLastSession(_optionalChain$1([options, 'optionalAccess', _21 => _21.walletName]))
+      return !! await getLastSession(_optionalChain$2([options, 'optionalAccess', _21 => _21.walletName]))
     };}
 
     constructor() {
@@ -2072,19 +2097,19 @@
     }
 
     async account() {
-      if(_optionalChain$1([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.namespaces, 'optionalAccess', _24 => _24.eip155, 'optionalAccess', _25 => _25.accounts, 'optionalAccess', _26 => _26.length])) {
+      if(_optionalChain$2([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.namespaces, 'optionalAccess', _24 => _24.eip155, 'optionalAccess', _25 => _25.accounts, 'optionalAccess', _26 => _26.length])) {
         return this.session.namespaces.eip155.accounts[0].split(':')[2]
       }
     }
 
     async setSessionBlockchains() {
-      if(!this.session || !_optionalChain$1([this, 'access', _27 => _27.session, 'optionalAccess', _28 => _28.namespaces, 'optionalAccess', _29 => _29.eip155])) { return }
-      if(_optionalChain$1([CONFIGURATIONS, 'access', _30 => _30[this.walletName], 'optionalAccess', _31 => _31.methods, 'optionalAccess', _32 => _32.includes, 'call', _33 => _33('wallet_switchEthereumChain')])) {
-        this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(chainIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
+      if(!this.session || !_optionalChain$2([this, 'access', _27 => _27.session, 'optionalAccess', _28 => _28.namespaces, 'optionalAccess', _29 => _29.eip155])) { return }
+      if(_optionalChain$2([CONFIGURATIONS, 'access', _30 => _30[this.walletName], 'optionalAccess', _31 => _31.methods, 'optionalAccess', _32 => _32.includes, 'call', _33 => _33('wallet_switchEthereumChain')])) {
+        this.blockchains = [this.session.namespaces.eip155.chains[this.session.namespaces.eip155.chains.length-1]].map((chainIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _34 => _34.findByNetworkId, 'call', _35 => _35(chainIdentifier.split(':')[1]), 'optionalAccess', _36 => _36.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.chains) {
-        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _37 => _37.findByNetworkId, 'call', _38 => _38(chainIdentifier.split(':')[1]), 'optionalAccess', _39 => _39.name])).filter(Boolean);
+        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _37 => _37.findByNetworkId, 'call', _38 => _38(chainIdentifier.split(':')[1]), 'optionalAccess', _39 => _39.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.accounts) {
-        this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$1([Blockchains__default['default'], 'access', _40 => _40.findByNetworkId, 'call', _41 => _41(accountIdentifier.split(':')[1]), 'optionalAccess', _42 => _42.name])).filter(Boolean);
+        this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _40 => _40.findByNetworkId, 'call', _41 => _41(accountIdentifier.split(':')[1]), 'optionalAccess', _42 => _42.name])).filter(Boolean);
       }
     }
 
@@ -2094,13 +2119,13 @@
       
       try {
 
-        this.walletName = _optionalChain$1([options, 'optionalAccess', _43 => _43.name]);
+        this.walletName = _optionalChain$2([options, 'optionalAccess', _43 => _43.name]);
 
         // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
         this.signClient = await getSignClient();
 
         this.signClient.on("session_delete", (session)=> {
-          if(_optionalChain$1([session, 'optionalAccess', _44 => _44.topic]) === _optionalChain$1([this, 'access', _45 => _45.session, 'optionalAccess', _46 => _46.topic])) {
+          if(_optionalChain$2([session, 'optionalAccess', _44 => _44.topic]) === _optionalChain$2([this, 'access', _45 => _45.session, 'optionalAccess', _46 => _46.topic])) {
             localStorage[KEY+':name'] = undefined;
             localStorage[KEY+':logo'] = undefined;
             this.signClient = undefined;
@@ -2109,14 +2134,14 @@
         });
 
         this.signClient.on("session_update", async(session)=> {
-          if(_optionalChain$1([session, 'optionalAccess', _47 => _47.topic]) === _optionalChain$1([this, 'access', _48 => _48.session, 'optionalAccess', _49 => _49.topic])) {
+          if(_optionalChain$2([session, 'optionalAccess', _47 => _47.topic]) === _optionalChain$2([this, 'access', _48 => _48.session, 'optionalAccess', _49 => _49.topic])) {
             this.session = this.signClient.session.get(session.topic);
             await this.setSessionBlockchains();
           }
         });
 
         this.signClient.on("session_event", (event)=> {
-          if(_optionalChain$1([event, 'optionalAccess', _50 => _50.topic]) === _optionalChain$1([this, 'access', _51 => _51.session, 'optionalAccess', _52 => _52.topic])) {}
+          if(_optionalChain$2([event, 'optionalAccess', _50 => _50.topic]) === _optionalChain$2([this, 'access', _51 => _51.session, 'optionalAccess', _52 => _52.topic])) {}
         });
 
         const connectWallet = async()=>{
@@ -2127,24 +2152,24 @@
           await new Promise(resolve=>setTimeout(resolve, 500)); // to prevent race condition within WalletConnect
         };
 
-        const lastSession = _optionalChain$1([this, 'optionalAccess', _53 => _53.walletName, 'optionalAccess', _54 => _54.length]) ? await getLastSession(this.walletName) : undefined;
+        const lastSession = _optionalChain$2([this, 'optionalAccess', _53 => _53.walletName, 'optionalAccess', _54 => _54.length]) ? await getLastSession(this.walletName) : undefined;
         if(lastSession) {
           this.session = lastSession;
         } else {
           await connectWallet();
         }
 
-        let meta = _optionalChain$1([this, 'access', _55 => _55.session, 'optionalAccess', _56 => _56.peer, 'optionalAccess', _57 => _57.metadata]);
+        let meta = _optionalChain$2([this, 'access', _55 => _55.session, 'optionalAccess', _56 => _56.peer, 'optionalAccess', _57 => _57.metadata]);
         if(meta && meta.name) {
           this.name = meta.name;
           localStorage[KEY+':name'] = meta.name;
-          if(_optionalChain$1([meta, 'optionalAccess', _58 => _58.icons]) && meta.icons.length) {
+          if(_optionalChain$2([meta, 'optionalAccess', _58 => _58.icons]) && meta.icons.length) {
             this.logo = meta.icons[0];
             localStorage[KEY+':logo'] = this.logo;
           }
         }
-        if(_optionalChain$1([options, 'optionalAccess', _59 => _59.name])) { localStorage[KEY+':name'] = this.name = options.name; }
-        if(_optionalChain$1([options, 'optionalAccess', _60 => _60.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
+        if(_optionalChain$2([options, 'optionalAccess', _59 => _59.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+        if(_optionalChain$2([options, 'optionalAccess', _60 => _60.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
         await this.setSessionBlockchains();
 
@@ -2201,7 +2226,7 @@
       switch (event) {
         case 'account':
           internalCallback = async(event)=> {
-            if(_optionalChain$1([event, 'optionalAccess', _61 => _61.topic]) === _optionalChain$1([this, 'access', _62 => _62.session, 'optionalAccess', _63 => _63.topic]) && event.params.event.name === 'accountsChanged') {
+            if(_optionalChain$2([event, 'optionalAccess', _61 => _61.topic]) === _optionalChain$2([this, 'access', _62 => _62.session, 'optionalAccess', _63 => _63.topic]) && event.params.event.name === 'accountsChanged') {
               callback(await this.account());
             }
           };
@@ -2261,6 +2286,7 @@
 
   WalletConnectV2.getConnectedInstance = getConnectedInstance$1;
 
+  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const sendTransaction = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
@@ -2311,7 +2337,10 @@
       try {
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
-          if(error && error.toString().match('undefined')) {
+          if(
+            (error && _optionalChain$1([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && error.toString().match('undefined'))
+          ) {
             setTimeout(()=>{
               retrieveConfirmedTransaction(sentTransaction)
                 .then(resolve)
@@ -2322,7 +2351,10 @@
           }
         });
       } catch(error) {
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && _optionalChain$1([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)

@@ -67,7 +67,10 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && error?.stack?.match('JSON-RPC error')) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -78,7 +81,10 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch (error) {
-      if(error && error.toString().match('undefined')) {
+      if(
+        (error && error?.stack?.match('JSON-RPC error')) ||
+        (error && error.toString().match('undefined'))
+      ) {
         setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -106,7 +112,10 @@ const retrieveTransaction = (tx, blockchain)=>{
       }
       resolve(sentTransaction)
     } catch (error) {
-      if(error && error.toString().match('undefined')) {
+      if(
+        (error && error?.stack?.match('JSON-RPC error')) ||
+        (error && error.toString().match('undefined'))
+      ) {
         setTimeout(()=>{
           retrieveTransaction(tx, blockchain)
             .then(resolve)

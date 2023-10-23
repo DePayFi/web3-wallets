@@ -68,7 +68,10 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
     try {
 
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        if(error && error.toString().match('undefined')) {
+        if(
+          (error && error?.stack?.match('JSON-RPC error')) ||
+          (error && error.toString().match('undefined'))
+        ) {
           setTimeout(()=>{
             retrieveConfirmedTransaction(sentTransaction)
               .then(resolve)
@@ -79,7 +82,10 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch(error) {
-      if(error && error.toString().match('undefined')) {
+      if(
+        (error && error?.stack?.match('JSON-RPC error')) ||
+        (error && error.toString().match('undefined'))
+      ) {
         setTimeout(()=>{
           retrieveConfirmedTransaction(sentTransaction)
             .then(resolve)
