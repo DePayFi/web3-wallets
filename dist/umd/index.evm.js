@@ -242,17 +242,21 @@
     }
   };
 
-  const submitContractInteraction$3 = ({ transaction, signer, provider })=>{
+  const submitContractInteraction$3 = async ({ transaction, signer, provider })=>{
     let contract = new ethers.ethers.Contract(transaction.to, transaction.api, provider);
     let contractArguments = transaction.getContractArguments({ contract });
     let method = contract.connect(signer)[transaction.getMethodNameWithSignature()];
+    let gas = await web3ClientEvm.estimate(transaction);
+    gas = gas.add(gas.div(10));
     if(contractArguments) {
       return method(...contractArguments, {
-        value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+        value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
+        gasLimit: gas ? gas.toHexString() : undefined
       })
     } else {
       return method({
-        value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+        value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
+        gasLimit: gas ? gas.toHexString() : undefined
       })
     }
   };
@@ -1325,7 +1329,8 @@
   const submitContractInteraction$1 = async ({ transaction, wallet })=>{
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     const blockchain = Blockchains__default['default'][transaction.blockchain];
-    const gas = await web3ClientEvm.estimate(transaction);
+    let gas = await web3ClientEvm.estimate(transaction);
+    gas = gas.add(gas.div(10));
     const gasPrice = await provider.getGasPrice();
     return wallet.signClient.request({
       topic: wallet.session.topic,

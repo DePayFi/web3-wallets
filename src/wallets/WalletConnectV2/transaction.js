@@ -139,7 +139,8 @@ const submit = ({ transaction, wallet }) => {
 const submitContractInteraction = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
   const blockchain = Blockchains[transaction.blockchain]
-  const gas = await estimate(transaction)
+  let gas = await estimate(transaction)
+  gas = gas.add(gas.div(10))
   const gasPrice = await provider.getGasPrice()
   return wallet.signClient.request({
     topic: wallet.session.topic,

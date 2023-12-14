@@ -506,17 +506,21 @@ const submit$3 = ({ transaction, provider, signer }) => {
   }
 };
 
-const submitContractInteraction$3 = ({ transaction, signer, provider })=>{
+const submitContractInteraction$3 = async ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider);
   let contractArguments = transaction.getContractArguments({ contract });
   let method = contract.connect(signer)[transaction.getMethodNameWithSignature()];
+  let gas = await estimate(transaction);
+  gas = gas.add(gas.div(10));
   if(contractArguments) {
     return method(...contractArguments, {
-      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
+      gasLimit: gas ? gas.toHexString() : undefined
     })
   } else {
     return method({
-      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
+      gasLimit: gas ? gas.toHexString() : undefined
     })
   }
 };
@@ -1860,7 +1864,8 @@ const submit$1 = ({ transaction, wallet }) => {
 const submitContractInteraction$1 = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain);
   const blockchain = Blockchains[transaction.blockchain];
-  const gas = await estimate(transaction);
+  let gas = await estimate(transaction);
+  gas = gas.add(gas.div(10));
   const gasPrice = await provider.getGasPrice();
   return wallet.signClient.request({
     topic: wallet.session.topic,

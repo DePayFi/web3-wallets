@@ -1,14 +1,14 @@
 /*#if _EVM
 
-import { request } from '@depay/web3-client-evm'
+import { request, estimate } from '@depay/web3-client-evm'
 
 /*#elif _SOLANA
 
-import { request } from '@depay/web3-client-solana'
+import { request, estimate } from '@depay/web3-client-solana'
 
 //#else */
 
-import { request } from '@depay/web3-client'
+import { request, estimate } from '@depay/web3-client'
 
 //#endif
 
@@ -106,17 +106,21 @@ const submit = ({ transaction, provider, signer }) => {
   }
 }
 
-const submitContractInteraction = ({ transaction, signer, provider })=>{
+const submitContractInteraction = async ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider)
   let contractArguments = transaction.getContractArguments({ contract })
   let method = contract.connect(signer)[transaction.getMethodNameWithSignature()]
+  let gas = await estimate(transaction)
+  gas = gas.add(gas.div(10))
   if(contractArguments) {
     return method(...contractArguments, {
-      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
+      gasLimit: gas ? gas.toHexString() : undefined
     })
   } else {
     return method({
-      value: Transaction.bigNumberify(transaction.value, transaction.blockchain)
+      value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
+      gasLimit: gas ? gas.toHexString() : undefined
     })
   }
 }
