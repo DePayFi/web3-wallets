@@ -1443,6 +1443,7 @@ const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
   } else {
     gasPrice = gasPrice.toHexString();
   }
+  let gas;
   try {
     gas = await estimate(transaction);
     gas = gas.add(gas.div(10));

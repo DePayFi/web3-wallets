@@ -1445,6 +1445,7 @@
     } else {
       gasPrice = gasPrice.toHexString();
     }
+    let gas;
     try {
       gas = await web3Client.estimate(transaction);
       gas = gas.add(gas.div(10));
