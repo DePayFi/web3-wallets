@@ -110,17 +110,20 @@ const submitContractInteraction = async ({ transaction, signer, provider })=>{
   let contract = new ethers.Contract(transaction.to, transaction.api, provider)
   let contractArguments = transaction.getContractArguments({ contract })
   let method = contract.connect(signer)[transaction.getMethodNameWithSignature()]
-  let gas = await estimate(transaction)
-  gas = gas.add(gas.div(10))
+  let gas
+  try {
+    gas = await estimate(transaction)
+    gas = gas.add(gas.div(10))
+  } catch {}
   if(contractArguments) {
-    return method(...contractArguments, {
+    return await method(...contractArguments, {
       value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
-      gasLimit: gas ? gas.toHexString() : undefined
+      gasLimit: gas?.toHexString()
     })
   } else {
-    return method({
+    return await method({
       value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
-      gasLimit: gas ? gas.toHexString() : undefined
+      gasLimit: gas?.toHexString()
     })
   }
 }

@@ -246,17 +246,20 @@
     let contract = new ethers.ethers.Contract(transaction.to, transaction.api, provider);
     let contractArguments = transaction.getContractArguments({ contract });
     let method = contract.connect(signer)[transaction.getMethodNameWithSignature()];
-    let gas = await web3ClientEvm.estimate(transaction);
-    gas = gas.add(gas.div(10));
+    let gas;
+    try {
+      gas = await web3ClientEvm.estimate(transaction);
+      gas = gas.add(gas.div(10));
+    } catch (e) {}
     if(contractArguments) {
-      return method(...contractArguments, {
+      return await method(...contractArguments, {
         value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
-        gasLimit: gas ? gas.toHexString() : undefined
+        gasLimit: _optionalChain$j([gas, 'optionalAccess', _7 => _7.toHexString, 'call', _8 => _8()])
       })
     } else {
-      return method({
+      return await method({
         value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
-        gasLimit: gas ? gas.toHexString() : undefined
+        gasLimit: _optionalChain$j([gas, 'optionalAccess', _9 => _9.toHexString, 'call', _10 => _10()])
       })
     }
   };
@@ -878,17 +881,20 @@
     } else {
       gasPrice = gasPrice.toHexString();
     }
-    let gas = await web3ClientEvm.estimate(transaction);
+    let gas;
+    try {
+      gas = await web3ClientEvm.estimate(transaction);
+      gas = gas.add(gas.div(10));
+    } catch (e2) {}
     const data = await transaction.getData();
     const value = transaction.value ? ethers.ethers.utils.hexlify(ethers.ethers.BigNumber.from(transaction.value)) : undefined;
     const nonce = ethers.ethers.utils.hexlify(transaction.nonce);
-    gas = gas.add(gas.div(10));
     return wallet.connector.sendTransaction({
       from: transaction.from,
       to: transaction.to,
       value,
       data,
-      gas: gas.toHexString(),
+      gas: _optionalChain$5([gas, 'optionalAccess', _10 => _10.toHexString, 'call', _11 => _11()]),
       gasPrice,
       nonce,
     })
@@ -897,12 +903,15 @@
   const submitSimpleTransfer$2 = async ({ transaction, wallet })=>{
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     let gasPrice = await provider.getGasPrice();
-    if(_optionalChain$5([wallet, 'access', _10 => _10.session, 'optionalAccess', _11 => _11.peerMeta, 'optionalAccess', _12 => _12.name]) === 'Uniswap Wallet') {
+    if(_optionalChain$5([wallet, 'access', _12 => _12.session, 'optionalAccess', _13 => _13.peerMeta, 'optionalAccess', _14 => _14.name]) === 'Uniswap Wallet') {
       gasPrice = undefined;
     } else {
       gasPrice = gasPrice.toHexString();
     }
-    const gas = await web3ClientEvm.estimate(transaction);
+    try {
+      gas = await web3ClientEvm.estimate(transaction);
+      gas = gas.add(gas.div(10));
+    } catch (e3) {}
     const value = ethers.ethers.utils.hexlify(ethers.ethers.BigNumber.from(transaction.value));
     const nonce = ethers.ethers.utils.hexlify(transaction.nonce);
     return wallet.connector.sendTransaction({
@@ -910,7 +919,7 @@
       to: transaction.to,
       value,
       data: '0x',
-      gas: gas.toHexString(),
+      gas: _optionalChain$5([gas, 'optionalAccess', _15 => _15.toHexString, 'call', _16 => _16()]),
       gasPrice,
       nonce,
     })
@@ -1329,8 +1338,11 @@
   const submitContractInteraction$1 = async ({ transaction, wallet })=>{
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     const blockchain = Blockchains__default['default'][transaction.blockchain];
-    let gas = await web3ClientEvm.estimate(transaction);
-    gas = gas.add(gas.div(10));
+    let gas;
+    try {
+      gas = await web3ClientEvm.estimate(transaction);
+      gas = gas.add(gas.div(10));
+    } catch (e2) {}
     const gasPrice = await provider.getGasPrice();
     return wallet.signClient.request({
       topic: wallet.session.topic,
@@ -1342,7 +1354,7 @@
           to: transaction.to,
           value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           data: await transaction.getData(),
-          gas: gas.toHexString(),
+          gas: _optionalChain$3([gas, 'optionalAccess', _10 => _10.toHexString, 'call', _11 => _11()]),
           gasPrice: gasPrice.toHexString(),
           nonce: transaction.nonce,
         }]
@@ -1353,7 +1365,11 @@
   const submitSimpleTransfer$1 = async ({ transaction, wallet })=>{
     const provider = await web3ClientEvm.getProvider(transaction.blockchain);
     let blockchain = Blockchains__default['default'][transaction.blockchain];
-    const gas = await web3ClientEvm.estimate(transaction);
+    let gas;
+    try {
+      gas = await web3ClientEvm.estimate(transaction);
+      gas = gas.add(gas.div(10));
+    } catch (e3) {}
     const gasPrice = await provider.getGasPrice();
     return wallet.signClient.request({
       topic: wallet.session.topic,
@@ -1364,7 +1380,7 @@
           from: transaction.from,
           to: transaction.to,
           value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
-          gas: gas.toHexString(),
+          gas: _optionalChain$3([gas, 'optionalAccess', _12 => _12.toHexString, 'call', _13 => _13()]),
           gasPrice: gasPrice.toHexString(),
           nonce: transaction.nonce
         }]

@@ -135,17 +135,20 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
   } else {
     gasPrice = gasPrice.toHexString()
   }
-  let gas = await estimate(transaction)
+  let gas
+  try {
+    gas = await estimate(transaction)
+    gas = gas.add(gas.div(10))
+  } catch {}
   const data = await transaction.getData()
   const value = transaction.value ? ethers.utils.hexlify(ethers.BigNumber.from(transaction.value)) : undefined
   const nonce = ethers.utils.hexlify(transaction.nonce)
-  gas = gas.add(gas.div(10))
   return wallet.connector.sendTransaction({
     from: transaction.from,
     to: transaction.to,
     value,
     data,
-    gas: gas.toHexString(),
+    gas: gas?.toHexString(),
     gasPrice,
     nonce,
   })
@@ -159,7 +162,10 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
   } else {
     gasPrice = gasPrice.toHexString()
   }
-  const gas = await estimate(transaction)
+  try {
+    gas = await estimate(transaction)
+    gas = gas.add(gas.div(10))
+  } catch {}
   const value = ethers.utils.hexlify(ethers.BigNumber.from(transaction.value))
   const nonce = ethers.utils.hexlify(transaction.nonce)
   return wallet.connector.sendTransaction({
@@ -167,7 +173,7 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
     to: transaction.to,
     value,
     data: '0x',
-    gas: gas.toHexString(),
+    gas: gas?.toHexString(),
     gasPrice,
     nonce,
   })

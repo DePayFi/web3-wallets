@@ -139,8 +139,11 @@ const submit = ({ transaction, wallet }) => {
 const submitContractInteraction = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
   const blockchain = Blockchains[transaction.blockchain]
-  let gas = await estimate(transaction)
-  gas = gas.add(gas.div(10))
+  let gas
+  try {
+    gas = await estimate(transaction)
+    gas = gas.add(gas.div(10))
+  } catch {}
   const gasPrice = await provider.getGasPrice()
   return wallet.signClient.request({
     topic: wallet.session.topic,
@@ -152,7 +155,7 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
         to: transaction.to,
         value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
         data: await transaction.getData(),
-        gas: gas.toHexString(),
+        gas: gas?.toHexString(),
         gasPrice: gasPrice.toHexString(),
         nonce: transaction.nonce,
       }]
@@ -163,7 +166,11 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
 const submitSimpleTransfer = async ({ transaction, wallet })=>{
   const provider = await getProvider(transaction.blockchain)
   let blockchain = Blockchains[transaction.blockchain]
-  const gas = await estimate(transaction)
+  let gas
+  try {
+    gas = await estimate(transaction)
+    gas = gas.add(gas.div(10))
+  } catch {}
   const gasPrice = await provider.getGasPrice()
   return wallet.signClient.request({
     topic: wallet.session.topic,
@@ -174,7 +181,7 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
         from: transaction.from,
         to: transaction.to,
         value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
-        gas: gas.toHexString(),
+        gas: gas?.toHexString(),
         gasPrice: gasPrice.toHexString(),
         nonce: transaction.nonce
       }]
