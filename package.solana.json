@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-wallets-solana",
   "moduleName": "Web3Wallets",
-  "version": "16.3.6",
+  "version": "16.3.7",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/umd/index.solana.js",
   "module": "dist/esm/index.solana.js",
@@ -24,8 +24,8 @@
   "private": false,
   "dependencies": {},
   "peerDependencies": {
-    "@depay/coinbase-wallet-sdk": "3.6.4",
-    "@depay/solana-web3.js": "^1.25.1",
+    "@depay/coinbase-wallet-sdk": "3.8.2",
+    "@depay/solana-web3.js": "^1.26.0",
     "@depay/walletconnect-v1": "^1.8.0",
     "@depay/walletconnect-v2": "^2.9.2",
     "@depay/web3-blockchains": "^9.1.4",

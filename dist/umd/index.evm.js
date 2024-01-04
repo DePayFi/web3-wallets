@@ -1930,9 +1930,10 @@
 
       await connect({ uri: this.connector.qrUrl });
       
-      _optionalChain([document, 'access', _ => _.querySelector, 'call', _2 => _2('.-cbwsdk-extension-dialog-container'), 'optionalAccess', _3 => _3.setAttribute, 'call', _4 => _4('style', 'display: none;')]);
+      _optionalChain([document, 'access', _ => _.querySelector, 'call', _2 => _2('.-cbwsdk-css-reset'), 'optionalAccess', _3 => _3.setAttribute, 'call', _4 => _4('style', 'display: none;')]);
+      _optionalChain([document, 'access', _5 => _5.querySelector, 'call', _6 => _6('.-cbwsdk-extension-dialog-container'), 'optionalAccess', _7 => _7.setAttribute, 'call', _8 => _8('style', 'display: none;')]);
       setTimeout(()=>{
-        if(_optionalChain([this, 'optionalAccess', _5 => _5.connector, 'optionalAccess', _6 => _6._relay, 'optionalAccess', _7 => _7.ui, 'optionalAccess', _8 => _8.linkFlow, 'optionalAccess', _9 => _9.isOpen])){
+        if(_optionalChain([this, 'optionalAccess', _9 => _9.connector, 'optionalAccess', _10 => _10._relay, 'optionalAccess', _11 => _11.ui, 'optionalAccess', _12 => _12.linkFlow, 'optionalAccess', _13 => _13.isOpen])){
           this.connector._relay.ui.linkFlow.isOpen = false;
         }
       }, 10);
