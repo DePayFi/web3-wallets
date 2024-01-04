@@ -65,6 +65,7 @@ class WalletLink {
 
     await connect({ uri: this.connector.qrUrl })
     
+    document.querySelector('.-cbwsdk-css-reset')?.setAttribute('style', 'display: none;')
     document.querySelector('.-cbwsdk-extension-dialog-container')?.setAttribute('style', 'display: none;')
     setTimeout(()=>{
       if(this?.connector?._relay?.ui?.linkFlow?.isOpen){
