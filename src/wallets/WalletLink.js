@@ -41,6 +41,12 @@ class WalletLink {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
+    // RESET WalletLink (do not recover connections!)
+    Object.keys(localStorage).forEach((key)=>{
+      if(key.match("-walletlink:https://www.walletlink.org")) {
+        delete localStorage[key]  
+      }
+    })
     this.connector = WalletLink.instance || this.newWalletLinkInstance()
     this.sendTransaction = (transaction)=>{
       return sendTransaction({
@@ -61,8 +67,8 @@ class WalletLink {
   }
 
   async connect(options) {
-    let connect = (options && options.connect) ? options.connect : ({uri})=>{}
 
+    let connect = (options && options.connect) ? options.connect : ({uri})=>{}
     await connect({ uri: this.connector.qrUrl })
     
     document.querySelector('.-cbwsdk-css-reset')?.setAttribute('style', 'display: none;')

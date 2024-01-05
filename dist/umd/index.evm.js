@@ -1906,6 +1906,12 @@
       this.name = this.constructor.info.name;
       this.logo = this.constructor.info.logo;
       this.blockchains = this.constructor.info.blockchains;
+      // RESET WalletLink (do not recover connections!)
+      Object.keys(localStorage).forEach((key)=>{
+        if(key.match("-walletlink:https://www.walletlink.org")) {
+          delete localStorage[key];  
+        }
+      });
       this.connector = WalletLink.instance || this.newWalletLinkInstance();
       this.sendTransaction = (transaction)=>{
         return sendTransaction({
@@ -1926,8 +1932,8 @@
     }
 
     async connect(options) {
-      let connect = (options && options.connect) ? options.connect : ({uri})=>{};
 
+      let connect = (options && options.connect) ? options.connect : ({uri})=>{};
       await connect({ uri: this.connector.qrUrl });
       
       _optionalChain([document, 'access', _ => _.querySelector, 'call', _2 => _2('.-cbwsdk-css-reset'), 'optionalAccess', _3 => _3.setAttribute, 'call', _4 => _4('style', 'display: none;')]);

@@ -926,10 +926,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@depay/coinbase-wallet-sdk@3.8.2":
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/@depay/coinbase-wallet-sdk/-/coinbase-wallet-sdk-3.8.2.tgz#f27ab1bde4042bcb233c7d57c19feffb2d9f1e84"
-  integrity sha512-x3vJifXaae6gA+YS+6tAv7nRyHW2yYSLlD/F1GPK4cC2q70sbZ90wJ9DzyHADn2Fwh0iMA8/c4p7TdVk3WwgNQ==
+"@depay/coinbase-wallet-sdk@^3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@depay/coinbase-wallet-sdk/-/coinbase-wallet-sdk-3.8.3.tgz#1087a75a5f14aab281aa6b40a69c4f11d08836e3"
+  integrity sha512-dF+nEoznHQ332QSBWSrKt9YYVXFKriC5FrXaxx3g+a7NrNvEQ+V9XhR083IcU6QxVZvDJKrxo783Flj/lCt9cQ==
   dependencies:
     "@coinbase/wallet-sdk" "3.7.2"
 
