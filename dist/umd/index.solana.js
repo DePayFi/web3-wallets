@@ -8,7 +8,7 @@
 
   var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
-  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
     constructor({
@@ -33,7 +33,7 @@
       this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
-      this.value = _optionalChain$9([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+      this.value = _optionalChain$b([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
       this.api = api;
       this.method = method;
       this.params = params;
@@ -73,7 +73,7 @@
     }
 
     getParamType(param) {
-      if(_optionalChain$9([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
+      if(_optionalChain$b([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
         return `(${param.components.map((param)=>this.getParamType(param)).join(',')})`
       } else {
         return param.type
@@ -146,7 +146,7 @@
     }
   }
 
-  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const POLL_SPEED = 500; // 0.5 seconds
   const MAX_POLLS = 240; // 120 seconds
@@ -167,14 +167,14 @@
 
           const provider = await web3ClientSolana.getProvider(transaction.blockchain);
           const { value } = await provider.getSignatureStatus(signature);
-          const confirmationStatus = _optionalChain$8([value, 'optionalAccess', _ => _.confirmationStatus]);
+          const confirmationStatus = _optionalChain$a([value, 'optionalAccess', _ => _.confirmationStatus]);
           if(confirmationStatus) {
             const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
             if (hasReachedSufficientCommitment) {
               if(value.err) {
                 transaction._failed = true;
                 const confirmedTransaction = await provider.getConfirmedTransaction(signature);
-                const failedReason = _optionalChain$8([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
+                const failedReason = _optionalChain$a([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
                 if(transaction.failed) transaction.failed(transaction, failedReason);
               } else {
                 transaction._succeeded = true;
@@ -265,7 +265,7 @@
   supported$1.evm = [];
   supported$1.solana = ['solana'];
 
-  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class WindowSolana {
 
     static __initStatic() {this.info = {
@@ -276,17 +276,19 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$7([window, 'optionalAccess', _5 => _5.solana]) &&
+        _optionalChain$9([window, 'optionalAccess', _5 => _5.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
         // not BitKeep
-        !(_optionalChain$7([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$7([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
+        !(_optionalChain$9([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$9([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow &&
         // not trust
-        !window.trustwallet
+        !window.trustwallet &&
+        // Brave Wallet
+        !window.solana.isBraveWallet
       )
     };}
     
@@ -333,7 +335,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$7([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
+          internalCallback = (publicKey) => callback(_optionalChain$9([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }
@@ -386,7 +388,7 @@
     }
   } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
-  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class Backpack extends WindowSolana {
 
@@ -398,7 +400,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$6([window, 'optionalAccess', _2 => _2.backpack]) &&
+        _optionalChain$8([window, 'optionalAccess', _2 => _2.backpack]) &&
         window.backpack.isBackpack
       )
     };}
@@ -422,9 +424,28 @@
     coin98: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA0MC43IDQwIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA0MC43IDQwIiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBmaWxsPSIjRDlCNDMyIiBkPSJtMzMuMyAwaC0yNS45Yy00LjEgMC03LjQgMy4zLTcuNCA3LjN2MjUuNGMwIDQgMy4zIDcuMyA3LjQgNy4zaDI1LjljNC4xIDAgNy40LTMuMyA3LjQtNy4zdi0yNS40YzAtNC0zLjMtNy4zLTcuNC03LjN6Ii8+CjxwYXRoIGZpbGw9IiMyNTI1MjUiIGQ9Im0zMy4zIDBoLTI1LjljLTQuMSAwLTcuNCAzLjMtNy40IDcuM3YyNS40YzAgNCAzLjMgNy4zIDcuNCA3LjNoMjUuOWM0LjEgMCA3LjQtMy4zIDcuNC03LjN2LTI1LjRjMC00LTMuMy03LjMtNy40LTcuM3ptLTYuMyAxMGMzIDAgNS41IDIuNCA1LjUgNS40IDAgMC45LTAuMiAxLjgtMC42IDIuNi0wLjctMC41LTEuNS0xLTIuMy0xLjMgMC4yLTAuNCAwLjMtMC45IDAuMy0xLjMgMC0xLjUtMS4zLTIuOC0yLjgtMi44LTEuNiAwLTIuOCAxLjMtMi44IDIuOCAwIDAuNSAwLjEgMC45IDAuMyAxLjMtMC44IDAuMy0xLjYgMC43LTIuMyAxLjMtMC41LTAuOC0wLjYtMS43LTAuNi0yLjYtMC4xLTMgMi4zLTUuNCA1LjMtNS40em0tMTMuMyAyMGMtMyAwLTUuNS0yLjQtNS41LTUuNGgyLjZjMCAxLjUgMS4zIDIuOCAyLjggMi44czIuOC0xLjMgMi44LTIuOGgyLjZjMC4yIDMtMi4zIDUuNC01LjMgNS40em0wLTcuNWMtMy41IDAtNi4zLTIuOC02LjMtNi4yczIuOC02LjMgNi4zLTYuMyA2LjQgMi44IDYuNCA2LjNjMCAzLjQtMi45IDYuMi02LjQgNi4yem0xMy4zIDcuNWMtMy41IDAtNi40LTIuOC02LjQtNi4yIDAtMy41IDIuOC02LjMgNi40LTYuMyAzLjUgMCA2LjMgMi44IDYuMyA2LjMgMC4xIDMuNC0yLjggNi4yLTYuMyA2LjJ6bTMuOC02LjNjMCAyLjEtMS43IDMuNy0zLjggMy43cy0zLjgtMS43LTMuOC0zLjdjMC0yLjEgMS43LTMuNyAzLjgtMy43IDIuMSAwLjEgMy44IDEuNyAzLjggMy43em0tMTMuNC03LjRjMCAyLjEtMS43IDMuNy0zLjggMy43cy0zLjgtMS43LTMuOC0zLjdjMC0yLjEgMS43LTMuNyAzLjgtMy43IDIuMiAwIDMuOCAxLjYgMy44IDMuN3oiLz4KPC9zdmc+Cg==",
     coinbase: "data:image/svg+xml;base64,PHN2ZyBpZD0nTGF5ZXJfMScgZGF0YS1uYW1lPSdMYXllciAxJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB2aWV3Qm94PScwIDAgNDg4Ljk2IDQ4OC45Nic+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTt9LmNscy0ye2ZpbGw6IzQzNjFhZDt9PC9zdHlsZT48bGluZWFyR3JhZGllbnQgaWQ9J2xpbmVhci1ncmFkaWVudCcgeDE9JzI1MCcgeTE9JzcuMzUnIHgyPScyNTAnIHkyPSc0OTYuMzInIGdyYWRpZW50VHJhbnNmb3JtPSdtYXRyaXgoMSwgMCwgMCwgLTEsIDAsIDUwMiknIGdyYWRpZW50VW5pdHM9J3VzZXJTcGFjZU9uVXNlJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyMzZDViYTknLz48c3RvcCBvZmZzZXQ9JzEnIHN0b3AtY29sb3I9JyM0ODY4YjEnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBjbGFzcz0nY2xzLTEnIGQ9J00yNTAsNS42OEMxMTQuODcsNS42OCw1LjUyLDExNSw1LjUyLDI1MC4xN1MxMTQuODcsNDk0LjY1LDI1MCw0OTQuNjUsNDk0LjQ4LDM4NS4yOSw0OTQuNDgsMjUwLjE3LDM4NS4xMyw1LjY4LDI1MCw1LjY4Wm0wLDM4Ny41NEExNDMuMDYsMTQzLjA2LDAsMSwxLDM5My4wNSwyNTAuMTcsMTQzLjExLDE0My4xMSwwLDAsMSwyNTAsMzkzLjIyWicgdHJhbnNmb3JtPSd0cmFuc2xhdGUoLTUuNTIgLTUuNjgpJy8+PHBhdGggY2xhc3M9J2Nscy0yJyBkPSdNMjg0LjY5LDI5Ni4wOUgyMTUuMzFhMTEsMTEsMCwwLDEtMTAuOS0xMC45VjIxNS40OGExMSwxMSwwLDAsMSwxMC45LTEwLjkxSDI4NWExMSwxMSwwLDAsMSwxMC45LDEwLjkxdjY5LjcxQTExLjA3LDExLjA3LDAsMCwxLDI4NC42OSwyOTYuMDlaJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgtNS41MiAtNS42OCknLz48L3N2Zz4=",
     trust: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI4LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAzOTkuOCA0MTUuMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzk5LjggNDE1LjE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojMDUwMEZGO30KCS5zdDF7ZmlsbDp1cmwoI1NWR0lEXzFfKTt9Cjwvc3R5bGU+CjxnPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTU1LjUsOTJsMTQ0LjQtNDd2MzI1Qzk2LjcsMzI2LjcsNTUuNSwyNDMuNiw1NS41LDE5Ni43TDU1LjUsOTJMNTUuNSw5MnoiLz4KCQoJCTxsaW5lYXJHcmFkaWVudCBpZD0iU1ZHSURfMV8iIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMzA1Ljk5NTMiIHkxPSIxODQ2LjAwMDIiIHgyPSIxOTYuODc1MiIgeTI9IjIxODkuMzQwMyIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDAgLTE4MjMuNzM5NykiPgoJCTxzdG9wICBvZmZzZXQ9IjIuMDAwMDAwZS0wMiIgc3R5bGU9InN0b3AtY29sb3I6IzAwMDBGRiIvPgoJCTxzdG9wICBvZmZzZXQ9IjguMDAwMDAwZS0wMiIgc3R5bGU9InN0b3AtY29sb3I6IzAwOTRGRiIvPgoJCTxzdG9wICBvZmZzZXQ9IjAuMTYiIHN0eWxlPSJzdG9wLWNvbG9yOiM0OEZGOTEiLz4KCQk8c3RvcCAgb2Zmc2V0PSIwLjQyIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA5NEZGIi8+CgkJPHN0b3AgIG9mZnNldD0iMC42OCIgc3R5bGU9InN0b3AtY29sb3I6IzAwMzhGRiIvPgoJCTxzdG9wICBvZmZzZXQ9IjAuOSIgc3R5bGU9InN0b3AtY29sb3I6IzA1MDBGRiIvPgoJPC9saW5lYXJHcmFkaWVudD4KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0zNDQuNCw5MkwxOTkuOSw0NXYzMjVjMTAzLjItNDMuMywxNDQuNS0xMjYuNCwxNDQuNS0xNzMuM1Y5MkwzNDQuNCw5MnoiLz4KPC9nPgo8L3N2Zz4K",
+    brave: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNTYgMzAxIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNTYgMzAxIiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgoKCTxwYXRoIGZpbGw9IiNGMTVBMjIiIGQ9Im0yMzYgMTA1LjQtNy44LTIxLjIgNS40LTEyLjJjMC43LTEuNiAwLjMtMy40LTAuOC00LjZsLTE0LjgtMTQuOWMtNi41LTYuNS0xNi4xLTguOC0yNC44LTUuN2wtNC4xIDEuNC0yMi42LTI0LjUtMzguMi0wLjNoLTAuM2wtMzguNSAwLjMtMjIuNiAyNC43LTQtMS40Yy04LjgtMy4xLTE4LjUtMC44LTI1IDUuOGwtMTUgMTUuMmMtMSAxLTEuMyAyLjQtMC44IDMuN2w1LjcgMTIuNy03LjggMjEuMiA1LjEgMTkuMiAyMyA4Ny4yYzIuNiAxMCA4LjcgMTguOCAxNy4yIDI0LjkgMCAwIDI3LjggMTkuNyA1NS4zIDM3LjUgMi40IDEuNiA1IDIuNyA3LjcgMi43czUuMi0xLjEgNy43LTIuN2MzMC45LTIwLjIgNTUuMy0zNy41IDU1LjMtMzcuNSA4LjQtNi4xIDE0LjUtMTQuOCAxNy4xLTI0LjlsMjIuOC04Ny4yIDQuOC0xOS40eiIvPgoJPHBhdGggZmlsbD0iI0ZGRkZGRiIgZD0ibTEzMy4xIDE3OS40Yy0xLTAuNC0yLjEtMC44LTIuNC0wLjhoLTIuN2MtMC4zIDAtMS40IDAuMy0yLjQgMC44bC0xMSA0LjZjLTEgMC40LTIuNyAxLjItMy43IDEuN2wtMTYuNSA4LjZjLTEgMC41LTEuMSAxLjQtMC4yIDIuMWwxNC42IDEwLjNjMC45IDAuNyAyLjQgMS44IDMuMiAyLjVsNi41IDUuNmMwLjggMC44IDIuMiAxLjkgMyAyLjdsNi4yIDUuNmMwLjggMC44IDIuMiAwLjggMyAwbDYuNC01LjZjMC44LTAuOCAyLjItMS45IDMtMi43bDYuNS01LjdjMC44LTAuOCAyLjMtMS45IDMuMi0yLjVsMTQuNi0xMC40YzAuOS0wLjcgMC44LTEuNi0wLjItMi4xbC0xNi41LTguNGMtMS0wLjUtMi43LTEuMy0zLjctMS43bC0xMC45LTQuNnoiLz4KCTxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Im0yMTIuMiAxMDkuMmMwLjMtMS4xIDAuMy0xLjUgMC4zLTEuNSAwLTEuMS0wLjEtMy0wLjMtNGwtMC44LTIuNGMtMC41LTEtMS40LTIuNi0yLTMuNWwtOS41LTE0LjFjLTAuNi0wLjktMS43LTIuNC0yLjQtMy4zbC0xMi4zLTE1LjRjLTAuNy0wLjgtMS40LTEuNi0xLjQtMS41aC0wLjJzLTAuOSAwLjItMiAwLjNsLTE4LjggMy43Yy0xLjEgMC4zLTIuOSAwLjYtNCAwLjhsLTAuMyAwLjFjLTEuMSAwLjItMi45IDAuMS00LTAuM2wtMTUuOC01LjFjLTEuMS0wLjMtMi45LTAuOC0zLjktMS4xIDAgMC0zLjItMC44LTUuOC0wLjctMi42IDAtNS44IDAuNy01LjggMC43LTEuMSAwLjMtMi45IDAuOC0zLjkgMS4xbC0xNS44IDUuMWMtMS4xIDAuMy0yLjkgMC40LTQgMC4zbC0wLjMtMC4xYy0xLjEtMC4yLTIuOS0wLjYtNC0wLjhsLTE5LTMuNWMtMS4xLTAuMy0yLTAuMy0yLTAuM2gtMC4yYy0wLjEgMC0wLjggMC43LTEuNCAxLjVsLTEyLjMgMTUuMmMtMC43IDAuOC0xLjggMi40LTIuNCAzLjNsLTkuNSAxNC4xYy0wLjYgMC45LTEuNSAyLjUtMiAzLjVsLTAuOCAyLjRjLTAuMiAxLjEtMC4zIDMtMC4zIDQuMSAwIDAgMCAwLjMgMC4zIDEuNSAwLjYgMiAyIDMuOSAyIDMuOSAwLjcgMC44IDEuOSAyLjMgMi43IDNsMjcuOSAyOS43YzAuOCAwLjggMSAyLjQgMC42IDMuNGwtNS44IDEzLjhjLTAuNCAxLTAuNSAyLjctMC4xIDMuOGwxLjYgNC4zYzEuMyAzLjYgMy42IDYuOCA2LjcgOS4zbDUuNyA0LjZjMC44IDAuNyAyLjQgMC45IDMuNCAwLjRsMTcuOS04LjVjMS0wLjUgMi41LTEuNSAzLjQtMi4zbDEyLjgtMTEuNmMxLjktMS43IDEuOS00LjYgMC4zLTYuNGwtMjYuOS0xOC4xYy0wLjktMC42LTEuMy0xLjktMC44LTNsMTEuOC0yMi4zYzAuNS0xIDAuNi0yLjYgMC4yLTMuNmwtMS40LTMuM2MtMC40LTEtMS43LTIuMi0yLjctMi42bC0zNC45LTEzYy0xLTAuNC0xLTAuOCAwLjEtMC45bDIyLjQtMi4xYzEuMS0wLjEgMi45IDAuMSA0IDAuM2wxOS45IDUuNmMxLjEgMC4zIDEuOCAxLjQgMS42IDIuNWwtNyAzNy44Yy0wLjIgMS4xLTAuMiAyLjYgMC4xIDMuNXMxLjMgMS42IDIuNCAxLjlsMTMuOCAzYzEuMSAwLjMgMi45IDAuMyA0IDBsMTIuOS0zYzEuMS0wLjMgMi4yLTEuMSAyLjQtMS45IDAuMy0wLjggMC4zLTIuNCAwLjEtMy41bC02LjgtMzcuOWMtMC4yLTEuMSAwLjUtMi4zIDEuNi0yLjVsMTkuOS01LjZjMS4xLTAuMyAyLjktMC40IDQtMC4zbDIyLjQgMi4xYzEuMSAwLjEgMS4yIDAuNSAwLjEgMC45bC0zNC43IDEzLjJjLTEgMC40LTIuMyAxLjUtMi43IDIuNmwtMS40IDMuM2MtMC40IDEtMC40IDIuNyAwLjIgMy42bDExLjkgMjIuM2MwLjUgMSAwLjIgMi4zLTAuOCAzbC0yNi45IDE4LjJjLTEuOCAxLjgtMS42IDQuNyAwLjMgNi40bDEyLjggMTEuNmMwLjggMC44IDIuNCAxLjggMy40IDIuMmwxOCA4LjVjMSAwLjUgMi41IDAuMyAzLjQtMC40bDUuNy00LjZjMy0yLjQgNS4zLTUuNyA2LjYtOS4zbDEuNi00LjNjMC40LTEgMC4zLTIuOC0wLjEtMy44bC01LjgtMTMuOGMtMC40LTEtMC4yLTIuNSAwLjYtMy40bDI3LjktMjkuN2MwLjgtMC44IDEuOS0yLjIgMi43LTMtMC40LTAuMyAxLjEtMi4xIDEuNi00LjF6Ii8+Cgo8L3N2Zz4K",
+    magicEden: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjAwIDIwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cmVjdCB4PSIwIiBmaWxsPSIjRTQyNTc1IiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIvPgo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMTMxLjgsNzcuNWw4LjksMTAuNWMxLDEuMiwxLjksMi4xLDIuMywyLjdjMi43LDIuNyw0LjIsNi4yLDQuMiwxMGMtMC4zLDQuNC0zLjEsNy40LTUuOCwxMC42bC02LjMsNy4zCglsLTMuMywzLjhjLTAuMSwwLjEtMC4yLDAuMy0wLjIsMC41YzAsMC4yLDAsMC4zLDAuMSwwLjVjMC4xLDAuMiwwLjIsMC4zLDAuMywwLjRjMC4yLDAuMSwwLjMsMC4xLDAuNSwwLjFoMzIuNgoJYzUsMCwxMS4zLDQuMiwxMC45LDEwLjVjMCwyLjktMS4yLDUuNy0zLjMsNy43Yy0yLjEsMi00LjksMy4yLTcuOCwzLjJIMTE0Yy0zLjQsMC0xMi40LDAuNC0xNC45LTcuM2MtMC41LTEuNi0wLjYtMy4zLTAuMi01CgljMC43LTIuNCwxLjktNC43LDMuNC02LjhjMi42LTMuOCw1LjMtNy42LDguMS0xMS4zYzMuNS00LjgsNy4yLTkuNSwxMC43LTE0LjRjMC4xLTAuMiwwLjItMC40LDAuMi0wLjZjMC0wLjItMC4xLTAuNC0wLjItMC42CglsLTEzLTE1LjJjLTAuMS0wLjEtMC4yLTAuMi0wLjMtMC4zYy0wLjEtMC4xLTAuMy0wLjEtMC40LTAuMWMtMC4xLDAtMC4zLDAtMC40LDAuMWMtMC4xLDAuMS0wLjIsMC4yLTAuMywwLjMKCWMtMy41LDQuNi0xOC43LDI1LjEtMjEuOSwyOS4yYy0zLjIsNC4xLTExLjIsNC40LTE1LjcsMEw0OC44LDkzLjRjLTAuMS0wLjEtMC4zLTAuMi0wLjUtMC4zYy0wLjIsMC0wLjQsMC0wLjUsMC4xCgljLTAuMiwwLjEtMC4zLDAuMi0wLjQsMC4zYy0wLjEsMC4yLTAuMiwwLjMtMC4yLDAuNXYzOC42YzAsMi43LTAuOCw1LjQtMi40LDcuN2MtMS42LDIuMy0zLjgsNC02LjQsNC45Yy0xLjcsMC42LTMuNSwwLjctNS4yLDAuNQoJYy0xLjgtMC4yLTMuNC0wLjktNC45LTEuOWMtMS40LTEtMi42LTIuMy0zLjQtMy45Yy0wLjgtMS41LTEuMi0zLjMtMS4yLTVWNjUuNWMwLjEtMi41LDEtNC45LDIuNi02LjljMS42LTIsMy43LTMuNCw2LjItNC4xCgljMi4xLTAuNiw0LjMtMC41LDYuNCwwYzIuMSwwLjYsNCwxLjcsNS41LDMuMmwzMS4yLDMwLjhjMC4xLDAuMSwwLjIsMC4yLDAuMywwLjJjMC4xLDAsMC4zLDAuMSwwLjQsMC4xYzAuMSwwLDAuMy0wLjEsMC40LTAuMQoJYzAuMS0wLjEsMC4yLTAuMiwwLjMtMC4zbDIyLjItMzAuMmMxLTEuMiwyLjMtMi4yLDMuOC0yLjljMS41LTAuNywzLTEuMSw0LjctMS4xaDU3LjZjMS42LDAsMy4xLDAuMyw0LjYsMXMyLjcsMS42LDMuOCwyLjgKCWMxLDEuMiwxLjgsMi41LDIuMyw0YzAuNSwxLjUsMC42LDMuMSwwLjQsNC42Yy0wLjQsMi43LTEuOCw1LjEtMy45LDYuOXMtNC44LDIuNy03LjUsMi43aC0zMi4zYy0wLjIsMC0wLjMsMC4xLTAuNSwwLjEKCWMtMC4xLDAuMS0wLjIsMC4yLTAuMywwLjNjLTAuMSwwLjEtMC4xLDAuMy0wLjEsMC41UzEzMS43LDc3LjQsMTMxLjgsNzcuNXoiLz4KPC9zdmc+Cg=="
   };
 
-  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  class BraveSVM extends WindowSolana {
+
+    static __initStatic() {this.info = {
+      name: 'Brave',
+      logo: logos.brave,
+      blockchains: supported$1.solana,
+      platform: 'svm',
+    };}
+
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$7([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isBraveWallet]) };}
+
+    getProvider() { 
+      return window.braveSolana
+    }
+  } BraveSVM.__initStatic(); BraveSVM.__initStatic2();
+
+  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Coin98SVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -434,7 +455,7 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$5([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$6([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
 
     getProvider() { return window.coin98.sol }
 
@@ -458,7 +479,7 @@
     };}
   } CoinbaseSVM.__initStatic(); CoinbaseSVM.__initStatic2();
 
-  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class ExodusSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -468,7 +489,7 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$4([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$5([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
   } ExodusSVM.__initStatic(); ExodusSVM.__initStatic2();
 
   class Glow extends WindowSolana {
@@ -487,6 +508,23 @@
     };}
   } Glow.__initStatic(); Glow.__initStatic2();
 
+  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  class MagicEdenSVM extends WindowSolana {
+
+    static __initStatic() {this.info = {
+      name: 'Magic Eden',
+      logo: logos.magicEden,
+      blockchains: ['solana'],
+      platform: 'svm',
+    };}
+
+    static __initStatic2() {this.isAvailable = async()=>{
+      return (
+        _optionalChain$4([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isMagicEden])
+      )
+    };}
+  } MagicEdenSVM.__initStatic(); MagicEdenSVM.__initStatic2();
+
   function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class PhantomSVM extends WindowSolana {
 
@@ -501,8 +539,9 @@
       return (
         window.phantom &&
         !window.glow &&
-        !_optionalChain$3([window, 'optionalAccess', _5 => _5.solana, 'optionalAccess', _6 => _6.isGlow]) &&
-        !_optionalChain$3([window, 'optionalAccess', _7 => _7.solana, 'optionalAccess', _8 => _8.isExodus]) &&
+        !_optionalChain$3([window, 'optionalAccess', _7 => _7.solana, 'optionalAccess', _8 => _8.isGlow]) &&
+        !_optionalChain$3([window, 'optionalAccess', _9 => _9.solana, 'optionalAccess', _10 => _10.isExodus]) &&
+        ! _optionalChain$3([window, 'optionalAccess', _11 => _11.ethereum, 'optionalAccess', _12 => _12.isMagicEden]) &&
         !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
       )
     };}
@@ -698,10 +737,12 @@
   var wallets = {
     PhantomSVM,
     Backpack,
+    MagicEdenSVM,
     Glow,
     Solflare,
     CoinbaseSVM,
     TrustSVM,
+    BraveSVM,
     ExodusSVM,
     Coin98SVM,
 
@@ -744,10 +785,12 @@
   const supported = [
     wallets.PhantomSVM,
     wallets.Backpack,
+    wallets.MagicEdenSVM,
     wallets.Glow,
     wallets.Solflare,
     wallets.CoinbaseSVM,
     wallets.TrustSVM,
+    wallets.BraveSVM,
     wallets.ExodusSVM,
     wallets.Coin98SVM,
 

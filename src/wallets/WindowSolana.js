@@ -21,7 +21,9 @@ export default class WindowSolana {
       // not Glow
       !window.solana.isGlow &&
       // not trust
-      !window.trustwallet
+      !window.trustwallet &&
+      // Brave Wallet
+      !window.solana.isBraveWallet
     )
   }
   

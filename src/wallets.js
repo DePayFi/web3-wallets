@@ -1,12 +1,13 @@
 /*#if _EVM
 
 import Binance from './wallets/Binance'
-import Brave from './wallets/Brave'
+import BraveEVM from './wallets/Brave.evm'
 import Coin98EVM from './wallets/Coin98.evm'
 import CoinbaseEVM from './wallets/Coinbase.evm'
 import CryptoCom from './wallets/CryptoCom'
 import ExodusEVM from './wallets/Exodus.evm'
 import HyperPay from './wallets/HyperPay'
+import MagicEdenEVM from './wallets/MagicEden.evm'
 import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
@@ -24,8 +25,9 @@ export default {
   Binance,
   TrustEVM,
   Rabby,
-  Brave,
+  BraveEVM,
   Opera,
+  MagicEdenEVM,
   Coin98EVM,
   CryptoCom,
   HyperPay,
@@ -43,10 +45,12 @@ export default {
 /*#elif _SOLANA
 
 import Backpack from './wallets/Backpack'
+import BraveSVM from './wallets/Brave.svm'
 import Coin98SVM from './wallets/Coin98.svm'
 import CoinbaseSVM from './wallets/Coinbase.svm'
 import ExodusSVM from './wallets/Exodus.svm'
 import Glow from './wallets/Glow'
+import MagicEdenSVM from './wallets/MagicEden.svm'
 import PhantomSVM from './wallets/Phantom.svm'
 import SolanaMobileWalletAdapter from './wallets/SolanaMobileWalletAdapter'
 import Solflare from './wallets/Solflare'
@@ -56,10 +60,12 @@ import WindowSolana from './wallets/WindowSolana'
 export default {
   PhantomSVM,
   Backpack,
+  MagicEdenSVM,
   Glow,
   Solflare,
   CoinbaseSVM,
   TrustSVM,
+  BraveSVM,
   ExodusSVM,
   Coin98SVM,
 
@@ -72,7 +78,8 @@ export default {
 
 import Backpack from './wallets/Backpack'
 import Binance from './wallets/Binance'
-import Brave from './wallets/Brave'
+import BraveEVM from './wallets/Brave.evm'
+import BraveSVM from './wallets/Brave.svm'
 import Coin98EVM from './wallets/Coin98.evm'
 import Coin98SVM from './wallets/Coin98.svm'
 import CoinbaseEVM from './wallets/Coinbase.evm'
@@ -82,6 +89,8 @@ import ExodusEVM from './wallets/Exodus.evm'
 import ExodusSVM from './wallets/Exodus.svm'
 import Glow from './wallets/Glow'
 import HyperPay from './wallets/HyperPay'
+import MagicEdenEVM from './wallets/MagicEden.evm'
+import MagicEdenSVM from './wallets/MagicEden.svm'
 import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
@@ -111,7 +120,10 @@ export default {
   Glow,
   Solflare,
   Rabby,
-  Brave,
+  BraveEVM,
+  BraveSVM,
+  MagicEdenEVM,
+  MagicEdenSVM,
   Opera,
   Coin98EVM,
   Coin98SVM,

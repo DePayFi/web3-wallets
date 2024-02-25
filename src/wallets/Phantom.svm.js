@@ -17,6 +17,7 @@ export default class PhantomSVM extends WindowSolana {
       !window.glow &&
       !window?.solana?.isGlow &&
       !window?.solana?.isExodus &&
+      ! window?.ethereum?.isMagicEden &&
       !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
     )
   }

@@ -51,7 +51,9 @@ export default class WindowEthereum {
       // not Coinbase
       !(window?.ethereum?.isCoinbaseWallet || window?.ethereum?.isWalletLink) &&
       // MetaMask through ProviderMap
-      !window?.ethereum?.providerMap?.has('MetaMask')
+      !window?.ethereum?.providerMap?.has('MetaMask') &&
+      // Brave Wallet
+      !window?.ethereum?.isBraveWallet
     )
   }
   
