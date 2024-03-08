@@ -276,19 +276,21 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$a([window, 'optionalAccess', _5 => _5.solana]) &&
+        _optionalChain$a([window, 'optionalAccess', _6 => _6.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
         // not BitKeep
-        !(_optionalChain$a([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$a([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
+        !(_optionalChain$a([window, 'optionalAccess', _7 => _7.solana]) && _optionalChain$a([window, 'optionalAccess', _8 => _8.solana, 'access', _9 => _9.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow &&
         // not trust
         !window.trustwallet &&
         // Brave Wallet
-        !window.solana.isBraveWallet
+        !window.solana.isBraveWallet &&
+        // OKX Wallet
+        !_optionalChain$a([window, 'optionalAccess', _10 => _10.okxwallet])
       )
     };}
     
@@ -335,7 +337,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$a([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
+          internalCallback = (publicKey) => callback(_optionalChain$a([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }

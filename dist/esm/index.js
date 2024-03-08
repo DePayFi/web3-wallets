@@ -274,19 +274,21 @@ class WindowSolana {
 
   static __initStatic2() {this.isAvailable = async()=>{ 
     return (
-      _optionalChain$x([window, 'optionalAccess', _5 => _5.solana]) &&
+      _optionalChain$x([window, 'optionalAccess', _6 => _6.solana]) &&
       // not Phantom
       !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
       // not Coin98
       !window.coin98 &&
       // not BitKeep
-      !(_optionalChain$x([window, 'optionalAccess', _6 => _6.solana]) && _optionalChain$x([window, 'optionalAccess', _7 => _7.solana, 'access', _8 => _8.isBitKeep])) && 
+      !(_optionalChain$x([window, 'optionalAccess', _7 => _7.solana]) && _optionalChain$x([window, 'optionalAccess', _8 => _8.solana, 'access', _9 => _9.isBitKeep])) && 
       // not Glow
       !window.solana.isGlow &&
       // not trust
       !window.trustwallet &&
       // Brave Wallet
-      !window.solana.isBraveWallet
+      !window.solana.isBraveWallet &&
+      // OKX Wallet
+      !_optionalChain$x([window, 'optionalAccess', _10 => _10.okxwallet])
     )
   };}
   
@@ -333,7 +335,7 @@ class WindowSolana {
     let internalCallback;
     switch (event) {
       case 'account':
-        internalCallback = (publicKey) => callback(_optionalChain$x([publicKey, 'optionalAccess', _9 => _9.toString, 'call', _10 => _10()]));
+        internalCallback = (publicKey) => callback(_optionalChain$x([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
         this.getProvider().on('accountChanged', internalCallback);
         break
     }
@@ -549,33 +551,35 @@ class WindowEthereum {
 
   static __initStatic2() {this.isAvailable = async()=>{ 
     return (
-      _optionalChain$u([window, 'optionalAccess', _33 => _33.ethereum]) &&
+      _optionalChain$u([window, 'optionalAccess', _34 => _34.ethereum]) &&
       // not MetaMask
-      !(_optionalChain$u([window, 'optionalAccess', _34 => _34.ethereum, 'optionalAccess', _35 => _35.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
+      !(_optionalChain$u([window, 'optionalAccess', _35 => _35.ethereum, 'optionalAccess', _36 => _36.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
       // not Coin98
-      !_optionalChain$u([window, 'optionalAccess', _36 => _36.coin98]) &&
+      !_optionalChain$u([window, 'optionalAccess', _37 => _37.coin98]) &&
       // not Trust Wallet
-      !(_optionalChain$u([window, 'optionalAccess', _37 => _37.ethereum, 'optionalAccess', _38 => _38.isTrust]) || _optionalChain$u([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isTrustWallet])) &&
+      !(_optionalChain$u([window, 'optionalAccess', _38 => _38.ethereum, 'optionalAccess', _39 => _39.isTrust]) || _optionalChain$u([window, 'optionalAccess', _40 => _40.ethereum, 'optionalAccess', _41 => _41.isTrustWallet])) &&
       // not crypto.com
-      !_optionalChain$u([window, 'optionalAccess', _41 => _41.ethereum, 'optionalAccess', _42 => _42.isDeficonnectProvider]) &&
+      !_optionalChain$u([window, 'optionalAccess', _42 => _42.ethereum, 'optionalAccess', _43 => _43.isDeficonnectProvider]) &&
       // not HyperPay
-      !_optionalChain$u([window, 'optionalAccess', _43 => _43.ethereum, 'optionalAccess', _44 => _44.isHyperPay]) &&
+      !_optionalChain$u([window, 'optionalAccess', _44 => _44.ethereum, 'optionalAccess', _45 => _45.isHyperPay]) &&
       // not Phantom
-      !(window.phantom && !window.glow && !_optionalChain$u([window, 'optionalAccess', _45 => _45.solana, 'optionalAccess', _46 => _46.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
+      !(window.phantom && !window.glow && !_optionalChain$u([window, 'optionalAccess', _46 => _46.solana, 'optionalAccess', _47 => _47.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
       // not Rabby
-      !_optionalChain$u([window, 'optionalAccess', _47 => _47.ethereum, 'optionalAccess', _48 => _48.isRabby]) &&
+      !_optionalChain$u([window, 'optionalAccess', _48 => _48.ethereum, 'optionalAccess', _49 => _49.isRabby]) &&
       // not Backpack
-      !_optionalChain$u([window, 'optionalAccess', _49 => _49.backpack, 'optionalAccess', _50 => _50.isBackpack]) &&
+      !_optionalChain$u([window, 'optionalAccess', _50 => _50.backpack, 'optionalAccess', _51 => _51.isBackpack]) &&
       // not TokenPocket
-      !_optionalChain$u([window, 'optionalAccess', _51 => _51.ethereum, 'optionalAccess', _52 => _52.isTokenPocket]) && 
+      !_optionalChain$u([window, 'optionalAccess', _52 => _52.ethereum, 'optionalAccess', _53 => _53.isTokenPocket]) && 
       // not BitKeep
-      !_optionalChain$u([window, 'optionalAccess', _53 => _53.ethereum, 'optionalAccess', _54 => _54.isBitKeep]) && 
+      !_optionalChain$u([window, 'optionalAccess', _54 => _54.ethereum, 'optionalAccess', _55 => _55.isBitKeep]) && 
       // not Coinbase
-      !(_optionalChain$u([window, 'optionalAccess', _55 => _55.ethereum, 'optionalAccess', _56 => _56.isCoinbaseWallet]) || _optionalChain$u([window, 'optionalAccess', _57 => _57.ethereum, 'optionalAccess', _58 => _58.isWalletLink])) &&
+      !(_optionalChain$u([window, 'optionalAccess', _56 => _56.ethereum, 'optionalAccess', _57 => _57.isCoinbaseWallet]) || _optionalChain$u([window, 'optionalAccess', _58 => _58.ethereum, 'optionalAccess', _59 => _59.isWalletLink])) &&
       // MetaMask through ProviderMap
-      !_optionalChain$u([window, 'optionalAccess', _59 => _59.ethereum, 'optionalAccess', _60 => _60.providerMap, 'optionalAccess', _61 => _61.has, 'call', _62 => _62('MetaMask')]) &&
+      !_optionalChain$u([window, 'optionalAccess', _60 => _60.ethereum, 'optionalAccess', _61 => _61.providerMap, 'optionalAccess', _62 => _62.has, 'call', _63 => _63('MetaMask')]) &&
       // Brave Wallet
-      !_optionalChain$u([window, 'optionalAccess', _63 => _63.ethereum, 'optionalAccess', _64 => _64.isBraveWallet])
+      !_optionalChain$u([window, 'optionalAccess', _64 => _64.ethereum, 'optionalAccess', _65 => _65.isBraveWallet]) &&
+      // OKX Wallet
+      !_optionalChain$u([window, 'optionalAccess', _66 => _66.okxwallet])
     )
   };}
   

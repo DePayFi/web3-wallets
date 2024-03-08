@@ -23,7 +23,9 @@ export default class WindowSolana {
       // not trust
       !window.trustwallet &&
       // Brave Wallet
-      !window.solana.isBraveWallet
+      !window.solana.isBraveWallet &&
+      // OKX Wallet
+      !window?.okxwallet
     )
   }
   
