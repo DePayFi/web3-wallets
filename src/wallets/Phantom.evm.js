@@ -15,7 +15,8 @@ export default class PhantomEVM extends WindowEthereum {
     return (
       window.phantom &&
       window.phantom.ethereum &&
-      ! window?.ethereum?.isMagicEden
+      ! window?.ethereum?.isMagicEden &&
+      ! window?.okxwallet
     )
   }
 }

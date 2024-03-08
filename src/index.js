@@ -11,6 +11,7 @@ const supported = [
   wallets.Rabby,
   wallets.PhantomEVM,
   wallets.BraveEVM,
+  wallets.OKXEvm,
   wallets.MagicEdenEVM,
   wallets.Opera,
   wallets.Coin98EVM,
@@ -38,6 +39,7 @@ const supported = [
   wallets.CoinbaseSVM,
   wallets.TrustSVM,
   wallets.BraveSVM,
+  wallets.OKXSVM,
   wallets.ExodusSVM,
   wallets.Coin98SVM,
 
@@ -73,6 +75,8 @@ const supported = [
   wallets.TokenPocket,
   wallets.MagicEdenEVM,
   wallets.MagicEdenSVM,
+  wallets.OKXEVM,
+  wallets.OKXSVM,
   wallets.ExodusEVM,
   wallets.ExodusSVM,
 
