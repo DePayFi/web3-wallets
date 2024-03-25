@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-wallets",
   "moduleName": "Web3Wallets",
-  "version": "16.5.1",
+  "version": "16.5.2",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/umd/index.js",
   "module": "dist/esm/index.js",
@@ -35,7 +35,7 @@
     "@depay/coinbase-wallet-sdk": "^3.8.4",
     "@depay/solana-web3.js": "^1.26.0",
     "@depay/walletconnect-v1": "^1.8.0",
-    "@depay/walletconnect-v2": "^2.9.2",
+    "@depay/walletconnect-v2": "^2.11.3",
     "@depay/web3-blockchains": "^9.2.5",
     "@depay/web3-client": "^10.18.4",
     "ethers": "^5.7.1"
@@ -49,7 +49,7 @@
     "@depay/coinbase-wallet-sdk": "^3.8.4",
     "@depay/solana-web3.js": "^1.26.0",
     "@depay/walletconnect-v1": "^1.8.0",
-    "@depay/walletconnect-v2": "^2.9.2",
+    "@depay/walletconnect-v2": "^2.11.3",
     "@depay/web3-blockchains": "^9.2.5",
     "@depay/web3-client": "^10.18.4",
     "@depay/web3-client-evm": "^10.18.4",
@@ -86,5 +86,8 @@
     "tslib": "^2.3.1",
     "typescript": "^5.0.2",
     "webpack": "^5.74.0"
+  },
+  "resolutions": {
+    "clipboardy": "3.0.0"
   }
 }
