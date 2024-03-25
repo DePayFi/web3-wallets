@@ -217,9 +217,7 @@ class WalletConnectV2 {
 
   async setSessionBlockchains() {
     if(!this.session || (!this.session?.namespaces?.eip155 && !this.session?.optionalNamespaces?.eip155)) { return }
-    if(this.session?.optionalNamespaces?.eip155?.chains) {
-      this.blockchains = this.session.optionalNamespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
-    } else if(this.session.namespaces.eip155.chains) {
+    if(this.session.namespaces.eip155.chains) {
       this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>Blockchains.findByNetworkId(chainIdentifier.split(':')[1])?.name).filter(Boolean)
     } else if(this.session.namespaces.eip155.accounts) {
       this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>Blockchains.findByNetworkId(accountIdentifier.split(':')[1])?.name).filter(Boolean)

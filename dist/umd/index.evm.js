@@ -1638,12 +1638,10 @@
 
     async setSessionBlockchains() {
       if(!this.session || (!_optionalChain$2([this, 'access', _27 => _27.session, 'optionalAccess', _28 => _28.namespaces, 'optionalAccess', _29 => _29.eip155]) && !_optionalChain$2([this, 'access', _30 => _30.session, 'optionalAccess', _31 => _31.optionalNamespaces, 'optionalAccess', _32 => _32.eip155]))) { return }
-      if(_optionalChain$2([this, 'access', _33 => _33.session, 'optionalAccess', _34 => _34.optionalNamespaces, 'optionalAccess', _35 => _35.eip155, 'optionalAccess', _36 => _36.chains])) {
-        this.blockchains = this.session.optionalNamespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _37 => _37.findByNetworkId, 'call', _38 => _38(chainIdentifier.split(':')[1]), 'optionalAccess', _39 => _39.name])).filter(Boolean);
-      } else if(this.session.namespaces.eip155.chains) {
-        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _40 => _40.findByNetworkId, 'call', _41 => _41(chainIdentifier.split(':')[1]), 'optionalAccess', _42 => _42.name])).filter(Boolean);
+      if(this.session.namespaces.eip155.chains) {
+        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _33 => _33.findByNetworkId, 'call', _34 => _34(chainIdentifier.split(':')[1]), 'optionalAccess', _35 => _35.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.accounts) {
-        this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _43 => _43.findByNetworkId, 'call', _44 => _44(accountIdentifier.split(':')[1]), 'optionalAccess', _45 => _45.name])).filter(Boolean);
+        this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$2([Blockchains__default['default'], 'access', _36 => _36.findByNetworkId, 'call', _37 => _37(accountIdentifier.split(':')[1]), 'optionalAccess', _38 => _38.name])).filter(Boolean);
       }
     }
 
@@ -1653,13 +1651,13 @@
       
       try {
 
-        this.walletName = _optionalChain$2([options, 'optionalAccess', _46 => _46.name]);
+        this.walletName = _optionalChain$2([options, 'optionalAccess', _39 => _39.name]);
 
         // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
         this.signClient = await getSignClient();
 
         this.signClient.on("session_delete", (session)=> {
-          if(_optionalChain$2([session, 'optionalAccess', _47 => _47.topic]) === _optionalChain$2([this, 'access', _48 => _48.session, 'optionalAccess', _49 => _49.topic])) {
+          if(_optionalChain$2([session, 'optionalAccess', _40 => _40.topic]) === _optionalChain$2([this, 'access', _41 => _41.session, 'optionalAccess', _42 => _42.topic])) {
             localStorage[KEY+':name'] = undefined;
             localStorage[KEY+':logo'] = undefined;
             this.signClient = undefined;
@@ -1668,14 +1666,14 @@
         });
 
         this.signClient.on("session_update", async(session)=> {
-          if(_optionalChain$2([session, 'optionalAccess', _50 => _50.topic]) === _optionalChain$2([this, 'access', _51 => _51.session, 'optionalAccess', _52 => _52.topic])) {
+          if(_optionalChain$2([session, 'optionalAccess', _43 => _43.topic]) === _optionalChain$2([this, 'access', _44 => _44.session, 'optionalAccess', _45 => _45.topic])) {
             this.session = this.signClient.session.get(session.topic);
             await this.setSessionBlockchains();
           }
         });
 
         this.signClient.on("session_event", (event)=> {
-          if(_optionalChain$2([event, 'optionalAccess', _53 => _53.topic]) === _optionalChain$2([this, 'access', _54 => _54.session, 'optionalAccess', _55 => _55.topic])) {}
+          if(_optionalChain$2([event, 'optionalAccess', _46 => _46.topic]) === _optionalChain$2([this, 'access', _47 => _47.session, 'optionalAccess', _48 => _48.topic])) {}
         });
 
         const connectWallet = async()=>{
@@ -1686,24 +1684,24 @@
           await new Promise(resolve=>setTimeout(resolve, 500)); // to prevent race condition within WalletConnect
         };
 
-        const lastSession = _optionalChain$2([this, 'optionalAccess', _56 => _56.walletName, 'optionalAccess', _57 => _57.length]) ? await getLastSession(this.walletName) : undefined;
+        const lastSession = _optionalChain$2([this, 'optionalAccess', _49 => _49.walletName, 'optionalAccess', _50 => _50.length]) ? await getLastSession(this.walletName) : undefined;
         if(lastSession) {
           this.session = lastSession;
         } else {
           await connectWallet();
         }
 
-        let meta = _optionalChain$2([this, 'access', _58 => _58.session, 'optionalAccess', _59 => _59.peer, 'optionalAccess', _60 => _60.metadata]);
+        let meta = _optionalChain$2([this, 'access', _51 => _51.session, 'optionalAccess', _52 => _52.peer, 'optionalAccess', _53 => _53.metadata]);
         if(meta && meta.name) {
           this.name = meta.name;
           localStorage[KEY+':name'] = meta.name;
-          if(_optionalChain$2([meta, 'optionalAccess', _61 => _61.icons]) && meta.icons.length) {
+          if(_optionalChain$2([meta, 'optionalAccess', _54 => _54.icons]) && meta.icons.length) {
             this.logo = meta.icons[0];
             localStorage[KEY+':logo'] = this.logo;
           }
         }
-        if(_optionalChain$2([options, 'optionalAccess', _62 => _62.name])) { localStorage[KEY+':name'] = this.name = options.name; }
-        if(_optionalChain$2([options, 'optionalAccess', _63 => _63.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
+        if(_optionalChain$2([options, 'optionalAccess', _55 => _55.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+        if(_optionalChain$2([options, 'optionalAccess', _56 => _56.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
         await this.setSessionBlockchains();
 
@@ -1760,7 +1758,7 @@
       switch (event) {
         case 'account':
           internalCallback = async(event)=> {
-            if(_optionalChain$2([event, 'optionalAccess', _64 => _64.topic]) === _optionalChain$2([this, 'access', _65 => _65.session, 'optionalAccess', _66 => _66.topic]) && event.params.event.name === 'accountsChanged') {
+            if(_optionalChain$2([event, 'optionalAccess', _57 => _57.topic]) === _optionalChain$2([this, 'access', _58 => _58.session, 'optionalAccess', _59 => _59.topic]) && event.params.event.name === 'accountsChanged') {
               callback(await this.account());
             }
           };
