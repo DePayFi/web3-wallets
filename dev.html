@@ -10,10 +10,9 @@
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@uiw/copy-to-clipboard/dist/copy-to-clipboard.umd.js"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/solana-web3.js@1.26.0"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-blockchains@9"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-client@10.18.4"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/walletconnect-v1@1"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/walletconnect-v2@2.9.2"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/coinbase-wallet-sdk@3.8.2"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-client@10"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/walletconnect-v2@2"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/coinbase-wallet-sdk@3"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-tokens@10"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/qr-code-styling@1"></script>
     <script src="tmp/index.dev.js"></script>
@@ -199,9 +198,10 @@
                     <select id="walletConnectV2WalletName">
                       <option value="">Unknown</option>
                       <option value="Ledger Live">Ledger Live</option>
-                      <option value="MetaMask">MetaMask</option>
                       <option value="Uniswap Wallet">Uniswap Wallet</option>
+                      <option value="Binance Wallet">Binance Wallet</option>
                       <option value="Enjin Wallet">Enjin Wallet</option>
+                      <option value="Trust Wallet">Trust Wallet</option>
                     </select>
                   </div>
                   <div id="walletConnectV2QRCode">
@@ -602,6 +602,58 @@
                     console.log('sendSimpleEthTransfer')
                     wallet.sendTransaction({ 
                       blockchain: "ethereum",
+                      to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
+                      value: "100000000000",
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleEthTransfer()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send simple ETH transfer arbitrum</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleEthTransfer = async ()=> {
+                    console.log('sendSimpleEthTransfer')
+                    wallet.sendTransaction({ 
+                      blockchain: "arbitrum",
+                      to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
+                      value: "100000000000",
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='window.sendSimpleEthTransfer()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Send simple ETH transfer optimism</h5>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.sendSimpleEthTransfer = async ()=> {
+                    console.log('sendSimpleEthTransfer')
+                    wallet.sendTransaction({ 
+                      blockchain: "optimism",
                       to: "0x08B277154218CCF3380CAE48d630DA13462E3950",
                       value: "100000000000",
                       sent: function(transaction){ console.log("sent callback", transaction) },

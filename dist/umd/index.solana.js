@@ -818,7 +818,6 @@
     wallets.Coin98SVM,
 
     // standards (not concrete wallets)
-    wallets.WalletConnectV1,
     wallets.WalletConnectV2,
     wallets.SolanaMobileWalletAdapter,
     wallets.WalletLink,

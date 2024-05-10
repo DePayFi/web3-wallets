@@ -22,7 +22,6 @@ const supported = [
   wallets.ExodusEVM,
 
   // standards (not concrete wallets)
-  wallets.WalletConnectV1,
   wallets.WalletConnectV2,
   wallets.WalletLink,
   wallets.WindowEthereum,
@@ -44,7 +43,6 @@ const supported = [
   wallets.Coin98SVM,
 
   // standards (not concrete wallets)
-  wallets.WalletConnectV1,
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,
@@ -81,7 +79,6 @@ const supported = [
   wallets.ExodusSVM,
 
   // standards (not concrete wallets)
-  wallets.WalletConnectV1,
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,

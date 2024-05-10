@@ -15,7 +15,6 @@ import PhantomEVM from './wallets/Phantom.evm'
 import Rabby from './wallets/Rabby'
 import TokenPocket from './wallets/TokenPocket'
 import TrustEVM from './wallets/Trust.evm'
-import WalletConnectV1 from './wallets/WalletConnectV1'
 import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
@@ -39,7 +38,6 @@ export default {
 
   // standards (not concrete wallets)
   WindowEthereum,
-  WalletConnectV1,
   WalletConnectV2,
   WalletLink
 }
@@ -107,7 +105,6 @@ import Solflare from './wallets/Solflare'
 import TokenPocket from './wallets/TokenPocket'
 import TrustEVM from './wallets/Trust.evm'
 import TrustSVM from './wallets/Trust.svm'
-import WalletConnectV1 from './wallets/WalletConnectV1'
 import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
@@ -145,7 +142,6 @@ export default {
   WindowEthereum,
   WindowSolana,
   SolanaMobileWalletAdapter,
-  WalletConnectV1,
   WalletConnectV2,
   WalletLink
 }

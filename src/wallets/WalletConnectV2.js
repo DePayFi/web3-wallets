@@ -21,88 +21,6 @@ import { supported } from '../blockchains'
 
 const KEY = 'depay:wallets:wc2'
 
-// configurations for wallets that require special handling
-const CONFIGURATIONS = {
-
-  "MetaMask": {
-    methods: [
-      "eth_sendTransaction",
-      "personal_sign",
-      "eth_signTypedData",
-      "eth_signTypedData_v4",
-      "wallet_switchEthereumChain"
-    ],
-  },
-
-  "BitGet (BitKeep)": {
-    methods: [
-      "eth_sendTransaction",
-      "personal_sign",
-      "eth_signTypedData",
-      "eth_signTypedData_v4",
-    ],
-    requiredNamespaces: {
-      eip155: {
-        chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'base'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
-      }
-    },
-    optionalNamespaces: {},
-  },
-
-  "BitGet": {
-    methods: [
-      "eth_sendTransaction",
-      "personal_sign",
-      "eth_signTypedData",
-      "eth_signTypedData_v4",
-    ],
-    requiredNamespaces: {
-      eip155: {
-        chains: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'base'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
-      }
-    },
-    optionalNamespaces: {},
-  },
-
-  "Uniswap Wallet": {
-    methods: [
-      "eth_sendTransaction",
-      "personal_sign",
-      "eth_signTypedData",
-      "eth_signTypedData_v4",
-    ],
-    requiredNamespaces: {
-      eip155: {
-        chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'].map((blockchainName)=>`eip155:${Blockchains[blockchainName].networkId}`)
-      }
-    },
-    optionalNamespaces: {},
-  },
-
-  "Ledger Live": {
-    methods: [
-      "eth_sendTransaction",
-      "personal_sign",
-      "eth_signTypedData",
-      "eth_signTypedData_v4",
-    ],
-    requiredNamespaces: {},
-    optionalNamespaces: {
-      eip155: {
-        chains: Blockchains.all.map((blockchain)=>`eip155:${blockchain.networkId}`)
-      }
-    },
-  },
-
-  "Enjin Wallet": {
-    methods: [
-      "eth_sendTransaction",
-      "personal_sign",
-      "eth_signTypedData",
-    ]
-  },
-}
-
 const DEFAULT_CONFIGURATION = {
   events: ['accountsChanged'],
   methods: [
@@ -136,16 +54,12 @@ const getLastSession = async(walletName)=>{
 }
 
 const getWalletConnectV2Config = (walletName)=>{
-  const methods = CONFIGURATIONS[walletName]?.methods || DEFAULT_CONFIGURATION.methods
-  const events = CONFIGURATIONS[walletName]?.events || DEFAULT_CONFIGURATION.events
+  const methods = DEFAULT_CONFIGURATION.methods
+  const events = DEFAULT_CONFIGURATION.events
 
   let requiredNamespaces = {}
-  if(CONFIGURATIONS[walletName]?.requiredNamespaces) {
-    requiredNamespaces = CONFIGURATIONS[walletName].requiredNamespaces
-  } else {
-    requiredNamespaces['eip155'] = {
-      chains: [`eip155:1`],
-    }
+  requiredNamespaces['eip155'] = {
+    chains: [`eip155:1`],
   }
   if(requiredNamespaces['eip155']) {
     requiredNamespaces['eip155'].methods = methods
@@ -153,12 +67,8 @@ const getWalletConnectV2Config = (walletName)=>{
   }
 
   let optionalNamespaces = {}
-  if(CONFIGURATIONS[walletName]?.optionalNamespaces) {
-    optionalNamespaces = CONFIGURATIONS[walletName].optionalNamespaces
-  } else {
-    optionalNamespaces['eip155'] = {
-      chains: supported.evm.map((blockchain)=>`${Blockchains[blockchain].namespace}:${Blockchains[blockchain].networkId}`),
-    }
+  optionalNamespaces['eip155'] = {
+    chains: supported.evm.map((blockchain)=>`${Blockchains[blockchain].namespace}:${Blockchains[blockchain].networkId}`),
   }
   if(optionalNamespaces?.eip155 && optionalNamespaces?.eip155?.chains?.length) {
     optionalNamespaces['eip155'].methods = methods
@@ -305,24 +215,7 @@ class WalletConnectV2 {
 
   switchTo(blockchainName) {
     return new Promise((resolve, reject)=>{
-      
-      const blockchain = Blockchains[blockchainName]
-
-      Promise.race([
-        this.signClient.request({
-          topic: this.session.topic,
-          chainId: this.getValidChainId(),
-          request:{
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: blockchain.id }],
-          }
-        }),
-        new Promise((resolve, reject)=>setTimeout(()=>{
-          if(this.blockchains.indexOf(blockchainName) === -1) {
-            reject({ code: 'NOT_SUPPORTED' })
-          }
-        } , 8000))
-      ]).catch(reject)
+      reject({ code: 'NOT_SUPPORTED' })
     })
   }
 

@@ -18,9 +18,6 @@ import { ethers } from 'ethers'
 
 const sendTransaction = async ({ transaction, wallet })=> {
   transaction = new Transaction(transaction)
-  if((await wallet.connectedTo(transaction.blockchain)) == false) {
-    throw({ code: 'WRONG_NETWORK' })
-  }
   await transaction.prepare({ wallet })
   let transactionCount = await request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from })
   transaction.nonce = transactionCount
@@ -156,8 +153,9 @@ const submitContractInteraction = async ({ transaction, wallet })=>{
         value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
         data: await transaction.getData(),
         gas: gas?.toHexString(),
+        gasLimit: gas?.toHexString(),
         gasPrice: gasPrice.toHexString(),
-        nonce: transaction.nonce,
+        nonce: ethers.utils.hexlify(transaction.nonce),
       }]
     }
   }).catch((e)=>{console.log('ERROR', e)})
@@ -181,9 +179,11 @@ const submitSimpleTransfer = async ({ transaction, wallet })=>{
         from: transaction.from,
         to: transaction.to,
         value: transaction.value ? ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
+        data: '0x0',
         gas: gas?.toHexString(),
-        gasPrice: gasPrice.toHexString(),
-        nonce: transaction.nonce
+        gasLimit: gas?.toHexString(),
+        gasPrice: gasPrice?.toHexString(),
+        nonce: ethers.utils.hexlify(transaction.nonce)
       }]
     }
   }).catch((e)=>{console.log('ERROR', e)})
