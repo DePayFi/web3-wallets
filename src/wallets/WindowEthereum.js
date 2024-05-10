@@ -54,6 +54,8 @@ export default class WindowEthereum {
       !window?.ethereum?.providerMap?.has('MetaMask') &&
       // Brave Wallet
       !window?.ethereum?.isBraveWallet &&
+      // Uniswap Wallet
+      !window?.ethereum?.isUniswapWallet &&
       // OKX Wallet
       !window?.okxwallet
     )

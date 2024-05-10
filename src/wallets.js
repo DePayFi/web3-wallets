@@ -13,6 +13,7 @@ import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
 import Rabby from './wallets/Rabby'
+import Uniswap from './wallets/Uniswap'
 import TokenPocket from './wallets/TokenPocket'
 import TrustEVM from './wallets/Trust.evm'
 import WalletConnectV2 from './wallets/WalletConnectV2'
@@ -25,6 +26,7 @@ export default {
   Binance,
   TrustEVM,
   Rabby,
+  Uniswap,
   BraveEVM,
   Opera,
   MagicEdenEVM,
@@ -100,6 +102,7 @@ import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
 import PhantomSVM from './wallets/Phantom.svm'
 import Rabby from './wallets/Rabby'
+import Uniswap from './wallets/Uniswap'
 import SolanaMobileWalletAdapter from './wallets/SolanaMobileWalletAdapter'
 import Solflare from './wallets/Solflare'
 import TokenPocket from './wallets/TokenPocket'
@@ -123,6 +126,7 @@ export default {
   Glow,
   Solflare,
   Rabby,
+  Uniswap,
   BraveEVM,
   BraveSVM,
   MagicEdenEVM,
