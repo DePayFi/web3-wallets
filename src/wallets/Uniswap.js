@@ -9,9 +9,20 @@ export default class Uniswap extends WindowEthereum {
     blockchains: supported.evm
   }
 
-  static isAvailable = async()=>{ 
+  static getEip6963Provider = ()=>{
+    return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
+      return provider?.isUniswapWallet
+    }) : undefined
+  }
+
+  static isAvailable = async()=>{
     return(
+      Uniswap.getEip6963Provider() ||
       window?.ethereum?.isUniswapWallet
     )
+  }
+
+  getProvider() {
+    return Uniswap.getEip6963Provider() || (window?.ethereum?.isUniswapWallet && window?.ethereum)
   }
 }

@@ -9,22 +9,27 @@ export default class MetaMask extends WindowEthereum {
     blockchains: supported.evm
   }
 
-  getProvider() { 
-    if(window?.ethereum?.providerMap?.has('MetaMask')) {
-      return window?.ethereum?.providerMap?.get('MetaMask')
-    } else {
-      return window.ethereum
-    }
+  static isMetaMask = (provider)=> {
+    return(
+      provider?.isMetaMask &&
+      Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
+    )
+  }
+
+  static getEip6963Provider = ()=>{
+    return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
+      return MetaMask.isMetaMask(provider)
+    }) : undefined
   }
 
   static isAvailable = async()=>{
     return(
-      (
-        window?.ethereum?.isMetaMask &&
-        Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
-      ) || (
-        window?.ethereum?.providerMap?.has('MetaMask')
-      )
+      MetaMask.getEip6963Provider() ||
+      MetaMask.isMetaMask(window?.ethereum)
     )
+  }
+
+  getProvider() {
+    return MetaMask.getEip6963Provider() || (MetaMask.isMetaMask(window?.ethereum) && window?.ethereum)
   }
 }

@@ -8,7 +8,7 @@
 
   var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
-  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
     constructor({
@@ -33,7 +33,7 @@
       this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
-      this.value = _optionalChain$c([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+      this.value = _optionalChain$d([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
       this.api = api;
       this.method = method;
       this.params = params;
@@ -73,7 +73,7 @@
     }
 
     getParamType(param) {
-      if(_optionalChain$c([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
+      if(_optionalChain$d([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
         return `(${param.components.map((param)=>this.getParamType(param)).join(',')})`
       } else {
         return param.type
@@ -146,7 +146,7 @@
     }
   }
 
-  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const POLL_SPEED = 500; // 0.5 seconds
   const MAX_POLLS = 240; // 120 seconds
@@ -167,14 +167,14 @@
 
           const provider = await web3ClientSolana.getProvider(transaction.blockchain);
           const { value } = await provider.getSignatureStatus(signature);
-          const confirmationStatus = _optionalChain$b([value, 'optionalAccess', _ => _.confirmationStatus]);
+          const confirmationStatus = _optionalChain$c([value, 'optionalAccess', _ => _.confirmationStatus]);
           if(confirmationStatus) {
             const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
             if (hasReachedSufficientCommitment) {
               if(value.err) {
                 transaction._failed = true;
                 const confirmedTransaction = await provider.getConfirmedTransaction(signature);
-                const failedReason = _optionalChain$b([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
+                const failedReason = _optionalChain$c([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
                 if(transaction.failed) transaction.failed(transaction, failedReason);
               } else {
                 transaction._succeeded = true;
@@ -265,7 +265,7 @@
   supported$1.evm = [];
   supported$1.solana = ['solana'];
 
-  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class WindowSolana {
 
     static __initStatic() {this.info = {
@@ -276,13 +276,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$a([window, 'optionalAccess', _6 => _6.solana]) &&
+        _optionalChain$b([window, 'optionalAccess', _6 => _6.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
         // not BitKeep
-        !(_optionalChain$a([window, 'optionalAccess', _7 => _7.solana]) && _optionalChain$a([window, 'optionalAccess', _8 => _8.solana, 'access', _9 => _9.isBitKeep])) && 
+        !(_optionalChain$b([window, 'optionalAccess', _7 => _7.solana]) && _optionalChain$b([window, 'optionalAccess', _8 => _8.solana, 'access', _9 => _9.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow &&
         // not trust
@@ -290,7 +290,7 @@
         // Brave Wallet
         !window.solana.isBraveWallet &&
         // OKX Wallet
-        !_optionalChain$a([window, 'optionalAccess', _10 => _10.okxwallet])
+        !_optionalChain$b([window, 'optionalAccess', _10 => _10.okxwallet])
       )
     };}
     
@@ -337,7 +337,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$a([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
+          internalCallback = (publicKey) => callback(_optionalChain$b([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }
@@ -390,7 +390,7 @@
     }
   } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
-  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class Backpack extends WindowSolana {
 
@@ -402,7 +402,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$9([window, 'optionalAccess', _2 => _2.backpack]) &&
+        _optionalChain$a([window, 'optionalAccess', _2 => _2.backpack]) &&
         window.backpack.isBackpack
       )
     };}
@@ -431,7 +431,7 @@
     okx: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI4LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAzMzYuMSAzMzYuMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzM2LjEgMzM2LjE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KPC9zdHlsZT4KPHBhdGggZD0iTTMxMy43LDBIMjIuNEMxMCwwLDAsMTAsMCwyMi40djI5MS4zYzAsMTIuNCwxMCwyMi40LDIyLjQsMjIuNGgyOTEuM2MxMi40LDAsMjIuNC0xMCwyMi40LTIyLjRWMjIuNAoJQzMzNi4xLDEwLDMyNi4xLDAsMzEzLjcsMHoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTIwNC41LDEzMC43aC02NC43Yy0yLjcsMC01LDIuMi01LDV2NjQuN2MwLDIuNywyLjIsNSw1LDVoNjQuN2MyLjcsMCw1LTIuMiw1LTV2LTY0LjcKCUMyMDkuNSwxMzIuOSwyMDcuMiwxMzAuNywyMDQuNSwxMzAuN3oiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTEyOS44LDU2LjFINjUuMWMtMi43LDAtNSwyLjItNSw1djY0LjdjMCwyLjcsMi4yLDUsNSw1aDY0LjdjMi44LDAsNS0yLjIsNS01VjYxCglDMTM0LjgsNTguMywxMzIuNSw1Ni4xLDEyOS44LDU2LjF6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yNzkuMSw1Ni4xaC02NC43Yy0yLjcsMC01LDIuMi01LDV2NjQuN2MwLDIuNywyLjIsNSw1LDVoNjQuN2MyLjcsMCw1LTIuMiw1LTVWNjEKCUMyODQuMSw1OC4zLDI4MS45LDU2LjEsMjc5LjEsNTYuMXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTEyOS44LDIwNS40SDY1LjFjLTIuNywwLTUsMi4yLTUsNXY2NC43YzAsMi43LDIuMiw1LDUsNWg2NC43YzIuOCwwLDUtMi4yLDUtNXYtNjQuNwoJQzEzNC44LDIwNy42LDEzMi41LDIwNS40LDEyOS44LDIwNS40eiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjc5LjEsMjA1LjRoLTY0LjdjLTIuNywwLTUsMi4yLTUsNXY2NC43YzAsMi43LDIuMiw1LDUsNWg2NC43YzIuNywwLDUtMi4yLDUtNXYtNjQuNwoJQzI4NC4xLDIwNy42LDI4MS45LDIwNS40LDI3OS4xLDIwNS40eiIvPgo8L3N2Zz4K",
   };
 
-  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class BraveSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -441,14 +441,14 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$8([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isBraveWallet]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$9([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isBraveWallet]) };}
 
     getProvider() { 
       return window.braveSolana
     }
   } BraveSVM.__initStatic(); BraveSVM.__initStatic2();
 
-  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Coin98SVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -458,7 +458,7 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$7([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$8([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
 
     getProvider() { return window.coin98.sol }
 
@@ -482,7 +482,7 @@
     };}
   } CoinbaseSVM.__initStatic(); CoinbaseSVM.__initStatic2();
 
-  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class ExodusSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -492,7 +492,7 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$6([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$7([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
   } ExodusSVM.__initStatic(); ExodusSVM.__initStatic2();
 
   class Glow extends WindowSolana {
@@ -511,7 +511,7 @@
     };}
   } Glow.__initStatic(); Glow.__initStatic2();
 
-  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class MagicEdenSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -523,12 +523,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$5([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isMagicEden])
+        _optionalChain$6([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isMagicEden])
       )
     };}
   } MagicEdenSVM.__initStatic(); MagicEdenSVM.__initStatic2();
 
-  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class OKXSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -540,12 +540,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$4([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isOkxWallet])
+        _optionalChain$5([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isOkxWallet])
       )
     };}
   } OKXSVM.__initStatic(); OKXSVM.__initStatic2();
 
-  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class PhantomSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -559,16 +559,16 @@
       return (
         window.phantom &&
         !window.glow &&
-        !_optionalChain$3([window, 'optionalAccess', _8 => _8.solana, 'optionalAccess', _9 => _9.isGlow]) &&
-        !_optionalChain$3([window, 'optionalAccess', _10 => _10.solana, 'optionalAccess', _11 => _11.isExodus]) &&
-        ! _optionalChain$3([window, 'optionalAccess', _12 => _12.ethereum, 'optionalAccess', _13 => _13.isMagicEden]) &&
-        ! _optionalChain$3([window, 'optionalAccess', _14 => _14.okxwallet]) &&
+        !_optionalChain$4([window, 'optionalAccess', _8 => _8.solana, 'optionalAccess', _9 => _9.isGlow]) &&
+        !_optionalChain$4([window, 'optionalAccess', _10 => _10.solana, 'optionalAccess', _11 => _11.isExodus]) &&
+        ! _optionalChain$4([window, 'optionalAccess', _12 => _12.ethereum, 'optionalAccess', _13 => _13.isMagicEden]) &&
+        ! _optionalChain$4([window, 'optionalAccess', _14 => _14.okxwallet]) &&
         !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
       )
     };}
   } PhantomSVM.__initStatic(); PhantomSVM.__initStatic2();
 
-  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 
   const KEY = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
@@ -659,8 +659,8 @@
       await solanaWeb3_js.transact(
         async (wallet) => {
           await this.authorize(wallet);
-          if(_optionalChain$2([options, 'optionalAccess', _ => _.name])) { localStorage[KEY+'_name'] = this.name = options.name; }
-          if(_optionalChain$2([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY+'_logo'] = this.logo = options.logo; }
+          if(_optionalChain$3([options, 'optionalAccess', _ => _.name])) { localStorage[KEY+'_name'] = this.name = options.name; }
+          if(_optionalChain$3([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY+'_logo'] = this.logo = options.logo; }
         }
       );
       return this._account
@@ -719,7 +719,7 @@
     }
   } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
 
-  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Solflare extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -730,7 +730,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$1([window, 'optionalAccess', _2 => _2.solflare]) &&
+        _optionalChain$2([window, 'optionalAccess', _2 => _2.solflare]) &&
         window.solflare.isSolflare
       )
     };}
@@ -740,7 +740,7 @@
     _sendTransaction(transaction) { return this.getProvider().signTransaction(transaction) }
   } Solflare.__initStatic(); Solflare.__initStatic2();
 
-  function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TrustSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -751,7 +751,7 @@
     };}
 
     static __initStatic2() {this.isAvailable = async()=>{
-      return _optionalChain([window, 'access', _3 => _3.solana, 'optionalAccess', _4 => _4.isTrustWallet])
+      return _optionalChain$1([window, 'access', _3 => _3.solana, 'optionalAccess', _4 => _4.isTrustWallet])
     };}
   } TrustSVM.__initStatic(); TrustSVM.__initStatic2();
 
@@ -773,9 +773,21 @@
     SolanaMobileWalletAdapter,
   };
 
+  function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const getWallets = async(args)=>{
 
     let drip = (args && typeof args.drip === 'function') ? args.drip : undefined;
+
+    // eip6963
+    window['_eip6963Providers'] = {};
+    const announceProvider = (event)=>{
+      if(_optionalChain([event, 'optionalAccess', _ => _.detail, 'optionalAccess', _2 => _2.info, 'optionalAccess', _3 => _3.uuid])) {
+        window['_eip6963Providers'][_optionalChain([event, 'optionalAccess', _4 => _4.detail, 'optionalAccess', _5 => _5.info, 'optionalAccess', _6 => _6.uuid])] = event.detail.provider;
+      }
+    };
+    window.addEventListener("eip6963:announceProvider", announceProvider);
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
+    window.removeEventListener("eip6963:announceProvider", announceProvider);
 
     let availableWallets = await Promise.all(
       

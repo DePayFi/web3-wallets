@@ -4,6 +4,17 @@ const getWallets = async(args)=>{
 
   let drip = (args && typeof args.drip === 'function') ? args.drip : undefined
 
+  // eip6963
+  window['_eip6963Providers'] = {}
+  const announceProvider = (event)=>{
+    if(event?.detail?.info?.uuid) {
+      window['_eip6963Providers'][event?.detail?.info?.uuid] = event.detail.provider
+    }
+  }
+  window.addEventListener("eip6963:announceProvider", announceProvider)
+  window.dispatchEvent(new Event("eip6963:requestProvider"))
+  window.removeEventListener("eip6963:announceProvider", announceProvider)
+
   let availableWallets = await Promise.all(
     
     Object.keys(wallets).map(

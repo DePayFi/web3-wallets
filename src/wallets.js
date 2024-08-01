@@ -14,6 +14,7 @@ import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
 import Rabby from './wallets/Rabby'
 import Uniswap from './wallets/Uniswap'
+import Rainbow from './wallets/Rainbow'
 import TokenPocket from './wallets/TokenPocket'
 import TrustEVM from './wallets/Trust.evm'
 import WalletConnectV2 from './wallets/WalletConnectV2'
@@ -27,6 +28,7 @@ export default {
   TrustEVM,
   Rabby,
   Uniswap,
+  Rainbow,
   BraveEVM,
   Opera,
   MagicEdenEVM,
@@ -103,6 +105,7 @@ import PhantomEVM from './wallets/Phantom.evm'
 import PhantomSVM from './wallets/Phantom.svm'
 import Rabby from './wallets/Rabby'
 import Uniswap from './wallets/Uniswap'
+import Rainbow from './wallets/Rainbow'
 import SolanaMobileWalletAdapter from './wallets/SolanaMobileWalletAdapter'
 import Solflare from './wallets/Solflare'
 import TokenPocket from './wallets/TokenPocket'
@@ -127,6 +130,7 @@ export default {
   Solflare,
   Rabby,
   Uniswap,
+  Rainbow,
   BraveEVM,
   BraveSVM,
   MagicEdenEVM,

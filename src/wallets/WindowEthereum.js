@@ -56,6 +56,8 @@ export default class WindowEthereum {
       !window?.ethereum?.isBraveWallet &&
       // Uniswap Wallet
       !window?.ethereum?.isUniswapWallet &&
+      // Rainbow
+      !window?.ethereum?.isRainbow &&
       // OKX Wallet
       !window?.okxwallet
     )
