@@ -19,4 +19,8 @@ export default class PhantomEVM extends WindowEthereum {
       ! window?.okxwallet
     )
   }
+
+  getProvider() { 
+    return window?.phantom?.ethereum || window.ethereum
+  }
 }

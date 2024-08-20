@@ -22,4 +22,8 @@ export default class PhantomSVM extends WindowSolana {
       !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
     )
   }
+
+  getProvider() { 
+    return window?.phantom?.solana || window.solana
+  }
 }
