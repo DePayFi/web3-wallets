@@ -1000,7 +1000,7 @@
     static __initStatic2() {this.isMetaMask = (provider)=> {
       return(
         _optionalChain$g([provider, 'optionalAccess', _3 => _3.isMetaMask]) &&
-        Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
+        Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!WalletGuard)(?!RevokeCash)/)).length == 1
       )
     };}
 

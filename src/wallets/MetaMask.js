@@ -12,7 +12,7 @@ export default class MetaMask extends WindowEthereum {
   static isMetaMask = (provider)=> {
     return(
       provider?.isMetaMask &&
-      Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
+      Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!WalletGuard)(?!RevokeCash)/)).length == 1
     )
   }
 
