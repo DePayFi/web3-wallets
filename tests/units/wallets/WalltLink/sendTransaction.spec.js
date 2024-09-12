@@ -154,6 +154,7 @@ describe('WalletLink: sendTransaction', () => {
             'avalanche': 'https://snowtrace.io/tx/',
             'gnosis': 'https://gnosisscan.io/tx/',
             'optimism': 'https://optimistic.etherscan.io/tx/',
+            'worldchain': 'https://worldchain-mainnet.explorer.alchemy.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
@@ -301,6 +302,7 @@ describe('WalletLink: sendTransaction', () => {
             'avalanche': 'https://snowtrace.io/tx/',
             'gnosis': 'https://gnosisscan.io/tx/',
             'optimism': 'https://optimistic.etherscan.io/tx/',
+            'worldchain': 'https://worldchain-mainnet.explorer.alchemy.com/tx/',
           }[blockchain]
           expect(submittedTransaction.url).toEqual(`${blockexplorer}${submittedTransaction.id}`)
         })
