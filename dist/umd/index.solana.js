@@ -772,7 +772,7 @@
     ExodusSVM,
     Coin98SVM,
 
-    // standards (not concrete wallets)
+    // standards
     WindowSolana,
     SolanaMobileWalletAdapter,
   };
@@ -833,7 +833,7 @@
     wallets.ExodusSVM,
     wallets.Coin98SVM,
 
-    // standards (not concrete wallets)
+    // standards
     wallets.WalletConnectV2,
     wallets.SolanaMobileWalletAdapter,
     wallets.WalletLink,

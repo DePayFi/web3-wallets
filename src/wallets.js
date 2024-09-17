@@ -8,18 +8,19 @@ import CryptoCom from './wallets/CryptoCom'
 import ExodusEVM from './wallets/Exodus.evm'
 import HyperPay from './wallets/HyperPay'
 import MagicEdenEVM from './wallets/MagicEden.evm'
-import OKXEVM from './wallets/OKX.evm'
 import MetaMask from './wallets/MetaMask'
+import OKXEVM from './wallets/OKX.evm'
 import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
 import Rabby from './wallets/Rabby'
-import Uniswap from './wallets/Uniswap'
 import Rainbow from './wallets/Rainbow'
 import TokenPocket from './wallets/TokenPocket'
 import TrustEVM from './wallets/Trust.evm'
+import Uniswap from './wallets/Uniswap'
 import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
+import Worldapp from './wallets/Worldapp'
 
 export default {
   MetaMask,
@@ -39,8 +40,9 @@ export default {
   TokenPocket,
   ExodusEVM,
   PhantomEVM,
+  Worldapp,
 
-  // standards (not concrete wallets)
+  // standards
   WindowEthereum,
   WalletConnectV2,
   WalletLink
@@ -75,7 +77,7 @@ export default {
   ExodusSVM,
   Coin98SVM,
 
-  // standards (not concrete wallets)
+  // standards
   WindowSolana,
   SolanaMobileWalletAdapter,
 }
@@ -97,24 +99,25 @@ import Glow from './wallets/Glow'
 import HyperPay from './wallets/HyperPay'
 import MagicEdenEVM from './wallets/MagicEden.evm'
 import MagicEdenSVM from './wallets/MagicEden.svm'
+import MetaMask from './wallets/MetaMask'
 import OKXEVM from './wallets/OKX.evm'
 import OKXSVM from './wallets/OKX.svm'
-import MetaMask from './wallets/MetaMask'
 import Opera from './wallets/Opera'
 import PhantomEVM from './wallets/Phantom.evm'
 import PhantomSVM from './wallets/Phantom.svm'
 import Rabby from './wallets/Rabby'
-import Uniswap from './wallets/Uniswap'
 import Rainbow from './wallets/Rainbow'
 import SolanaMobileWalletAdapter from './wallets/SolanaMobileWalletAdapter'
 import Solflare from './wallets/Solflare'
 import TokenPocket from './wallets/TokenPocket'
 import TrustEVM from './wallets/Trust.evm'
 import TrustSVM from './wallets/Trust.svm'
+import Uniswap from './wallets/Uniswap'
 import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
 import WindowSolana from './wallets/WindowSolana'
+import Worldapp from './wallets/Worldapp'
 
 export default {
   MetaMask,
@@ -145,8 +148,9 @@ export default {
   TokenPocket,
   ExodusEVM,
   ExodusSVM,
+  Worldapp,
 
-  // standards (not concrete wallets)
+  // standards
   WindowEthereum,
   WindowSolana,
   SolanaMobileWalletAdapter,
