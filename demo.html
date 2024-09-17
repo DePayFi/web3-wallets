@@ -31,7 +31,11 @@
       }
     </style>
     <script>
-      alert(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
+      document.addEventListener("DOMContentLoaded", function() {
+        let newElement = document.createElement('div');
+        newElement.textContent = `window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`;
+        document.body.prepend(newElement);
+      });
       window.openNativeLink = (href, uri, name, encoded)=>{
         console.log('openNativeLink', href, uri, name, encoded)
         localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href, name }))
