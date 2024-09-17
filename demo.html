@@ -32,9 +32,16 @@
     </style>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        let newElement = document.createElement('div');
+        let newElement;
+
+        newElement = document.createElement('div');
+        newElement.textContent = Object.keys(window);
+        document.body.prepend(newElement);
+        
+        newElement = document.createElement('div');
         newElement.textContent = `window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`;
         document.body.prepend(newElement);
+        
       });
       window.openNativeLink = (href, uri, name, encoded)=>{
         console.log('openNativeLink', href, uri, name, encoded)
