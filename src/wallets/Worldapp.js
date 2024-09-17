@@ -8,8 +8,7 @@ export default class Worldapp {
 
   static isAvailable = async()=>{ 
     return Boolean(
-      window?.WorldApp &&
-      window?.MiniKit
+      window?.WorldApp
     )
   }
   

@@ -16,7 +16,7 @@
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/coinbase-wallet-sdk@3"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-tokens@10"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/qr-code-styling@1"></script>
-    <script src="dist/umd/index.js?7"></script>
+    <script src="dist/umd/index.js"></script>
     <style>
       .btn-primary {
         color: #fff;
@@ -31,6 +31,7 @@
       }
     </style>
     <script>
+      alert(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
       window.openNativeLink = (href, uri, name, encoded)=>{
         console.log('openNativeLink', href, uri, name, encoded)
         localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href, name }))

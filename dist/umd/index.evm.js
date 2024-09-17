@@ -1624,8 +1624,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return Boolean(
-        _optionalChain$1([window, 'optionalAccess', _3 => _3.WorldApp]) &&
-        _optionalChain$1([window, 'optionalAccess', _4 => _4.MiniKit])
+        _optionalChain$1([window, 'optionalAccess', _2 => _2.WorldApp])
       )
     };}
     
