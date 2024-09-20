@@ -232,6 +232,8 @@
                     const USDCE = '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
 
                     const ZERO = '0x0000000000000000000000000000000000000000'
+                    
+                    const PAYMENT_RECEIVER = '0x317D875cA3B9f8d14f960486C0d1D1913be74e90'
 
                     const amount = '10000'
                     
@@ -276,8 +278,8 @@
                                     tokenInAddress: USDCE,
                                     exchangeAddress: ZERO,
                                     tokenOutAddress: USDCE,
-                                    paymentReceiverAddress: '0x317D875cA3B9f8d14f960486C0d1D1913be74e90',
-                                    feeReceiverAddress: '0x0000000000000000000000000000000000000000',
+                                    paymentReceiverAddress: PAYMENT_RECEIVER,
+                                    feeReceiverAddress: ZERO,
                                     exchangeType: 0,
                                     receiverType: 0,
                                     exchangeCallData: ZERO,
@@ -294,7 +296,7 @@
                         permit2: [
                             {
                                 ...permitTransfer,
-                                spender: "0x34afd47fbdcc37344d1eb6a2ed53b253d4392a2f",
+                                spender: ROUTER,
                             },
                         ],
                     });
