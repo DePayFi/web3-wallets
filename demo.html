@@ -31,6 +31,7 @@
       }
     </style>
     <script>
+
       document.addEventListener("DOMContentLoaded", function() {
         let newElement;
 
@@ -48,6 +49,7 @@
 
         
       });
+
       window.openNativeLink = (href, uri, name, encoded)=>{
         console.log('openNativeLink', href, uri, name, encoded)
         localStorage.setItem('WALLETCONNECT_DEEPLINK_CHOICE', JSON.stringify({ href, name }))
@@ -57,6 +59,11 @@
           href = `${href}wc?uri=${uri}`
         }
         return window.open(href, '_self', 'noreferrer noopener')
+      }
+
+
+      window.getUnusedNonce = (address)=>{
+
       }
     </script>
   </head>
@@ -236,7 +243,7 @@
                     const PAYMENT_RECEIVER = '0x317D875cA3B9f8d14f960486C0d1D1913be74e90'
 
                     const amount = 10000
-                    
+
                     const nonce = 0
                     
                     const permitTransfer = {
@@ -266,7 +273,7 @@
 
                     const paymentDeadline = permitDeadline * 1000 // ms
 
-                    const payload = WorldcoinPrecompiled.MiniKit.commands.sendTransaction({
+                    const sendTransaction = {
                         transaction: [
                             {
                                 address: ROUTER,
@@ -303,7 +310,18 @@
                                 spender: ROUTER,
                             },
                         ],
-                    });
+                    }
+
+                    let newElement;
+                    newElement = document.createElement('div');
+                    newElement.textContent = JSON.stringify(sendTransaction);
+                    document.body.prepend(newElement);
+
+                    const payload = WorldcoinPrecompiled.MiniKit.commands.sendTransaction(sendTransaction);
+
+                    newElement = document.createElement('div');
+                    newElement.textContent = JSON.stringify(payload);
+                    document.body.prepend(newElement);
                   }
                 </script>
                 <button class='btn btn-primary' onClick='worldappSendTransaction()'>Try it</button>
@@ -337,8 +355,8 @@
 
                     const amount = 10000
 
-                    const nonce = 0
-                    
+                    const nonce = getUnusedNonce(await window.wallet.account())
+
                     const permitTransfer = {
                         permitted: {
                           token: USDCE,
