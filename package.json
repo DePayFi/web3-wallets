@@ -37,6 +37,7 @@
     "@depay/walletconnect-v2": "^2.12.2",
     "@depay/web3-blockchains": "^9.6.1",
     "@depay/web3-client": "^10.19.0",
+    "@depay/worldcoin-precompiled": "^0.0.32",
     "ethers": "^5.7.1"
   },
   "engines": {
@@ -58,6 +59,7 @@
     "@depay/web3-tokens": "^10.4.1",
     "@depay/web3-tokens-evm": "^10.4.1",
     "@depay/web3-tokens-solana": "^10.4.1",
+    "@depay/worldcoin-precompiled": "^0.0.32",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
