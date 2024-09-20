@@ -225,7 +225,7 @@
                   window.worldappSendTransaction = async()=>{
                     await WorldcoinPrecompiled.MiniKit.install()
                     
-                    const deadline = Math.floor((Date.now() + 30 * 60 * 1000) / 1000).toString()
+                    const permitDeadline = Math.floor((Date.now() + 30 * 60 * 1000) / 1000)
 
                     const ROUTER = "0x7FB45175440FCf0f75540aAA3A79474f9A301640"
 
@@ -235,15 +235,17 @@
                     
                     const PAYMENT_RECEIVER = '0x317D875cA3B9f8d14f960486C0d1D1913be74e90'
 
-                    const amount = '10000'
+                    const amount = 10000
+                    
+                    const nonce = 0
                     
                     const permitTransfer = {
                         permitted: {
-                            token: USDCE,
-                            amount,
+                          token: USDCE,
+                          amount,
                         },
-                        nonce: Date.now().toString(),
-                        deadline,
+                        nonce,
+                        deadline: permitDeadline,
                     }
 
                     const permitTransferArgsForm = [
@@ -262,6 +264,8 @@
                         transferDetails.requestedAmount,
                     ]
 
+                    const paymentDeadline = permitDeadline * 1000 // ms
+
                     const payload = WorldcoinPrecompiled.MiniKit.commands.sendTransaction({
                         transaction: [
                             {
@@ -273,8 +277,8 @@
                                     amountIn: amount,
                                     permit2: true,
                                     paymentAmount: amount,
-                                    feeAmount: '0',
-                                    protocolAmount: '0',
+                                    feeAmount: 0,
+                                    protocolAmount: 0,
                                     tokenInAddress: USDCE,
                                     exchangeAddress: ZERO,
                                     tokenOutAddress: USDCE,
@@ -284,7 +288,7 @@
                                     receiverType: 0,
                                     exchangeCallData: ZERO,
                                     receiverCallData: ZERO,
-                                    deadline,
+                                    deadline: paymentDeadline,
                                   },
                                   { // permitTransferFromAndSignature
                                     permitTransferFrom: permitTransfer,
@@ -303,6 +307,149 @@
                   }
                 </script>
                 <button class='btn btn-primary' onClick='worldappSendTransaction()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
+                <h5 class="px-4">Test DePay V3 SignatureTransfer</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Test DePay V3 SignatureTransfer</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.v3SignatureTransfer = async()=>{
+                    
+                    const permitDeadline = Math.floor((Date.now() + 30 * 60 * 1000) / 1000)
+
+                    const ROUTER = "0x7FB45175440FCf0f75540aAA3A79474f9A301640"
+
+                    const USDCE = '0x7F5c764cBc14f9669B88837ca1490cCa17c31607'
+
+                    const ZERO = '0x0000000000000000000000000000000000000000'
+                    
+                    const PAYMENT_RECEIVER = '0x08B277154218CCF3380CAE48d630DA13462E3950'
+
+                    const amount = 10000
+
+                    const nonce = 0
+                    
+                    const permitTransfer = {
+                        permitted: {
+                          token: USDCE,
+                          amount,
+                        },
+                        nonce,
+                        deadline: permitDeadline,
+                    }
+
+                    const permitTransferArgsForm = [
+                        [permitTransfer.permitted.token, permitTransfer.permitted.amount],
+                        permitTransfer.nonce,
+                        permitTransfer.deadline,
+                    ]
+
+                    const transferDetails = {
+                        to: ROUTER,
+                        requestedAmount: amount,
+                    }
+
+                    const transferDetailsArgsForm = [
+                        transferDetails.to,
+                        transferDetails.requestedAmount,
+                    ]
+
+                    let signature = await window.wallet.sign({
+                      types: {
+                        EIP712Domain: [
+                          { name: "name", type: "string" },
+                          { name: "chainId", type: "uint256" },
+                          { name: "verifyingContract", type: "address" },
+                        ],
+                        PermitTransferFrom: [
+                          { name: "permitted", type: "TokenPermissions" },
+                          { name: "spender", type: "address" },
+                          { name: "nonce", type: "uint256" },
+                          { name: "deadline", type: "uint256" }
+                        ],
+                        TokenPermissions: [
+                          { name: "token", type: "address" },
+                          { name: "amount", type: "uint256" },
+                        ]
+                      },
+                      primaryType: "PermitTransferFrom",
+                      domain: {
+                        name: "Permit2",
+                        chainId: "10",
+                        verifyingContract: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+                      },
+                      message: {
+                        permitted: {
+                          token: USDCE,
+                          amount: amount.toString(),
+                        },
+                        spender: ROUTER,
+                        nonce: nonce.toString(),
+                        deadline: permitTransfer.deadline
+                      }
+                    })
+                    console.log('message', {
+                      permitted: {
+                          token: USDCE,
+                          amount: amount.toString(),
+                        },
+                        spender: ROUTER,
+                        nonce: nonce.toString(),
+                        deadline: permitTransfer.deadline
+                    })
+                    console.log('signature', signature)
+
+                    const paymentDeadline = permitDeadline * 1000 // ms
+
+                    console.log('sendV3 approval payment')
+                    await wallet.sendTransaction({ 
+                      blockchain: "optimism", 
+                      from: await wallet.account(), 
+                      to: ROUTER, 
+                      method: "pay", 
+                      params: [
+                        { // payment tuple
+                          amountIn: amount,
+                          permit2: true,
+                          paymentAmount: amount,
+                          feeAmount: 0,
+                          protocolAmount: 0,
+                          tokenInAddress: USDCE,
+                          exchangeAddress: ZERO,
+                          tokenOutAddress: USDCE,
+                          paymentReceiverAddress: PAYMENT_RECEIVER,
+                          feeReceiverAddress: ZERO,
+                          exchangeType: 0,
+                          receiverType: 0,
+                          exchangeCallData: ZERO,
+                          receiverCallData: ZERO,
+                          deadline: paymentDeadline,
+                        }
+                        ,
+                        { // permitTransferFromAndSignature
+                          permitTransferFrom: permitTransfer,
+                          signature
+                        }
+                      ],
+                      api: [{"inputs":[{"internalType":"address","name":"_PERMIT2","type":"address"},{"internalType":"address","name":"_FORWARDER","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ExchangeCallFailed","type":"error"},{"inputs":[],"name":"ExchangeCallMissing","type":"error"},{"inputs":[],"name":"ExchangeNotApproved","type":"error"},{"inputs":[],"name":"ForwardingPaymentFailed","type":"error"},{"inputs":[],"name":"InsufficientBalanceInAfterPayment","type":"error"},{"inputs":[],"name":"InsufficientBalanceOutAfterPayment","type":"error"},{"inputs":[],"name":"InsufficientProtocolAmount","type":"error"},{"inputs":[],"name":"NativeFeePaymentFailed","type":"error"},{"inputs":[],"name":"NativePaymentFailed","type":"error"},{"inputs":[],"name":"PaymentDeadlineReached","type":"error"},{"inputs":[],"name":"PaymentToZeroAddressNotAllowed","type":"error"},{"inputs":[],"name":"WrongAmountPaidIn","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"exchange","type":"address"}],"name":"Disabled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"exchange","type":"address"}],"name":"Enabled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"deadline","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"paymentAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"feeAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"protocolAmount","type":"uint256"},{"indexed":false,"internalType":"address","name":"tokenInAddress","type":"address"},{"indexed":false,"internalType":"address","name":"tokenOutAddress","type":"address"},{"indexed":false,"internalType":"address","name":"feeReceiverAddress","type":"address"}],"name":"Payment","type":"event"},{"inputs":[],"name":"FORWARDER","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PERMIT2","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"exchange","type":"address"},{"internalType":"bool","name":"enabled","type":"bool"}],"name":"enable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"exchanges","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"paymentAmount","type":"uint256"},{"internalType":"uint256","name":"feeAmount","type":"uint256"},{"internalType":"uint256","name":"protocolAmount","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"address","name":"tokenInAddress","type":"address"},{"internalType":"address","name":"exchangeAddress","type":"address"},{"internalType":"address","name":"tokenOutAddress","type":"address"},{"internalType":"address","name":"paymentReceiverAddress","type":"address"},{"internalType":"address","name":"feeReceiverAddress","type":"address"},{"internalType":"uint8","name":"exchangeType","type":"uint8"},{"internalType":"uint8","name":"receiverType","type":"uint8"},{"internalType":"bool","name":"permit2","type":"bool"},{"internalType":"bytes","name":"exchangeCallData","type":"bytes"},{"internalType":"bytes","name":"receiverCallData","type":"bytes"}],"internalType":"structIDePayRouterV3.Payment","name":"payment","type":"tuple"},{"components":[{"components":[{"components":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"internalType":"structIPermit2.TokenPermissions","name":"permitted","type":"tuple"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"internalType":"structIPermit2.PermitTransferFrom","name":"permitTransferFrom","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"internalType":"structIDePayRouterV3.PermitTransferFromAndSignature","name":"permitTransferFromAndSignature","type":"tuple"}],"name":"pay","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"paymentAmount","type":"uint256"},{"internalType":"uint256","name":"feeAmount","type":"uint256"},{"internalType":"uint256","name":"protocolAmount","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"address","name":"tokenInAddress","type":"address"},{"internalType":"address","name":"exchangeAddress","type":"address"},{"internalType":"address","name":"tokenOutAddress","type":"address"},{"internalType":"address","name":"paymentReceiverAddress","type":"address"},{"internalType":"address","name":"feeReceiverAddress","type":"address"},{"internalType":"uint8","name":"exchangeType","type":"uint8"},{"internalType":"uint8","name":"receiverType","type":"uint8"},{"internalType":"bool","name":"permit2","type":"bool"},{"internalType":"bytes","name":"exchangeCallData","type":"bytes"},{"internalType":"bytes","name":"receiverCallData","type":"bytes"}],"internalType":"structIDePayRouterV3.Payment","name":"payment","type":"tuple"}],"name":"pay","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"paymentAmount","type":"uint256"},{"internalType":"uint256","name":"feeAmount","type":"uint256"},{"internalType":"uint256","name":"protocolAmount","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"address","name":"tokenInAddress","type":"address"},{"internalType":"address","name":"exchangeAddress","type":"address"},{"internalType":"address","name":"tokenOutAddress","type":"address"},{"internalType":"address","name":"paymentReceiverAddress","type":"address"},{"internalType":"address","name":"feeReceiverAddress","type":"address"},{"internalType":"uint8","name":"exchangeType","type":"uint8"},{"internalType":"uint8","name":"receiverType","type":"uint8"},{"internalType":"bool","name":"permit2","type":"bool"},{"internalType":"bytes","name":"exchangeCallData","type":"bytes"},{"internalType":"bytes","name":"receiverCallData","type":"bytes"}],"internalType":"structIDePayRouterV3.Payment","name":"payment","type":"tuple"},{"components":[{"components":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint160","name":"amount","type":"uint160"},{"internalType":"uint48","name":"expiration","type":"uint48"},{"internalType":"uint48","name":"nonce","type":"uint48"}],"internalType":"structIPermit2.PermitDetails","name":"details","type":"tuple"},{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"sigDeadline","type":"uint256"}],"internalType":"structIPermit2.PermitSingle","name":"permitSingle","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"pay","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"pendingOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                      sent: function(transaction){ console.log("sent callback", transaction) },
+                      succeeded: function(transaction){ console.log("succeeded callback", transaction) },
+                      failed: function(transaction){ console.log("failed callback", transaction) } 
+                    }).then((transaction)=>{ console.log('sendTransaction then ->', transaction) })
+                    
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='v3SignatureTransfer()'>Try it</button>
               </div>
             </div>
           </div>
