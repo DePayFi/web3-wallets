@@ -32,21 +32,25 @@
     </style>
     <script>
 
-      document.addEventListener("DOMContentLoaded", function() {
+      window._debug = (text)=>{
         let newElement;
 
         newElement = document.createElement('div');
-        newElement.textContent = Object.keys(window);
+        newElement.textContent = text;
         document.body.prepend(newElement);
 
         newElement = document.createElement('div');
-        newElement.textContent = `WalletAddress: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`;
+        newElement.textContent = '-';
         document.body.prepend(newElement);
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
         
-        newElement = document.createElement('div');
-        newElement.textContent = `window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`;
-        document.body.prepend(newElement);
+        window._debug(Object.keys(window))
 
+        window._debug(`WalletAddress: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`)
+
+        window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
       });
 
@@ -183,20 +187,13 @@
                     await WorldcoinPrecompiled.MiniKit.install()
                     const nonce = crypto.randomUUID().replace(/-/g, "")
                      WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppWalletAuth, async (payload) => {
-                      let newElement;
                       if (payload.status === "error") {
-                        newElement = document.createElement('div');
-                        newElement.textContent = JSON.stringify(payload);
-                        document.body.prepend(newElement);
+                        window._debug(JSON.stringify(payload))
                         return
                       } else {
-                        newElement = document.createElement('div');
-                        newElement.textContent = JSON.stringify(payload);
-                        document.body.prepend(newElement);
+                        window._debug(JSON.stringify(payload))
                       }
-                      newElement = document.createElement('div');
-                      newElement.textContent = `WalletAddress: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`;
-                      document.body.prepend(newElement);
+                      window._debug(`WalletAddress: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`)
                     });
                     const generateMessageResult = WorldcoinPrecompiled.MiniKit.commands.walletAuth({
                       nonce: nonce,
@@ -206,10 +203,7 @@
                       statement:
                         "This is my statement2 and here is a link https://worldcoin.com/apps",
                     });
-                    let newElement;
-                    newElement = document.createElement('div');
-                    newElement.textContent = JSON.stringify(generateMessageResult);
-                    document.body.prepend(newElement);
+                    window._debug(JSON.stringify(generateMessageResult))
                   }
                 </script>
                 <button class='btn btn-primary' onClick='worldappAuth()'>Try it</button>
@@ -312,16 +306,15 @@
                         ],
                     }
 
-                    let newElement;
-                    newElement = document.createElement('div');
-                    newElement.textContent = JSON.stringify(sendTransaction);
-                    document.body.prepend(newElement);
+                    window._debug(JSON.stringify(sendTransaction))
 
-                    const payload = WorldcoinPrecompiled.MiniKit.commands.sendTransaction(sendTransaction);
-
-                    newElement = document.createElement('div');
-                    newElement.textContent = JSON.stringify(payload);
-                    document.body.prepend(newElement);
+                    try {
+                      const payload = WorldcoinPrecompiled.MiniKit.commands.sendTransaction(sendTransaction);
+                      window._debug(JSON.stringify(payload))
+                    } catch (error) {
+                      window._debug("ERROR!")
+                      window._debug(JSON.stringify(error))
+                    }
                   }
                 </script>
                 <button class='btn btn-primary' onClick='worldappSendTransaction()'>Try it</button>
