@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v7`)
+        window._debug(`v8`)
         
       });
 
@@ -241,22 +241,16 @@
 
                     const amount = 10000
 
-                    const nonce = 0
+                    const nonce = Date.now().toString()
                     
                     const permitTransfer = {
                         permitted: {
                           token: USDCE,
-                          amount,
+                          amount: amount.toString(),
                         },
-                        nonce,
-                        deadline: permitDeadline,
+                        nonce: nonce.toString(),
+                        deadline: permitDeadline.toString(),
                     }
-
-                    const permitTransferArgsForm = [
-                        [permitTransfer.permitted.token, permitTransfer.permitted.amount],
-                        permitTransfer.nonce,
-                        permitTransfer.deadline,
-                    ]
 
                     const transferDetails = {
                         to: ROUTER,
@@ -362,7 +356,7 @@
 
                     const amount = 10000
 
-                    const nonce = 0
+                    const nonce = Date.now().toString()
                     
                     const permitTransfer = {
                         permitted: {
@@ -488,12 +482,6 @@
                         deadline: permitDeadline.toString(),
                     }
 
-                    const permitTransferArgsForm = [
-                        [permitTransfer.permitted.token, permitTransfer.permitted.amount],
-                        permitTransfer.nonce,
-                        permitTransfer.deadline,
-                    ]
-
                     const transferDetails = {
                         to: ROUTER,
                         requestedAmount: amount,
@@ -596,17 +584,11 @@
                     const permitTransfer = {
                         permitted: {
                           token: USDCE,
-                          amount,
+                          amount: amount.toString(),
                         },
-                        nonce,
-                        deadline: permitDeadline,
+                        nonce: nonce.toString(),
+                        deadline: permitDeadline.toString(),
                     }
-
-                    const permitTransferArgsForm = [
-                        [permitTransfer.permitted.token, permitTransfer.permitted.amount],
-                        permitTransfer.nonce,
-                        permitTransfer.deadline,
-                    ]
 
                     const transferDetails = {
                         to: ROUTER,
