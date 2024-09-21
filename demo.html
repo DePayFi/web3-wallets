@@ -224,7 +224,7 @@
               <div class="px-4 pt-3">
                 <script>
                   window.worldappSendTransactionTuple = async()=>{
-                    window._debug(await WorldcoinPrecompiled.MiniKit.install())
+                    window._debug(JSON.stringify(await WorldcoinPrecompiled.MiniKit.install()))
                     window._debug(`WorldcoinPrecompiled.MiniKit.isInstalled(): ${WorldcoinPrecompiled.MiniKit.isInstalled() ? 'true' : 'false'}`)
                     
                     const permitDeadline = Math.floor(Date.now() / 1000) + 30 * 60
@@ -345,7 +345,7 @@
               <div class="px-4 pt-3">
                 <script>
                   window.worldappSendTransaction = async()=>{
-                    window._debug(await WorldcoinPrecompiled.MiniKit.install())
+                    window._debug(JSON.stringify(await WorldcoinPrecompiled.MiniKit.install()))
                     window._debug(`WorldcoinPrecompiled.MiniKit.isInstalled(): ${WorldcoinPrecompiled.MiniKit.isInstalled() ? 'true' : 'false'}`)
                     
                     const permitDeadline = Math.floor(Date.now() / 1000) + 30 * 60
