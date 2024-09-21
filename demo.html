@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v8`)
+        window._debug(`v9`)
         
       });
 
@@ -361,17 +361,11 @@
                     const permitTransfer = {
                         permitted: {
                           token: USDCE,
-                          amount,
+                          amount: amount.toString(),
                         },
                         nonce,
-                        deadline: permitDeadline,
+                        deadline: permitDeadline.toString(),
                     }
-
-                    const permitTransferArgsForm = [
-                        [permitTransfer.permitted.token, permitTransfer.permitted.amount],
-                        permitTransfer.nonce,
-                        permitTransfer.deadline,
-                    ]
 
                     const transferDetails = {
                         to: ROUTER,
