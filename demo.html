@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v6`)
+        window._debug(`v7`)
         
       });
 
@@ -477,15 +477,15 @@
 
                     const amount = 10000
 
-                    const nonce = 0
+                    const nonce = Date.now().toString()
                     
                     const permitTransfer = {
                         permitted: {
                           token: USDCE,
-                          amount,
+                          amount: amount.toString(),
                         },
                         nonce,
-                        deadline: permitDeadline,
+                        deadline: permitDeadline.toString(),
                     }
 
                     const permitTransferArgsForm = [
