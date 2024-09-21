@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v5`)
+        window._debug(`v6`)
         
       });
 
@@ -506,6 +506,12 @@
 
                     const paymentDeadline = Date.now() // ms
 
+                    window._debug('permit2')
+                    window._debug(JSON.stringify({
+                        ...permitTransfer,
+                        spender: ROUTER,
+                    }))
+
                     try {
                       const sendTransaction = {
                         transaction: [
@@ -539,7 +545,10 @@
                             },
                         ],
                         permit2: [
-                           
+                           {
+                              ...permitTransfer,
+                              spender: ROUTER,
+                            },
                         ],
                       }
 
