@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v12`)
+        window._debug(`v13`)
         
       });
 
@@ -325,14 +325,12 @@
                                   ],
                                   [ // permitTransferFromAndSignature
                                     [ // permitTransferFrom
-                                      [
-                                        [ // permitted
-                                          USDCE, // token
-                                          amount // amount
-                                        ],
-                                        nonce, // nonce
-                                        permitDeadline // deadline
-                                      ]
+                                      [ // permitted
+                                        USDCE, // token
+                                        amount.toString() // amount
+                                      ],
+                                      nonce.toString(), // nonce
+                                      permitDeadline.toString() // deadline
                                     ],
                                     "PERMIT2_SIGNATURE_PLACEHOLDER_0"
                                   ]
