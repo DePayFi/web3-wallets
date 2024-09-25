@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v19`)
+        window._debug(`v20`)
         
       });
 
@@ -298,7 +298,7 @@
                         transferDetails.requestedAmount,
                     ]
 
-                    const paymentDeadline = Date.now() + 30 * 60 * 1000; // Current time + 30 minutes (in ms)
+                    const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
 
                     WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, async (payload) => {
                       window._debug(JSON.stringify(payload))
@@ -416,7 +416,7 @@
                         transferDetails.requestedAmount,
                     ]
 
-                    const paymentDeadline = Date.now() + 30 * 60 * 1000; // Current time + 30 minutes (in ms)
+                    const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
 
                     WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, async (payload) => {
                       window._debug(JSON.stringify(payload))
@@ -577,7 +577,37 @@
                     })
                     console.log('signature', signature)
 
-                    const paymentDeadline = Date.now() + 30 * 60 * 1000; // Current time + 30 minutes (in ms)
+                    const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
+
+                    console.log([
+                    [ // payment
+                      amount.toString(), // amountIn
+                      amount.toString(), // paymentAmount
+                      "0", // feeAmount
+                      "0", // protocolAmount
+                      paymentDeadline, // deadline
+                      USDCE, // tokenInAddress
+                      ZERO_ADDRESS, // exchangeAddress
+                      USDCE, // tokenOutAddress
+                      PAYMENT_RECEIVER, // paymentReceiverAddress
+                      ZERO_ADDRESS, // feeReceiverAddress
+                      0, // exchangeType
+                      0, // receiverType
+                      true, // permit2
+                      ZERO_BYTES, // exchangeCallData
+                      ZERO_BYTES, // receiverCallData
+                    ],
+                    [ // permitTransferFromAndSignature
+                      [ // permitTransferFrom
+                        [ // permitted
+                          USDCE, // token
+                          amount.toString() // amount
+                        ],
+                        nonce.toString(), // nonce
+                        permitDeadline.toString() // deadline
+                      ],
+                      signature
+                    ]])
 
                     await wallet.sendTransaction({ 
                       blockchain: "optimism", 
