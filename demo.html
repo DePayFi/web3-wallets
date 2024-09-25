@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v16`)
+        window._debug(`v17`)
         
       });
 
@@ -298,6 +298,10 @@
                     ]
 
                     const paymentDeadline = Date.now() + 30 * 60 * 1000; // Current time + 30 minutes (in ms)
+
+                    WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, async (payload) => {
+                      window._debug(JSON.stringify(payload))
+                    });
 
                     const sendTransaction = {
                         transaction: [
