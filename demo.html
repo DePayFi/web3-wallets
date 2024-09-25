@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v23`)
+        window._debug(`v24`)
         
       });
 
@@ -382,7 +382,7 @@
                     window._debug(JSON.stringify(await WorldcoinPrecompiled.MiniKit.install()))
                     window._debug(`WorldcoinPrecompiled.MiniKit.isInstalled(): ${WorldcoinPrecompiled.MiniKit.isInstalled() ? 'true' : 'false'}`)
                     
-                    const permitDeadline = Math.floor(Date.now() / 1000) + 60 * 60
+                    const permitDeadline = Math.floor((Date.now() + 30 * 60 * 1000) / 1000).toString();
 
                     const ROUTER = "0x7FB45175440FCf0f75540aAA3A79474f9A301640"
 
@@ -416,7 +416,7 @@
                         transferDetails.requestedAmount,
                     ]
 
-                    const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
+                    const paymentDeadline = permitDeadline + '000'; // permitDeadline in ms
 
                     WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, async (payload) => {
                       window._debug(JSON.stringify(payload))
@@ -440,11 +440,11 @@
                                     USDCE, // tokenOutAddress
                                     PAYMENT_RECEIVER, // paymentReceiverAddress
                                     ZERO_ADDRESS, // feeReceiverAddress
-                                    0, // exchangeType
-                                    0, // receiverType
+                                    '0', // exchangeType
+                                    '0', // receiverType
                                     true, // permit2
-                                    ZERO_BYTES, // exchangeCallData
-                                    ZERO_BYTES, // receiverCallData
+                                    ZERO_ADDRESS, // exchangeCallData
+                                    ZERO_ADDRESS, // receiverCallData
                                   ],
                                   [ // permitTransferFromAndSignature
                                     [ // permitTransferFrom
