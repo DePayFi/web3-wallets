@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v17`)
+        window._debug(`v18`)
         
       });
 
@@ -311,18 +311,18 @@
                                 functionName: "pay",
                                 args: [
                                   [ // payment
-                                    amount, // amountIn
-                                    amount, // paymentAmount
-                                    0, // feeAmount
-                                    0, // protocolAmount
-                                    paymentDeadline, // deadline
+                                    amount.toString(), // amountIn
+                                    amount.toString(), // paymentAmount
+                                    "0", // feeAmount
+                                    "0", // protocolAmount
+                                    paymentDeadline.toString(), // deadline
                                     USDCE, // tokenInAddress
                                     ZERO, // exchangeAddress
                                     USDCE, // tokenOutAddress
                                     PAYMENT_RECEIVER, // paymentReceiverAddress
                                     ZERO, // feeReceiverAddress
-                                    0, // exchangeType
-                                    0, // receiverType
+                                    "0", // exchangeType
+                                    "0", // receiverType
                                     true, // permit2
                                     ZERO, // exchangeCallData
                                     ZERO, // receiverCallData
