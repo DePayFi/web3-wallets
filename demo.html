@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v20`)
+        window._debug(`v21`)
         
       });
 
@@ -585,7 +585,7 @@
                       amount.toString(), // paymentAmount
                       "0", // feeAmount
                       "0", // protocolAmount
-                      paymentDeadline, // deadline
+                      paymentDeadline.toString(), // deadline
                       USDCE, // tokenInAddress
                       ZERO_ADDRESS, // exchangeAddress
                       USDCE, // tokenOutAddress
