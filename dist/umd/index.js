@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-client'), require('@depay/web3-blockchains'), require('@depay/solana-web3.js'), require('ethers'), require('@depay/walletconnect-v2'), require('@depay/coinbase-wallet-sdk')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-client', '@depay/web3-blockchains', '@depay/solana-web3.js', 'ethers', '@depay/walletconnect-v2', '@depay/coinbase-wallet-sdk'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Client, global.Web3Blockchains, global.SolanaWeb3js, global.ethers, global.WalletConnectV2, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Client, Blockchains$1, solanaWeb3_js, ethers$1, walletconnectV2, coinbaseWalletSdk) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-client'), require('@depay/web3-blockchains'), require('@depay/solana-web3.js'), require('ethers'), require('@depay/walletconnect-v2'), require('@depay/coinbase-wallet-sdk'), require('@depay/worldcoin-precompiled')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-client', '@depay/web3-blockchains', '@depay/solana-web3.js', 'ethers', '@depay/walletconnect-v2', '@depay/coinbase-wallet-sdk', '@depay/worldcoin-precompiled'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Client, global.Web3Blockchains, global.SolanaWeb3js, global.ethers, global.WalletConnectV2, global.CoinbaseWalletSdk, global.WorldcoinPrecompiled));
+}(this, (function (exports, web3Client, Blockchains$1, solanaWeb3_js, ethers, walletconnectV2, coinbaseWalletSdk, worldcoinPrecompiled) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -29,8 +29,8 @@
 
       // required
       this.blockchain = blockchain;
-      this.from = (from && from.match('0x')) ? ethers$1.ethers.utils.getAddress(from) : from;
-      this.to = (to && to.match('0x')) ? ethers$1.ethers.utils.getAddress(to) : to;
+      this.from = (from && from.match('0x')) ? ethers.ethers.utils.getAddress(from) : from;
+      this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
       this.value = _optionalChain$B([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
@@ -55,9 +55,9 @@
 
     static bigNumberify(value, blockchain) {
       if (typeof value === 'number') {
-        return ethers$1.ethers.utils.parseUnits(value.toString(), Blockchains__default['default'][blockchain].currency.decimals)
+        return ethers.ethers.utils.parseUnits(value.toString(), Blockchains__default['default'][blockchain].currency.decimals)
       } else if (value && value.toString) {
-        return ethers$1.ethers.BigNumber.from(value.toString())
+        return ethers.ethers.BigNumber.from(value.toString())
       } else {
         return value
       }
@@ -102,7 +102,7 @@
     }
 
     getContract() {
-      return new ethers$1.ethers.Contract(this.to, this.api)
+      return new ethers.ethers.Contract(this.to, this.api)
     }
 
     async getData() {
@@ -433,7 +433,7 @@
     await transaction.prepare({ wallet });
     let transactionCount = await web3Client.request({ blockchain: transaction.blockchain, method: 'transactionCount', address: transaction.from });
     transaction.nonce = transactionCount;
-    let provider = new ethers$1.ethers.providers.Web3Provider(wallet.getProvider(), 'any');
+    let provider = new ethers.ethers.providers.Web3Provider(wallet.getProvider(), 'any');
     let signer = provider.getSigner(0);
     await submit$2({ transaction, provider, signer }).then((sentTransaction)=>{
       if (sentTransaction) {
@@ -513,7 +513,7 @@
   };
 
   const submitContractInteraction$2 = async ({ transaction, signer, provider })=>{
-    let contract = new ethers$1.ethers.Contract(transaction.to, transaction.api, provider);
+    let contract = new ethers.ethers.Contract(transaction.to, transaction.api, provider);
     let contractArguments = transaction.getContractArguments({ contract });
     let method = contract.connect(signer)[transaction.getMethodNameWithSignature()];
     let gas;
@@ -605,13 +605,13 @@
 
     async account() {
       if(!this.getProvider()) { return undefined }
-      const accounts = (await this.getProvider().request({ method: 'eth_accounts' })).map((address)=>ethers$1.ethers.utils.getAddress(address));
+      const accounts = (await this.getProvider().request({ method: 'eth_accounts' })).map((address)=>ethers.ethers.utils.getAddress(address));
       return accounts[0]
     }
 
     async connect() {
       if(!this.getProvider()) { return undefined }
-      const accounts = (await this.getProvider().request({ method: 'eth_requestAccounts' })).map((address)=>ethers$1.ethers.utils.getAddress(address));
+      const accounts = (await this.getProvider().request({ method: 'eth_requestAccounts' })).map((address)=>ethers.ethers.utils.getAddress(address));
       return accounts[0]
     }
 
@@ -619,7 +619,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (accounts) => callback(ethers$1.ethers.utils.getAddress(accounts[0]));
+          internalCallback = (accounts) => callback(ethers.ethers.utils.getAddress(accounts[0]));
           this.getProvider().on('accountsChanged', internalCallback);
           break
       }
@@ -703,7 +703,7 @@
         return signature
       } else if (typeof message === 'string') {
         await this.account();
-        let provider = new ethers$1.ethers.providers.Web3Provider(this.getProvider(), 'any');
+        let provider = new ethers.ethers.providers.Web3Provider(this.getProvider(), 'any');
         let signer = provider.getSigner(0);
         let signature = await signer.signMessage(message);
         return signature
@@ -1614,12 +1614,12 @@
         params: [{
           from: transaction.from,
           to: transaction.to,
-          value: transaction.value ? ethers$1.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
+          value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           data: await transaction.getData(),
           gas: _optionalChain$5([gas, 'optionalAccess', _10 => _10.toHexString, 'call', _11 => _11()]),
           gasLimit: _optionalChain$5([gas, 'optionalAccess', _12 => _12.toHexString, 'call', _13 => _13()]),
           gasPrice: gasPrice.toHexString(),
-          nonce: ethers$1.ethers.utils.hexlify(transaction.nonce),
+          nonce: ethers.ethers.utils.hexlify(transaction.nonce),
         }]
       }
     }).catch((e)=>{console.log('ERROR', e);})
@@ -1642,12 +1642,12 @@
         params: [{
           from: transaction.from,
           to: transaction.to,
-          value: transaction.value ? ethers$1.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
+          value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           data: '0x0',
           gas: _optionalChain$5([gas, 'optionalAccess', _14 => _14.toHexString, 'call', _15 => _15()]),
           gasLimit: _optionalChain$5([gas, 'optionalAccess', _16 => _16.toHexString, 'call', _17 => _17()]),
           gasPrice: _optionalChain$5([gasPrice, 'optionalAccess', _18 => _18.toHexString, 'call', _19 => _19()]),
-          nonce: ethers$1.ethers.utils.hexlify(transaction.nonce)
+          nonce: ethers.ethers.utils.hexlify(transaction.nonce)
         }]
       }
     }).catch((e)=>{console.log('ERROR', e);})
@@ -1907,7 +1907,7 @@
         return signature
       } else if (typeof message === 'string') {
         const address = await this.account();
-        const params = [ethers$1.ethers.utils.hexlify(ethers$1.ethers.utils.toUtf8Bytes(message)), address];
+        const params = [ethers.ethers.utils.hexlify(ethers.ethers.utils.toUtf8Bytes(message)), address];
         let signature = await this.signClient.request({
           topic: this.session.topic,
           chainId: this.getValidChainId(),
@@ -1917,7 +1917,7 @@
           }
         });
         if(typeof signature == 'object') {
-          signature = ethers$1.ethers.utils.hexlify(signature);
+          signature = ethers.ethers.utils.hexlify(signature);
         }
         return signature
       }
@@ -1936,7 +1936,7 @@
       throw({ code: 'WRONG_NETWORK' })
     }
     await transaction.prepare({ wallet });
-    let provider = new ethers$1.ethers.providers.Web3Provider(wallet.connector, 'any');
+    let provider = new ethers.ethers.providers.Web3Provider(wallet.connector, 'any');
     let signer = provider.getSigner(0);
     await submit({ transaction, provider, signer }).then((sentTransaction)=>{
       if (sentTransaction) {
@@ -2016,7 +2016,7 @@
   };
 
   const submitContractInteraction = ({ transaction, signer, provider })=>{
-    let contract = new ethers$1.ethers.Contract(transaction.to, transaction.api, provider);
+    let contract = new ethers.ethers.Contract(transaction.to, transaction.api, provider);
     let contractArguments = transaction.getContractArguments({ contract });
     let method = contract.connect(signer)[transaction.getMethodNameWithSignature()];
     if(contractArguments) {
@@ -2083,7 +2083,7 @@
 
     async account() {
       if(this.connectedAccounts == undefined) { return }
-      return ethers$1.ethers.utils.getAddress(this.connectedAccounts[0])
+      return ethers.ethers.utils.getAddress(this.connectedAccounts[0])
     }
 
     async connect(options) {
@@ -2106,7 +2106,7 @@
       if(accounts instanceof Array && accounts.length) {
         setConnectedInstance(this);
       }
-      accounts = accounts.map((account)=>ethers$1.ethers.utils.getAddress(account));
+      accounts = accounts.map((account)=>ethers.ethers.utils.getAddress(account));
       this.connectedAccounts = accounts;
       this.connectedChainId = await this.connector.getChainId();
       return accounts[0]
@@ -2166,7 +2166,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (accounts) => callback(ethers$1.ethers.utils.getAddress(accounts[0]));
+          internalCallback = (accounts) => callback(ethers.ethers.utils.getAddress(accounts[0]));
           this.connector.on('accountsChanged', internalCallback);
           break
       }
@@ -2201,7 +2201,7 @@
         return signature
       } else if (typeof message === 'string') {
         await this.account();
-        let provider = new ethers$1.ethers.providers.Web3Provider(this.connector, 'any');
+        let provider = new ethers.ethers.providers.Web3Provider(this.connector, 'any');
         let signer = provider.getSigner(0);
         let signature = await signer.signMessage(message);
         return signature
@@ -2212,12 +2212,14 @@
   WalletLink.getConnectedInstance = getConnectedInstance;
   WalletLink.setConnectedInstance = setConnectedInstance;
 
-  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }class Worldapp {
+  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+
+  class Worldapp {
 
     static __initStatic() {this.info = {
       name: 'Worldapp',
       logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMzIDMyIj4KICA8Zz4KICAgIDxnPgogICAgICA8cmVjdCBmaWxsPSIjMDAwMDAwIiB3aWR0aD0iMzMiIGhlaWdodD0iMzIiLz4KICAgIDwvZz4KICAgIDxnPgogICAgICA8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjQuNywxMi41Yy0uNS0xLjEtMS4xLTItMS45LTIuOHMtMS44LTEuNS0yLjgtMS45Yy0xLjEtLjUtMi4zLS43LTMuNS0uN3MtMi40LjItMy41LjdjLTEuMS41LTIsMS4xLTIuOCwxLjlzLTEuNSwxLjgtMS45LDIuOGMtLjUsMS4xLS43LDIuMy0uNywzLjVzLjIsMi40LjcsMy41LDEuMSwyLDEuOSwyLjhjLjguOCwxLjgsMS41LDIuOCwxLjksMS4xLjUsMi4zLjcsMy41LjdzMi40LS4yLDMuNS0uNywyLTEuMSwyLjgtMS45LDEuNS0xLjgsMS45LTIuOGMuNS0xLjEuNy0yLjMuNy0zLjVzLS4yLTIuNC0uNy0zLjVaTTEzLjUsMTUuMmMuNC0xLjQsMS43LTIuNSwzLjItMi41aDYuMmMuNC44LjcsMS42LjcsMi41aC0xMC4xWk0yMy43LDE2LjhjMCwuOS0uNCwxLjctLjcsMi41aC02LjJjLTEuNSwwLTIuOC0xLjEtMy4yLTIuNWgxMC4xWk0xMS40LDEwLjljMS40LTEuNCwzLjItMi4xLDUuMS0yLjFzMy44LjcsNS4xLDIuMWguMWMwLC4xLTUsLjEtNSwuMS0xLjMsMC0yLjYuNS0zLjUsMS41LS43LjctMS4yLDEuNy0xLjQsMi43aC0yLjVjLjItMS42LjktMy4xLDIuMS00LjNaTTE2LjUsMjMuMmMtMS45LDAtMy44LS43LTUuMS0yLjEtMS4yLTEuMi0xLjktMi43LTIuMS00LjNoMi41Yy4yLDEsLjcsMS45LDEuNCwyLjcuOS45LDIuMiwxLjUsMy41LDEuNWg1LS4xYy0xLjQsMS41LTMuMiwyLjItNS4xLDIuMloiLz4KICAgIDwvZz4KICA8L2c+Cjwvc3ZnPgo=",
-      blockchains: ["optimism", "worldchain"]
+      blockchains: ["worldchain"]
     };}
 
     static __initStatic2() {this.isAvailable = async()=>{ 
@@ -2227,6 +2229,7 @@
     };}
     
     constructor () {
+      worldcoinPrecompiled.MiniKit.install();
       this.name = this.constructor.info.name;
       this.logo = this.constructor.info.logo;
       this.blockchains = this.constructor.info.blockchains;
@@ -2241,23 +2244,37 @@
 
     async account() {
       if(!this.getProvider()) { return undefined }
-      const accounts = (await this.getProvider().request({ method: 'eth_accounts' })).map((address)=>ethers.utils.getAddress(address));
-      return accounts[0]
+      return worldcoinPrecompiled.MiniKit.walletAddress
     }
 
-    async connect() {
-      if(!this.getProvider()) { return undefined }
-      const accounts = (await this.getProvider().request({ method: 'eth_requestAccounts' })).map((address)=>ethers.utils.getAddress(address));
-      return accounts[0]
+    connect() {
+
+      return new Promise((resolve, reject)=>{
+
+        if(worldcoinPrecompiled.MiniKit.walletAddress) {
+          return resolve(worldcoinPrecompiled.MiniKit.walletAddress)
+        }
+
+        worldcoinPrecompiled.MiniKit.subscribe(worldcoinPrecompiled.ResponseEvent.MiniAppWalletAuth, async (payload) => {
+          if (payload.status === "error") {
+            return reject()
+          } else {
+            return resolve()
+          }
+        });
+
+        WorldcoinPrecompiled.MiniKit.commands.walletAuth({
+          nonce: crypto.randomUUID().replace(/-/g, ""),
+          expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+          notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+          statement: "Connect your WorldApp to continue..."
+        });
+      })
     }
 
-    on(event, callback) {
-      
-    }
+    on(event, callback) {}
 
-    off(event, internalCallback) {
-      
-    }
+    off(event, internalCallback) {}
 
     async connectedTo(input) {
       const blockchain = Blockchains.findById(await this.getProvider().request({ method: 'eth_chainId' }));
@@ -2281,8 +2298,10 @@
       })
     }
 
-    transactionCount({ blockchain, address }) {
-      return request({ blockchain, method: 'transactionCount', address })
+    async transactionCount({ blockchain, address }) {
+      // return (await request({
+        
+      // })).toString()
     }
 
     async sign(message) {

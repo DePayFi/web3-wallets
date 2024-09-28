@@ -8,5 +8,6 @@ export default {
   '@depay/web3-client-evm': 'Web3Client',
   '@depay/web3-client-solana': 'Web3Client',
   '@depay/web3-constants': 'Web3Constants',
-  'ethers': 'ethers'
+  '@depay/worldcoin-precompiled': 'WorldcoinPrecompiled',
+  'ethers': 'ethers',
 }
