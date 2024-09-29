@@ -6657,11 +6657,10 @@
       return new Promise((resolve, reject)=>{
 
         MiniKit.subscribe(ResponseEvent.MiniAppSignMessage, async (payload) => {
-          window._debug(`PAYLOAD: ${JSON.stringify(payload)}`);
           if (payload.status === "error") {
             return reject()
           } else {
-            return resolve()
+            return resolve(payload.signature)
           }
         });
 

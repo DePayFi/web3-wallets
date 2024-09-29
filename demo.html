@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v29`)
+        window._debug(`v30`)
         
       });
 
@@ -1507,6 +1507,22 @@
               </div>
               <div class="px-4 pt-3">
                 <button class='btn btn-primary' onClick='window.wallet.sign("This is a test message\n\n And a new line").then((signature)=>{console.log(signature)})'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div class="overflow-auto" style="height: 120px;">
+                <h5 class="px-4">Transaction count</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">Gets the transaction count for the connected wallet.</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <button class='btn btn-primary' onClick='window.wallet.transactionCount().then((number)=>{window._debug(`Transaction Count: ${number.toString()}`)})'>Try it</button>
               </div>
             </div>
           </div>
