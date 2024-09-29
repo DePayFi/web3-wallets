@@ -2268,7 +2268,7 @@
           nonce: crypto.randomUUID().replace(/-/g, ""),
           expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
           notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-          statement: "Sign to continue... (v3)"
+          statement: "Connect DePay V1"
         });
       })
     }
