@@ -6598,8 +6598,8 @@ class Worldapp {
         if (payload.status === "error") {
           return reject()
         } else {
-          window._debug(`PAYLOAD: ${JSON.stringify(payload)}`);
-          return resolve()
+          window._debug(MiniKit.walletAddress);
+          return resolve(MiniKit.walletAddress)
         }
       });
 
@@ -6607,7 +6607,7 @@ class Worldapp {
         nonce: crypto.randomUUID().replace(/-/g, ""),
         expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
         notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        statement: "Connect to continue... (v2)"
+        statement: "Sign to continue... (v3)"
       });
     })
   }
