@@ -2259,6 +2259,7 @@
           if (payload.status === "error") {
             return reject()
           } else {
+            window._debug(`PAYLOAD: ${JSON.stringify(payload)}`);
             return resolve()
           }
         });
@@ -2267,7 +2268,7 @@
           nonce: crypto.randomUUID().replace(/-/g, ""),
           expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
           notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-          statement: "Connect your WorldApp to continue..."
+          statement: "Connect to continue... (v2)"
         });
       })
     }
@@ -2300,7 +2301,7 @@
 
     async transactionCount({ blockchain, address }) {
       // return (await request({
-        
+
       // })).toString()
     }
 
