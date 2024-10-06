@@ -52,7 +52,7 @@
 
         window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
         
-        window._debug(`v31`)
+        window._debug(`v34`)
         
       });
 
@@ -1227,7 +1227,7 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='window.wallet.transactionCount({ blockchain: 'worldcoin', address: WorldcoinPrecompiled.MiniKit?.walletAddress }).then((number)=>{window._debug(`Transaction Count: ${number.toString()}`)})'>Try it</button>
+                <button class='btn btn-primary' onClick='window.wallet.transactionCount({ blockchain: "worldcoin", address: WorldcoinPrecompiled.MiniKit?.walletAddress }).then((number)=>{window._debug(`Transaction Count: ${number.toString()}`)})'>Try it</button>
               </div>
             </div>
           </div>
