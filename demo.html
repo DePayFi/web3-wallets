@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="https://depay.com/favicon.png"/>
     <title>Demo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.css">
-    <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js" type="application/javascript"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@uiw/copy-to-clipboard/dist/copy-to-clipboard.umd.js"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/solana-web3.js@1"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-blockchains@9"></script>
@@ -253,9 +253,9 @@
           <div class="px-0 py-4 rounded-lg bg-white border">
             <div class="col px-0">
               <div>
-                <h5 class="px-4">WorldApp SendTransaction tuple (permit2 nonce)</h5>
+                <h5 class="px-4">WorldApp SendTransaction</h5>
                 <div class="px-4">
-                  <div class="text-secondary ">Test WorldApp SendTransaction tuple (permit2 nonce)</div>
+                  <div class="text-secondary ">Test WorldApp SendTransaction</div>
                 </div>
               </div>
               <div class="px-4 pt-3">
@@ -300,65 +300,55 @@
 
                     const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
 
-                    WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, async (payload) => {
-                      window._debug(JSON.stringify(payload))
-                    });
-
-                    const sendTransaction = {
-                        transaction: [
-                            {
-                                address: ROUTER,
-                                abi: [{"inputs":[{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"paymentAmount","type":"uint256"},{"internalType":"uint256","name":"feeAmount","type":"uint256"},{"internalType":"uint256","name":"protocolAmount","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"address","name":"tokenInAddress","type":"address"},{"internalType":"address","name":"exchangeAddress","type":"address"},{"internalType":"address","name":"tokenOutAddress","type":"address"},{"internalType":"address","name":"paymentReceiverAddress","type":"address"},{"internalType":"address","name":"feeReceiverAddress","type":"address"},{"internalType":"uint8","name":"exchangeType","type":"uint8"},{"internalType":"uint8","name":"receiverType","type":"uint8"},{"internalType":"bool","name":"permit2","type":"bool"},{"internalType":"bytes","name":"exchangeCallData","type":"bytes"},{"internalType":"bytes","name":"receiverCallData","type":"bytes"}],"internalType":"structIDePayRouterV3.Payment","name":"payment","type":"tuple"},{"components":[{"components":[{"components":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"internalType":"structIPermit2.TokenPermissions","name":"permitted","type":"tuple"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"internalType":"structIPermit2.PermitTransferFrom","name":"permitTransferFrom","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"internalType":"structIDePayRouterV3.PermitTransferFromAndSignature","name":"permitTransferFromAndSignature","type":"tuple"}],"name":"pay","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"}],
-                                functionName: "pay",
-                                args: [
-                                  [ // payment
-                                    amount.toString(), // amountIn
-                                    amount.toString(), // paymentAmount
-                                    "0", // feeAmount
-                                    "0", // protocolAmount
-                                    paymentDeadline.toString(), // deadline
-                                    USDCE, // tokenInAddress
-                                    ZERO_ADDRESS, // exchangeAddress
-                                    USDCE, // tokenOutAddress
-                                    PAYMENT_RECEIVER, // paymentReceiverAddress
-                                    ZERO_ADDRESS, // feeReceiverAddress
-                                    0, // exchangeType
-                                    0, // receiverType
-                                    true, // permit2
-                                    ZERO_BYTES, // exchangeCallData
-                                    ZERO_BYTES, // receiverCallData
-                                  ],
-                                  [ // permitTransferFromAndSignature
-                                    [ // permitTransferFrom
-                                      [ // permitted
-                                        USDCE, // token
-                                        amount.toString() // amount
-                                      ],
-                                      nonce.toString(), // nonce
-                                      permitDeadline.toString() // deadline
-                                    ],
-                                    "PERMIT2_SIGNATURE_PLACEHOLDER_0"
-                                  ]
-                                ],
-                            },
+                    const sentTransaction = await wallet.sendTransaction({
+                      blockchain: 'worldchain',
+                      to: ROUTER,
+                      api: [{"inputs":[{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"paymentAmount","type":"uint256"},{"internalType":"uint256","name":"feeAmount","type":"uint256"},{"internalType":"uint256","name":"protocolAmount","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"address","name":"tokenInAddress","type":"address"},{"internalType":"address","name":"exchangeAddress","type":"address"},{"internalType":"address","name":"tokenOutAddress","type":"address"},{"internalType":"address","name":"paymentReceiverAddress","type":"address"},{"internalType":"address","name":"feeReceiverAddress","type":"address"},{"internalType":"uint8","name":"exchangeType","type":"uint8"},{"internalType":"uint8","name":"receiverType","type":"uint8"},{"internalType":"bool","name":"permit2","type":"bool"},{"internalType":"bytes","name":"exchangeCallData","type":"bytes"},{"internalType":"bytes","name":"receiverCallData","type":"bytes"}],"internalType":"structIDePayRouterV3.Payment","name":"payment","type":"tuple"},{"components":[{"components":[{"components":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"internalType":"structIPermit2.TokenPermissions","name":"permitted","type":"tuple"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"internalType":"structIPermit2.PermitTransferFrom","name":"permitTransferFrom","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"internalType":"structIDePayRouterV3.PermitTransferFromAndSignature","name":"permitTransferFromAndSignature","type":"tuple"}],"name":"pay","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"}],
+                      method: 'pay',
+                      params: {
+                        args: [
+                          [ // payment
+                            amount.toString(), // amountIn
+                            amount.toString(), // paymentAmount
+                            "0", // feeAmount
+                            "0", // protocolAmount
+                            paymentDeadline.toString(), // deadline
+                            USDCE, // tokenInAddress
+                            ZERO_ADDRESS, // exchangeAddress
+                            USDCE, // tokenOutAddress
+                            PAYMENT_RECEIVER, // paymentReceiverAddress
+                            ZERO_ADDRESS, // feeReceiverAddress
+                            0, // exchangeType
+                            0, // receiverType
+                            true, // permit2
+                            ZERO_BYTES, // exchangeCallData
+                            ZERO_BYTES, // receiverCallData
+                          ],
+                          [ // permitTransferFromAndSignature
+                            [ // permitTransferFrom
+                              [ // permitted
+                                USDCE, // token
+                                amount.toString() // amount
+                              ],
+                              nonce.toString(), // nonce
+                              permitDeadline.toString() // deadline
+                            ],
+                            "PERMIT2_SIGNATURE_PLACEHOLDER_0"
+                          ]
                         ],
-                        permit2: [
-                            {
-                                ...permitTransfer,
-                                spender: ROUTER,
-                            },
-                        ],
-                    }
+                        permit2: {
+                          ...permitTransfer,
+                          spender: ROUTER,
+                        },
+                      }
+                      value: 0,
+                      sent: function(transaction){ window._debug(`SENT: ${JSON.stringify(transaction)}`) },
+                      succeeded: function(transaction){ window._debug(`SUCCEEDED: ${JSON.stringify(transaction)}`) },
+                      failed: function(transaction, error){ window._debug(`FAILED: ${JSON.stringify(transaction)} ${error}`) }
+                    })
 
-                    window._debug(JSON.stringify(sendTransaction))
+                    window._debug(`sentTransaction: ${JSON.stringify(sentTransaction)}`)
 
-                    try {
-                      const payload = WorldcoinPrecompiled.MiniKit.commands.sendTransaction(sendTransaction);
-                      window._debug(JSON.stringify(payload))
-                    } catch (error) {
-                      window._debug("ERROR!")
-                      window._debug(JSON.stringify(error))
-                    }
                   }
                 </script>
                 <button class='btn btn-primary' onClick='worldappSendTransactionTuple()'>Try it</button>
@@ -1237,7 +1227,7 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='window.wallet.transactionCount().then((number)=>{window._debug(`Transaction Count: ${number.toString()}`)})'>Try it</button>
+                <button class='btn btn-primary' onClick='window.wallet.transactionCount({ blockchain: 'worldcoin', address: WorldcoinPrecompiled.MiniKit?.walletAddress }).then((number)=>{window._debug(`Transaction Count: ${number.toString()}`)})'>Try it</button>
               </div>
             </div>
           </div>

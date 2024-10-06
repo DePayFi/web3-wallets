@@ -1,6 +1,6 @@
 /*#if _EVM
 
-import { request } from '@depay/web3-client-evm'
+import { request, getProvider } from '@depay/web3-client-evm'
 
 /*#elif _SOLANA
 
@@ -8,11 +8,13 @@ import { request } from '@depay/web3-client-solana'
 
 //#else */
 
-import { request } from '@depay/web3-client'
+import { request, getProvider } from '@depay/web3-client'
+import { ethers } from 'ethers'
 
 //#endif
 
 import { MiniKit, ResponseEvent } from '@depay/worldcoin-precompiled'
+import { Transaction } from '../Transaction'
 
 export default class Worldapp {
 
@@ -33,9 +35,79 @@ export default class Worldapp {
     this.name = this.constructor.info.name
     this.logo = this.constructor.info.logo
     this.blockchains = this.constructor.info.blockchains
-    this.sendTransaction = (transaction)=>{
-      console.log('sendTransaction')
-    }
+    this.sendTransaction = this.sendTransaction
+  }
+
+  sendTransaction({ transaction }) {
+    transaction = new Transaction(transaction)
+
+    return new Promise(async(resolve, reject)=>{
+      await transaction.prepare({ wallet: this })
+      transaction.nonce = await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })
+      window._debug(`transaction: ${JSON.stringify(transaction)}`)
+
+      MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
+        if (payload.status == "success") {
+          this.fetchTransaction(payload, 1).then((transactionHash)=>{
+            if(transactionHash) {
+              resolve(transaction)
+            } else {
+              reject('Fetching transaction failed!')
+            }
+          }).catch(reject)
+        } else {
+          reject('Submitting transaction failed!')
+        }
+        MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction)
+      })
+
+      MiniKit.commands.sendTransaction({
+        transaction: [
+          {
+            address: transaction.to,
+            abi: transaction.api,
+            functionName: transaction.method,
+            args: transaction.params?.args
+          },
+        ],
+        permit2: [transaction.params?.permit2]
+      })
+    })
+  }
+
+  retryFetchTransaction(payload, attempt) {
+    return new Promise((resolve, reject)=>{
+      setTimeout(()=>{
+        this.fetchTransaction(payload, attempt+1).then(resolve).catch(reject)
+      }, 500)
+    })
+  }
+
+  fetchTransaction(payload, attempt) {
+    if(attempt > 5) { reject('Fetching transaction failed!') }
+    return new Promise((resolve, reject)=>{
+      fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
+        headers: { "Content-Type": "application/json" },
+      }).then((response)=>{
+        if(response.ok) {
+          response.json().then((transaction)=>{
+            if(transaction?.external_id) {
+              getProvider('worldchain').then((provider)=>{
+                provider.waitForTransaction(transaction.external_id).then((receipt)=>{
+                  if(receipt && receipt.status == 1) {
+                    resolve()
+                  }
+                }).catch(reject)
+              }).catch(reject)
+            } else {
+              retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
+            }
+          }).catch(()=>retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
+        } else {
+          retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
+        }
+      }).catch(()=>retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
+    })
   }
 
   getProvider() {
