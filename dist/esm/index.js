@@ -2236,11 +2236,15 @@ class Worldapp {
   sendTransaction(transaction) {
     console.log('sendTransaction', transaction);
     transaction = new Transaction(transaction);
+    console.log('after transaction wrapping transaction.sent', transaction.sent);
+    console.log('after transaction wrapping transaction.succeeded', transaction.succeeded);
+    console.log('after transaction wrapping transaction.failed', transaction.failed);
 
     return new Promise(async(resolve, reject)=>{
       await transaction.prepare({ wallet: this });
+      console.log('after prepare transaction', transaction);
       transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString();
-      console.log('transaction', transaction);
+      console.log('after nonce transaction', transaction);
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         console.log('payload', payload);
@@ -2289,10 +2293,10 @@ class Worldapp {
         console.log('After fetch', response);
         if(response.ok) {
           console.log('Before json');
-          response.json().then((transaction)=>{
-            console.log('After json', transaction);
-            if(_optionalChain$1([transaction, 'optionalAccess', _7 => _7.external_id])) {
-              transaction.id = _optionalChain$1([transaction, 'optionalAccess', _8 => _8.external_id]);
+          response.json().then((transactionJSON)=>{
+            console.log('After json', transactionJSON);
+            if(_optionalChain$1([transactionJSON, 'optionalAccess', _7 => _7.external_id])) {
+              transaction.id = _optionalChain$1([transactionJSON, 'optionalAccess', _8 => _8.external_id]);
               transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction });
               console.log('before transaction.sent', transaction.sent);
               if (transaction.sent) { transaction.sent(transaction); }
