@@ -4,15 +4,16 @@ import { request, getProvider } from '@depay/web3-client-evm'
 
 /*#elif _SOLANA
 
-import { request } from '@depay/web3-client-solana'
+import { request, getProvider } from '@depay/web3-client-solana'
 
 //#else */
 
 import { request, getProvider } from '@depay/web3-client'
-import { ethers } from 'ethers'
 
 //#endif
 
+import Blockchains from '@depay/web3-blockchains'
+import { ethers } from 'ethers'
 import { MiniKit, ResponseEvent } from '@depay/worldcoin-precompiled'
 import { Transaction } from '../Transaction'
 
@@ -50,7 +51,7 @@ export default class Worldapp {
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         console.log('payload', payload)
         if (payload.status == "success") {
-          this.fetchTransaction(payload).then((transactionHash)=>{
+          this.fetchTransaction(transaction, payload).then((transactionHash)=>{
             if(transactionHash) {
               resolve(transaction)
             } else {
@@ -76,18 +77,17 @@ export default class Worldapp {
     })
   }
 
-  retryFetchTransaction(payload, attempt) {
-    console.log('Retry Fetch transaction')
+  retryFetchTransaction(transaction, payload, attempt) {
+    console.log('Retry Fetch transaction', attempt)
     return new Promise((resolve, reject)=>{
       setTimeout(()=>{
-        this.fetchTransaction(payload, attempt+1).then(resolve).catch(reject)
-      }, 500)
+        this.fetchTransaction(transaction, payload, attempt+1).then(resolve).catch(reject)
+      }, (attempt < 30 ? 500 : 1000))
     })
   }
 
-  fetchTransaction(payload, attempt = 1) {
+  fetchTransaction(transaction, payload, attempt = 1) {
     return new Promise((resolve, reject)=>{
-      if(attempt > 60) { reject('Fetching transaction failed!') }
       console.log('Before fetch')
       fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
         headers: { "Content-Type": "application/json" },
@@ -98,6 +98,9 @@ export default class Worldapp {
           response.json().then((transaction)=>{
             console.log('After json', transaction)
             if(transaction?.external_id) {
+              transaction.id = transaction?.external_id
+              transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction })
+              if (transaction.sent) transaction.sent(transaction)
               console.log('Before provider')
               getProvider('worldchain').then((provider)=>{
                 console.log('After provider', provider)
@@ -105,18 +108,20 @@ export default class Worldapp {
                 provider.waitForTransaction(transaction.external_id).then((receipt)=>{
                   console.log('After receipt', receipt)
                   if(receipt && receipt.status == 1) {
-                    resolve()
+                    transaction._succeeded = true
+                    if (transaction.succeeded) transaction.succeeded(transaction)
+                    resolve(transaction)
                   }
                 }).catch(reject)
               }).catch(reject)
             } else {
-              this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
+              this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject)
             }
-          }).catch(()=>this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
+          }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject))
         } else {
-          this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
+          this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject)
         }
-      }).catch(()=>this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
+      }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject))
     })
   }
 
