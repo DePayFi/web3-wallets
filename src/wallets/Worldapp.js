@@ -50,7 +50,7 @@ export default class Worldapp {
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         console.log('payload', payload)
         if (payload.status == "success") {
-          this.fetchTransaction(payload, 1).then((transactionHash)=>{
+          this.fetchTransaction(payload).then((transactionHash)=>{
             if(transactionHash) {
               resolve(transaction)
             } else {
@@ -85,9 +85,9 @@ export default class Worldapp {
     })
   }
 
-  fetchTransaction(payload, attempt) {
+  fetchTransaction(payload, attempt = 1) {
     return new Promise((resolve, reject)=>{
-      if(attempt > 5) { reject('Fetching transaction failed!') }
+      if(attempt > 60) { reject('Fetching transaction failed!') }
       console.log('Before fetch')
       fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
         headers: { "Content-Type": "application/json" },
@@ -96,10 +96,14 @@ export default class Worldapp {
         if(response.ok) {
           console.log('Before json')
           response.json().then((transaction)=>{
-            console.log('After json2', transaction)
+            console.log('After json', transaction)
             if(transaction?.external_id) {
+              console.log('Before provider')
               getProvider('worldchain').then((provider)=>{
+                console.log('After provider', provider)
+                console.log('Before wait transaction', transaction.external_id)
                 provider.waitForTransaction(transaction.external_id).then((receipt)=>{
+                  console.log('After receipt', receipt)
                   if(receipt && receipt.status == 1) {
                     resolve()
                   }
