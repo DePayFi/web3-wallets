@@ -2296,7 +2296,8 @@
               if(_optionalChain$1([transaction, 'optionalAccess', _7 => _7.external_id])) {
                 transaction.id = _optionalChain$1([transaction, 'optionalAccess', _8 => _8.external_id]);
                 transaction.url = Blockchains__default['default']['worldchain'].explorerUrlFor({ transaction });
-                if (transaction.sent) transaction.sent(transaction);
+                console.log('before transaction.sent', transaction.sent);
+                if (transaction.sent) { transaction.sent(transaction); }
                 console.log('Before provider');
                 web3Client.getProvider('worldchain').then((provider)=>{
                   console.log('After provider', provider);
@@ -2305,7 +2306,8 @@
                     console.log('After receipt', receipt);
                     if(receipt && receipt.status == 1) {
                       transaction._succeeded = true;
-                      if (transaction.succeeded) transaction.succeeded(transaction);
+                      console.log('before transaction.succeeded', transaction.succeeded);
+                      if (transaction.succeeded) { transaction.succeeded(transaction); }
                       resolve(transaction);
                     }
                   }).catch(reject);

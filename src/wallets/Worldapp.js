@@ -100,7 +100,8 @@ export default class Worldapp {
             if(transaction?.external_id) {
               transaction.id = transaction?.external_id
               transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction })
-              if (transaction.sent) transaction.sent(transaction)
+              console.log('before transaction.sent', transaction.sent)
+              if (transaction.sent) { transaction.sent(transaction) }
               console.log('Before provider')
               getProvider('worldchain').then((provider)=>{
                 console.log('After provider', provider)
@@ -109,7 +110,8 @@ export default class Worldapp {
                   console.log('After receipt', receipt)
                   if(receipt && receipt.status == 1) {
                     transaction._succeeded = true
-                    if (transaction.succeeded) transaction.succeeded(transaction)
+                    console.log('before transaction.succeeded', transaction.succeeded)
+                    if (transaction.succeeded) { transaction.succeeded(transaction) }
                     resolve(transaction)
                   }
                 }).catch(reject)
