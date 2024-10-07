@@ -20,7 +20,7 @@ import Uniswap from './wallets/Uniswap'
 import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
-import Worldapp from './wallets/Worldapp'
+import WorldApp from './wallets/WorldApp'
 
 export default {
   MetaMask,
@@ -40,7 +40,7 @@ export default {
   TokenPocket,
   ExodusEVM,
   PhantomEVM,
-  Worldapp,
+  WorldApp,
 
   // standards
   WindowEthereum,
@@ -117,7 +117,7 @@ import WalletConnectV2 from './wallets/WalletConnectV2'
 import WalletLink from './wallets/WalletLink'
 import WindowEthereum from './wallets/WindowEthereum'
 import WindowSolana from './wallets/WindowSolana'
-import Worldapp from './wallets/Worldapp'
+import WorldApp from './wallets/WorldApp'
 
 export default {
   MetaMask,
@@ -148,7 +148,7 @@ export default {
   TokenPocket,
   ExodusEVM,
   ExodusSVM,
-  Worldapp,
+  WorldApp,
 
   // standards
   WindowEthereum,
