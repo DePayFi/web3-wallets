@@ -6575,6 +6575,7 @@ class Worldapp {
   }
 
   sendTransaction({ transaction }) {
+    window._debug(`sendTransaction: ${JSON.stringify(transaction)}`);
     transaction = new Transaction(transaction);
 
     return new Promise(async(resolve, reject)=>{
@@ -6675,8 +6676,9 @@ class Worldapp {
         nonce: crypto.randomUUID().replace(/-/g, ""),
         expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
         notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        statement: ""
+        statement: "Connect wallet (v17.3.0)"
       });
+
     })
   }
 
