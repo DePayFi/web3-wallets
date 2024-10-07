@@ -2303,8 +2303,8 @@ class Worldapp {
               console.log('Before provider');
               getProvider('worldchain').then((provider)=>{
                 console.log('After provider', provider);
-                console.log('Before wait transaction', transaction.external_id);
-                provider.waitForTransaction(transaction.external_id).then((receipt)=>{
+                console.log('Before wait transaction', transactionJSON.external_id);
+                provider.waitForTransaction(transactionJSON.external_id).then((receipt)=>{
                   console.log('After receipt', receipt);
                   if(receipt && receipt.status == 1) {
                     transaction._succeeded = true;
