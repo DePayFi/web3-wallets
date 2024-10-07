@@ -22,8 +22,9 @@ const supported = [
   wallets.HyperPay,
   wallets.TokenPocket,
   wallets.ExodusEVM,
+  wallets.Worldapp,
 
-  // standards (not concrete wallets)
+  // standards
   wallets.WalletConnectV2,
   wallets.WalletLink,
   wallets.WindowEthereum,
@@ -44,7 +45,7 @@ const supported = [
   wallets.ExodusSVM,
   wallets.Coin98SVM,
 
-  // standards (not concrete wallets)
+  // standards
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,
@@ -81,8 +82,9 @@ const supported = [
   wallets.OKXSVM,
   wallets.ExodusEVM,
   wallets.ExodusSVM,
+  wallets.Worldapp,
 
-  // standards (not concrete wallets)
+  // standards
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,

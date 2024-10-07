@@ -66,7 +66,6 @@ const sendTransaction = async ({ transaction, wallet })=> {
 const retrieveConfirmedTransaction = (sentTransaction)=>{
   return new Promise((resolve, reject)=>{
     try {
-
       sentTransaction.wait(1).then(resolve).catch((error)=>{
         if(
           (error && error?.stack?.match('JSON-RPC error')) ||

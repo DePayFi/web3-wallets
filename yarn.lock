@@ -1036,6 +1036,11 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.6.1.tgz#f0b6dc5ef4e3629136892458d3ef75d824625fac"
   integrity sha512-IK8D+zQ8UufqY8+fIGJ2Yuzw4Yms7VLYtkEPbAfurUffNTMOweMxBWRJVQfkcmKTamZbA7juTHFJ7Uv/z0m17g==
 
+"@depay/web3-blockchains@^9.6.2":
+  version "9.6.2"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.6.2.tgz#bb33d8d8f3078fcce33753065de1c927b4e28097"
+  integrity sha512-/Hz2siFgb5gJZu+B9XBiwq0fFRiLsJIMc9/JWPvLtGMuB0xgY7bznHHX00FlQTRXS1bwUxyUDVs3hWag17WXZw==
+
 "@depay/web3-client-evm@^10.19.0":
   version "10.19.0"
   resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-10.19.0.tgz#fb7ff54fb3ea632afae908890c030746dbf0c52b"
@@ -1091,6 +1096,13 @@
   version "10.4.1"
   resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-10.4.1.tgz#5679bf714058941a0d43379ac145fd16089cd666"
   integrity sha512-brUXHpgZ2CLGptF4SVJnGAguDYEobYFEIJ4IWYt6G8cFCrErCq3IQuK1DULh30pl+sFy9UihrSana7U1mPWR0Q==
+
+"@depay/worldcoin-precompiled@^0.0.32":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@depay/worldcoin-precompiled/-/worldcoin-precompiled-0.0.32.tgz#31fdd48bdb25463906c48bc2d15309eebdf6e1b6"
+  integrity sha512-hXVQ7mibASwRDvFbAdEaYOmp2qiZJKiK3Cvj4yWbKokOZ1ogJ+jO0iwt6KgXf7towtBU3tJ4UexTH8O30j00hA==
+  dependencies:
+    "@rollup/plugin-alias" "^5.1.0"
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -1686,6 +1698,13 @@
     "@parcel/watcher-win32-arm64" "2.4.1"
     "@parcel/watcher-win32-ia32" "2.4.1"
     "@parcel/watcher-win32-x64" "2.4.1"
+
+"@rollup/plugin-alias@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-alias/-/plugin-alias-5.1.0.tgz#99a94accc4ff9a3483be5baeedd5d7da3b597e93"
+  integrity sha512-lpA3RZ9PdIG7qqhEfv79tBffNaoDuukFDrmhLqg9ifv99u/ehn+lOg30x2zmhf8AQqQUZaMk/B9fZraQ6/acDQ==
+  dependencies:
+    slash "^4.0.0"
 
 "@rollup/plugin-commonjs@^18.0.0":
   version "18.1.0"
@@ -6393,6 +6412,11 @@ slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
+
+slash@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
+  integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
 slice-ansi@^4.0.0:
   version "4.0.0"

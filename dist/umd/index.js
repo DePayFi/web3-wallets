@@ -1,14 +1,14 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-client'), require('@depay/web3-blockchains'), require('@depay/solana-web3.js'), require('ethers'), require('@depay/walletconnect-v2'), require('@depay/coinbase-wallet-sdk')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-client', '@depay/web3-blockchains', '@depay/solana-web3.js', 'ethers', '@depay/walletconnect-v2', '@depay/coinbase-wallet-sdk'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Client, global.Web3Blockchains, global.SolanaWeb3js, global.ethers, global.WalletConnectV2, global.CoinbaseWalletSdk));
-}(this, (function (exports, web3Client, Blockchains, solanaWeb3_js, ethers, walletconnectV2, coinbaseWalletSdk) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@depay/web3-client'), require('@depay/web3-blockchains'), require('@depay/solana-web3.js'), require('ethers'), require('@depay/walletconnect-v2'), require('@depay/coinbase-wallet-sdk'), require('@depay/worldcoin-precompiled')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@depay/web3-client', '@depay/web3-blockchains', '@depay/solana-web3.js', 'ethers', '@depay/walletconnect-v2', '@depay/coinbase-wallet-sdk', '@depay/worldcoin-precompiled'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Wallets = {}, global.Web3Client, global.Web3Blockchains, global.SolanaWeb3js, global.ethers, global.WalletConnectV2, global.CoinbaseWalletSdk, global.WorldcoinPrecompiled));
+}(this, (function (exports, web3Client, Blockchains, solanaWeb3_js, ethers, walletconnectV2, coinbaseWalletSdk, worldcoinPrecompiled) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
   var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
-  function _optionalChain$A(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$B(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Transaction {
 
     constructor({
@@ -33,7 +33,7 @@
       this.to = (to && to.match('0x')) ? ethers.ethers.utils.getAddress(to) : to;
 
       // optional
-      this.value = _optionalChain$A([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
+      this.value = _optionalChain$B([Transaction, 'access', _ => _.bigNumberify, 'call', _2 => _2(value, blockchain), 'optionalAccess', _3 => _3.toString, 'call', _4 => _4()]);
       this.api = api;
       this.method = method;
       this.params = params;
@@ -73,7 +73,7 @@
     }
 
     getParamType(param) {
-      if(_optionalChain$A([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
+      if(_optionalChain$B([param, 'optionalAccess', _5 => _5.components, 'optionalAccess', _6 => _6.length])) {
         return `(${param.components.map((param)=>this.getParamType(param)).join(',')})`
       } else {
         return param.type
@@ -146,7 +146,7 @@
     }
   }
 
-  function _optionalChain$z(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$A(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const POLL_SPEED = 500; // 0.5 seconds
   const MAX_POLLS = 240; // 120 seconds
@@ -167,14 +167,14 @@
 
           const provider = await web3Client.getProvider(transaction.blockchain);
           const { value } = await provider.getSignatureStatus(signature);
-          const confirmationStatus = _optionalChain$z([value, 'optionalAccess', _ => _.confirmationStatus]);
+          const confirmationStatus = _optionalChain$A([value, 'optionalAccess', _ => _.confirmationStatus]);
           if(confirmationStatus) {
             const hasReachedSufficientCommitment = confirmationStatus === 'confirmed' || confirmationStatus === 'finalized';
             if (hasReachedSufficientCommitment) {
               if(value.err) {
                 transaction._failed = true;
                 const confirmedTransaction = await provider.getConfirmedTransaction(signature);
-                const failedReason = _optionalChain$z([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
+                const failedReason = _optionalChain$A([confirmedTransaction, 'optionalAccess', _2 => _2.meta, 'optionalAccess', _3 => _3.logMessages]) ? confirmedTransaction.meta.logMessages[confirmedTransaction.meta.logMessages.length - 1] : null;
                 if(transaction.failed) transaction.failed(transaction, failedReason);
               } else {
                 transaction._succeeded = true;
@@ -265,7 +265,7 @@
   supported$1.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base', 'worldchain'];
   supported$1.solana = ['solana'];
 
-  function _optionalChain$y(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$z(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class WindowSolana {
 
     static __initStatic() {this.info = {
@@ -276,13 +276,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$y([window, 'optionalAccess', _6 => _6.solana]) &&
+        _optionalChain$z([window, 'optionalAccess', _6 => _6.solana]) &&
         // not Phantom
         !(window.phantom && !window.glow && !window.solana.isGlow && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Coin98
         !window.coin98 &&
         // not BitKeep
-        !(_optionalChain$y([window, 'optionalAccess', _7 => _7.solana]) && _optionalChain$y([window, 'optionalAccess', _8 => _8.solana, 'access', _9 => _9.isBitKeep])) && 
+        !(_optionalChain$z([window, 'optionalAccess', _7 => _7.solana]) && _optionalChain$z([window, 'optionalAccess', _8 => _8.solana, 'access', _9 => _9.isBitKeep])) && 
         // not Glow
         !window.solana.isGlow &&
         // not trust
@@ -290,7 +290,7 @@
         // Brave Wallet
         !window.solana.isBraveWallet &&
         // OKX Wallet
-        !_optionalChain$y([window, 'optionalAccess', _10 => _10.okxwallet])
+        !_optionalChain$z([window, 'optionalAccess', _10 => _10.okxwallet])
       )
     };}
     
@@ -337,7 +337,7 @@
       let internalCallback;
       switch (event) {
         case 'account':
-          internalCallback = (publicKey) => callback(_optionalChain$y([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
+          internalCallback = (publicKey) => callback(_optionalChain$z([publicKey, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()]));
           this.getProvider().on('accountChanged', internalCallback);
           break
       }
@@ -390,7 +390,7 @@
     }
   } WindowSolana.__initStatic(); WindowSolana.__initStatic2();
 
-  function _optionalChain$x(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$y(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class Backpack extends WindowSolana {
 
@@ -402,7 +402,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$x([window, 'optionalAccess', _2 => _2.backpack]) &&
+        _optionalChain$y([window, 'optionalAccess', _2 => _2.backpack]) &&
         window.backpack.isBackpack
       )
     };}
@@ -420,7 +420,7 @@
     }
   } Backpack.__initStatic(); Backpack.__initStatic2();
 
-  function _optionalChain$w(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$x(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const sendTransaction$2 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
@@ -472,10 +472,9 @@
   const retrieveConfirmedTransaction$2 = (sentTransaction)=>{
     return new Promise((resolve, reject)=>{
       try {
-
         sentTransaction.wait(1).then(resolve).catch((error)=>{
           if(
-            (error && _optionalChain$w([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && _optionalChain$x([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
             (error && error.toString().match('undefined'))
           ) {
             setTimeout(()=>{
@@ -489,7 +488,7 @@
         });
       } catch(error) {
         if(
-          (error && _optionalChain$w([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && _optionalChain$x([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
           (error && error.toString().match('undefined'))
         ) {
           setTimeout(()=>{
@@ -524,12 +523,12 @@
     if(contractArguments) {
       return await method(...contractArguments, {
         value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
-        gasLimit: _optionalChain$w([gas, 'optionalAccess', _7 => _7.toHexString, 'call', _8 => _8()])
+        gasLimit: _optionalChain$x([gas, 'optionalAccess', _7 => _7.toHexString, 'call', _8 => _8()])
       })
     } else {
       return await method({
         value: Transaction.bigNumberify(transaction.value, transaction.blockchain),
-        gasLimit: _optionalChain$w([gas, 'optionalAccess', _9 => _9.toHexString, 'call', _10 => _10()])
+        gasLimit: _optionalChain$x([gas, 'optionalAccess', _9 => _9.toHexString, 'call', _10 => _10()])
       })
     }
   };
@@ -541,7 +540,7 @@
     })
   };
 
-  function _optionalChain$v(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$w(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   class WindowEthereum {
 
@@ -553,39 +552,39 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return (
-        _optionalChain$v([window, 'optionalAccess', _38 => _38.ethereum]) &&
+        _optionalChain$w([window, 'optionalAccess', _38 => _38.ethereum]) &&
         // not MetaMask
-        !(_optionalChain$v([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
+        !(_optionalChain$w([window, 'optionalAccess', _39 => _39.ethereum, 'optionalAccess', _40 => _40.isMetaMask]) && Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!RevokeCash)/)).length == 1) &&
         // not Coin98
-        !_optionalChain$v([window, 'optionalAccess', _41 => _41.coin98]) &&
+        !_optionalChain$w([window, 'optionalAccess', _41 => _41.coin98]) &&
         // not Trust Wallet
-        !(_optionalChain$v([window, 'optionalAccess', _42 => _42.ethereum, 'optionalAccess', _43 => _43.isTrust]) || _optionalChain$v([window, 'optionalAccess', _44 => _44.ethereum, 'optionalAccess', _45 => _45.isTrustWallet])) &&
+        !(_optionalChain$w([window, 'optionalAccess', _42 => _42.ethereum, 'optionalAccess', _43 => _43.isTrust]) || _optionalChain$w([window, 'optionalAccess', _44 => _44.ethereum, 'optionalAccess', _45 => _45.isTrustWallet])) &&
         // not crypto.com
-        !_optionalChain$v([window, 'optionalAccess', _46 => _46.ethereum, 'optionalAccess', _47 => _47.isDeficonnectProvider]) &&
+        !_optionalChain$w([window, 'optionalAccess', _46 => _46.ethereum, 'optionalAccess', _47 => _47.isDeficonnectProvider]) &&
         // not HyperPay
-        !_optionalChain$v([window, 'optionalAccess', _48 => _48.ethereum, 'optionalAccess', _49 => _49.isHyperPay]) &&
+        !_optionalChain$w([window, 'optionalAccess', _48 => _48.ethereum, 'optionalAccess', _49 => _49.isHyperPay]) &&
         // not Phantom
-        !(window.phantom && !window.glow && !_optionalChain$v([window, 'optionalAccess', _50 => _50.solana, 'optionalAccess', _51 => _51.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
+        !(window.phantom && !window.glow && !_optionalChain$w([window, 'optionalAccess', _50 => _50.solana, 'optionalAccess', _51 => _51.isGlow]) && !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])) &&
         // not Rabby
-        !_optionalChain$v([window, 'optionalAccess', _52 => _52.ethereum, 'optionalAccess', _53 => _53.isRabby]) &&
+        !_optionalChain$w([window, 'optionalAccess', _52 => _52.ethereum, 'optionalAccess', _53 => _53.isRabby]) &&
         // not Backpack
-        !_optionalChain$v([window, 'optionalAccess', _54 => _54.backpack, 'optionalAccess', _55 => _55.isBackpack]) &&
+        !_optionalChain$w([window, 'optionalAccess', _54 => _54.backpack, 'optionalAccess', _55 => _55.isBackpack]) &&
         // not TokenPocket
-        !_optionalChain$v([window, 'optionalAccess', _56 => _56.ethereum, 'optionalAccess', _57 => _57.isTokenPocket]) && 
+        !_optionalChain$w([window, 'optionalAccess', _56 => _56.ethereum, 'optionalAccess', _57 => _57.isTokenPocket]) && 
         // not BitKeep
-        !_optionalChain$v([window, 'optionalAccess', _58 => _58.ethereum, 'optionalAccess', _59 => _59.isBitKeep]) && 
+        !_optionalChain$w([window, 'optionalAccess', _58 => _58.ethereum, 'optionalAccess', _59 => _59.isBitKeep]) && 
         // not Coinbase
-        !(_optionalChain$v([window, 'optionalAccess', _60 => _60.ethereum, 'optionalAccess', _61 => _61.isCoinbaseWallet]) || _optionalChain$v([window, 'optionalAccess', _62 => _62.ethereum, 'optionalAccess', _63 => _63.isWalletLink])) &&
+        !(_optionalChain$w([window, 'optionalAccess', _60 => _60.ethereum, 'optionalAccess', _61 => _61.isCoinbaseWallet]) || _optionalChain$w([window, 'optionalAccess', _62 => _62.ethereum, 'optionalAccess', _63 => _63.isWalletLink])) &&
         // MetaMask through ProviderMap
-        !_optionalChain$v([window, 'optionalAccess', _64 => _64.ethereum, 'optionalAccess', _65 => _65.providerMap, 'optionalAccess', _66 => _66.has, 'call', _67 => _67('MetaMask')]) &&
+        !_optionalChain$w([window, 'optionalAccess', _64 => _64.ethereum, 'optionalAccess', _65 => _65.providerMap, 'optionalAccess', _66 => _66.has, 'call', _67 => _67('MetaMask')]) &&
         // Brave Wallet
-        !_optionalChain$v([window, 'optionalAccess', _68 => _68.ethereum, 'optionalAccess', _69 => _69.isBraveWallet]) &&
+        !_optionalChain$w([window, 'optionalAccess', _68 => _68.ethereum, 'optionalAccess', _69 => _69.isBraveWallet]) &&
         // Uniswap Wallet
-        !_optionalChain$v([window, 'optionalAccess', _70 => _70.ethereum, 'optionalAccess', _71 => _71.isUniswapWallet]) &&
+        !_optionalChain$w([window, 'optionalAccess', _70 => _70.ethereum, 'optionalAccess', _71 => _71.isUniswapWallet]) &&
         // Rainbow
-        !_optionalChain$v([window, 'optionalAccess', _72 => _72.ethereum, 'optionalAccess', _73 => _73.isRainbow]) &&
+        !_optionalChain$w([window, 'optionalAccess', _72 => _72.ethereum, 'optionalAccess', _73 => _73.isRainbow]) &&
         // OKX Wallet
-        !_optionalChain$v([window, 'optionalAccess', _74 => _74.okxwallet])
+        !_optionalChain$w([window, 'optionalAccess', _74 => _74.okxwallet])
       )
     };}
     
@@ -711,7 +710,7 @@
     }
   } WindowEthereum.__initStatic(); WindowEthereum.__initStatic2();
 
-  function _optionalChain$u(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$v(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Binance extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -721,7 +720,7 @@
     };}
 
     static __initStatic2() {this.isAvailable = async()=>{
-      return _optionalChain$u([window, 'optionalAccess', _2 => _2.BinanceChain]) &&
+      return _optionalChain$v([window, 'optionalAccess', _2 => _2.BinanceChain]) &&
         !window.coin98 &&
         !window.trustwallet
     };}
@@ -741,7 +740,7 @@
     okx: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI4LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAzMzYuMSAzMzYuMSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzM2LjEgMzM2LjE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KPC9zdHlsZT4KPHBhdGggZD0iTTMxMy43LDBIMjIuNEMxMCwwLDAsMTAsMCwyMi40djI5MS4zYzAsMTIuNCwxMCwyMi40LDIyLjQsMjIuNGgyOTEuM2MxMi40LDAsMjIuNC0xMCwyMi40LTIyLjRWMjIuNAoJQzMzNi4xLDEwLDMyNi4xLDAsMzEzLjcsMHoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTIwNC41LDEzMC43aC02NC43Yy0yLjcsMC01LDIuMi01LDV2NjQuN2MwLDIuNywyLjIsNSw1LDVoNjQuN2MyLjcsMCw1LTIuMiw1LTV2LTY0LjcKCUMyMDkuNSwxMzIuOSwyMDcuMiwxMzAuNywyMDQuNSwxMzAuN3oiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTEyOS44LDU2LjFINjUuMWMtMi43LDAtNSwyLjItNSw1djY0LjdjMCwyLjcsMi4yLDUsNSw1aDY0LjdjMi44LDAsNS0yLjIsNS01VjYxCglDMTM0LjgsNTguMywxMzIuNSw1Ni4xLDEyOS44LDU2LjF6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yNzkuMSw1Ni4xaC02NC43Yy0yLjcsMC01LDIuMi01LDV2NjQuN2MwLDIuNywyLjIsNSw1LDVoNjQuN2MyLjcsMCw1LTIuMiw1LTVWNjEKCUMyODQuMSw1OC4zLDI4MS45LDU2LjEsMjc5LjEsNTYuMXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTEyOS44LDIwNS40SDY1LjFjLTIuNywwLTUsMi4yLTUsNXY2NC43YzAsMi43LDIuMiw1LDUsNWg2NC43YzIuOCwwLDUtMi4yLDUtNXYtNjQuNwoJQzEzNC44LDIwNy42LDEzMi41LDIwNS40LDEyOS44LDIwNS40eiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjc5LjEsMjA1LjRoLTY0LjdjLTIuNywwLTUsMi4yLTUsNXY2NC43YzAsMi43LDIuMiw1LDUsNWg2NC43YzIuNywwLDUtMi4yLDUtNXYtNjQuNwoJQzI4NC4xLDIwNy42LDI4MS45LDIwNS40LDI3OS4xLDIwNS40eiIvPgo8L3N2Zz4K",
   };
 
-  function _optionalChain$t(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$u(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class BraveEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -751,14 +750,14 @@
       platform: 'evm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$t([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isBraveWallet]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$u([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isBraveWallet]) };}
 
     getProvider() { 
       return window.ethereum
     }
   } BraveEVM.__initStatic(); BraveEVM.__initStatic2();
 
-  function _optionalChain$s(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$t(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class BraveSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -768,14 +767,14 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$s([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isBraveWallet]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$t([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isBraveWallet]) };}
 
     getProvider() { 
       return window.braveSolana
     }
   } BraveSVM.__initStatic(); BraveSVM.__initStatic2();
 
-  function _optionalChain$r(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$s(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Coin98EVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -785,13 +784,13 @@
       platform: 'evm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$r([window, 'optionalAccess', _2 => _2.coin98]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$s([window, 'optionalAccess', _2 => _2.coin98]) };}
 
     getProvider() { return window.coin98.provider }
     
   } Coin98EVM.__initStatic(); Coin98EVM.__initStatic2();
 
-  function _optionalChain$q(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$r(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Coin98SVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -801,13 +800,13 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$q([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$r([window, 'optionalAccess', _3 => _3.coin98, 'optionalAccess', _4 => _4.sol]) };}
 
     getProvider() { return window.coin98.sol }
 
   } Coin98SVM.__initStatic(); Coin98SVM.__initStatic2();
 
-  function _optionalChain$p(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$q(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class CoinbaseEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -818,8 +817,8 @@
     };}
 
     getProvider() { 
-      if(_optionalChain$p([window, 'optionalAccess', _9 => _9.ethereum, 'optionalAccess', _10 => _10.providerMap, 'optionalAccess', _11 => _11.has, 'call', _12 => _12('CoinbaseWallet')])) {
-        return _optionalChain$p([window, 'optionalAccess', _13 => _13.ethereum, 'optionalAccess', _14 => _14.providerMap, 'optionalAccess', _15 => _15.get, 'call', _16 => _16('CoinbaseWallet')])
+      if(_optionalChain$q([window, 'optionalAccess', _9 => _9.ethereum, 'optionalAccess', _10 => _10.providerMap, 'optionalAccess', _11 => _11.has, 'call', _12 => _12('CoinbaseWallet')])) {
+        return _optionalChain$q([window, 'optionalAccess', _13 => _13.ethereum, 'optionalAccess', _14 => _14.providerMap, 'optionalAccess', _15 => _15.get, 'call', _16 => _16('CoinbaseWallet')])
       } else {
         return window.ethereum
       }
@@ -828,9 +827,9 @@
     static __initStatic2() {this.isAvailable = async()=>{ 
       return(
         (
-          _optionalChain$p([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isCoinbaseWallet]) || _optionalChain$p([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isWalletLink])
+          _optionalChain$q([window, 'optionalAccess', _17 => _17.ethereum, 'optionalAccess', _18 => _18.isCoinbaseWallet]) || _optionalChain$q([window, 'optionalAccess', _19 => _19.ethereum, 'optionalAccess', _20 => _20.isWalletLink])
         ) || (
-          _optionalChain$p([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.providerMap, 'optionalAccess', _23 => _23.has, 'call', _24 => _24('CoinbaseWallet')])
+          _optionalChain$q([window, 'optionalAccess', _21 => _21.ethereum, 'optionalAccess', _22 => _22.providerMap, 'optionalAccess', _23 => _23.has, 'call', _24 => _24('CoinbaseWallet')])
         )
       )
     };}
@@ -854,7 +853,7 @@
     };}
   } CoinbaseSVM.__initStatic(); CoinbaseSVM.__initStatic2();
 
-  function _optionalChain$o(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$p(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class CryptoCom extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -863,10 +862,10 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$o([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isDeficonnectProvider]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$p([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isDeficonnectProvider]) };}
   } CryptoCom.__initStatic(); CryptoCom.__initStatic2();
 
-  function _optionalChain$n(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$o(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class ExodusEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -876,10 +875,10 @@
       platform: 'evm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$n([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isExodus]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$o([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isExodus]) };}
   } ExodusEVM.__initStatic(); ExodusEVM.__initStatic2();
 
-  function _optionalChain$m(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$n(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class ExodusSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -889,7 +888,7 @@
       platform: 'svm',
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$m([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$n([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isExodus]) };}
   } ExodusSVM.__initStatic(); ExodusSVM.__initStatic2();
 
   class Glow extends WindowSolana {
@@ -908,7 +907,7 @@
     };}
   } Glow.__initStatic(); Glow.__initStatic2();
 
-  function _optionalChain$l(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$m(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class HyperPay extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -917,10 +916,10 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$l([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isHyperPay]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$m([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isHyperPay]) };}
   } HyperPay.__initStatic(); HyperPay.__initStatic2();
 
-  function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$l(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class MagicEdenEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -932,12 +931,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$k([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isMagicEden])
+        _optionalChain$l([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isMagicEden])
       )
     };}
   } MagicEdenEVM.__initStatic(); MagicEdenEVM.__initStatic2();
 
-  function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class MagicEdenSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -949,10 +948,44 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$j([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isMagicEden])
+        _optionalChain$k([window, 'optionalAccess', _3 => _3.solana, 'optionalAccess', _4 => _4.isMagicEden])
       )
     };}
   } MagicEdenSVM.__initStatic(); MagicEdenSVM.__initStatic2();
+
+  function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  class MetaMask extends WindowEthereum {
+
+    static __initStatic() {this.info = {
+      name: 'MetaMask',
+      logo: "data:image/svg+xml;base64,PHN2ZyBpZD0nTGF5ZXJfMScgZGF0YS1uYW1lPSdMYXllciAxJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0ODUuOTMgNDUwLjU2Jz48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzgyODQ4Nzt9LmNscy0ye2ZpbGw6I2UyNzcyNjtzdHJva2U6I2UyNzcyNjt9LmNscy0xMCwuY2xzLTExLC5jbHMtMiwuY2xzLTMsLmNscy00LC5jbHMtNSwuY2xzLTYsLmNscy03LC5jbHMtOCwuY2xzLTl7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO30uY2xzLTN7ZmlsbDojZTM3NzI1O3N0cm9rZTojZTM3NzI1O30uY2xzLTR7ZmlsbDojZDZjMGIzO3N0cm9rZTojZDZjMGIzO30uY2xzLTV7ZmlsbDojMjQzNDQ3O3N0cm9rZTojMjQzNDQ3O30uY2xzLTZ7ZmlsbDojY2Q2MzI4O3N0cm9rZTojY2Q2MzI4O30uY2xzLTd7ZmlsbDojZTM3NTI1O3N0cm9rZTojZTM3NTI1O30uY2xzLTh7ZmlsbDojZjY4NTFmO3N0cm9rZTojZjY4NTFmO30uY2xzLTl7ZmlsbDojYzFhZTllO3N0cm9rZTojYzFhZTllO30uY2xzLTEwe2ZpbGw6IzE3MTcxNztzdHJva2U6IzE3MTcxNzt9LmNscy0xMXtmaWxsOiM3NjNlMWE7c3Ryb2tlOiM3NjNlMWE7fTwvc3R5bGU+PC9kZWZzPjxwYXRoIGNsYXNzPSdjbHMtMScgZD0nTTI0Ny45MSwzNTYuMjlhMjYsMjYsMCwxLDAtMjYsMjZBMjYsMjYsMCwwLDAsMjQ3LjkxLDM1Ni4yOVonIHRyYW5zZm9ybT0ndHJhbnNsYXRlKC03Ljk3IC0yMS4zMyknLz48cGF0aCBjbGFzcz0nY2xzLTEnIGQ9J00yNDYuNTUsMTQ5LjcxYTI2LDI2LDAsMSwwLTI2LDI2QTI2LDI2LDAsMCwwLDI0Ni41NSwxNDkuNzFaJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgtNy45NyAtMjEuMzMpJy8+PGNpcmNsZSBjbGFzcz0nY2xzLTEnIGN4PScxNDguNCcgY3k9JzIzMC4wNScgcj0nMjUuOTknLz48cG9seWdvbiBjbGFzcz0nY2xzLTInIHBvaW50cz0nNDYxLjI4IDAuNSAyNzIuMDYgMTQxLjAzIDMwNy4wNSA1OC4xMiA0NjEuMjggMC41Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzI0LjQ2IDAuNSAyMTIuMTYgMTQyLjM3IDE3OC44OCA1OC4xMiAyNC40NiAwLjUnLz48cG9seWdvbiBjbGFzcz0nY2xzLTMnIHBvaW50cz0nMzkzLjIgMzI2LjI2IDM0Mi44MSA0MDMuNDcgNDUwLjYzIDQzMy4xNCA0ODEuNjMgMzI3Ljk3IDM5My4yIDMyNi4yNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMycgcG9pbnRzPSc0LjQ5IDMyNy45NyAzNS4zIDQzMy4xNCAxNDMuMTMgNDAzLjQ3IDkyLjczIDMyNi4yNiA0LjQ5IDMyNy45NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMycgcG9pbnRzPScxMzcuMDQgMTk1LjggMTA3IDI0MS4yNSAyMTQuMDYgMjQ2LjAxIDIxMC4yNiAxMzAuOTYgMTM3LjA0IDE5NS44Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzM0OC43IDE5NS44IDI3NC41MyAxMjkuNjMgMjcyLjA2IDI0Ni4wMSAzNzguOTQgMjQxLjI1IDM0OC43IDE5NS44Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzE0My4xMyA0MDMuNDcgMjA3LjQxIDM3Mi4wOSAxNTEuODggMzI4LjczIDE0My4xMyA0MDMuNDcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTMnIHBvaW50cz0nMjc4LjM0IDM3Mi4wOSAzNDIuODEgNDAzLjQ3IDMzMy44NyAzMjguNzMgMjc4LjM0IDM3Mi4wOScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNCcgcG9pbnRzPSczNDIuODEgNDAzLjQ3IDI3OC4zNCAzNzIuMDkgMjgzLjQ3IDQxNC4xMiAyODIuOSA0MzEuODEgMzQyLjgxIDQwMy40NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNCcgcG9pbnRzPScxNDMuMTMgNDAzLjQ3IDIwMy4wMyA0MzEuODEgMjAyLjY1IDQxNC4xMiAyMDcuNDEgMzcyLjA5IDE0My4xMyA0MDMuNDcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTUnIHBvaW50cz0nMjAzLjk4IDMwMC45NyAxNTAuMzUgMjg1LjE4IDE4OC4yIDI2Ny44OCAyMDMuOTggMzAwLjk3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy01JyBwb2ludHM9JzI4MS43NiAzMDAuOTcgMjk3LjU1IDI2Ny44OCAzMzUuNTggMjg1LjE4IDI4MS43NiAzMDAuOTcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTYnIHBvaW50cz0nMTQzLjEzIDQwMy40NyAxNTIuMjUgMzI2LjI2IDkyLjczIDMyNy45NyAxNDMuMTMgNDAzLjQ3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy02JyBwb2ludHM9JzMzMy42OCAzMjYuMjYgMzQyLjgxIDQwMy40NyAzOTMuMiAzMjcuOTcgMzMzLjY4IDMyNi4yNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNicgcG9pbnRzPSczNzguOTQgMjQxLjI1IDI3Mi4wNiAyNDYuMDEgMjgxLjk1IDMwMC45NyAyOTcuNzQgMjY3Ljg4IDMzNS43NyAyODUuMTggMzc4Ljk0IDI0MS4yNScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNicgcG9pbnRzPScxNTAuMzUgMjg1LjE4IDE4OC4zOSAyNjcuODggMjAzLjk4IDMwMC45NyAyMTQuMDYgMjQ2LjAxIDEwNyAyNDEuMjUgMTUwLjM1IDI4NS4xOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNycgcG9pbnRzPScxMDcgMjQxLjI1IDE1MS44OCAzMjguNzMgMTUwLjM1IDI4NS4xOCAxMDcgMjQxLjI1Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy03JyBwb2ludHM9JzMzNS43NyAyODUuMTggMzMzLjg3IDMyOC43MyAzNzguOTQgMjQxLjI1IDMzNS43NyAyODUuMTgnLz48cG9seWdvbiBjbGFzcz0nY2xzLTcnIHBvaW50cz0nMjE0LjA2IDI0Ni4wMSAyMDMuOTggMzAwLjk3IDIxNi41MyAzNjUuODIgMjE5LjM4IDI4MC40MyAyMTQuMDYgMjQ2LjAxJy8+PHBvbHlnb24gY2xhc3M9J2Nscy03JyBwb2ludHM9JzI3Mi4wNiAyNDYuMDEgMjY2LjkzIDI4MC4yNCAyNjkuMjEgMzY1LjgyIDI4MS45NSAzMDAuOTcgMjcyLjA2IDI0Ni4wMScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScyODEuOTUgMzAwLjk3IDI2OS4yMSAzNjUuODIgMjc4LjM0IDM3Mi4wOSAzMzMuODcgMzI4LjczIDMzNS43NyAyODUuMTggMjgxLjk1IDMwMC45NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScxNTAuMzUgMjg1LjE4IDE1MS44OCAzMjguNzMgMjA3LjQxIDM3Mi4wOSAyMTYuNTMgMzY1LjgyIDIwMy45OCAzMDAuOTcgMTUwLjM1IDI4NS4xOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOScgcG9pbnRzPScyODIuOSA0MzEuODEgMjgzLjQ3IDQxNC4xMiAyNzguNzIgNDA5Ljk0IDIwNy4wMiA0MDkuOTQgMjAyLjY1IDQxNC4xMiAyMDMuMDMgNDMxLjgxIDE0My4xMyA0MDMuNDcgMTY0LjA1IDQyMC41OCAyMDYuNDUgNDUwLjA2IDI3OS4yOSA0NTAuMDYgMzIxLjg5IDQyMC41OCAzNDIuODEgNDAzLjQ3IDI4Mi45IDQzMS44MScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMTAnIHBvaW50cz0nMjc4LjM0IDM3Mi4wOSAyNjkuMjEgMzY1LjgyIDIxNi41MyAzNjUuODIgMjA3LjQxIDM3Mi4wOSAyMDIuNjUgNDE0LjEyIDIwNy4wMiA0MDkuOTQgMjc4LjcyIDQwOS45NCAyODMuNDcgNDE0LjEyIDI3OC4zNCAzNzIuMDknLz48cG9seWdvbiBjbGFzcz0nY2xzLTExJyBwb2ludHM9JzQ2OS4yNyAxNTAuMTYgNDg1LjQzIDcyLjU3IDQ2MS4yOCAwLjUgMjc4LjM0IDEzNi4yOCAzNDguNyAxOTUuOCA0NDguMTYgMjI0LjkgNDcwLjIyIDE5OS4yMyA0NjAuNzEgMTkyLjM4IDQ3NS45MiAxNzguNSA0NjQuMTMgMTY5LjM3IDQ3OS4zNSAxNTcuNzcgNDY5LjI3IDE1MC4xNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMTEnIHBvaW50cz0nMC41IDcyLjU3IDE2LjY2IDE1MC4xNiA2LjM5IDE1Ny43NyAyMS42MSAxNjkuMzcgMTAuMDEgMTc4LjUgMjUuMjIgMTkyLjM4IDE1LjcxIDE5OS4yMyAzNy41OCAyMjQuOSAxMzcuMDQgMTk1LjggMjA3LjQxIDEzNi4yOCAyNC40NiAwLjUgMC41IDcyLjU3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy04JyBwb2ludHM9JzQ0OC4xNiAyMjQuOSAzNDguNyAxOTUuOCAzNzguOTQgMjQxLjI1IDMzMy44NyAzMjguNzMgMzkzLjIgMzI3Ljk3IDQ4MS42MyAzMjcuOTcgNDQ4LjE2IDIyNC45Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy04JyBwb2ludHM9JzEzNy4wNCAxOTUuOCAzNy41OCAyMjQuOSA0LjQ5IDMyNy45NyA5Mi43MyAzMjcuOTcgMTUxLjg4IDMyOC43MyAxMDcgMjQxLjI1IDEzNy4wNCAxOTUuOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScyNzIuMDYgMjQ2LjAxIDI3OC4zNCAxMzYuMjggMzA3LjI0IDU4LjEyIDE3OC44OCA1OC4xMiAyMDcuNDEgMTM2LjI4IDIxNC4wNiAyNDYuMDEgMjE2LjM0IDI4MC42MiAyMTYuNTMgMzY1LjgyIDI2OS4yMSAzNjUuODIgMjY5LjU5IDI4MC42MiAyNzIuMDYgMjQ2LjAxJy8+PC9zdmc+",
+      blockchains: supported$1.evm
+    };}
+
+    static __initStatic2() {this.isMetaMask = (provider)=> {
+      return(
+        _optionalChain$j([provider, 'optionalAccess', _3 => _3.isMetaMask]) &&
+        Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!WalletGuard)(?!RevokeCash)/)).length == 1
+      )
+    };}
+
+    static __initStatic3() {this.getEip6963Provider = ()=>{
+      return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
+        return MetaMask.isMetaMask(provider)
+      }) : undefined
+    };}
+
+    static __initStatic4() {this.isAvailable = async()=>{
+      return(
+        MetaMask.getEip6963Provider() ||
+        MetaMask.isMetaMask(_optionalChain$j([window, 'optionalAccess', _4 => _4.ethereum]))
+      )
+    };}
+
+    getProvider() {
+      return MetaMask.getEip6963Provider() || (MetaMask.isMetaMask(_optionalChain$j([window, 'optionalAccess', _5 => _5.ethereum])) && _optionalChain$j([window, 'optionalAccess', _6 => _6.ethereum]))
+    }
+  } MetaMask.__initStatic(); MetaMask.__initStatic2(); MetaMask.__initStatic3(); MetaMask.__initStatic4();
 
   function _optionalChain$i(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class OKXEVM extends WindowEthereum {
@@ -989,40 +1022,6 @@
   } OKXSVM.__initStatic(); OKXSVM.__initStatic2();
 
   function _optionalChain$g(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  class MetaMask extends WindowEthereum {
-
-    static __initStatic() {this.info = {
-      name: 'MetaMask',
-      logo: "data:image/svg+xml;base64,PHN2ZyBpZD0nTGF5ZXJfMScgZGF0YS1uYW1lPSdMYXllciAxJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0ODUuOTMgNDUwLjU2Jz48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzgyODQ4Nzt9LmNscy0ye2ZpbGw6I2UyNzcyNjtzdHJva2U6I2UyNzcyNjt9LmNscy0xMCwuY2xzLTExLC5jbHMtMiwuY2xzLTMsLmNscy00LC5jbHMtNSwuY2xzLTYsLmNscy03LC5jbHMtOCwuY2xzLTl7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO30uY2xzLTN7ZmlsbDojZTM3NzI1O3N0cm9rZTojZTM3NzI1O30uY2xzLTR7ZmlsbDojZDZjMGIzO3N0cm9rZTojZDZjMGIzO30uY2xzLTV7ZmlsbDojMjQzNDQ3O3N0cm9rZTojMjQzNDQ3O30uY2xzLTZ7ZmlsbDojY2Q2MzI4O3N0cm9rZTojY2Q2MzI4O30uY2xzLTd7ZmlsbDojZTM3NTI1O3N0cm9rZTojZTM3NTI1O30uY2xzLTh7ZmlsbDojZjY4NTFmO3N0cm9rZTojZjY4NTFmO30uY2xzLTl7ZmlsbDojYzFhZTllO3N0cm9rZTojYzFhZTllO30uY2xzLTEwe2ZpbGw6IzE3MTcxNztzdHJva2U6IzE3MTcxNzt9LmNscy0xMXtmaWxsOiM3NjNlMWE7c3Ryb2tlOiM3NjNlMWE7fTwvc3R5bGU+PC9kZWZzPjxwYXRoIGNsYXNzPSdjbHMtMScgZD0nTTI0Ny45MSwzNTYuMjlhMjYsMjYsMCwxLDAtMjYsMjZBMjYsMjYsMCwwLDAsMjQ3LjkxLDM1Ni4yOVonIHRyYW5zZm9ybT0ndHJhbnNsYXRlKC03Ljk3IC0yMS4zMyknLz48cGF0aCBjbGFzcz0nY2xzLTEnIGQ9J00yNDYuNTUsMTQ5LjcxYTI2LDI2LDAsMSwwLTI2LDI2QTI2LDI2LDAsMCwwLDI0Ni41NSwxNDkuNzFaJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgtNy45NyAtMjEuMzMpJy8+PGNpcmNsZSBjbGFzcz0nY2xzLTEnIGN4PScxNDguNCcgY3k9JzIzMC4wNScgcj0nMjUuOTknLz48cG9seWdvbiBjbGFzcz0nY2xzLTInIHBvaW50cz0nNDYxLjI4IDAuNSAyNzIuMDYgMTQxLjAzIDMwNy4wNSA1OC4xMiA0NjEuMjggMC41Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzI0LjQ2IDAuNSAyMTIuMTYgMTQyLjM3IDE3OC44OCA1OC4xMiAyNC40NiAwLjUnLz48cG9seWdvbiBjbGFzcz0nY2xzLTMnIHBvaW50cz0nMzkzLjIgMzI2LjI2IDM0Mi44MSA0MDMuNDcgNDUwLjYzIDQzMy4xNCA0ODEuNjMgMzI3Ljk3IDM5My4yIDMyNi4yNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMycgcG9pbnRzPSc0LjQ5IDMyNy45NyAzNS4zIDQzMy4xNCAxNDMuMTMgNDAzLjQ3IDkyLjczIDMyNi4yNiA0LjQ5IDMyNy45NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMycgcG9pbnRzPScxMzcuMDQgMTk1LjggMTA3IDI0MS4yNSAyMTQuMDYgMjQ2LjAxIDIxMC4yNiAxMzAuOTYgMTM3LjA0IDE5NS44Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzM0OC43IDE5NS44IDI3NC41MyAxMjkuNjMgMjcyLjA2IDI0Ni4wMSAzNzguOTQgMjQxLjI1IDM0OC43IDE5NS44Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy0zJyBwb2ludHM9JzE0My4xMyA0MDMuNDcgMjA3LjQxIDM3Mi4wOSAxNTEuODggMzI4LjczIDE0My4xMyA0MDMuNDcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTMnIHBvaW50cz0nMjc4LjM0IDM3Mi4wOSAzNDIuODEgNDAzLjQ3IDMzMy44NyAzMjguNzMgMjc4LjM0IDM3Mi4wOScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNCcgcG9pbnRzPSczNDIuODEgNDAzLjQ3IDI3OC4zNCAzNzIuMDkgMjgzLjQ3IDQxNC4xMiAyODIuOSA0MzEuODEgMzQyLjgxIDQwMy40NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNCcgcG9pbnRzPScxNDMuMTMgNDAzLjQ3IDIwMy4wMyA0MzEuODEgMjAyLjY1IDQxNC4xMiAyMDcuNDEgMzcyLjA5IDE0My4xMyA0MDMuNDcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTUnIHBvaW50cz0nMjAzLjk4IDMwMC45NyAxNTAuMzUgMjg1LjE4IDE4OC4yIDI2Ny44OCAyMDMuOTggMzAwLjk3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy01JyBwb2ludHM9JzI4MS43NiAzMDAuOTcgMjk3LjU1IDI2Ny44OCAzMzUuNTggMjg1LjE4IDI4MS43NiAzMDAuOTcnLz48cG9seWdvbiBjbGFzcz0nY2xzLTYnIHBvaW50cz0nMTQzLjEzIDQwMy40NyAxNTIuMjUgMzI2LjI2IDkyLjczIDMyNy45NyAxNDMuMTMgNDAzLjQ3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy02JyBwb2ludHM9JzMzMy42OCAzMjYuMjYgMzQyLjgxIDQwMy40NyAzOTMuMiAzMjcuOTcgMzMzLjY4IDMyNi4yNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNicgcG9pbnRzPSczNzguOTQgMjQxLjI1IDI3Mi4wNiAyNDYuMDEgMjgxLjk1IDMwMC45NyAyOTcuNzQgMjY3Ljg4IDMzNS43NyAyODUuMTggMzc4Ljk0IDI0MS4yNScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNicgcG9pbnRzPScxNTAuMzUgMjg1LjE4IDE4OC4zOSAyNjcuODggMjAzLjk4IDMwMC45NyAyMTQuMDYgMjQ2LjAxIDEwNyAyNDEuMjUgMTUwLjM1IDI4NS4xOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtNycgcG9pbnRzPScxMDcgMjQxLjI1IDE1MS44OCAzMjguNzMgMTUwLjM1IDI4NS4xOCAxMDcgMjQxLjI1Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy03JyBwb2ludHM9JzMzNS43NyAyODUuMTggMzMzLjg3IDMyOC43MyAzNzguOTQgMjQxLjI1IDMzNS43NyAyODUuMTgnLz48cG9seWdvbiBjbGFzcz0nY2xzLTcnIHBvaW50cz0nMjE0LjA2IDI0Ni4wMSAyMDMuOTggMzAwLjk3IDIxNi41MyAzNjUuODIgMjE5LjM4IDI4MC40MyAyMTQuMDYgMjQ2LjAxJy8+PHBvbHlnb24gY2xhc3M9J2Nscy03JyBwb2ludHM9JzI3Mi4wNiAyNDYuMDEgMjY2LjkzIDI4MC4yNCAyNjkuMjEgMzY1LjgyIDI4MS45NSAzMDAuOTcgMjcyLjA2IDI0Ni4wMScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScyODEuOTUgMzAwLjk3IDI2OS4yMSAzNjUuODIgMjc4LjM0IDM3Mi4wOSAzMzMuODcgMzI4LjczIDMzNS43NyAyODUuMTggMjgxLjk1IDMwMC45NycvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScxNTAuMzUgMjg1LjE4IDE1MS44OCAzMjguNzMgMjA3LjQxIDM3Mi4wOSAyMTYuNTMgMzY1LjgyIDIwMy45OCAzMDAuOTcgMTUwLjM1IDI4NS4xOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOScgcG9pbnRzPScyODIuOSA0MzEuODEgMjgzLjQ3IDQxNC4xMiAyNzguNzIgNDA5Ljk0IDIwNy4wMiA0MDkuOTQgMjAyLjY1IDQxNC4xMiAyMDMuMDMgNDMxLjgxIDE0My4xMyA0MDMuNDcgMTY0LjA1IDQyMC41OCAyMDYuNDUgNDUwLjA2IDI3OS4yOSA0NTAuMDYgMzIxLjg5IDQyMC41OCAzNDIuODEgNDAzLjQ3IDI4Mi45IDQzMS44MScvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMTAnIHBvaW50cz0nMjc4LjM0IDM3Mi4wOSAyNjkuMjEgMzY1LjgyIDIxNi41MyAzNjUuODIgMjA3LjQxIDM3Mi4wOSAyMDIuNjUgNDE0LjEyIDIwNy4wMiA0MDkuOTQgMjc4LjcyIDQwOS45NCAyODMuNDcgNDE0LjEyIDI3OC4zNCAzNzIuMDknLz48cG9seWdvbiBjbGFzcz0nY2xzLTExJyBwb2ludHM9JzQ2OS4yNyAxNTAuMTYgNDg1LjQzIDcyLjU3IDQ2MS4yOCAwLjUgMjc4LjM0IDEzNi4yOCAzNDguNyAxOTUuOCA0NDguMTYgMjI0LjkgNDcwLjIyIDE5OS4yMyA0NjAuNzEgMTkyLjM4IDQ3NS45MiAxNzguNSA0NjQuMTMgMTY5LjM3IDQ3OS4zNSAxNTcuNzcgNDY5LjI3IDE1MC4xNicvPjxwb2x5Z29uIGNsYXNzPSdjbHMtMTEnIHBvaW50cz0nMC41IDcyLjU3IDE2LjY2IDE1MC4xNiA2LjM5IDE1Ny43NyAyMS42MSAxNjkuMzcgMTAuMDEgMTc4LjUgMjUuMjIgMTkyLjM4IDE1LjcxIDE5OS4yMyAzNy41OCAyMjQuOSAxMzcuMDQgMTk1LjggMjA3LjQxIDEzNi4yOCAyNC40NiAwLjUgMC41IDcyLjU3Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy04JyBwb2ludHM9JzQ0OC4xNiAyMjQuOSAzNDguNyAxOTUuOCAzNzguOTQgMjQxLjI1IDMzMy44NyAzMjguNzMgMzkzLjIgMzI3Ljk3IDQ4MS42MyAzMjcuOTcgNDQ4LjE2IDIyNC45Jy8+PHBvbHlnb24gY2xhc3M9J2Nscy04JyBwb2ludHM9JzEzNy4wNCAxOTUuOCAzNy41OCAyMjQuOSA0LjQ5IDMyNy45NyA5Mi43MyAzMjcuOTcgMTUxLjg4IDMyOC43MyAxMDcgMjQxLjI1IDEzNy4wNCAxOTUuOCcvPjxwb2x5Z29uIGNsYXNzPSdjbHMtOCcgcG9pbnRzPScyNzIuMDYgMjQ2LjAxIDI3OC4zNCAxMzYuMjggMzA3LjI0IDU4LjEyIDE3OC44OCA1OC4xMiAyMDcuNDEgMTM2LjI4IDIxNC4wNiAyNDYuMDEgMjE2LjM0IDI4MC42MiAyMTYuNTMgMzY1LjgyIDI2OS4yMSAzNjUuODIgMjY5LjU5IDI4MC42MiAyNzIuMDYgMjQ2LjAxJy8+PC9zdmc+",
-      blockchains: supported$1.evm
-    };}
-
-    static __initStatic2() {this.isMetaMask = (provider)=> {
-      return(
-        _optionalChain$g([provider, 'optionalAccess', _3 => _3.isMetaMask]) &&
-        Object.keys(provider).filter((key)=>key.match(/^is(?!Connected)(?!PocketUniverse)(?!WalletGuard)(?!RevokeCash)/)).length == 1
-      )
-    };}
-
-    static __initStatic3() {this.getEip6963Provider = ()=>{
-      return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
-        return MetaMask.isMetaMask(provider)
-      }) : undefined
-    };}
-
-    static __initStatic4() {this.isAvailable = async()=>{
-      return(
-        MetaMask.getEip6963Provider() ||
-        MetaMask.isMetaMask(_optionalChain$g([window, 'optionalAccess', _4 => _4.ethereum]))
-      )
-    };}
-
-    getProvider() {
-      return MetaMask.getEip6963Provider() || (MetaMask.isMetaMask(_optionalChain$g([window, 'optionalAccess', _5 => _5.ethereum])) && _optionalChain$g([window, 'optionalAccess', _6 => _6.ethereum]))
-    }
-  } MetaMask.__initStatic(); MetaMask.__initStatic2(); MetaMask.__initStatic3(); MetaMask.__initStatic4();
-
-  function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Opera extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1031,10 +1030,10 @@
       blockchains: supported$1.evm
     };}
 
-    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$f([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isOpera]) };}
+    static __initStatic2() {this.isAvailable = async()=>{ return _optionalChain$g([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isOpera]) };}
   } Opera.__initStatic(); Opera.__initStatic2();
 
-  function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class PhantomEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1048,17 +1047,17 @@
       return (
         window.phantom &&
         window.phantom.ethereum &&
-        ! _optionalChain$e([window, 'optionalAccess', _4 => _4.ethereum, 'optionalAccess', _5 => _5.isMagicEden]) &&
-        ! _optionalChain$e([window, 'optionalAccess', _6 => _6.okxwallet])
+        ! _optionalChain$f([window, 'optionalAccess', _4 => _4.ethereum, 'optionalAccess', _5 => _5.isMagicEden]) &&
+        ! _optionalChain$f([window, 'optionalAccess', _6 => _6.okxwallet])
       )
     };}
 
     getProvider() { 
-      return _optionalChain$e([window, 'optionalAccess', _7 => _7.phantom, 'optionalAccess', _8 => _8.ethereum]) || window.ethereum
+      return _optionalChain$f([window, 'optionalAccess', _7 => _7.phantom, 'optionalAccess', _8 => _8.ethereum]) || window.ethereum
     }
   } PhantomEVM.__initStatic(); PhantomEVM.__initStatic2();
 
-  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class PhantomSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -1072,20 +1071,20 @@
       return (
         window.phantom &&
         !window.glow &&
-        !_optionalChain$d([window, 'optionalAccess', _8 => _8.solana, 'optionalAccess', _9 => _9.isGlow]) &&
-        !_optionalChain$d([window, 'optionalAccess', _10 => _10.solana, 'optionalAccess', _11 => _11.isExodus]) &&
-        ! _optionalChain$d([window, 'optionalAccess', _12 => _12.ethereum, 'optionalAccess', _13 => _13.isMagicEden]) &&
-        ! _optionalChain$d([window, 'optionalAccess', _14 => _14.okxwallet]) &&
+        !_optionalChain$e([window, 'optionalAccess', _8 => _8.solana, 'optionalAccess', _9 => _9.isGlow]) &&
+        !_optionalChain$e([window, 'optionalAccess', _10 => _10.solana, 'optionalAccess', _11 => _11.isExodus]) &&
+        ! _optionalChain$e([window, 'optionalAccess', _12 => _12.ethereum, 'optionalAccess', _13 => _13.isMagicEden]) &&
+        ! _optionalChain$e([window, 'optionalAccess', _14 => _14.okxwallet]) &&
         !['isBitKeep'].some((identifier)=>window.solana && window.solana[identifier])
       )
     };}
 
     getProvider() { 
-      return _optionalChain$d([window, 'optionalAccess', _15 => _15.phantom, 'optionalAccess', _16 => _16.solana]) || window.solana
+      return _optionalChain$e([window, 'optionalAccess', _15 => _15.phantom, 'optionalAccess', _16 => _16.solana]) || window.solana
     }
   } PhantomSVM.__initStatic(); PhantomSVM.__initStatic2();
 
-  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Rabby extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1096,39 +1095,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{ 
       return(
-        _optionalChain$c([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isRabby])
+        _optionalChain$d([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isRabby])
       )
     };}
   } Rabby.__initStatic(); Rabby.__initStatic2();
 
-  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  class Uniswap extends WindowEthereum {
-
-    static __initStatic() {this.info = {
-      name: 'Uniswap',
-      logo: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQxIiBoZWlnaHQ9IjY0MCIgdmlld0JveD0iMCAwIDY0MSA2NDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0yMjQuNTM0IDEyMy4yMjZDMjE4LjY5MiAxMjIuMzIgMjE4LjQ0NSAxMjIuMjEzIDIyMS4xOTUgMTIxLjc5MUMyMjYuNDY0IDEyMC45OCAyMzguOTA1IDEyMi4wODUgMjQ3LjQ3OSAxMjQuMTIzQzI2Ny40OTQgMTI4Ljg4MSAyODUuNzA3IDE0MS4wNjkgMzA1LjE0OCAxNjIuNzE0TDMxMC4zMTMgMTY4LjQ2NUwzMTcuNzAxIDE2Ny4yNzdDMzQ4LjgyOCAxNjIuMjc1IDM4MC40OTMgMTY2LjI1IDQwNi45NzggMTc4LjQ4NUM0MTQuMjY0IDE4MS44NTEgNDI1Ljc1MiAxODguNTUyIDQyNy4xODcgMTkwLjI3NEM0MjcuNjQ1IDE5MC44MjIgNDI4LjQ4NSAxOTQuMzU1IDQyOS4wNTMgMTk4LjEyNEM0MzEuMDIgMjExLjE2NCA0MzAuMDM2IDIyMS4xNiA0MjYuMDQ3IDIyOC42MjVDNDIzLjg3NyAyMzIuNjg4IDQyMy43NTYgMjMzLjk3NSA0MjUuMjE1IDIzNy40NTJDNDI2LjM4IDI0MC4yMjcgNDI5LjYyNyAyNDIuMjggNDMyLjg0MyAyNDIuMjc2QzQzOS40MjUgMjQyLjI2NyA0NDYuNTA5IDIzMS42MjcgNDQ5Ljc5MSAyMTYuODIzTDQ1MS4wOTUgMjEwLjk0M0w0NTMuNjc4IDIxMy44NjhDNDY3Ljg0NiAyMjkuOTIgNDc4Ljk3NCAyNTEuODExIDQ4MC44ODUgMjY3LjM5M0w0ODEuMzgzIDI3MS40NTVMNDc5LjAwMiAyNjcuNzYyQzQ3NC45MDMgMjYxLjQwNyA0NzAuNzg1IDI1Ny4wOCA0NjUuNTEyIDI1My41OTFDNDU2LjAwNiAyNDcuMzAxIDQ0NS45NTUgMjQ1LjE2MSA0MTkuMzM3IDI0My43NThDMzk1LjI5NiAyNDIuNDkxIDM4MS42OSAyNDAuNDM4IDM2OC4xOTggMjM2LjAzOEMzNDUuMjQ0IDIyOC41NTQgMzMzLjY3MiAyMTguNTg3IDMwNi40MDUgMTgyLjgxMkMyOTQuMjk0IDE2Ni45MjMgMjg2LjgwOCAxNTguMTMxIDI3OS4zNjIgMTUxLjA1MUMyNjIuNDQyIDEzNC45NjQgMjQ1LjgxNiAxMjYuNTI3IDIyNC41MzQgMTIzLjIyNloiIGZpbGw9IiNGRjAwN0EiLz4KPHBhdGggZD0iTTQzMi42MSAxNTguNzA0QzQzMy4yMTUgMTQ4LjA1NyA0MzQuNjU5IDE0MS4wMzMgNDM3LjU2MiAxMzQuNjJDNDM4LjcxMSAxMzIuMDgxIDQzOS43ODggMTMwLjAwMyA0MzkuOTU0IDEzMC4wMDNDNDQwLjEyIDEzMC4wMDMgNDM5LjYyMSAxMzEuODc3IDQzOC44NDQgMTM0LjE2N0M0MzYuNzMzIDE0MC4zOTIgNDM2LjM4NyAxNDguOTA1IDQzNy44NCAxNTguODExQzQzOS42ODYgMTcxLjM3OSA0NDAuNzM1IDE3My4xOTIgNDU0LjAxOSAxODYuNzY5QzQ2MC4yNSAxOTMuMTM3IDQ2Ny40OTcgMjAxLjE2OCA0NzAuMTI0IDIwNC42MTZMNDc0LjkwMSAyMTAuODg2TDQ3MC4xMjQgMjA2LjQwNUM0NjQuMjgyIDIwMC45MjYgNDUwLjg0NyAxOTAuMjQgNDQ3Ljg3OSAxODguNzEyQzQ0NS44OSAxODcuNjg4IDQ0NS41OTQgMTg3LjcwNSA0NDQuMzY2IDE4OC45MjdDNDQzLjIzNSAxOTAuMDUzIDQ0Mi45OTcgMTkxLjc0NCA0NDIuODQgMTk5Ljc0MUM0NDIuNTk2IDIxMi4yMDQgNDQwLjg5NyAyMjAuMjA0IDQzNi43OTcgMjI4LjIwM0M0MzQuNTggMjMyLjUyOSA0MzQuMjMgMjMxLjYwNiA0MzYuMjM3IDIyNi43MjNDNDM3LjczNSAyMjMuMDc3IDQzNy44ODcgMjIxLjQ3NCA0MzcuODc2IDIwOS40MDhDNDM3Ljg1MyAxODUuMTY3IDQzNC45NzUgMTc5LjMzOSA0MTguMDk3IDE2OS4zNTVDNDEzLjgyMSAxNjYuODI2IDQwNi43NzYgMTYzLjE3OCA0MDIuNDQyIDE2MS4yNDlDMzk4LjEwNyAxNTkuMzIgMzk0LjY2NCAxNTcuNjM5IDM5NC43ODkgMTU3LjUxNEMzOTUuMjY3IDE1Ny4wMzggNDExLjcyNyAxNjEuODQyIDQxOC4zNTIgMTY0LjM5QzQyOC4yMDYgMTY4LjE4MSA0MjkuODMzIDE2OC42NzIgNDMxLjAzIDE2OC4yMTVDNDMxLjgzMiAxNjcuOTA5IDQzMi4yMiAxNjUuNTcyIDQzMi42MSAxNTguNzA0WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBkPSJNMjM1Ljg4MyAyMDAuMTc1QzIyNC4wMjIgMTgzLjg0NiAyMTYuNjg0IDE1OC44MDkgMjE4LjI3MiAxNDAuMDkzTDIxOC43NjQgMTM0LjMwMUwyMjEuNDYzIDEzNC43OTRDMjI2LjUzNCAxMzUuNzE5IDIzNS4yNzUgMTM4Ljk3MyAyMzkuMzY5IDE0MS40NTlDMjUwLjYwMiAxNDguMjgxIDI1NS40NjUgMTU3LjI2MyAyNjAuNDEzIDE4MC4zMjhDMjYxLjg2MiAxODcuMDgzIDI2My43NjMgMTk0LjcyOCAyNjQuNjM4IDE5Ny4zMTdDMjY2LjA0NyAyMDEuNDgzIDI3MS4zNjkgMjExLjIxNCAyNzUuNjk2IDIxNy41MzRDMjc4LjgxMyAyMjIuMDg1IDI3Ni43NDMgMjI0LjI0MiAyNjkuODUzIDIyMy42MkMyNTkuMzMxIDIyMi42NyAyNDUuMDc4IDIxMi44MzQgMjM1Ljg4MyAyMDAuMTc1WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBkPSJNNDE4LjIyMyAzMjEuNzA3QzM2Mi43OTMgMjk5LjM4OSAzNDMuMjcxIDI4MC4wMTcgMzQzLjI3MSAyNDcuMzMxQzM0My4yNzEgMjQyLjUyMSAzNDMuNDM3IDIzOC41ODUgMzQzLjYzOCAyMzguNTg1QzM0My44NCAyMzguNTg1IDM0NS45ODUgMjQwLjE3MyAzNDguNDA0IDI0Mi4xMTNDMzU5LjY0NCAyNTEuMTI4IDM3Mi4yMzEgMjU0Ljk3OSA0MDcuMDc2IDI2MC4wNjJDNDI3LjU4IDI2My4wNTQgNDM5LjExOSAyNjUuNDcgNDQ5Ljc2MyAyNjlDNDgzLjU5NSAyODAuMjIgNTA0LjUyNyAzMDIuOTkgNTA5LjUxOCAzMzQuMDA0QzUxMC45NjkgMzQzLjAxNiA1MTAuMTE4IDM1OS45MTUgNTA3Ljc2NiAzNjguODIyQzUwNS45MSAzNzUuODU3IDUwMC4yNDUgMzg4LjUzNyA0OTguNzQyIDM4OS4wMjNDNDk4LjMyNSAzODkuMTU4IDQ5Ny45MTcgMzg3LjU2MiA0OTcuODEgMzg1LjM4OUM0OTcuMjQgMzczLjc0NCA0OTEuMzU1IDM2Mi40MDYgNDgxLjQ3MiAzNTMuOTEzQzQ3MC4yMzUgMzQ0LjI1NyA0NTUuMTM3IDMzNi41NjkgNDE4LjIyMyAzMjEuNzA3WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBkPSJNMzc5LjMxIDMzMC45NzhDMzc4LjYxNSAzMjYuODQ2IDM3Ny40MTEgMzIxLjU2OCAzNzYuNjMzIDMxOS4yNUwzNzUuMjE5IDMxNS4wMzZMMzc3Ljg0NiAzMTcuOTg1QzM4MS40ODEgMzIyLjA2NSAzODQuMzU0IDMyNy4yODcgMzg2Ljc4OSAzMzQuMjQxQzM4OC42NDcgMzM5LjU0OSAzODguODU2IDM0MS4xMjcgMzg4Ljg0MiAzNDkuNzUzQzM4OC44MjggMzU4LjIyMSAzODguNTk2IDM1OS45OTYgMzg2Ljg4IDM2NC43NzNDMzg0LjE3NCAzNzIuMzA3IDM4MC44MTYgMzc3LjY0OSAzNzUuMTgxIDM4My4zODNDMzY1LjA1NiAzOTMuNjg4IDM1Mi4wMzggMzk5LjM5MyAzMzMuMjUzIDQwMS43NkMzMjkuOTg3IDQwMi4xNzEgMzIwLjQ3IDQwMi44NjQgMzEyLjEwMyA0MDMuMjk5QzI5MS4wMTYgNDA0LjM5NSAyNzcuMTM4IDQwNi42NjEgMjY0LjY2OCA0MTEuMDRDMjYyLjg3NSA0MTEuNjcgMjYxLjI3NCA0MTIuMDUyIDI2MS4xMTIgNDExLjg5QzI2MC42MDcgNDExLjM4OCAyNjkuMDk4IDQwNi4zMjYgMjc2LjExMSA0MDIuOTQ4QzI4NS45OTkgMzk4LjE4NSAyOTUuODQyIDM5NS41ODYgMzE3Ljg5NyAzOTEuOTEzQzMyOC43OTIgMzkwLjA5OCAzNDAuMDQzIDM4Ny44OTcgMzQyLjkgMzg3LjAyMUMzNjkuODggMzc4Ljc0OSAzODMuNzQ4IDM1Ny40MDIgMzc5LjMxIDMzMC45NzhaIiBmaWxsPSIjRkYwMDdBIi8+CjxwYXRoIGQ9Ik00MDQuNzE5IDM3Ni4xMDVDMzk3LjM1NSAzNjAuMjczIDM5NS42NjQgMzQ0Ljk4OCAzOTkuNjk4IDMzMC43MzJDNDAwLjEzIDMyOS4yMDkgNDAwLjgyNCAzMjcuOTYyIDQwMS4yNDIgMzI3Ljk2MkM0MDEuNjU5IDMyNy45NjIgNDAzLjM5NyAzMjguOTAyIDQwNS4xMDMgMzMwLjA1QzQwOC40OTcgMzMyLjMzNSA0MTUuMzAzIDMzNi4xODIgNDMzLjQzNyAzNDYuMDY5QzQ1Ni4wNjUgMzU4LjQwNiA0NjguOTY2IDM2Ny45NTkgNDc3Ljc0IDM3OC44NzNDNDg1LjQyMyAzODguNDMyIDQ5MC4xNzggMzk5LjMxOCA0OTIuNDY3IDQxMi41OTNDNDkzLjc2MiA0MjAuMTEzIDQ5My4wMDMgNDM4LjIwNiA0OTEuMDc0IDQ0NS43NzhDNDg0Ljk5IDQ2OS42NTMgNDcwLjg1IDQ4OC40MDYgNDUwLjY4MiA0OTkuMzQ5QzQ0Ny43MjcgNTAwLjk1MiA0NDUuMDc1IDUwMi4yNjkgNDQ0Ljc4OCA1MDIuMjc1QzQ0NC41MDEgNTAyLjI4IDQ0NS41NzcgNDk5LjU0MyA0NDcuMTggNDk2LjE5MUM0NTMuOTY1IDQ4Mi4wMDkgNDU0LjczNyA0NjguMjE0IDQ0OS42MDggNDUyLjg1OUM0NDYuNDY3IDQ0My40NTcgNDQwLjA2NCA0MzEuOTg1IDQyNy4xMzUgNDEyLjU5NkM0MTIuMTAzIDM5MC4wNTQgNDA4LjQxNyAzODQuMDU0IDQwNC43MTkgMzc2LjEwNVoiIGZpbGw9IiNGRjAwN0EiLz4KPHBhdGggZD0iTTE5Ni41MTkgNDYxLjUyNUMyMTcuMDg5IDQ0NC4xNTcgMjQyLjY4MiA0MzEuODE5IDI2NS45OTYgNDI4LjAzMkMyNzYuMDQzIDQyNi4zOTkgMjkyLjc4IDQyNy4wNDcgMzAyLjA4NCA0MjkuNDI4QzMxNi45OTggNDMzLjI0NSAzMzAuMzM4IDQ0MS43OTMgMzM3LjI3NiA0NTEuOTc4QzM0NC4wNTcgNDYxLjkzMiAzNDYuOTY2IDQ3MC42MDYgMzQ5Ljk5NSA0ODkuOTA2QzM1MS4xODkgNDk3LjUxOSAzNTIuNDg5IDUwNS4xNjQgMzUyLjg4MiA1MDYuODk1QzM1NS4xNTYgNTE2Ljg5NyAzNTkuNTgzIDUyNC44OTIgMzY1LjA2NyA1MjguOTA3QzM3My43NzkgNTM1LjI4MyAzODguNzggNTM1LjY4IDQwMy41MzYgNTI5LjkyNEM0MDYuMDQxIDUyOC45NDcgNDA4LjIxNSA1MjguMjcxIDQwOC4zNjggNTI4LjQyNEM0MDguOTAzIDUyOC45NTUgNDAxLjQ3MyA1MzMuOTMgMzk2LjIzIDUzNi41NDhDMzg5LjE3NyA1NDAuMDcxIDM4My41NjggNTQxLjQzNCAzNzYuMTE1IDU0MS40MzRDMzYyLjYgNTQxLjQzNCAzNTEuMzc5IDUzNC41NTggMzQyLjAxNiA1MjAuNTM5QzM0MC4xNzQgNTE3Ljc4IDMzNi4wMzIgNTA5LjUxNiAzMzIuODEzIDUwMi4xNzZDMzIyLjkyOCA0NzkuNjI4IDMxOC4wNDYgNDcyLjc1OSAzMDYuNTY4IDQ2NS4yNDJDMjk2LjU3OSA0NTguNzAxIDI4My42OTcgNDU3LjUzIDI3NC4wMDYgNDYyLjI4MkMyNjEuMjc2IDQ2OC41MjMgMjU3LjcyNCA0ODQuNzkxIDI2Ni44NDIgNDk1LjEwMUMyNzAuNDY1IDQ5OS4xOTggMjc3LjIyMyA1MDIuNzMyIDI4Mi43NDkgNTAzLjQxOUMyOTMuMDg2IDUwNC43MDUgMzAxLjk3IDQ5Ni44NDEgMzAxLjk3IDQ4Ni40MDRDMzAxLjk3IDQ3OS42MjcgMjk5LjM2NSA0NzUuNzYgMjkyLjgwOCA0NzIuODAxQzI4My44NTIgNDY4Ljc2IDI3NC4yMjYgNDczLjQ4MyAyNzQuMjcyIDQ4MS44OTdDMjc0LjI5MiA0ODUuNDg0IDI3NS44NTQgNDg3LjczNyAyNzkuNDUgNDg5LjM2NEMyODEuNzU3IDQ5MC40MDggMjgxLjgxMSA0OTAuNDkxIDI3OS45MjkgNDkwLjFDMjcxLjcxMiA0ODguMzk2IDI2OS43ODcgNDc4LjQ5IDI3Ni4zOTQgNDcxLjkxM0MyODQuMzI2IDQ2NC4wMTggMzAwLjcyOSA0NjcuNTAyIDMwNi4zNjIgNDc4LjI3OUMzMDguNzI4IDQ4Mi44MDUgMzA5LjAwMyA0OTEuODIgMzA2Ljk0IDQ5Ny4yNjRDMzAyLjMyMiA1MDkuNDQ4IDI4OC44NTkgNTE1Ljg1NSAyNzUuMjAxIDUxMi4zNjhDMjY1LjkwMyA1MDkuOTk0IDI2Mi4xMTcgNTA3LjQyNCAyNTAuOTA2IDQ5NS44NzZDMjMxLjQyNSA0NzUuODA5IDIyMy44NjIgNDcxLjkyIDE5NS43NzcgNDY3LjUzNkwxOTAuMzk1IDQ2Ni42OTZMMTk2LjUxOSA0NjEuNTI1WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ5LjYyMDIgMTIuMDAzMUMxMTQuNjc4IDkwLjk2MzggMjE0Ljk3NyAyMTMuOTAxIDIxOS45NTcgMjIwLjc4NEMyMjQuMDY4IDIyNi40NjcgMjIyLjUyMSAyMzEuNTc2IDIxNS40NzggMjM1LjU4QzIxMS41NjEgMjM3LjgwNyAyMDMuNTA4IDI0MC4wNjMgMTk5LjQ3NiAyNDAuMDYzQzE5NC45MTYgMjQwLjA2MyAxODkuNzc5IDIzNy44NjcgMTg2LjAzOCAyMzQuMzE4QzE4My4zOTMgMjMxLjgxIDE3Mi43MjEgMjE1Ljg3NCAxNDguMDg0IDE3Ny42NDZDMTI5LjIzMyAxNDguMzk2IDExMy40NTcgMTI0LjEzMSAxMTMuMDI3IDEyMy43MjVDMTEyLjAzMiAxMjIuNzg1IDExMi4wNDkgMTIyLjgxNyAxNDYuMTYyIDE4My44NTRDMTY3LjU4MiAyMjIuMTgxIDE3NC44MTMgMjM1LjczMSAxNzQuODEzIDIzNy41NDNDMTc0LjgxMyAyNDEuMjI5IDE3My44MDggMjQzLjE2NiAxNjkuMjYxIDI0OC4yMzhDMTYxLjY4MSAyNTYuNjk0IDE1OC4yOTMgMjY2LjE5NSAxNTUuODQ3IDI4NS44NTlDMTUzLjEwNCAzMDcuOTAyIDE0NS4zOTQgMzIzLjQ3MyAxMjQuMDI2IDM1MC4xMjJDMTExLjUxOCAzNjUuNzIyIDEwOS40NzEgMzY4LjU4MSAxMDYuMzE1IDM3NC44NjlDMTAyLjMzOSAzODIuNzg2IDEwMS4yNDYgMzg3LjIyMSAxMDAuODAzIDM5Ny4yMTlDMTAwLjMzNSA0MDcuNzkgMTAxLjI0NyA0MTQuNjE5IDEwNC40NzcgNDI0LjcyNkMxMDcuMzA0IDQzMy41NzUgMTEwLjI1NSA0MzkuNDE3IDExNy44IDQ1MS4xMDRDMTI0LjMxMSA0NjEuMTg4IDEyOC4wNjEgNDY4LjY4MyAxMjguMDYxIDQ3MS42MTRDMTI4LjA2MSA0NzMuOTQ3IDEyOC41MDYgNDczLjk1IDEzOC41OTYgNDcxLjY3MkMxNjIuNzQxIDQ2Ni4yMTkgMTgyLjM0OCA0NTYuNjI5IDE5My4zNzUgNDQ0Ljg3N0MyMDAuMTk5IDQzNy42MDMgMjAxLjgwMSA0MzMuNTg2IDIwMS44NTMgNDIzLjYxOEMyMDEuODg3IDQxNy4wOTggMjAxLjY1OCA0MTUuNzMzIDE5OS44OTYgNDExLjk4MkMxOTcuMDI3IDQwNS44NzcgMTkxLjgwNCA0MDAuODAxIDE4MC4yOTIgMzkyLjkzMkMxNjUuMjA5IDM4Mi42MjEgMTU4Ljc2NyAzNzQuMzIgMTU2Ljk4NyAzNjIuOTA0QzE1NS41MjcgMzUzLjUzNyAxNTcuMjIxIDM0Ni45MjggMTY1LjU2NSAzMjkuNDRDMTc0LjIwMiAzMTEuMzM4IDE3Ni4zNDIgMzAzLjYyNCAxNzcuNzkgMjg1LjM3OEMxNzguNzI1IDI3My41ODkgMTgwLjAyIDI2OC45NCAxODMuNDA3IDI2NS4yMDlDMTg2LjkzOSAyNjEuMzE3IDE5MC4xMTkgMjYwIDE5OC44NjEgMjU4LjgwNUMyMTMuMTEzIDI1Ni44NTggMjIyLjE4OCAyNTMuMTcxIDIyOS42NDggMjQ2LjI5N0MyMzYuMTE5IDI0MC4zMzQgMjM4LjgyNyAyMzQuNTg4IDIzOS4yNDMgMjI1LjkzOEwyMzkuNTU4IDIxOS4zODJMMjM1Ljk0MiAyMTUuMTY2QzIyMi44NDYgMTk5Ljg5NiA0MC44NSAwIDQwLjA0NCAwQzM5Ljg3MTkgMCA0NC4xODEzIDUuNDAxNzggNDkuNjIwMiAxMi4wMDMxWk0xMzUuNDEyIDQwOS4xOEMxMzguMzczIDQwMy45MzcgMTM2LjggMzk3LjE5NSAxMzEuODQ3IDM5My45MDJDMTI3LjE2NyAzOTAuNzkgMTE5Ljg5NyAzOTIuMjU2IDExOS44OTcgMzk2LjMxMUMxMTkuODk3IDM5Ny41NDggMTIwLjU4MiAzOTguNDQ5IDEyMi4xMjQgMzk5LjI0M0MxMjQuNzIgNDAwLjU3OSAxMjQuOTA5IDQwMi4wODEgMTIyLjg2NiA0MDUuMTUyQzEyMC43OTcgNDA4LjI2MiAxMjAuOTY0IDQxMC45OTYgMTIzLjMzNyA0MTIuODU0QzEyNy4xNjIgNDE1Ljg0OSAxMzIuNTc2IDQxNC4yMDIgMTM1LjQxMiA0MDkuMThaIiBmaWxsPSIjRkYwMDdBIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjQ4LjU1MiAyNjIuMjQ0QzI0MS44NjIgMjY0LjI5OSAyMzUuMzU4IDI3MS4zOSAyMzMuMzQ0IDI3OC44MjZDMjMyLjExNiAyODMuMzYyIDIzMi44MTMgMjkxLjMxOSAyMzQuNjUzIDI5My43NzZDMjM3LjYyNSAyOTcuNzQ1IDI0MC40OTkgMjk4Ljc5MSAyNDguMjgyIDI5OC43MzZDMjYzLjUxOCAyOTguNjMgMjc2Ljc2NCAyOTIuMDk1IDI3OC4zMDQgMjgzLjkyNUMyNzkuNTY3IDI3Ny4yMjkgMjczLjc0OSAyNjcuOTQ4IDI2NS43MzYgMjYzLjg3NEMyNjEuNjAxIDI2MS43NzIgMjUyLjgwNyAyNjAuOTM4IDI0OC41NTIgMjYyLjI0NFpNMjY2LjM2NCAyNzYuMTcyQzI2OC43MTQgMjcyLjgzNCAyNjcuNjg2IDI2OS4yMjUgMjYzLjY5IDI2Ni43ODVDMjU2LjA4IDI2Mi4xMzggMjQ0LjU3MSAyNjUuOTgzIDI0NC41NzEgMjczLjE3M0MyNDQuNTcxIDI3Ni43NTIgMjUwLjU3MiAyODAuNjU2IDI1Ni4wNzQgMjgwLjY1NkMyNTkuNzM1IDI4MC42NTYgMjY0Ljc0NiAyNzguNDczIDI2Ni4zNjQgMjc2LjE3MloiIGZpbGw9IiNGRjAwN0EiLz4KPC9zdmc+Cg==",
-      blockchains: supported$1.evm
-    };}
-
-    static __initStatic2() {this.getEip6963Provider = ()=>{
-      return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
-        return _optionalChain$b([provider, 'optionalAccess', _4 => _4.isUniswapWallet])
-      }) : undefined
-    };}
-
-    static __initStatic3() {this.isAvailable = async()=>{
-      return(
-        Uniswap.getEip6963Provider() ||
-        _optionalChain$b([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isUniswapWallet])
-      )
-    };}
-
-    getProvider() {
-      return Uniswap.getEip6963Provider() || (_optionalChain$b([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isUniswapWallet]) && _optionalChain$b([window, 'optionalAccess', _9 => _9.ethereum]))
-    }
-  } Uniswap.__initStatic(); Uniswap.__initStatic2(); Uniswap.__initStatic3();
-
-  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Rainbow extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1139,24 +1111,24 @@
 
     static __initStatic2() {this.getEip6963Provider = ()=>{
       return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
-        return _optionalChain$a([provider, 'optionalAccess', _4 => _4.isRainbow])
+        return _optionalChain$c([provider, 'optionalAccess', _4 => _4.isRainbow])
       }) : undefined
     };}
 
     static __initStatic3() {this.isAvailable = async()=>{
       return(
         Rainbow.getEip6963Provider() ||
-        _optionalChain$a([window, 'optionalAccess', _5 => _5.rainbow, 'optionalAccess', _6 => _6.isRainbow])
+        _optionalChain$c([window, 'optionalAccess', _5 => _5.rainbow, 'optionalAccess', _6 => _6.isRainbow])
       )
     };}
 
     getProvider() {
-      return Rainbow.getEip6963Provider() || _optionalChain$a([window, 'optionalAccess', _7 => _7.rainbow])
+      return Rainbow.getEip6963Provider() || _optionalChain$c([window, 'optionalAccess', _7 => _7.rainbow])
     }
 
   } Rainbow.__initStatic(); Rainbow.__initStatic2(); Rainbow.__initStatic3();
 
-  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 
   const KEY$1 = '_DePayWeb3WalletsConnectedSolanaMobileWalletInstance';
@@ -1247,8 +1219,8 @@
       await solanaWeb3_js.transact(
         async (wallet) => {
           await this.authorize(wallet);
-          if(_optionalChain$9([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$1+'_name'] = this.name = options.name; }
-          if(_optionalChain$9([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1+'_logo'] = this.logo = options.logo; }
+          if(_optionalChain$b([options, 'optionalAccess', _ => _.name])) { localStorage[KEY$1+'_name'] = this.name = options.name; }
+          if(_optionalChain$b([options, 'optionalAccess', _2 => _2.logo])) { localStorage[KEY$1+'_logo'] = this.logo = options.logo; }
         }
       );
       return this._account
@@ -1307,7 +1279,7 @@
     }
   } SolanaMobileWalletAdapter.__initStatic(); SolanaMobileWalletAdapter.__initStatic2();
 
-  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class Solflare extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -1318,7 +1290,7 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$8([window, 'optionalAccess', _2 => _2.solflare]) &&
+        _optionalChain$a([window, 'optionalAccess', _2 => _2.solflare]) &&
         window.solflare.isSolflare
       )
     };}
@@ -1328,7 +1300,7 @@
     _sendTransaction(transaction) { return this.getProvider().signTransaction(transaction) }
   } Solflare.__initStatic(); Solflare.__initStatic2();
 
-  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TokenPocket extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1339,12 +1311,12 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        _optionalChain$7([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isTokenPocket])
+        _optionalChain$9([window, 'optionalAccess', _3 => _3.ethereum, 'optionalAccess', _4 => _4.isTokenPocket])
       )
     };}
   } TokenPocket.__initStatic(); TokenPocket.__initStatic2();
 
-  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TrustEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
@@ -1356,13 +1328,13 @@
 
     static __initStatic2() {this.isAvailable = async()=>{
       return (
-        (_optionalChain$6([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$6([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) &&
+        (_optionalChain$8([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isTrust]) || _optionalChain$8([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isTrustWallet])) &&
         Object.keys(window.ethereum).filter((key)=>key.match(/^is(?!Connected)(?!Debug)(?!TrustWallet)(?!MetaMask)(?!PocketUniverse)(?!RevokeCash)/)).length == 1
       )
     };}
   } TrustEVM.__initStatic(); TrustEVM.__initStatic2();
 
-  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   class TrustSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
@@ -1373,9 +1345,36 @@
     };}
 
     static __initStatic2() {this.isAvailable = async()=>{
-      return _optionalChain$5([window, 'access', _3 => _3.solana, 'optionalAccess', _4 => _4.isTrustWallet])
+      return _optionalChain$7([window, 'access', _3 => _3.solana, 'optionalAccess', _4 => _4.isTrustWallet])
     };}
   } TrustSVM.__initStatic(); TrustSVM.__initStatic2();
+
+  function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  class Uniswap extends WindowEthereum {
+
+    static __initStatic() {this.info = {
+      name: 'Uniswap',
+      logo: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQxIiBoZWlnaHQ9IjY0MCIgdmlld0JveD0iMCAwIDY0MSA2NDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0yMjQuNTM0IDEyMy4yMjZDMjE4LjY5MiAxMjIuMzIgMjE4LjQ0NSAxMjIuMjEzIDIyMS4xOTUgMTIxLjc5MUMyMjYuNDY0IDEyMC45OCAyMzguOTA1IDEyMi4wODUgMjQ3LjQ3OSAxMjQuMTIzQzI2Ny40OTQgMTI4Ljg4MSAyODUuNzA3IDE0MS4wNjkgMzA1LjE0OCAxNjIuNzE0TDMxMC4zMTMgMTY4LjQ2NUwzMTcuNzAxIDE2Ny4yNzdDMzQ4LjgyOCAxNjIuMjc1IDM4MC40OTMgMTY2LjI1IDQwNi45NzggMTc4LjQ4NUM0MTQuMjY0IDE4MS44NTEgNDI1Ljc1MiAxODguNTUyIDQyNy4xODcgMTkwLjI3NEM0MjcuNjQ1IDE5MC44MjIgNDI4LjQ4NSAxOTQuMzU1IDQyOS4wNTMgMTk4LjEyNEM0MzEuMDIgMjExLjE2NCA0MzAuMDM2IDIyMS4xNiA0MjYuMDQ3IDIyOC42MjVDNDIzLjg3NyAyMzIuNjg4IDQyMy43NTYgMjMzLjk3NSA0MjUuMjE1IDIzNy40NTJDNDI2LjM4IDI0MC4yMjcgNDI5LjYyNyAyNDIuMjggNDMyLjg0MyAyNDIuMjc2QzQzOS40MjUgMjQyLjI2NyA0NDYuNTA5IDIzMS42MjcgNDQ5Ljc5MSAyMTYuODIzTDQ1MS4wOTUgMjEwLjk0M0w0NTMuNjc4IDIxMy44NjhDNDY3Ljg0NiAyMjkuOTIgNDc4Ljk3NCAyNTEuODExIDQ4MC44ODUgMjY3LjM5M0w0ODEuMzgzIDI3MS40NTVMNDc5LjAwMiAyNjcuNzYyQzQ3NC45MDMgMjYxLjQwNyA0NzAuNzg1IDI1Ny4wOCA0NjUuNTEyIDI1My41OTFDNDU2LjAwNiAyNDcuMzAxIDQ0NS45NTUgMjQ1LjE2MSA0MTkuMzM3IDI0My43NThDMzk1LjI5NiAyNDIuNDkxIDM4MS42OSAyNDAuNDM4IDM2OC4xOTggMjM2LjAzOEMzNDUuMjQ0IDIyOC41NTQgMzMzLjY3MiAyMTguNTg3IDMwNi40MDUgMTgyLjgxMkMyOTQuMjk0IDE2Ni45MjMgMjg2LjgwOCAxNTguMTMxIDI3OS4zNjIgMTUxLjA1MUMyNjIuNDQyIDEzNC45NjQgMjQ1LjgxNiAxMjYuNTI3IDIyNC41MzQgMTIzLjIyNloiIGZpbGw9IiNGRjAwN0EiLz4KPHBhdGggZD0iTTQzMi42MSAxNTguNzA0QzQzMy4yMTUgMTQ4LjA1NyA0MzQuNjU5IDE0MS4wMzMgNDM3LjU2MiAxMzQuNjJDNDM4LjcxMSAxMzIuMDgxIDQzOS43ODggMTMwLjAwMyA0MzkuOTU0IDEzMC4wMDNDNDQwLjEyIDEzMC4wMDMgNDM5LjYyMSAxMzEuODc3IDQzOC44NDQgMTM0LjE2N0M0MzYuNzMzIDE0MC4zOTIgNDM2LjM4NyAxNDguOTA1IDQzNy44NCAxNTguODExQzQzOS42ODYgMTcxLjM3OSA0NDAuNzM1IDE3My4xOTIgNDU0LjAxOSAxODYuNzY5QzQ2MC4yNSAxOTMuMTM3IDQ2Ny40OTcgMjAxLjE2OCA0NzAuMTI0IDIwNC42MTZMNDc0LjkwMSAyMTAuODg2TDQ3MC4xMjQgMjA2LjQwNUM0NjQuMjgyIDIwMC45MjYgNDUwLjg0NyAxOTAuMjQgNDQ3Ljg3OSAxODguNzEyQzQ0NS44OSAxODcuNjg4IDQ0NS41OTQgMTg3LjcwNSA0NDQuMzY2IDE4OC45MjdDNDQzLjIzNSAxOTAuMDUzIDQ0Mi45OTcgMTkxLjc0NCA0NDIuODQgMTk5Ljc0MUM0NDIuNTk2IDIxMi4yMDQgNDQwLjg5NyAyMjAuMjA0IDQzNi43OTcgMjI4LjIwM0M0MzQuNTggMjMyLjUyOSA0MzQuMjMgMjMxLjYwNiA0MzYuMjM3IDIyNi43MjNDNDM3LjczNSAyMjMuMDc3IDQzNy44ODcgMjIxLjQ3NCA0MzcuODc2IDIwOS40MDhDNDM3Ljg1MyAxODUuMTY3IDQzNC45NzUgMTc5LjMzOSA0MTguMDk3IDE2OS4zNTVDNDEzLjgyMSAxNjYuODI2IDQwNi43NzYgMTYzLjE3OCA0MDIuNDQyIDE2MS4yNDlDMzk4LjEwNyAxNTkuMzIgMzk0LjY2NCAxNTcuNjM5IDM5NC43ODkgMTU3LjUxNEMzOTUuMjY3IDE1Ny4wMzggNDExLjcyNyAxNjEuODQyIDQxOC4zNTIgMTY0LjM5QzQyOC4yMDYgMTY4LjE4MSA0MjkuODMzIDE2OC42NzIgNDMxLjAzIDE2OC4yMTVDNDMxLjgzMiAxNjcuOTA5IDQzMi4yMiAxNjUuNTcyIDQzMi42MSAxNTguNzA0WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBkPSJNMjM1Ljg4MyAyMDAuMTc1QzIyNC4wMjIgMTgzLjg0NiAyMTYuNjg0IDE1OC44MDkgMjE4LjI3MiAxNDAuMDkzTDIxOC43NjQgMTM0LjMwMUwyMjEuNDYzIDEzNC43OTRDMjI2LjUzNCAxMzUuNzE5IDIzNS4yNzUgMTM4Ljk3MyAyMzkuMzY5IDE0MS40NTlDMjUwLjYwMiAxNDguMjgxIDI1NS40NjUgMTU3LjI2MyAyNjAuNDEzIDE4MC4zMjhDMjYxLjg2MiAxODcuMDgzIDI2My43NjMgMTk0LjcyOCAyNjQuNjM4IDE5Ny4zMTdDMjY2LjA0NyAyMDEuNDgzIDI3MS4zNjkgMjExLjIxNCAyNzUuNjk2IDIxNy41MzRDMjc4LjgxMyAyMjIuMDg1IDI3Ni43NDMgMjI0LjI0MiAyNjkuODUzIDIyMy42MkMyNTkuMzMxIDIyMi42NyAyNDUuMDc4IDIxMi44MzQgMjM1Ljg4MyAyMDAuMTc1WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBkPSJNNDE4LjIyMyAzMjEuNzA3QzM2Mi43OTMgMjk5LjM4OSAzNDMuMjcxIDI4MC4wMTcgMzQzLjI3MSAyNDcuMzMxQzM0My4yNzEgMjQyLjUyMSAzNDMuNDM3IDIzOC41ODUgMzQzLjYzOCAyMzguNTg1QzM0My44NCAyMzguNTg1IDM0NS45ODUgMjQwLjE3MyAzNDguNDA0IDI0Mi4xMTNDMzU5LjY0NCAyNTEuMTI4IDM3Mi4yMzEgMjU0Ljk3OSA0MDcuMDc2IDI2MC4wNjJDNDI3LjU4IDI2My4wNTQgNDM5LjExOSAyNjUuNDcgNDQ5Ljc2MyAyNjlDNDgzLjU5NSAyODAuMjIgNTA0LjUyNyAzMDIuOTkgNTA5LjUxOCAzMzQuMDA0QzUxMC45NjkgMzQzLjAxNiA1MTAuMTE4IDM1OS45MTUgNTA3Ljc2NiAzNjguODIyQzUwNS45MSAzNzUuODU3IDUwMC4yNDUgMzg4LjUzNyA0OTguNzQyIDM4OS4wMjNDNDk4LjMyNSAzODkuMTU4IDQ5Ny45MTcgMzg3LjU2MiA0OTcuODEgMzg1LjM4OUM0OTcuMjQgMzczLjc0NCA0OTEuMzU1IDM2Mi40MDYgNDgxLjQ3MiAzNTMuOTEzQzQ3MC4yMzUgMzQ0LjI1NyA0NTUuMTM3IDMzNi41NjkgNDE4LjIyMyAzMjEuNzA3WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBkPSJNMzc5LjMxIDMzMC45NzhDMzc4LjYxNSAzMjYuODQ2IDM3Ny40MTEgMzIxLjU2OCAzNzYuNjMzIDMxOS4yNUwzNzUuMjE5IDMxNS4wMzZMMzc3Ljg0NiAzMTcuOTg1QzM4MS40ODEgMzIyLjA2NSAzODQuMzU0IDMyNy4yODcgMzg2Ljc4OSAzMzQuMjQxQzM4OC42NDcgMzM5LjU0OSAzODguODU2IDM0MS4xMjcgMzg4Ljg0MiAzNDkuNzUzQzM4OC44MjggMzU4LjIyMSAzODguNTk2IDM1OS45OTYgMzg2Ljg4IDM2NC43NzNDMzg0LjE3NCAzNzIuMzA3IDM4MC44MTYgMzc3LjY0OSAzNzUuMTgxIDM4My4zODNDMzY1LjA1NiAzOTMuNjg4IDM1Mi4wMzggMzk5LjM5MyAzMzMuMjUzIDQwMS43NkMzMjkuOTg3IDQwMi4xNzEgMzIwLjQ3IDQwMi44NjQgMzEyLjEwMyA0MDMuMjk5QzI5MS4wMTYgNDA0LjM5NSAyNzcuMTM4IDQwNi42NjEgMjY0LjY2OCA0MTEuMDRDMjYyLjg3NSA0MTEuNjcgMjYxLjI3NCA0MTIuMDUyIDI2MS4xMTIgNDExLjg5QzI2MC42MDcgNDExLjM4OCAyNjkuMDk4IDQwNi4zMjYgMjc2LjExMSA0MDIuOTQ4QzI4NS45OTkgMzk4LjE4NSAyOTUuODQyIDM5NS41ODYgMzE3Ljg5NyAzOTEuOTEzQzMyOC43OTIgMzkwLjA5OCAzNDAuMDQzIDM4Ny44OTcgMzQyLjkgMzg3LjAyMUMzNjkuODggMzc4Ljc0OSAzODMuNzQ4IDM1Ny40MDIgMzc5LjMxIDMzMC45NzhaIiBmaWxsPSIjRkYwMDdBIi8+CjxwYXRoIGQ9Ik00MDQuNzE5IDM3Ni4xMDVDMzk3LjM1NSAzNjAuMjczIDM5NS42NjQgMzQ0Ljk4OCAzOTkuNjk4IDMzMC43MzJDNDAwLjEzIDMyOS4yMDkgNDAwLjgyNCAzMjcuOTYyIDQwMS4yNDIgMzI3Ljk2MkM0MDEuNjU5IDMyNy45NjIgNDAzLjM5NyAzMjguOTAyIDQwNS4xMDMgMzMwLjA1QzQwOC40OTcgMzMyLjMzNSA0MTUuMzAzIDMzNi4xODIgNDMzLjQzNyAzNDYuMDY5QzQ1Ni4wNjUgMzU4LjQwNiA0NjguOTY2IDM2Ny45NTkgNDc3Ljc0IDM3OC44NzNDNDg1LjQyMyAzODguNDMyIDQ5MC4xNzggMzk5LjMxOCA0OTIuNDY3IDQxMi41OTNDNDkzLjc2MiA0MjAuMTEzIDQ5My4wMDMgNDM4LjIwNiA0OTEuMDc0IDQ0NS43NzhDNDg0Ljk5IDQ2OS42NTMgNDcwLjg1IDQ4OC40MDYgNDUwLjY4MiA0OTkuMzQ5QzQ0Ny43MjcgNTAwLjk1MiA0NDUuMDc1IDUwMi4yNjkgNDQ0Ljc4OCA1MDIuMjc1QzQ0NC41MDEgNTAyLjI4IDQ0NS41NzcgNDk5LjU0MyA0NDcuMTggNDk2LjE5MUM0NTMuOTY1IDQ4Mi4wMDkgNDU0LjczNyA0NjguMjE0IDQ0OS42MDggNDUyLjg1OUM0NDYuNDY3IDQ0My40NTcgNDQwLjA2NCA0MzEuOTg1IDQyNy4xMzUgNDEyLjU5NkM0MTIuMTAzIDM5MC4wNTQgNDA4LjQxNyAzODQuMDU0IDQwNC43MTkgMzc2LjEwNVoiIGZpbGw9IiNGRjAwN0EiLz4KPHBhdGggZD0iTTE5Ni41MTkgNDYxLjUyNUMyMTcuMDg5IDQ0NC4xNTcgMjQyLjY4MiA0MzEuODE5IDI2NS45OTYgNDI4LjAzMkMyNzYuMDQzIDQyNi4zOTkgMjkyLjc4IDQyNy4wNDcgMzAyLjA4NCA0MjkuNDI4QzMxNi45OTggNDMzLjI0NSAzMzAuMzM4IDQ0MS43OTMgMzM3LjI3NiA0NTEuOTc4QzM0NC4wNTcgNDYxLjkzMiAzNDYuOTY2IDQ3MC42MDYgMzQ5Ljk5NSA0ODkuOTA2QzM1MS4xODkgNDk3LjUxOSAzNTIuNDg5IDUwNS4xNjQgMzUyLjg4MiA1MDYuODk1QzM1NS4xNTYgNTE2Ljg5NyAzNTkuNTgzIDUyNC44OTIgMzY1LjA2NyA1MjguOTA3QzM3My43NzkgNTM1LjI4MyAzODguNzggNTM1LjY4IDQwMy41MzYgNTI5LjkyNEM0MDYuMDQxIDUyOC45NDcgNDA4LjIxNSA1MjguMjcxIDQwOC4zNjggNTI4LjQyNEM0MDguOTAzIDUyOC45NTUgNDAxLjQ3MyA1MzMuOTMgMzk2LjIzIDUzNi41NDhDMzg5LjE3NyA1NDAuMDcxIDM4My41NjggNTQxLjQzNCAzNzYuMTE1IDU0MS40MzRDMzYyLjYgNTQxLjQzNCAzNTEuMzc5IDUzNC41NTggMzQyLjAxNiA1MjAuNTM5QzM0MC4xNzQgNTE3Ljc4IDMzNi4wMzIgNTA5LjUxNiAzMzIuODEzIDUwMi4xNzZDMzIyLjkyOCA0NzkuNjI4IDMxOC4wNDYgNDcyLjc1OSAzMDYuNTY4IDQ2NS4yNDJDMjk2LjU3OSA0NTguNzAxIDI4My42OTcgNDU3LjUzIDI3NC4wMDYgNDYyLjI4MkMyNjEuMjc2IDQ2OC41MjMgMjU3LjcyNCA0ODQuNzkxIDI2Ni44NDIgNDk1LjEwMUMyNzAuNDY1IDQ5OS4xOTggMjc3LjIyMyA1MDIuNzMyIDI4Mi43NDkgNTAzLjQxOUMyOTMuMDg2IDUwNC43MDUgMzAxLjk3IDQ5Ni44NDEgMzAxLjk3IDQ4Ni40MDRDMzAxLjk3IDQ3OS42MjcgMjk5LjM2NSA0NzUuNzYgMjkyLjgwOCA0NzIuODAxQzI4My44NTIgNDY4Ljc2IDI3NC4yMjYgNDczLjQ4MyAyNzQuMjcyIDQ4MS44OTdDMjc0LjI5MiA0ODUuNDg0IDI3NS44NTQgNDg3LjczNyAyNzkuNDUgNDg5LjM2NEMyODEuNzU3IDQ5MC40MDggMjgxLjgxMSA0OTAuNDkxIDI3OS45MjkgNDkwLjFDMjcxLjcxMiA0ODguMzk2IDI2OS43ODcgNDc4LjQ5IDI3Ni4zOTQgNDcxLjkxM0MyODQuMzI2IDQ2NC4wMTggMzAwLjcyOSA0NjcuNTAyIDMwNi4zNjIgNDc4LjI3OUMzMDguNzI4IDQ4Mi44MDUgMzA5LjAwMyA0OTEuODIgMzA2Ljk0IDQ5Ny4yNjRDMzAyLjMyMiA1MDkuNDQ4IDI4OC44NTkgNTE1Ljg1NSAyNzUuMjAxIDUxMi4zNjhDMjY1LjkwMyA1MDkuOTk0IDI2Mi4xMTcgNTA3LjQyNCAyNTAuOTA2IDQ5NS44NzZDMjMxLjQyNSA0NzUuODA5IDIyMy44NjIgNDcxLjkyIDE5NS43NzcgNDY3LjUzNkwxOTAuMzk1IDQ2Ni42OTZMMTk2LjUxOSA0NjEuNTI1WiIgZmlsbD0iI0ZGMDA3QSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ5LjYyMDIgMTIuMDAzMUMxMTQuNjc4IDkwLjk2MzggMjE0Ljk3NyAyMTMuOTAxIDIxOS45NTcgMjIwLjc4NEMyMjQuMDY4IDIyNi40NjcgMjIyLjUyMSAyMzEuNTc2IDIxNS40NzggMjM1LjU4QzIxMS41NjEgMjM3LjgwNyAyMDMuNTA4IDI0MC4wNjMgMTk5LjQ3NiAyNDAuMDYzQzE5NC45MTYgMjQwLjA2MyAxODkuNzc5IDIzNy44NjcgMTg2LjAzOCAyMzQuMzE4QzE4My4zOTMgMjMxLjgxIDE3Mi43MjEgMjE1Ljg3NCAxNDguMDg0IDE3Ny42NDZDMTI5LjIzMyAxNDguMzk2IDExMy40NTcgMTI0LjEzMSAxMTMuMDI3IDEyMy43MjVDMTEyLjAzMiAxMjIuNzg1IDExMi4wNDkgMTIyLjgxNyAxNDYuMTYyIDE4My44NTRDMTY3LjU4MiAyMjIuMTgxIDE3NC44MTMgMjM1LjczMSAxNzQuODEzIDIzNy41NDNDMTc0LjgxMyAyNDEuMjI5IDE3My44MDggMjQzLjE2NiAxNjkuMjYxIDI0OC4yMzhDMTYxLjY4MSAyNTYuNjk0IDE1OC4yOTMgMjY2LjE5NSAxNTUuODQ3IDI4NS44NTlDMTUzLjEwNCAzMDcuOTAyIDE0NS4zOTQgMzIzLjQ3MyAxMjQuMDI2IDM1MC4xMjJDMTExLjUxOCAzNjUuNzIyIDEwOS40NzEgMzY4LjU4MSAxMDYuMzE1IDM3NC44NjlDMTAyLjMzOSAzODIuNzg2IDEwMS4yNDYgMzg3LjIyMSAxMDAuODAzIDM5Ny4yMTlDMTAwLjMzNSA0MDcuNzkgMTAxLjI0NyA0MTQuNjE5IDEwNC40NzcgNDI0LjcyNkMxMDcuMzA0IDQzMy41NzUgMTEwLjI1NSA0MzkuNDE3IDExNy44IDQ1MS4xMDRDMTI0LjMxMSA0NjEuMTg4IDEyOC4wNjEgNDY4LjY4MyAxMjguMDYxIDQ3MS42MTRDMTI4LjA2MSA0NzMuOTQ3IDEyOC41MDYgNDczLjk1IDEzOC41OTYgNDcxLjY3MkMxNjIuNzQxIDQ2Ni4yMTkgMTgyLjM0OCA0NTYuNjI5IDE5My4zNzUgNDQ0Ljg3N0MyMDAuMTk5IDQzNy42MDMgMjAxLjgwMSA0MzMuNTg2IDIwMS44NTMgNDIzLjYxOEMyMDEuODg3IDQxNy4wOTggMjAxLjY1OCA0MTUuNzMzIDE5OS44OTYgNDExLjk4MkMxOTcuMDI3IDQwNS44NzcgMTkxLjgwNCA0MDAuODAxIDE4MC4yOTIgMzkyLjkzMkMxNjUuMjA5IDM4Mi42MjEgMTU4Ljc2NyAzNzQuMzIgMTU2Ljk4NyAzNjIuOTA0QzE1NS41MjcgMzUzLjUzNyAxNTcuMjIxIDM0Ni45MjggMTY1LjU2NSAzMjkuNDRDMTc0LjIwMiAzMTEuMzM4IDE3Ni4zNDIgMzAzLjYyNCAxNzcuNzkgMjg1LjM3OEMxNzguNzI1IDI3My41ODkgMTgwLjAyIDI2OC45NCAxODMuNDA3IDI2NS4yMDlDMTg2LjkzOSAyNjEuMzE3IDE5MC4xMTkgMjYwIDE5OC44NjEgMjU4LjgwNUMyMTMuMTEzIDI1Ni44NTggMjIyLjE4OCAyNTMuMTcxIDIyOS42NDggMjQ2LjI5N0MyMzYuMTE5IDI0MC4zMzQgMjM4LjgyNyAyMzQuNTg4IDIzOS4yNDMgMjI1LjkzOEwyMzkuNTU4IDIxOS4zODJMMjM1Ljk0MiAyMTUuMTY2QzIyMi44NDYgMTk5Ljg5NiA0MC44NSAwIDQwLjA0NCAwQzM5Ljg3MTkgMCA0NC4xODEzIDUuNDAxNzggNDkuNjIwMiAxMi4wMDMxWk0xMzUuNDEyIDQwOS4xOEMxMzguMzczIDQwMy45MzcgMTM2LjggMzk3LjE5NSAxMzEuODQ3IDM5My45MDJDMTI3LjE2NyAzOTAuNzkgMTE5Ljg5NyAzOTIuMjU2IDExOS44OTcgMzk2LjMxMUMxMTkuODk3IDM5Ny41NDggMTIwLjU4MiAzOTguNDQ5IDEyMi4xMjQgMzk5LjI0M0MxMjQuNzIgNDAwLjU3OSAxMjQuOTA5IDQwMi4wODEgMTIyLjg2NiA0MDUuMTUyQzEyMC43OTcgNDA4LjI2MiAxMjAuOTY0IDQxMC45OTYgMTIzLjMzNyA0MTIuODU0QzEyNy4xNjIgNDE1Ljg0OSAxMzIuNTc2IDQxNC4yMDIgMTM1LjQxMiA0MDkuMThaIiBmaWxsPSIjRkYwMDdBIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjQ4LjU1MiAyNjIuMjQ0QzI0MS44NjIgMjY0LjI5OSAyMzUuMzU4IDI3MS4zOSAyMzMuMzQ0IDI3OC44MjZDMjMyLjExNiAyODMuMzYyIDIzMi44MTMgMjkxLjMxOSAyMzQuNjUzIDI5My43NzZDMjM3LjYyNSAyOTcuNzQ1IDI0MC40OTkgMjk4Ljc5MSAyNDguMjgyIDI5OC43MzZDMjYzLjUxOCAyOTguNjMgMjc2Ljc2NCAyOTIuMDk1IDI3OC4zMDQgMjgzLjkyNUMyNzkuNTY3IDI3Ny4yMjkgMjczLjc0OSAyNjcuOTQ4IDI2NS43MzYgMjYzLjg3NEMyNjEuNjAxIDI2MS43NzIgMjUyLjgwNyAyNjAuOTM4IDI0OC41NTIgMjYyLjI0NFpNMjY2LjM2NCAyNzYuMTcyQzI2OC43MTQgMjcyLjgzNCAyNjcuNjg2IDI2OS4yMjUgMjYzLjY5IDI2Ni43ODVDMjU2LjA4IDI2Mi4xMzggMjQ0LjU3MSAyNjUuOTgzIDI0NC41NzEgMjczLjE3M0MyNDQuNTcxIDI3Ni43NTIgMjUwLjU3MiAyODAuNjU2IDI1Ni4wNzQgMjgwLjY1NkMyNTkuNzM1IDI4MC42NTYgMjY0Ljc0NiAyNzguNDczIDI2Ni4zNjQgMjc2LjE3MloiIGZpbGw9IiNGRjAwN0EiLz4KPC9zdmc+Cg==",
+      blockchains: supported$1.evm
+    };}
+
+    static __initStatic2() {this.getEip6963Provider = ()=>{
+      return window['_eip6963Providers'] ? Object.values(window['_eip6963Providers']).find((provider)=>{
+        return _optionalChain$6([provider, 'optionalAccess', _4 => _4.isUniswapWallet])
+      }) : undefined
+    };}
+
+    static __initStatic3() {this.isAvailable = async()=>{
+      return(
+        Uniswap.getEip6963Provider() ||
+        _optionalChain$6([window, 'optionalAccess', _5 => _5.ethereum, 'optionalAccess', _6 => _6.isUniswapWallet])
+      )
+    };}
+
+    getProvider() {
+      return Uniswap.getEip6963Provider() || (_optionalChain$6([window, 'optionalAccess', _7 => _7.ethereum, 'optionalAccess', _8 => _8.isUniswapWallet]) && _optionalChain$6([window, 'optionalAccess', _9 => _9.ethereum]))
+    }
+  } Uniswap.__initStatic(); Uniswap.__initStatic2(); Uniswap.__initStatic3();
 
   const transactionApiBlockchainNames = {
     'ethereum': 'mainnet',
@@ -1478,7 +1477,7 @@
     }
   };
 
-  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const sendTransaction$1 = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
@@ -1529,7 +1528,7 @@
       try {
         sentTransaction.wait(1).then(resolve).catch((error)=>{
           if(
-            (error && _optionalChain$4([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && _optionalChain$5([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
             (error && error.toString().match('undefined'))
           ) {
             setTimeout(()=>{
@@ -1543,7 +1542,7 @@
         });
       } catch (error) {
         if(
-          (error && _optionalChain$4([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && _optionalChain$5([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
           (error && error.toString().match('undefined'))
         ) {
           setTimeout(()=>{
@@ -1574,7 +1573,7 @@
         resolve(sentTransaction);
       } catch (error) {
         if(
-          (error && _optionalChain$4([error, 'optionalAccess', _7 => _7.stack, 'optionalAccess', _8 => _8.match, 'call', _9 => _9('JSON-RPC error')])) ||
+          (error && _optionalChain$5([error, 'optionalAccess', _7 => _7.stack, 'optionalAccess', _8 => _8.match, 'call', _9 => _9('JSON-RPC error')])) ||
           (error && error.toString().match('undefined'))
         ) {
           setTimeout(()=>{
@@ -1616,8 +1615,8 @@
           to: transaction.to,
           value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           data: await transaction.getData(),
-          gas: _optionalChain$4([gas, 'optionalAccess', _10 => _10.toHexString, 'call', _11 => _11()]),
-          gasLimit: _optionalChain$4([gas, 'optionalAccess', _12 => _12.toHexString, 'call', _13 => _13()]),
+          gas: _optionalChain$5([gas, 'optionalAccess', _10 => _10.toHexString, 'call', _11 => _11()]),
+          gasLimit: _optionalChain$5([gas, 'optionalAccess', _12 => _12.toHexString, 'call', _13 => _13()]),
           gasPrice: gasPrice.toHexString(),
           nonce: ethers.ethers.utils.hexlify(transaction.nonce),
         }]
@@ -1644,16 +1643,16 @@
           to: transaction.to,
           value: transaction.value ? ethers.ethers.BigNumber.from(transaction.value.toString()).toHexString() : undefined,
           data: '0x0',
-          gas: _optionalChain$4([gas, 'optionalAccess', _14 => _14.toHexString, 'call', _15 => _15()]),
-          gasLimit: _optionalChain$4([gas, 'optionalAccess', _16 => _16.toHexString, 'call', _17 => _17()]),
-          gasPrice: _optionalChain$4([gasPrice, 'optionalAccess', _18 => _18.toHexString, 'call', _19 => _19()]),
+          gas: _optionalChain$5([gas, 'optionalAccess', _14 => _14.toHexString, 'call', _15 => _15()]),
+          gasLimit: _optionalChain$5([gas, 'optionalAccess', _16 => _16.toHexString, 'call', _17 => _17()]),
+          gasPrice: _optionalChain$5([gasPrice, 'optionalAccess', _18 => _18.toHexString, 'call', _19 => _19()]),
           nonce: ethers.ethers.utils.hexlify(transaction.nonce)
         }]
       }
     }).catch((e)=>{console.log('ERROR', e);})
   };
 
-  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const KEY = 'depay:wallets:wc2';
 
@@ -1706,7 +1705,7 @@
     optionalNamespaces['eip155'] = {
       chains: supported$1.evm.map((blockchain)=>`${Blockchains__default['default'][blockchain].namespace}:${Blockchains__default['default'][blockchain].networkId}`),
     };
-    if(_optionalChain$3([optionalNamespaces, 'optionalAccess', _ => _.eip155]) && _optionalChain$3([optionalNamespaces, 'optionalAccess', _2 => _2.eip155, 'optionalAccess', _3 => _3.chains, 'optionalAccess', _4 => _4.length])) {
+    if(_optionalChain$4([optionalNamespaces, 'optionalAccess', _ => _.eip155]) && _optionalChain$4([optionalNamespaces, 'optionalAccess', _2 => _2.eip155, 'optionalAccess', _3 => _3.chains, 'optionalAccess', _4 => _4.length])) {
       optionalNamespaces['eip155'].methods = methods;
       optionalNamespaces['eip155'].events = events;
     }
@@ -1721,9 +1720,9 @@
         projectId: localStorage[KEY+":projectId"],
         metadata: {
           name: document.title || 'dApp',
-          description: _optionalChain$3([document, 'access', _5 => _5.querySelector, 'call', _6 => _6('meta[name="description"]'), 'optionalAccess', _7 => _7.getAttribute, 'call', _8 => _8('content')]) || document.title || 'dApp',
+          description: _optionalChain$4([document, 'access', _5 => _5.querySelector, 'call', _6 => _6('meta[name="description"]'), 'optionalAccess', _7 => _7.getAttribute, 'call', _8 => _8('content')]) || document.title || 'dApp',
           url: location.href,
-          icons: [_optionalChain$3([document, 'access', _9 => _9.querySelector, 'call', _10 => _10("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _11 => _11.href]) || `${location.origin}/favicon.ico`]
+          icons: [_optionalChain$4([document, 'access', _9 => _9.querySelector, 'call', _10 => _10("link[rel~='icon'], link[rel~='shortcut icon']"), 'optionalAccess', _11 => _11.href]) || `${location.origin}/favicon.ico`]
         }
       });
       resolve(signClient);
@@ -1741,7 +1740,7 @@
     };}
 
     static __initStatic2() {this.isAvailable = async(options)=>{ 
-      return !! await getLastSession(_optionalChain$3([options, 'optionalAccess', _13 => _13.walletName]))
+      return !! await getLastSession(_optionalChain$4([options, 'optionalAccess', _13 => _13.walletName]))
     };}
 
     constructor() {
@@ -1756,17 +1755,17 @@
     }
 
     async account() {
-      if(_optionalChain$3([this, 'access', _14 => _14.session, 'optionalAccess', _15 => _15.namespaces, 'optionalAccess', _16 => _16.eip155, 'optionalAccess', _17 => _17.accounts, 'optionalAccess', _18 => _18.length])) {
+      if(_optionalChain$4([this, 'access', _14 => _14.session, 'optionalAccess', _15 => _15.namespaces, 'optionalAccess', _16 => _16.eip155, 'optionalAccess', _17 => _17.accounts, 'optionalAccess', _18 => _18.length])) {
         return this.session.namespaces.eip155.accounts[0].split(':')[2]
       }
     }
 
     async setSessionBlockchains() {
-      if(!this.session || (!_optionalChain$3([this, 'access', _19 => _19.session, 'optionalAccess', _20 => _20.namespaces, 'optionalAccess', _21 => _21.eip155]) && !_optionalChain$3([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.optionalNamespaces, 'optionalAccess', _24 => _24.eip155]))) { return }
+      if(!this.session || (!_optionalChain$4([this, 'access', _19 => _19.session, 'optionalAccess', _20 => _20.namespaces, 'optionalAccess', _21 => _21.eip155]) && !_optionalChain$4([this, 'access', _22 => _22.session, 'optionalAccess', _23 => _23.optionalNamespaces, 'optionalAccess', _24 => _24.eip155]))) { return }
       if(this.session.namespaces.eip155.chains) {
-        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$3([Blockchains__default['default'], 'access', _25 => _25.findByNetworkId, 'call', _26 => _26(chainIdentifier.split(':')[1]), 'optionalAccess', _27 => _27.name])).filter(Boolean);
+        this.blockchains = this.session.namespaces.eip155.chains.map((chainIdentifier)=>_optionalChain$4([Blockchains__default['default'], 'access', _25 => _25.findByNetworkId, 'call', _26 => _26(chainIdentifier.split(':')[1]), 'optionalAccess', _27 => _27.name])).filter(Boolean);
       } else if(this.session.namespaces.eip155.accounts) {
-        this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$3([Blockchains__default['default'], 'access', _28 => _28.findByNetworkId, 'call', _29 => _29(accountIdentifier.split(':')[1]), 'optionalAccess', _30 => _30.name])).filter(Boolean);
+        this.blockchains = this.session.namespaces.eip155.accounts.map((accountIdentifier)=>_optionalChain$4([Blockchains__default['default'], 'access', _28 => _28.findByNetworkId, 'call', _29 => _29(accountIdentifier.split(':')[1]), 'optionalAccess', _30 => _30.name])).filter(Boolean);
       }
     }
 
@@ -1776,13 +1775,13 @@
       
       try {
 
-        this.walletName = _optionalChain$3([options, 'optionalAccess', _31 => _31.name]);
+        this.walletName = _optionalChain$4([options, 'optionalAccess', _31 => _31.name]);
 
         // delete localStorage[`wc@2:client:0.3//session`] // DELETE WC SESSIONS
         this.signClient = await getSignClient();
 
         this.signClient.on("session_delete", (session)=> {
-          if(_optionalChain$3([session, 'optionalAccess', _32 => _32.topic]) === _optionalChain$3([this, 'access', _33 => _33.session, 'optionalAccess', _34 => _34.topic])) {
+          if(_optionalChain$4([session, 'optionalAccess', _32 => _32.topic]) === _optionalChain$4([this, 'access', _33 => _33.session, 'optionalAccess', _34 => _34.topic])) {
             localStorage[KEY+':name'] = undefined;
             localStorage[KEY+':logo'] = undefined;
             this.signClient = undefined;
@@ -1791,14 +1790,14 @@
         });
 
         this.signClient.on("session_update", async(session)=> {
-          if(_optionalChain$3([session, 'optionalAccess', _35 => _35.topic]) === _optionalChain$3([this, 'access', _36 => _36.session, 'optionalAccess', _37 => _37.topic])) {
+          if(_optionalChain$4([session, 'optionalAccess', _35 => _35.topic]) === _optionalChain$4([this, 'access', _36 => _36.session, 'optionalAccess', _37 => _37.topic])) {
             this.session = this.signClient.session.get(session.topic);
             await this.setSessionBlockchains();
           }
         });
 
         this.signClient.on("session_event", (event)=> {
-          if(_optionalChain$3([event, 'optionalAccess', _38 => _38.topic]) === _optionalChain$3([this, 'access', _39 => _39.session, 'optionalAccess', _40 => _40.topic])) {}
+          if(_optionalChain$4([event, 'optionalAccess', _38 => _38.topic]) === _optionalChain$4([this, 'access', _39 => _39.session, 'optionalAccess', _40 => _40.topic])) {}
         });
 
         const connectWallet = async()=>{
@@ -1809,24 +1808,24 @@
           await new Promise(resolve=>setTimeout(resolve, 500)); // to prevent race condition within WalletConnect
         };
 
-        const lastSession = _optionalChain$3([this, 'optionalAccess', _41 => _41.walletName, 'optionalAccess', _42 => _42.length]) ? await getLastSession(this.walletName) : undefined;
+        const lastSession = _optionalChain$4([this, 'optionalAccess', _41 => _41.walletName, 'optionalAccess', _42 => _42.length]) ? await getLastSession(this.walletName) : undefined;
         if(lastSession) {
           this.session = lastSession;
         } else {
           await connectWallet();
         }
 
-        let meta = _optionalChain$3([this, 'access', _43 => _43.session, 'optionalAccess', _44 => _44.peer, 'optionalAccess', _45 => _45.metadata]);
+        let meta = _optionalChain$4([this, 'access', _43 => _43.session, 'optionalAccess', _44 => _44.peer, 'optionalAccess', _45 => _45.metadata]);
         if(meta && meta.name) {
           this.name = meta.name;
           localStorage[KEY+':name'] = meta.name;
-          if(_optionalChain$3([meta, 'optionalAccess', _46 => _46.icons]) && meta.icons.length) {
+          if(_optionalChain$4([meta, 'optionalAccess', _46 => _46.icons]) && meta.icons.length) {
             this.logo = meta.icons[0];
             localStorage[KEY+':logo'] = this.logo;
           }
         }
-        if(_optionalChain$3([options, 'optionalAccess', _47 => _47.name])) { localStorage[KEY+':name'] = this.name = options.name; }
-        if(_optionalChain$3([options, 'optionalAccess', _48 => _48.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
+        if(_optionalChain$4([options, 'optionalAccess', _47 => _47.name])) { localStorage[KEY+':name'] = this.name = options.name; }
+        if(_optionalChain$4([options, 'optionalAccess', _48 => _48.logo])) { localStorage[KEY+':logo'] = this.logo = options.logo; }
 
         await this.setSessionBlockchains();
 
@@ -1866,7 +1865,7 @@
       switch (event) {
         case 'account':
           internalCallback = async(event)=> {
-            if(_optionalChain$3([event, 'optionalAccess', _49 => _49.topic]) === _optionalChain$3([this, 'access', _50 => _50.session, 'optionalAccess', _51 => _51.topic]) && event.params.event.name === 'accountsChanged') {
+            if(_optionalChain$4([event, 'optionalAccess', _49 => _49.topic]) === _optionalChain$4([this, 'access', _50 => _50.session, 'optionalAccess', _51 => _51.topic]) && event.params.event.name === 'accountsChanged') {
               callback(await this.account());
             }
           };
@@ -1926,7 +1925,7 @@
 
   WalletConnectV2.getConnectedInstance = getConnectedInstance$1;
 
-  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   const sendTransaction = async ({ transaction, wallet })=> {
     transaction = new Transaction(transaction);
     if((await wallet.connectedTo(transaction.blockchain)) == false) {
@@ -1978,7 +1977,7 @@
 
         sentTransaction.wait(1).then(resolve).catch((error)=>{
           if(
-            (error && _optionalChain$2([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
+            (error && _optionalChain$3([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
             (error && error.toString().match('undefined'))
           ) {
             setTimeout(()=>{
@@ -1992,7 +1991,7 @@
         });
       } catch(error) {
         if(
-          (error && _optionalChain$2([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
+          (error && _optionalChain$3([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
           (error && error.toString().match('undefined'))
         ) {
           setTimeout(()=>{
@@ -2037,7 +2036,7 @@
     })
   };
 
-  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
   const getConnectedInstance = ()=>{
     return window._connectedWalletLinkInstance
@@ -2091,10 +2090,10 @@
       let connect = (options && options.connect) ? options.connect : ({uri})=>{};
       await connect({ uri: this.connector.qrUrl });
       
-      _optionalChain$1([document, 'access', _ => _.querySelector, 'call', _2 => _2('.-cbwsdk-css-reset'), 'optionalAccess', _3 => _3.setAttribute, 'call', _4 => _4('style', 'display: none;')]);
-      _optionalChain$1([document, 'access', _5 => _5.querySelector, 'call', _6 => _6('.-cbwsdk-extension-dialog-container'), 'optionalAccess', _7 => _7.setAttribute, 'call', _8 => _8('style', 'display: none;')]);
+      _optionalChain$2([document, 'access', _ => _.querySelector, 'call', _2 => _2('.-cbwsdk-css-reset'), 'optionalAccess', _3 => _3.setAttribute, 'call', _4 => _4('style', 'display: none;')]);
+      _optionalChain$2([document, 'access', _5 => _5.querySelector, 'call', _6 => _6('.-cbwsdk-extension-dialog-container'), 'optionalAccess', _7 => _7.setAttribute, 'call', _8 => _8('style', 'display: none;')]);
       setTimeout(()=>{
-        if(_optionalChain$1([this, 'optionalAccess', _9 => _9.connector, 'optionalAccess', _10 => _10._relay, 'optionalAccess', _11 => _11.ui, 'optionalAccess', _12 => _12.linkFlow, 'optionalAccess', _13 => _13.isOpen])){
+        if(_optionalChain$2([this, 'optionalAccess', _9 => _9.connector, 'optionalAccess', _10 => _10._relay, 'optionalAccess', _11 => _11.ui, 'optionalAccess', _12 => _12.linkFlow, 'optionalAccess', _13 => _13.isOpen])){
           this.connector._relay.ui.linkFlow.isOpen = false;
         }
       }, 10);
@@ -2212,6 +2211,212 @@
   WalletLink.getConnectedInstance = getConnectedInstance;
   WalletLink.setConnectedInstance = setConnectedInstance;
 
+  function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+
+  class Worldapp {
+
+    static __initStatic() {this.info = {
+      name: 'Worldapp',
+      logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMzIDMyIj4KICA8Zz4KICAgIDxnPgogICAgICA8cmVjdCBmaWxsPSIjMDAwMDAwIiB3aWR0aD0iMzMiIGhlaWdodD0iMzIiLz4KICAgIDwvZz4KICAgIDxnPgogICAgICA8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjQuNywxMi41Yy0uNS0xLjEtMS4xLTItMS45LTIuOHMtMS44LTEuNS0yLjgtMS45Yy0xLjEtLjUtMi4zLS43LTMuNS0uN3MtMi40LjItMy41LjdjLTEuMS41LTIsMS4xLTIuOCwxLjlzLTEuNSwxLjgtMS45LDIuOGMtLjUsMS4xLS43LDIuMy0uNywzLjVzLjIsMi40LjcsMy41LDEuMSwyLDEuOSwyLjhjLjguOCwxLjgsMS41LDIuOCwxLjksMS4xLjUsMi4zLjcsMy41LjdzMi40LS4yLDMuNS0uNywyLTEuMSwyLjgtMS45LDEuNS0xLjgsMS45LTIuOGMuNS0xLjEuNy0yLjMuNy0zLjVzLS4yLTIuNC0uNy0zLjVaTTEzLjUsMTUuMmMuNC0xLjQsMS43LTIuNSwzLjItMi41aDYuMmMuNC44LjcsMS42LjcsMi41aC0xMC4xWk0yMy43LDE2LjhjMCwuOS0uNCwxLjctLjcsMi41aC02LjJjLTEuNSwwLTIuOC0xLjEtMy4yLTIuNWgxMC4xWk0xMS40LDEwLjljMS40LTEuNCwzLjItMi4xLDUuMS0yLjFzMy44LjcsNS4xLDIuMWguMWMwLC4xLTUsLjEtNSwuMS0xLjMsMC0yLjYuNS0zLjUsMS41LS43LjctMS4yLDEuNy0xLjQsMi43aC0yLjVjLjItMS42LjktMy4xLDIuMS00LjNaTTE2LjUsMjMuMmMtMS45LDAtMy44LS43LTUuMS0yLjEtMS4yLTEuMi0xLjktMi43LTIuMS00LjNoMi41Yy4yLDEsLjcsMS45LDEuNCwyLjcuOS45LDIuMiwxLjUsMy41LDEuNWg1LS4xYy0xLjQsMS41LTMuMiwyLjItNS4xLDIuMloiLz4KICAgIDwvZz4KICA8L2c+Cjwvc3ZnPgo=",
+      blockchains: ["worldchain"]
+    };}
+
+    static __initStatic2() {this.isAvailable = async()=>{ 
+      return Boolean(
+        _optionalChain$1([window, 'optionalAccess', _2 => _2.WorldApp])
+      )
+    };}
+    
+    constructor () {
+      worldcoinPrecompiled.MiniKit.install();
+      this.name = this.constructor.info.name;
+      this.logo = this.constructor.info.logo;
+      this.blockchains = this.constructor.info.blockchains;
+      this.sendTransaction = this.sendTransaction;
+    }
+
+    sendTransaction(transaction) {
+      console.log('sendTransaction', transaction);
+      transaction = new Transaction(transaction);
+      console.log('after transaction wrapping transaction.sent', transaction.sent);
+      console.log('after transaction wrapping transaction.succeeded', transaction.succeeded);
+      console.log('after transaction wrapping transaction.failed', transaction.failed);
+
+      return new Promise(async(resolve, reject)=>{
+        await transaction.prepare({ wallet: this });
+        console.log('after prepare transaction', transaction);
+        transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString();
+        console.log('after nonce transaction', transaction);
+
+        worldcoinPrecompiled.MiniKit.subscribe(worldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, (payload)=> {
+          console.log('payload', payload);
+          if (payload.status == "success") {
+            this.fetchTransaction(transaction, payload).then((transactionHash)=>{
+              if(transactionHash) {
+                resolve(transaction);
+              } else {
+                reject('Fetching transaction failed!');
+              }
+            }).catch(reject);
+          } else {
+            reject('Submitting transaction failed!');
+          }
+        });
+
+        worldcoinPrecompiled.MiniKit.commands.sendTransaction({
+          transaction: [
+            {
+              address: transaction.to,
+              abi: transaction.api,
+              functionName: transaction.method,
+              args: _optionalChain$1([transaction, 'access', _3 => _3.params, 'optionalAccess', _4 => _4.args])
+            },
+          ],
+          permit2: [_optionalChain$1([transaction, 'access', _5 => _5.params, 'optionalAccess', _6 => _6.permit2])]
+        });
+      })
+    }
+
+    retryFetchTransaction(transaction, payload, attempt) {
+      console.log('Retry Fetch transaction', attempt);
+      return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          this.fetchTransaction(transaction, payload, attempt+1).then(resolve).catch(reject);
+        }, (attempt < 30 ? 500 : 1000));
+      })
+    }
+
+    fetchTransaction(transaction, payload, attempt = 1) {
+      return new Promise((resolve, reject)=>{
+        console.log('Before fetch');
+        fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
+          headers: { "Content-Type": "application/json" },
+        }).then((response)=>{
+          console.log('After fetch', response);
+          if(response.ok) {
+            console.log('Before json');
+            response.json().then((transactionJSON)=>{
+              console.log('After json', transactionJSON);
+              if(_optionalChain$1([transactionJSON, 'optionalAccess', _7 => _7.external_id])) {
+                transaction.id = _optionalChain$1([transactionJSON, 'optionalAccess', _8 => _8.external_id]);
+                transaction.url = Blockchains__default['default']['worldchain'].explorerUrlFor({ transaction });
+                console.log('before transaction.sent', transaction.sent);
+                if (transaction.sent) { transaction.sent(transaction); }
+                console.log('Before provider');
+                web3Client.getProvider('worldchain').then((provider)=>{
+                  console.log('After provider', provider);
+                  console.log('Before wait transaction', transactionJSON.external_id);
+                  provider.waitForTransaction(transactionJSON.external_id).then((receipt)=>{
+                    console.log('After receipt', receipt);
+                    if(receipt && receipt.status == 1) {
+                      transaction._succeeded = true;
+                      console.log('before transaction.succeeded', transaction.succeeded);
+                      if (transaction.succeeded) { transaction.succeeded(transaction); }
+                      resolve(transaction);
+                    }
+                  }).catch(reject);
+                }).catch(reject);
+              } else {
+                this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject);
+              }
+            }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject));
+          } else {
+            this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject);
+          }
+        }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject));
+      })
+    }
+
+    getProvider() {
+      return this
+    }
+
+    async account() {
+      if(!this.getProvider()) { return undefined }
+      return worldcoinPrecompiled.MiniKit.walletAddress
+    }
+
+    connect() {
+
+      return new Promise((resolve, reject)=>{
+
+        if(worldcoinPrecompiled.MiniKit.walletAddress) {
+          return resolve(worldcoinPrecompiled.MiniKit.walletAddress)
+        }
+
+        worldcoinPrecompiled.MiniKit.subscribe(worldcoinPrecompiled.ResponseEvent.MiniAppWalletAuth, async (payload) => {
+          if (payload.status === "error") {
+            return reject()
+          } else {
+            return resolve(worldcoinPrecompiled.MiniKit.walletAddress)
+          }
+        });
+
+        worldcoinPrecompiled.MiniKit.commands.walletAuth({
+          nonce: crypto.randomUUID().replace(/-/g, ""),
+          expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+          notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+          statement: "Connect wallet (v17.3.0)"
+        });
+
+      })
+    }
+
+    on(event, callback) {}
+
+    off(event, internalCallback) {}
+
+    async connectedTo(input) {
+      if(input) {
+        return input === 'worldchain'
+      } else {
+        return 'worldchain'
+      }
+    }
+
+    addNetwork(blockchainName) {
+      return new Promise((resolve, reject)=>{
+        reject({ code: 'NOT_SUPPORTED' });
+      })
+    }
+
+    switchTo(blockchainName) {
+      return new Promise((resolve, reject)=>{
+        reject({ code: 'NOT_SUPPORTED' });
+      })
+    }
+
+    async transactionCount({ blockchain, address }) {
+      if(!_optionalChain$1([worldcoinPrecompiled.MiniKit, 'optionalAccess', _9 => _9.walletAddress])) {
+        return 0
+      } else {
+        return web3Client.request({
+          blockchain: 'worldchain',
+          address: _optionalChain$1([worldcoinPrecompiled.MiniKit, 'optionalAccess', _10 => _10.walletAddress]),
+          api: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"}],"name":"AddedOwner","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"approvedHash","type":"bytes32"},{"indexed":true,"internalType":"address","name":"owner","type":"address"}],"name":"ApproveHash","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"handler","type":"address"}],"name":"ChangedFallbackHandler","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"guard","type":"address"}],"name":"ChangedGuard","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"threshold","type":"uint256"}],"name":"ChangedThreshold","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"module","type":"address"}],"name":"DisabledModule","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"module","type":"address"}],"name":"EnabledModule","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"txHash","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"payment","type":"uint256"}],"name":"ExecutionFailure","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"ExecutionFromModuleFailure","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"ExecutionFromModuleSuccess","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"txHash","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"payment","type":"uint256"}],"name":"ExecutionSuccess","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"}],"name":"RemovedOwner","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"SafeReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"initiator","type":"address"},{"indexed":false,"internalType":"address[]","name":"owners","type":"address[]"},{"indexed":false,"internalType":"uint256","name":"threshold","type":"uint256"},{"indexed":false,"internalType":"address","name":"initializer","type":"address"},{"indexed":false,"internalType":"address","name":"fallbackHandler","type":"address"}],"name":"SafeSetup","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"msgHash","type":"bytes32"}],"name":"SignMsg","type":"event"},{"stateMutability":"nonpayable","type":"fallback"},{"inputs":[],"name":"VERSION","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"_threshold","type":"uint256"}],"name":"addOwnerWithThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"hashToApprove","type":"bytes32"}],"name":"approveHash","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"approvedHashes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_threshold","type":"uint256"}],"name":"changeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"dataHash","type":"bytes32"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"bytes","name":"signatures","type":"bytes"},{"internalType":"uint256","name":"requiredSignatures","type":"uint256"}],"name":"checkNSignatures","outputs":[],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"dataHash","type":"bytes32"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"bytes","name":"signatures","type":"bytes"}],"name":"checkSignatures","outputs":[],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"prevModule","type":"address"},{"internalType":"address","name":"module","type":"address"}],"name":"disableModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"domainSeparator","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"enableModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"},{"internalType":"uint256","name":"safeTxGas","type":"uint256"},{"internalType":"uint256","name":"baseGas","type":"uint256"},{"internalType":"uint256","name":"gasPrice","type":"uint256"},{"internalType":"address","name":"gasToken","type":"address"},{"internalType":"address","name":"refundReceiver","type":"address"},{"internalType":"uint256","name":"_nonce","type":"uint256"}],"name":"encodeTransactionData","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"},{"internalType":"uint256","name":"safeTxGas","type":"uint256"},{"internalType":"uint256","name":"baseGas","type":"uint256"},{"internalType":"uint256","name":"gasPrice","type":"uint256"},{"internalType":"address","name":"gasToken","type":"address"},{"internalType":"addresspayable","name":"refundReceiver","type":"address"},{"internalType":"bytes","name":"signatures","type":"bytes"}],"name":"execTransaction","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"}],"name":"execTransactionFromModule","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"}],"name":"execTransactionFromModuleReturnData","outputs":[{"internalType":"bool","name":"success","type":"bool"},{"internalType":"bytes","name":"returnData","type":"bytes"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getChainId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"start","type":"address"},{"internalType":"uint256","name":"pageSize","type":"uint256"}],"name":"getModulesPaginated","outputs":[{"internalType":"address[]","name":"array","type":"address[]"},{"internalType":"address","name":"next","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getOwners","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"offset","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"getStorageAt","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"},{"internalType":"uint256","name":"safeTxGas","type":"uint256"},{"internalType":"uint256","name":"baseGas","type":"uint256"},{"internalType":"uint256","name":"gasPrice","type":"uint256"},{"internalType":"address","name":"gasToken","type":"address"},{"internalType":"address","name":"refundReceiver","type":"address"},{"internalType":"uint256","name":"_nonce","type":"uint256"}],"name":"getTransactionHash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"isModuleEnabled","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"isOwner","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"prevOwner","type":"address"},{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"_threshold","type":"uint256"}],"name":"removeOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"}],"name":"requiredTxGas","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"handler","type":"address"}],"name":"setFallbackHandler","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"guard","type":"address"}],"name":"setGuard","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address[]","name":"_owners","type":"address[]"},{"internalType":"uint256","name":"_threshold","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"address","name":"fallbackHandler","type":"address"},{"internalType":"address","name":"paymentToken","type":"address"},{"internalType":"uint256","name":"payment","type":"uint256"},{"internalType":"addresspayable","name":"paymentReceiver","type":"address"}],"name":"setup","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"signedMessages","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"targetContract","type":"address"},{"internalType":"bytes","name":"calldataPayload","type":"bytes"}],"name":"simulateAndRevert","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"prevOwner","type":"address"},{"internalType":"address","name":"oldOwner","type":"address"},{"internalType":"address","name":"newOwner","type":"address"}],"name":"swapOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+          method: 'nonce'
+        })
+      }
+    }
+
+    async sign(message) {
+      
+      return new Promise((resolve, reject)=>{
+
+        worldcoinPrecompiled.MiniKit.subscribe(worldcoinPrecompiled.ResponseEvent.MiniAppSignMessage, async (payload) => {
+          if (payload.status === "error") {
+            return reject()
+          } else {
+            return resolve(payload.signature)
+          }
+        });
+
+        worldcoinPrecompiled.MiniKit.commands.signMessage({ message });
+
+      })
+    }
+  } Worldapp.__initStatic(); Worldapp.__initStatic2();
+
   var wallets = {
     MetaMask,
     PhantomEVM,
@@ -2241,8 +2446,9 @@
     TokenPocket,
     ExodusEVM,
     ExodusSVM,
+    Worldapp,
 
-    // standards (not concrete wallets)
+    // standards
     WindowEthereum,
     WindowSolana,
     SolanaMobileWalletAdapter,
@@ -2322,8 +2528,9 @@
     wallets.OKXSVM,
     wallets.ExodusEVM,
     wallets.ExodusSVM,
+    wallets.Worldapp,
 
-    // standards (not concrete wallets)
+    // standards
     wallets.WalletConnectV2,
     wallets.SolanaMobileWalletAdapter,
     wallets.WalletLink,

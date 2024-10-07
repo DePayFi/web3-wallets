@@ -767,7 +767,7 @@ var wallets = {
   ExodusSVM,
   Coin98SVM,
 
-  // standards (not concrete wallets)
+  // standards
   WindowSolana,
   SolanaMobileWalletAdapter,
 };
@@ -828,7 +828,7 @@ const supported = [
   wallets.ExodusSVM,
   wallets.Coin98SVM,
 
-  // standards (not concrete wallets)
+  // standards
   wallets.WalletConnectV2,
   wallets.SolanaMobileWalletAdapter,
   wallets.WalletLink,
