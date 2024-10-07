@@ -44,7 +44,7 @@ export default class Worldapp {
 
     return new Promise(async(resolve, reject)=>{
       await transaction.prepare({ wallet: this })
-      transaction.nonce = await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })
+      transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString()
       console.log('transaction', transaction)
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
@@ -77,6 +77,7 @@ export default class Worldapp {
   }
 
   retryFetchTransaction(payload, attempt) {
+    console.log('Retry Fetch transaction')
     return new Promise((resolve, reject)=>{
       setTimeout(()=>{
         this.fetchTransaction(payload, attempt+1).then(resolve).catch(reject)
@@ -87,11 +88,15 @@ export default class Worldapp {
   fetchTransaction(payload, attempt) {
     if(attempt > 5) { reject('Fetching transaction failed!') }
     return new Promise((resolve, reject)=>{
+      console.log('Before fetch')
       fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
         headers: { "Content-Type": "application/json" },
       }).then((response)=>{
+        console.log('After fetch', response)
         if(response.ok) {
+          console.log('Before json')
           response.json().then((transaction)=>{
+            console.log('After json')
             if(transaction?.external_id) {
               getProvider('worldchain').then((provider)=>{
                 provider.waitForTransaction(transaction.external_id).then((receipt)=>{
@@ -101,13 +106,13 @@ export default class Worldapp {
                 }).catch(reject)
               }).catch(reject)
             } else {
-              retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
+              this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
             }
-          }).catch(()=>retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
+          }).catch(()=>this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
         } else {
-          retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
+          this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject)
         }
-      }).catch(()=>retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
+      }).catch(()=>this.retryFetchTransaction(payload, attempt).then(resolve).catch(reject))
     })
   }
 
