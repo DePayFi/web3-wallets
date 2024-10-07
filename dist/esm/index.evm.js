@@ -6574,14 +6574,14 @@ class Worldapp {
     this.sendTransaction = this.sendTransaction;
   }
 
-  sendTransaction({ transaction }) {
-    window._debug(`sendTransaction: ${JSON.stringify(transaction)}`);
+  sendTransaction(transaction) {
+    console.log('sendTransaction', transaction);
     transaction = new Transaction(transaction);
 
     return new Promise(async(resolve, reject)=>{
       await transaction.prepare({ wallet: this });
       transaction.nonce = await this.transactionCount({ blockchain: 'worldchain', address: transaction.from });
-      window._debug(`transaction: ${JSON.stringify(transaction)}`);
+      console.log('transaction', transaction);
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         if (payload.status == "success") {

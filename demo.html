@@ -33,30 +33,9 @@
     </style>
     <script>
 
-      window._debug = (text)=>{
-        let newElement;
-
-        newElement = document.createElement('div');
-        newElement.textContent = text;
-        document.body.prepend(newElement);
-
-        newElement = document.createElement('div');
-        newElement.textContent = '-';
-        document.body.prepend(newElement);
-      }
-
       document.addEventListener("DOMContentLoaded", function() {
-        
-        window._debug(Object.keys(window))
-
-        window._debug(`WalletAddress: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`)
-
-        window._debug(`window?.WorldApp: ${window?.WorldApp ? JSON.stringify(window?.WorldApp) : undefined}`)
-        
-        window._debug(`v38`)
-
         window.eruda.init()
-        
+        console.log('v40')
       });
 
       window.getNonce = async(address)=>{
@@ -228,12 +207,12 @@
                     const nonce = crypto.randomUUID().replace(/-/g, "")
                      WorldcoinPrecompiled.MiniKit.subscribe(WorldcoinPrecompiled.ResponseEvent.MiniAppWalletAuth, async (payload) => {
                       if (payload.status === "error") {
-                        window._debug(JSON.stringify(payload))
+                        console.log(payload)
                         return
                       } else {
-                        window._debug(JSON.stringify(payload))
+                        console.log(payload)
                       }
-                      window._debug(`WalletAddress: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`)
+                      console.log('WalletAddress', WorldcoinPrecompiled.MiniKit?.walletAddress)
                     });
                     const generateMessageResult = WorldcoinPrecompiled.MiniKit.commands.walletAuth({
                       nonce: nonce,
@@ -243,7 +222,7 @@
                       statement:
                         "This is my statement2 and here is a link https://worldcoin.com/apps",
                     });
-                    window._debug(JSON.stringify(generateMessageResult))
+                    console.log(generateMessageResult)
                   }
                 </script>
                 <button class='btn btn-primary' onClick='worldappAuth()'>Try it</button>
@@ -264,8 +243,8 @@
               <div class="px-4 pt-3">
                 <script>
                   window.worldappSendTransactionTuple = async()=>{
-                    window._debug(JSON.stringify(await WorldcoinPrecompiled.MiniKit.install()))
-                    window._debug(`WorldcoinPrecompiled.MiniKit.isInstalled(): ${WorldcoinPrecompiled.MiniKit.isInstalled() ? 'true' : 'false'}`)
+                    console.log('installed?', await WorldcoinPrecompiled.MiniKit.install())
+                    console.log('WorldcoinPrecompiled.MiniKit.isInstalled()', WorldcoinPrecompiled.MiniKit.isInstalled() ? 'true' : 'false')
                     
                     const permitDeadline = Math.floor(Date.now() / 1000) + 30 * 60
 
@@ -280,9 +259,9 @@
 
                     const amount = 10000
 
-                    window._debug(`Before nonce: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`)
+                    console.log('Before nonce', WorldcoinPrecompiled.MiniKit?.walletAddress)
                     const nonce = (await getNonce(WorldcoinPrecompiled.MiniKit?.walletAddress)).toString()
-                    window._debug(`After nonce: ${nonce}`)
+                    console.log('After nonce', nonce)
                     
                     const permitTransfer = {
                         permitted: {
@@ -305,7 +284,6 @@
 
                     const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
 
-                    window._debug(`Before wallet.sendTransaction`)
                     const sentTransaction = await window.wallet.sendTransaction({
                       blockchain: 'worldchain',
                       to: ROUTER,
@@ -348,12 +326,12 @@
                         },
                       },
                       value: 0,
-                      sent: function(transaction){ window._debug(`SENT: ${JSON.stringify(transaction)}`) },
-                      succeeded: function(transaction){ window._debug(`SUCCEEDED: ${JSON.stringify(transaction)}`) },
-                      failed: function(transaction, error){ window._debug(`FAILED: ${JSON.stringify(transaction)} ${error}`) }
+                      sent: function(transaction){ console.log('SENT', transaction) },
+                      succeeded: function(transaction){ console.log('SUCCEEDED', transaction) },
+                      failed: function(transaction, error){ console.log('FAILED', transaction) }
                     })
 
-                    window._debug(`after sentTransaction: ${JSON.stringify(sentTransaction)}`)
+                    console.log('after sentTransaction', sentTransaction)
 
                   }
                 </script>
@@ -1233,7 +1211,7 @@
                 </div>
               </div>
               <div class="px-4 pt-3">
-                <button class='btn btn-primary' onClick='window.wallet.transactionCount({ blockchain: "worldcoin", address: WorldcoinPrecompiled.MiniKit?.walletAddress }).then((number)=>{window._debug(`Transaction Count: ${number.toString()}`)})'>Try it</button>
+                <button class='btn btn-primary' onClick='window.wallet.transactionCount({ blockchain: "worldcoin", address: WorldcoinPrecompiled.MiniKit?.walletAddress }).then((number)=>{console.log(`Transaction Count: ${number.toString()}`)})'>Try it</button>
               </div>
             </div>
           </div>
