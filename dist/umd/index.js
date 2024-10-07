@@ -2283,8 +2283,8 @@
     }
 
     fetchTransaction(payload, attempt) {
-      if(attempt > 5) { reject('Fetching transaction failed!'); }
       return new Promise((resolve, reject)=>{
+        if(attempt > 5) { reject('Fetching transaction failed!'); }
         console.log('Before fetch');
         fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
           headers: { "Content-Type": "application/json" },
@@ -2293,7 +2293,7 @@
           if(response.ok) {
             console.log('Before json');
             response.json().then((transaction)=>{
-              console.log('After json');
+              console.log('After json', transaction);
               if(_optionalChain$1([transaction, 'optionalAccess', _7 => _7.external_id])) {
                 web3Client.getProvider('worldchain').then((provider)=>{
                   provider.waitForTransaction(transaction.external_id).then((receipt)=>{
