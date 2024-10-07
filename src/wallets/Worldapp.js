@@ -39,6 +39,7 @@ export default class Worldapp {
   }
 
   sendTransaction({ transaction }) {
+    window._debug(`sendTransaction: ${JSON.stringify(transaction)}`)
     transaction = new Transaction(transaction)
 
     return new Promise(async(resolve, reject)=>{
