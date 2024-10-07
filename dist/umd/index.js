@@ -2293,7 +2293,7 @@
           if(response.ok) {
             console.log('Before json');
             response.json().then((transaction)=>{
-              console.log('After json', transaction);
+              console.log('After json2', transaction);
               if(_optionalChain$1([transaction, 'optionalAccess', _7 => _7.external_id])) {
                 web3Client.getProvider('worldchain').then((provider)=>{
                   provider.waitForTransaction(transaction.external_id).then((receipt)=>{

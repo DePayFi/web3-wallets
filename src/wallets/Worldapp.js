@@ -96,7 +96,7 @@ export default class Worldapp {
         if(response.ok) {
           console.log('Before json')
           response.json().then((transaction)=>{
-            console.log('After json', transaction)
+            console.log('After json2', transaction)
             if(transaction?.external_id) {
               getProvider('worldchain').then((provider)=>{
                 provider.waitForTransaction(transaction.external_id).then((receipt)=>{
