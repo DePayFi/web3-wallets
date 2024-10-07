@@ -2245,6 +2245,7 @@
         console.log('transaction', transaction);
 
         worldcoinPrecompiled.MiniKit.subscribe(worldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction, (payload)=> {
+          console.log('payload', payload);
           if (payload.status == "success") {
             this.fetchTransaction(payload, 1).then((transactionHash)=>{
               if(transactionHash) {
@@ -2256,7 +2257,6 @@
           } else {
             reject('Submitting transaction failed!');
           }
-          worldcoinPrecompiled.MiniKit.unsubscribe(worldcoinPrecompiled.ResponseEvent.MiniAppSendTransaction);
         });
 
         worldcoinPrecompiled.MiniKit.commands.sendTransaction({

@@ -2243,6 +2243,7 @@ class Worldapp {
       console.log('transaction', transaction);
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
+        console.log('payload', payload);
         if (payload.status == "success") {
           this.fetchTransaction(payload, 1).then((transactionHash)=>{
             if(transactionHash) {
@@ -2254,7 +2255,6 @@ class Worldapp {
         } else {
           reject('Submitting transaction failed!');
         }
-        MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction);
       });
 
       MiniKit.commands.sendTransaction({
