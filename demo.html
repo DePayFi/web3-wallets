@@ -280,7 +280,9 @@
 
                     const amount = 10000
 
+                    window._debug(`Before nonce: ${WorldcoinPrecompiled.MiniKit?.walletAddress}`)
                     const nonce = (await getNonce(WorldcoinPrecompiled.MiniKit?.walletAddress)).toString()
+                    window._debug(`After nonce: ${nonce}`)
                     
                     const permitTransfer = {
                         permitted: {
@@ -303,6 +305,7 @@
 
                     const paymentDeadline = permitDeadline * 1000; // permitDeadline in ms
 
+                    window._debug(`Before wallet.sendTransaction`)
                     const sentTransaction = await wallet.sendTransaction({
                       blockchain: 'worldchain',
                       to: ROUTER,
@@ -350,7 +353,7 @@
                       failed: function(transaction, error){ window._debug(`FAILED: ${JSON.stringify(transaction)} ${error}`) }
                     })
 
-                    window._debug(`sentTransaction: ${JSON.stringify(sentTransaction)}`)
+                    window._debug(`after sentTransaction: ${JSON.stringify(sentTransaction)}`)
 
                   }
                 </script>
