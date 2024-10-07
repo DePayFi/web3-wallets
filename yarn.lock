@@ -1097,10 +1097,10 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-10.4.1.tgz#5679bf714058941a0d43379ac145fd16089cd666"
   integrity sha512-brUXHpgZ2CLGptF4SVJnGAguDYEobYFEIJ4IWYt6G8cFCrErCq3IQuK1DULh30pl+sFy9UihrSana7U1mPWR0Q==
 
-"@depay/worldcoin-precompiled@^0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@depay/worldcoin-precompiled/-/worldcoin-precompiled-0.0.32.tgz#31fdd48bdb25463906c48bc2d15309eebdf6e1b6"
-  integrity sha512-hXVQ7mibASwRDvFbAdEaYOmp2qiZJKiK3Cvj4yWbKokOZ1ogJ+jO0iwt6KgXf7towtBU3tJ4UexTH8O30j00hA==
+"@depay/worldcoin-precompiled@^0.0.33":
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@depay/worldcoin-precompiled/-/worldcoin-precompiled-0.0.33.tgz#0c0dab3b332c9c4d0f036efd287d2f8a8e218846"
+  integrity sha512-AlyBpjEBXD++v3LL3v/AURMtUnFCnBICJNjaqHmi7KXgmVMYVB2rwuSFBOI1ygblXpoObAJIPRtt0Vl4kzkVCA==
   dependencies:
     "@rollup/plugin-alias" "^5.1.0"
 
