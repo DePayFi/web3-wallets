@@ -1729,6 +1729,8 @@
                       console.log('before transaction.succeeded', transaction.succeeded);
                       if (transaction.succeeded) { transaction.succeeded(transaction); }
                       resolve(transaction);
+                    } else {
+                      if (transaction.failed) { transaction.failed(transaction, 'Transaction failed'); }
                     }
                   }).catch(reject);
                 }).catch(reject);
