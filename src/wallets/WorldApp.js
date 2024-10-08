@@ -52,6 +52,7 @@ export default class WorldApp {
       transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString()
       console.log('after nonce transaction', transaction)
 
+      console.log('before MiniKit.subscribe')
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         console.log('payload', payload)
         if (payload.status == "success") {
@@ -66,7 +67,19 @@ export default class WorldApp {
           reject('Submitting transaction failed!')
         }
       })
+      console.log('after MiniKit.subscribe')
 
+      console.log('before MiniKit.commands.sendTransaction', {
+        transaction: [
+          {
+            address: transaction.to,
+            abi: transaction.api,
+            functionName: transaction.method,
+            args: transaction.params?.args
+          },
+        ],
+        permit2: [transaction.params?.permit2]
+      })
       MiniKit.commands.sendTransaction({
         transaction: [
           {
@@ -78,6 +91,7 @@ export default class WorldApp {
         ],
         permit2: [transaction.params?.permit2]
       })
+      console.log('after MiniKit.commands.sendTransaction')
     })
   }
 
