@@ -73,7 +73,7 @@ export default class WorldApp {
         transaction: [
           {
             address: transaction.to,
-            abi: transaction.api,
+            abi: api.filter((fragment)=>fragment?.name === transaction.method),
             functionName: transaction.method,
             args: transaction.params?.args
           },
@@ -84,7 +84,7 @@ export default class WorldApp {
         transaction: [
           {
             address: transaction.to,
-            abi: transaction.api,
+            abi: api.filter((fragment)=>fragment?.name === transaction.method),
             functionName: transaction.method,
             args: transaction.params?.args
           },
