@@ -222,11 +222,13 @@ await wallet.switchTo('bsc')
 
 ### Data Structure
 
+`accepted: Function ()=>{}`: Callback that will be executed once the transaction has been accepted by the wallet but not sent to the network yet (e.g. relayer, World App). Has no transaction yet, as only sent can contain the transaction.
+
 `api: Array`: Api of the contract (e.g. abi for Ethereum, Layout/Struct for Solana).
 
 `blockchain: String`: Name of the blockchain e.g. 'ethereum'.
 
-`failed: Function (transaction, error)=>{}`: Callback to be executed if transaction failed (e.g. reverted).
+`failed: Function (transaction, error)=>{}`: Callback that will be executed once the transaction failed onchain (reverted).
 
 `from: String`: Address of the transaction sender.
 
@@ -242,9 +244,9 @@ await wallet.switchTo('bsc')
 
 `params: Object or Array`: Parameters passed to the method (EVM).
 
-`sent: Function (transaction)=>{}`: Callback to be executed if transaction has been sent to the network.
+`sent: Function (transaction)=>{}`: Callback that will be executed executed once the transaction has been sent to the network.
 
-`succeeded: Function (transaction)=>{}`: Callback to be executed if transaction was successful and has been confirmed once by the network.
+`succeeded: Function (transaction)=>{}`: Callback that will be executed once the transaction was successful and has been confirmed at least once by the network.
 
 `to String`: Address of the contract to be transacted with (EVM).
 

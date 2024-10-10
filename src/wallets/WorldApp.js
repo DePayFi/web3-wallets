@@ -56,6 +56,9 @@ export default class WorldApp {
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         console.log('payload', payload)
         if (payload.status == "success") {
+          console.log('before transaction.accepted', transaction)
+          if (transaction.accepted) { transaction.accepted() }
+          console.log('after transaction.accepted', transaction)
           this.fetchTransaction(transaction, payload).then((transactionHash)=>{
             if(transactionHash) {
               resolve(transaction)

@@ -19,7 +19,8 @@ class Transaction {
     alts,
     sent,
     succeeded,
-    failed
+    failed,
+    accepted,
   }) {
 
     // required
@@ -32,6 +33,7 @@ class Transaction {
     this.api = api;
     this.method = method;
     this.params = params;
+    this.accepted = accepted;
     this.sent = sent;
     this.succeeded = succeeded;
     this.failed = failed;
