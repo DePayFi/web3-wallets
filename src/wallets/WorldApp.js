@@ -161,7 +161,7 @@ export default class WorldApp {
 
   connect() {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise( async(resolve, reject)=>{
 
       if(MiniKit.walletAddress) {
         return resolve(MiniKit.walletAddress)
@@ -171,17 +171,22 @@ export default class WorldApp {
         if (payload.status === "error") {
           return reject(payload.message)
         } else {
-          return resolve(MiniKit.walletAddress)
+          return resolve(MiniKit.walletAddress || window.MiniKit?.walletAddress)
         }
       })
 
-      MiniKit.commands.walletAuth({
+      const { finalPayload } = await MiniKit.commandsAsync.walletAuth({
         nonce: crypto.randomUUID().replace(/-/g, ""),
         expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
         notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        statement: "Connect wallet (v17.6.0)"
+        statement: "Connect World App (v17.6.2)"
       })
 
+      if(finalPayload.status == 'error') {
+        return reject(finalPayload.message)
+      } else {
+        return resolve(MiniKit.walletAddress || window.MiniKit?.walletAddress)
+      }
     })
   }
 
