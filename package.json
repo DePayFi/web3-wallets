@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-wallets",
   "moduleName": "Web3Wallets",
-  "version": "17.5.0",
+  "version": "17.6.1",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/umd/index.js",
   "module": "dist/esm/index.js",
@@ -37,7 +37,7 @@
     "@depay/walletconnect-v2": "^2.12.2",
     "@depay/web3-blockchains": "^9.6.2",
     "@depay/web3-client": "^10.19.0",
-    "@depay/worldcoin-precompiled": "^0.0.33",
+    "@depay/worldcoin-precompiled": "^1.2.0",
     "ethers": "^5.7.1"
   },
   "engines": {
@@ -59,7 +59,7 @@
     "@depay/web3-tokens": "^10.4.1",
     "@depay/web3-tokens-evm": "^10.4.1",
     "@depay/web3-tokens-solana": "^10.4.1",
-    "@depay/worldcoin-precompiled": "^0.0.33",
+    "@depay/worldcoin-precompiled": "^1.2.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",

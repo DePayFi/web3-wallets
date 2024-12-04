@@ -1769,7 +1769,7 @@
 
         worldcoinPrecompiled.MiniKit.subscribe(worldcoinPrecompiled.ResponseEvent.MiniAppWalletAuth, async (payload) => {
           if (payload.status === "error") {
-            return reject()
+            return reject(payload.message)
           } else {
             return resolve(worldcoinPrecompiled.MiniKit.walletAddress)
           }
@@ -1779,7 +1779,7 @@
           nonce: crypto.randomUUID().replace(/-/g, ""),
           expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
           notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-          statement: "Connect wallet (v17.3.0)"
+          statement: "Connect wallet (v17.6.0)"
         });
 
       })
