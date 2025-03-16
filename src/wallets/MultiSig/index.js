@@ -2,9 +2,9 @@
 
 import { request, getProvider } from '@depay/web3-client-evm'
 
-/*#elif _SOLANA
+/*#elif _SVM
 
-import { request, getProvider } from '@depay/web3-client-solana'
+import { request, getProvider } from '@depay/web3-client-svm'
 
 //#else */
 

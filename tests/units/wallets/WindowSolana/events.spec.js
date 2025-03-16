@@ -6,7 +6,7 @@ import { supported as supportedBlockchains } from 'src/blockchains'
 
 describe('window.solana wallet events', () => {
 
-  supportedBlockchains.solana.forEach((blockchain)=>{
+  supportedBlockchains.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

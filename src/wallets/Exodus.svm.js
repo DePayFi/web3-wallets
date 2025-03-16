@@ -7,7 +7,7 @@ export default class ExodusSVM extends WindowSolana {
   static info = {
     name: 'Exodus',
     logo: logos.exodus,
-    blockchains: supported.solana,
+    blockchains: supported.svm,
     platform: 'svm',
   }
 

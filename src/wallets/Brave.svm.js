@@ -7,7 +7,7 @@ export default class BraveSVM extends WindowSolana {
   static info = {
     name: 'Brave',
     logo: logos.brave,
-    blockchains: supported.solana,
+    blockchains: supported.svm,
     platform: 'svm',
   }
 

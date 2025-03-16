@@ -8,7 +8,7 @@ import Token from '@depay/web3-tokens'
 
 describe('window.solana wallet sendTransaction', () => {
 
-  supportedBlockchains.solana.forEach((blockchain)=>{
+  supportedBlockchains.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

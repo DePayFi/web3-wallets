@@ -7,7 +7,7 @@ export default class Coin98SVM extends WindowSolana {
   static info = {
     name: 'Coin98',
     logo: logos.coin98,
-    blockchains: supported.solana,
+    blockchains: supported.svm,
     platform: 'svm',
   }
 

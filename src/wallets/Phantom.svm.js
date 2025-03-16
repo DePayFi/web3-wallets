@@ -7,7 +7,7 @@ export default class PhantomSVM extends WindowSolana {
   static info = {
     name: 'Phantom',
     logo: logos.phantom,
-    blockchains: supported.solana,
+    blockchains: supported.svm,
     platform: 'svm',
   }
 

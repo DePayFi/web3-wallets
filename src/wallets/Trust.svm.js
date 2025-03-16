@@ -7,7 +7,7 @@ export default class TrustSVM extends WindowSolana {
   static info = {
     name: 'Trust Wallet',
     logo: logos.trust,
-    blockchains: supported.solana,
+    blockchains: supported.svm,
     platform: 'svm',
   }
 

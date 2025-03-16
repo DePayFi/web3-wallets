@@ -48,7 +48,7 @@ export default {
   WalletLink
 }
 
-/*#elif _SOLANA
+/*#elif _SVM
 
 import Backpack from './wallets/Backpack'
 import BraveSVM from './wallets/Brave.svm'

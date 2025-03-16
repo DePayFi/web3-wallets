@@ -30,7 +30,7 @@ const supported = [
   wallets.WindowEthereum,
 ]
 
-/*#elif _SOLANA
+/*#elif _SVM
 
 const supported = [
   wallets.PhantomSVM,

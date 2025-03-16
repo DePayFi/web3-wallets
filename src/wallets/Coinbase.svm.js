@@ -7,7 +7,7 @@ export default class CoinbaseSVM extends WindowSolana {
   static info = {
     name: 'Coinbase',
     logo: logos.coinbase,
-    blockchains: supported.solana,
+    blockchains: supported.svm,
     platform: 'svm',
   }
 

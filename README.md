@@ -60,7 +60,7 @@ import { getWallets } from '@depay/web3-wallets-evm'
 ### SOLANA specific packaging
 
 ```javascript
-import { getWallets } from '@depay/web3-wallets-solana'
+import { getWallets } from '@depay/web3-wallets-svm'
 ```
 
 ## Functionalities

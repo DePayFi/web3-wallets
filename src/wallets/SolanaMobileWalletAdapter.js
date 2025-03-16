@@ -1,5 +1,5 @@
 /*#if _EVM
-/*#elif _SOLANA
+/*#elif _SVM
 
 import { sendTransaction } from './WindowSolana/transaction'
 import { transact, PublicKey } from '@depay/solana-web3.js'
