@@ -5,7 +5,7 @@ import { supported } from '../blockchains'
 export default class TrustEVM extends WindowEthereum {
 
   static info = {
-    name: 'Trust Wallet',
+    name: 'Trust',
     logo: logos.trust,
     blockchains: supported.evm,
     platform: 'evm',

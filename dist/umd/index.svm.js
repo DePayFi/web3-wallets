@@ -750,7 +750,7 @@
   class TrustSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
-      name: 'Trust Wallet',
+      name: 'Trust',
       logo: logos.trust,
       blockchains: supported$1.svm,
       platform: 'svm',

@@ -745,7 +745,7 @@ function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[
 class TrustSVM extends WindowSolana {
 
   static __initStatic() {this.info = {
-    name: 'Trust Wallet',
+    name: 'Trust',
     logo: logos.trust,
     blockchains: supported$1.svm,
     platform: 'svm',

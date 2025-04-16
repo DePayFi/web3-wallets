@@ -5,7 +5,7 @@ import { supported } from '../blockchains'
 export default class TrustSVM extends WindowSolana {
 
   static info = {
-    name: 'Trust Wallet',
+    name: 'Trust',
     logo: logos.trust,
     blockchains: supported.svm,
     platform: 'svm',

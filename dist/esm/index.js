@@ -714,7 +714,7 @@ function _optionalChain$v(ops) { let lastAccessLHS = undefined; let value = ops[
 class Binance extends WindowEthereum {
 
   static __initStatic() {this.info = {
-    name: 'Binance Wallet',
+    name: 'Binance',
     logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOTIgMTkzLjciPgogIDwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOS40LjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiAyLjEuMCBCdWlsZCAxNTIpICAtLT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLnN0MCB7CiAgICAgICAgZmlsbDogIzFlMjAyNDsKICAgICAgfQoKICAgICAgLnN0MSB7CiAgICAgICAgZmlsbDogI2YzYmEyZjsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9InN0MCIgeT0iMCIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTMuNyIvPgogIDxnPgogICAgPHBhdGggY2xhc3M9InN0MSIgZD0iTTY1LjcsODQuNGwzMC4zLTMwLjMsMzAuMywzMC4zLDE3LjYtMTcuNi00Ny45LTQ3LjktNDcuOSw0Ny45LDE3LjYsMTcuNloiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xOCw5Ni44bDE3LjYtMTcuNiwxNy42LDE3LjYtMTcuNiwxNy42LTE3LjYtMTcuNloiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik02NS43LDEwOS4zbDMwLjMsMzAuMywzMC4zLTMwLjMsMTcuNiwxNy42aDBzLTQ3LjksNDcuOS00Ny45LDQ3LjlsLTQ3LjktNDcuOWgwczE3LjctMTcuNiwxNy43LTE3LjZaIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTM4LjgsOTYuOGwxNy42LTE3LjYsMTcuNiwxNy42LTE3LjYsMTcuNi0xNy42LTE3LjZaIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMTEzLjksOTYuOGwtMTcuOS0xNy45LTEzLjIsMTMuMi0xLjUsMS41LTMuMSwzLjFoMHMwLDAsMCwwbDE3LjksMTcuOSwxNy45LTE3LjloMHMwLDAsMCwwWiIvPgogIDwvZz4KPC9zdmc+",
     blockchains: supported$1.evm
   };}
@@ -857,7 +857,7 @@ function _optionalChain$p(ops) { let lastAccessLHS = undefined; let value = ops[
 class CryptoCom extends WindowEthereum {
 
   static __initStatic() {this.info = {
-    name: 'Crypto.com | DeFi Wallet',
+    name: 'Crypto.com Onchain',
     logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA4OS45IDEwMi44IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA4OS45IDEwMi44IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGRkZGRkY7fQoJLnN0MXtmaWxsOiMwMzMxNkM7fQo8L3N0eWxlPgoKPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTUuMzc1MSAtMTEzLjYxKSI+Cgk8ZyB0cmFuc2Zvcm09Im1hdHJpeCguMzE3OTQgMCAwIC4zMTQ2NSAtMS4wNDczIDMwLjQ0NykiPgoJCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Im0xNjEuNiAyNjQuMy0xNDEuNCA4MS42djE2My4zbDE0MS40IDgxLjYgMTQxLjQtODEuNnYtMTYzLjNsLTE0MS40LTgxLjZ6bTAgMC0xNDEuNCA4MS42djE2My4zbDE0MS40IDgxLjYgMTQxLjQtODEuNnYtMTYzLjNsLTE0MS40LTgxLjZ6Ii8+CgkJPHBhdGggY2xhc3M9InN0MSIgZD0ibTIxNy41IDUyNy4xaC0yMC4xbC0yNC4xLTIyLjF2LTExLjNsMjQuOS0yMy44di0zNy43bDMyLjYtMjEuMyAzNy4xIDI4LjEtNTAuNCA4OC4xem0tODMuMy01OS42IDMuNy0zNS40LTEyLjItMzEuN2g3MmwtMTEuOSAzMS43IDMuNCAzNS40aC01NXptMTYuNCAzNy41LTI0LjEgMjIuNGgtMjAuNGwtNTAuNy04OC40IDM3LjQtMjcuOCAzMi45IDIxdjM3LjdsMjQuOSAyMy44djExLjN6bS00NC44LTE3MC4xaDExMS40bDEzLjMgNTYuN2gtMTM3LjdsMTMtNTYuN3ptNTUuOC03MC42LTE0MS40IDgxLjZ2MTYzLjNsMTQxLjQgODEuNiAxNDEuNC04MS42di0xNjMuM2wtMTQxLjQtODEuNnoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K",
     blockchains: supported$1.evm
   };}
@@ -1320,7 +1320,7 @@ function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[
 class TrustEVM extends WindowEthereum {
 
   static __initStatic() {this.info = {
-    name: 'Trust Wallet',
+    name: 'Trust',
     logo: logos.trust,
     blockchains: supported$1.evm,
     platform: 'evm',
@@ -1338,7 +1338,7 @@ function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[
 class TrustSVM extends WindowSolana {
 
   static __initStatic() {this.info = {
-    name: 'Trust Wallet',
+    name: 'Trust',
     logo: logos.trust,
     blockchains: supported$1.svm,
     platform: 'svm',
