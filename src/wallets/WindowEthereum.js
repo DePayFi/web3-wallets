@@ -93,7 +93,13 @@ export default class WindowEthereum {
     let internalCallback
     switch (event) {
       case 'account':
-        internalCallback = (accounts) => callback(ethers.utils.getAddress(accounts[0]))
+        internalCallback = (accounts) => {
+          if(accounts && accounts.length) {
+            callback(ethers.utils.getAddress(accounts[0]))
+          } else {
+            callback()
+          }
+        }
         this.getProvider().on('accountsChanged', internalCallback)
         break
     }
