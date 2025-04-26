@@ -2035,7 +2035,6 @@
     }
 
     retryFetchTransaction(transaction, payload, attempt) {
-      console.log('Retry fetch transaction', attempt);
       return new Promise((resolve, reject)=>{
         setTimeout(()=>{
           this.fetchTransaction(transaction, payload, attempt+1).then(resolve).catch(reject);
@@ -2069,7 +2068,6 @@
     }
 
     pollEventForUserOp(transaction, payload) {
-      console.log('pollEventForUserOp', transaction, payload);
 
       return new Promise((resolve)=>{
 
@@ -2088,7 +2086,6 @@
             }
           ]
         }).then((responseData)=>{
-          console.log('responseData', responseData);
           if(responseData && responseData instanceof Array) {
             let event = responseData.find((event)=>{
               return(!event.removed)
@@ -2105,13 +2102,13 @@
 
 
     fetchTransaction(transaction, payload, attempt = 1) {
-      console.log('fetchTransaction', transaction, payload);
       return new Promise((resolve, reject)=>{
 
         Promise.all([
-          // this.pollTransactionIdFromWorldchain(payload),
+          this.pollTransactionIdFromWorldchain(payload),
           this.pollEventForUserOp(transaction, payload),
         ]).then((results)=>{
+          console.log('results', results);
           let transactionHash = results ? results.filter(Boolean)[0] : undefined;
           console.log('transactionHash', transactionHash);
           if(transactionHash) {
