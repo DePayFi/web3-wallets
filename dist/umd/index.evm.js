@@ -1903,6 +1903,16 @@
       delete this.listeners[event];
     }
 
+    static trigger(event, payload) {
+      if (!this.listeners[event]) {
+        console.error(
+          `No handler for event ${event}, payload: ${JSON.stringify(payload)}`
+        );
+        return
+      }
+      this.listeners[event](payload);
+    }
+
     static __initStatic7() {this.commands = {
 
       walletAuth: (payload) => {
