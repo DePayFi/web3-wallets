@@ -1,14 +1,14 @@
 /*#if _EVM
 
-import { request, getProvider } from '@depay/web3-client-evm'
+import { request, rpcRequest, getProvider } from '@depay/web3-client-evm'
 
 /*#elif _SVM
 
-import { request, getProvider } from '@depay/web3-client-svm'
+import { request, rpcRequest, getProvider } from '@depay/web3-client-svm'
 
 //#else */
 
-import { request, getProvider } from '@depay/web3-client'
+import { request, rpcRequest, getProvider } from '@depay/web3-client'
 
 //#endif
 
@@ -87,12 +87,10 @@ export default class WorldApp {
   }
 
   pollTransactionIdFromWorldcoin(payload) {
-    console.log('pollTransactionIdFromWorldcoin', payload)
 
     return new Promise((resolve)=>{
 
-      console.log("FETCH", `https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction`)
-      fetch(`https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction`, {
+      fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}?app_id=${payload.mini_app_id}`, {
         headers: { "Content-Type": "application/json" },
       }).then((response)=>{
         console.log('response', response)
@@ -115,11 +113,48 @@ export default class WorldApp {
     })
   }
 
+  pollEventForUserOp(payload) {
+
+    return new Promise((resolve)=>{
+
+      rpcRequest({
+        blockchain: 'worldchain',
+        method: "eth_getLogs",
+        params: [
+          {
+            "fromBlock": "0xC8C935",
+            "toBlock": "latest",
+            "address": "0x0000000071727De22E5E9d8BAf0edAc6f37da032", // entry point
+            "topics": [
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f",
+              `0x855f8c02816d37b490a4f41f1052769a5cb892755a9b584b9deff5d3f7c7701a`
+            ]
+          }
+        ]
+      }).then((responseData)=>{
+        console.log('responseData', responseData)
+        if(responseData && responseData instanceof Array) {
+          let event = responseData.find((event)=>{
+            return(!event.removed)
+          })
+          if(event && event.transactionHash) {
+            return resolve(event.transactionHash)
+          }
+        }
+        resolve()
+      }).catch(()=>resolve())
+    })
+  }
+
+
+
   fetchTransaction(transaction, payload, attempt = 1) {
+    console.log('fetchTransaction', payload)
     return new Promise((resolve, reject)=>{
 
       Promise.all([
         this.pollTransactionIdFromWorldcoin(payload),
+        // this.pollEventForUserOp(payload),
       ]).then((results)=>{
         let transactionHash = results ? results.filter(Boolean)[0] : undefined
         console.log('transactionHash', transactionHash)
