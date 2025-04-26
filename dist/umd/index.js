@@ -2706,9 +2706,7 @@
           this.pollTransactionIdFromWorldchain(payload),
           this.pollEventForUserOp(transaction, payload),
         ]).then((results)=>{
-          console.log('results', results);
           let transactionHash = results ? results.filter(Boolean)[0] : undefined;
-          console.log('transactionHash', transactionHash);
           if(transactionHash) {
             transaction.id = transactionHash;
             transaction.url = Blockchains__default['default']['worldchain'].explorerUrlFor({ transaction });
