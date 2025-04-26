@@ -2332,7 +2332,7 @@
   };
 
   // https://github.com/worldcoin/minikit-js/blob/main/packages/core/helpers/send-webview-event.ts
-  const sendWebviewEvent = function(payload) {
+  const sendMiniKitEvent = function(payload) {
     if (window.webkit) {
       if (
         window.webkit.messageHandlers &&
