@@ -174,10 +174,7 @@ export default class WorldApp {
       })
 
       MiniKit.commands.walletAuth({
-        nonce: crypto.randomUUID().replace(/-/g, ""),
-        expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-        notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        statement: "Connect World App (v18.0.8)"
+        nonce: crypto.randomUUID().replace(/-/g, "")
       })
     })
   }
