@@ -90,11 +90,13 @@ export default class WorldApp {
 
     return new Promise((resolve)=>{
 
-      fetch(`"https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction",`, {
+      fetch(`https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction`, {
         headers: { "Content-Type": "application/json" },
       }).then((response)=>{
+        console.log('response', response)
         if(response.ok) {
           response.json().then((transactionJSON)=>{
+            console.log('transactionJSON', transactionJSON)
             if(transactionJSON?.external_id) {
               resolve(transactionJSON?.external_id)
             } else {
