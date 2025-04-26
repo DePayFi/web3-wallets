@@ -2477,11 +2477,6 @@
         const wrappedHandler = async (payload) => {
           if (payload.status === 'success') {
             MiniKit.user.walletAddress = payload.address;
-            try {
-              MiniKit.user = { ...MiniKit.user, ...user };
-            } catch (error) {
-              console.error('Failed to fetch user profile:', error);
-            }
           }
           originalHandler(payload);
         };
