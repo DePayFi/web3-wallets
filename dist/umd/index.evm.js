@@ -2043,7 +2043,7 @@
       })
     }
 
-    pollTransactionIdFromWorldcoin(payload) {
+    pollTransactionIdFromWorldchain(payload) {
 
       return new Promise((resolve)=>{
 
@@ -2111,7 +2111,7 @@
       return new Promise((resolve, reject)=>{
 
         Promise.all([
-          this.pollTransactionIdFromWorldcoin(payload),
+          this.pollTransactionIdFromWorldchain(payload),
           // this.pollEventForUserOp(transaction, payload),
         ]).then((results)=>{
           let transactionHash = results ? results.filter(Boolean)[0] : undefined;
