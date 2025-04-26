@@ -2068,7 +2068,7 @@
       return new Promise((resolve, reject)=>{
 
         Promise.all([
-          pollTransactionIdFromWorldcoin(payload),
+          this.pollTransactionIdFromWorldcoin(payload),
         ]).then((transactionHashFromWorld)=>{
           console.log('transactionHashFromWorldcoin', transactionHashFromWorldcoin);
           let transactionHash = transactionHashFromWorldcoin;
