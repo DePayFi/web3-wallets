@@ -14,7 +14,6 @@
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/walletconnect-v2@2"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/coinbase-wallet-sdk@3"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/web3-tokens@11"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@depay/worldcoin-precompiled@1.2.0"></script>
     <script crossorigin src="https://cdn.jsdelivr.net/npm/qr-code-styling@1"></script>
     <script src="tmp/index.dev.js"></script>
     <style>
@@ -107,6 +106,39 @@
               </div>
               <div class="px-4 pt-3">
                 <button class='btn btn-primary' onClick='connectWalletViaSelect()'>Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block d-md-inline-block p-2 col-12 col-md-4">
+          <div class="px-0 py-4 rounded-lg bg-white border">
+            <div class="col px-0">
+              <div>
+                <h5 class="px-4">Start Eruda</h5>
+                <div class="px-4">
+                  <div class="text-secondary ">for debugging within mobile apps</div>
+                </div>
+              </div>
+              <div class="px-4 pt-3">
+                <script>
+                  window.startEruda = async()=>{
+                    if (typeof window.eruda === 'undefined') {
+                      // Create a script element
+                      const script = document.createElement('script');
+                      script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+                      script.onload = function() {
+                        // Initialize Eruda once the script is loaded
+                        window.eruda.init();
+                        console.log('Eruda has been initialized.');
+                      };
+                      document.body.appendChild(script);
+                    } else {
+                      console.log('Eruda is already loaded.');
+                    }
+                  }
+                </script>
+                <button class='btn btn-primary' onClick='startEruda()'>Try it</button>
               </div>
             </div>
           </div>
