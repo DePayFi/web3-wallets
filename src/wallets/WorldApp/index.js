@@ -65,7 +65,7 @@ const processTransactionPayload = (payload) => {
 
   // Handle arrays by processing each element
   if (Array.isArray(payload)) {
-    return payload.map((value) => processPayload(value))
+    return payload.map((value) => processTransactionPayload(value))
   }
 
   // Handle objects
@@ -93,7 +93,7 @@ const processTransactionPayload = (payload) => {
     // Process all object properties recursively
     for (const key in result) {
       if (Object.prototype.hasOwnProperty.call(result, key)) {
-        result[key] = processPayload(result[key])
+        result[key] = processTransactionPayload(result[key])
       }
     }
 
