@@ -2667,9 +2667,8 @@
 
         Promise.all([
           this.pollTransactionIdFromWorldcoin(payload),
-        ]).then((transactionHashFromWorldcoin)=>{
-          console.log('transactionHashFromWorldcoin', transactionHashFromWorldcoin);
-          let transactionHash = transactionHashFromWorldcoin;
+        ]).then((results)=>{
+          let transactionHash = results ? results.filter(Boolean)[0] : undefined;
           console.log('transactionHash', transactionHash);
           if(transactionHash) {
             transaction.id = transactionHash;
