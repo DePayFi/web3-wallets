@@ -50,11 +50,8 @@ export default class WorldApp {
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction)
-        console.log('payload', payload)
         if (payload.status == "success") {
-          console.log('before transaction.accepted', transaction)
           if (transaction.accepted) { transaction.accepted() }
-          console.log('after transaction.accepted', transaction)
           this.fetchTransaction(transaction, payload).then((transactionHash)=>{
             if(transactionHash) {
               resolve(transaction)
@@ -65,19 +62,6 @@ export default class WorldApp {
         } else {
           reject('Submitting transaction failed!')
         }
-      })
-      console.log('after MiniKit.subscribe')
-
-      console.log('before MiniKit.commands.sendTransaction', {
-        transaction: [
-          {
-            address: transaction.to,
-            abi: transaction.api?.filter((fragment)=>fragment.name === transaction.method && fragment?.inputs?.length ===  transaction.params?.args?.length),
-            functionName: transaction.method,
-            args: transaction.params?.args
-          },
-        ],
-        permit2: [transaction.params?.permit2]
       })
       MiniKit.commands.sendTransaction({
         transaction: [
@@ -90,7 +74,6 @@ export default class WorldApp {
         ],
         permit2: [transaction.params?.permit2]
       })
-      console.log('after MiniKit.commands.sendTransaction')
     })
   }
 
@@ -105,8 +88,8 @@ export default class WorldApp {
 
   fetchTransaction(transaction, payload, attempt = 1) {
     return new Promise((resolve, reject)=>{
-      console.log('Before fetch')
-      fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
+
+      fetch(`"https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${mini_app_id}&type=transaction",`, {
         headers: { "Content-Type": "application/json" },
       }).then((response)=>{
         console.log('After fetch', response)
