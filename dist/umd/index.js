@@ -2667,7 +2667,7 @@
     }
 
     pollEventForUserOp(transaction, payload) {
-      console.log(pollEventForUserOp, transaction);
+      console.log('pollEventForUserOp', transaction, payload);
 
       return new Promise((resolve)=>{
 
