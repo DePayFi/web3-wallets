@@ -1036,20 +1036,20 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.7.9.tgz#3b1024684adfef9fcab7596ffd12a5a8cc4548fc"
   integrity sha512-nYv04ClJn6aOUrusApIyBtIk3/wHxY2OnQC5mFQ7giJqr0/ZE3FbdDmKHPYYkysedNQdERq/lR+p+AFWVzfEQQ==
 
-"@depay/web3-client-evm@^11.0.1":
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-11.0.1.tgz#1fbcb6c707b8f9f738af899777b0a6289c3bb424"
-  integrity sha512-YrdLtBpla1HOjOeok+NYefLG/MChNkO6WBXvXsN1d42mUr7OUq2NyJYcDWSERCphr8M14677MMGbULNU9PSP+A==
+"@depay/web3-client-evm@^11.1.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-evm/-/web3-client-evm-11.1.0.tgz#8b8cfcb9050c5652a9a8070aed0c179695b82ee7"
+  integrity sha512-Stg74KOAenQaZd2QjPe5PnTXGAhlZ9jPabeQKXcGT1rn3kAtx4eC6zT3g7B7enBOj5wunHqhcu9+Obltr/fwLg==
 
-"@depay/web3-client-svm@^11.0.1":
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client-svm/-/web3-client-svm-11.0.1.tgz#3f602ca55cdb886ef4e461ff6e3a4c648841de8e"
-  integrity sha512-6GwHe1Wh5uJF6yh9AV7pEbhF4cqWn/k6QlToxZjIqfoUvvkiU9ATUKUuR/cJ7xbU9HSekvlwzdZQvWq6H0mgpQ==
+"@depay/web3-client-svm@^11.1.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client-svm/-/web3-client-svm-11.1.0.tgz#28aa98f5428cdd5f88df24bbdfecf8677b09e506"
+  integrity sha512-T1G8Fr+o/v0fzaUjPcp5+y2S4L6Dpg6vkGk/v9mz478vWTp20EtRCPughNN8AzIUX5BNYUYGflLDov827bQu4w==
 
-"@depay/web3-client@^11.0.1":
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-11.0.1.tgz#fdb7f2eca85f52bd7c8a5814c2a7d48461d5808a"
-  integrity sha512-moynGSJuZ+T44wOjIIbPWQVDs7TxKgJowxlGVNi0fWusL+EgCRuia+Tdf3MJRZyIkyHj03MzWahhu8JGgvDqzw==
+"@depay/web3-client@^11.1.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-11.1.0.tgz#640c35a276774eb9a0b983bdf5fc90e9435bc2cc"
+  integrity sha512-KH7aRbW77BHn39ZQGoXIElnd1zCcDExwuSm6SQkDY03hC6HAfPnJzU+Tm8FzR6MJKSMkjo3Htpg+1QjW4KuvSA==
 
 "@depay/web3-mock-evm@^15.1.1":
   version "15.1.1"
@@ -1091,13 +1091,6 @@
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-11.0.0.tgz#fc5d22b324efa16f3f339ee0ea2e8dd739932478"
   integrity sha512-Whav1+c8xiMb3ayGpu6/vI/F4nd4WBWTLpavvi6509gQSuUqx0OnRZX8XBddSw8c9bpxvcJLxxIgSrMHyW0hGg==
-
-"@depay/worldcoin-precompiled@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@depay/worldcoin-precompiled/-/worldcoin-precompiled-1.2.0.tgz#5eb6b55d0d3890e6542c8e72f1941c08c6804058"
-  integrity sha512-VeHmugWFCMq2k6WvHpcu4M24hOyt17tvFEyYdo439q5wowcIXLVQYHyBCoEU3IScDwW5mtH0gPI0BWyoD2cAqA==
-  dependencies:
-    "@rollup/plugin-alias" "^5.1.0"
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
@@ -1693,13 +1686,6 @@
     "@parcel/watcher-win32-arm64" "2.4.1"
     "@parcel/watcher-win32-ia32" "2.4.1"
     "@parcel/watcher-win32-x64" "2.4.1"
-
-"@rollup/plugin-alias@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@rollup/plugin-alias/-/plugin-alias-5.1.0.tgz#99a94accc4ff9a3483be5baeedd5d7da3b597e93"
-  integrity sha512-lpA3RZ9PdIG7qqhEfv79tBffNaoDuukFDrmhLqg9ifv99u/ehn+lOg30x2zmhf8AQqQUZaMk/B9fZraQ6/acDQ==
-  dependencies:
-    slash "^4.0.0"
 
 "@rollup/plugin-commonjs@^18.0.0":
   version "18.1.0"
@@ -6407,11 +6393,6 @@ slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
-
-slash@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
-  integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
 slice-ansi@^4.0.0:
   version "4.0.0"

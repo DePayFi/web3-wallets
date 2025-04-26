@@ -1,23 +1,25 @@
 /*#if _EVM
 
-import { request, getProvider } from '@depay/web3-client-evm'
+import { request, rpcRequest, getProvider } from '@depay/web3-client-evm'
 
 /*#elif _SVM
 
-import { request, getProvider } from '@depay/web3-client-svm'
+import { request, rpcRequest, getProvider } from '@depay/web3-client-svm'
 
 //#else */
 
-import { request, getProvider } from '@depay/web3-client'
+import { request, rpcRequest, getProvider } from '@depay/web3-client'
 
 //#endif
 
 import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
-import { MiniKit, ResponseEvent } from '@depay/worldcoin-precompiled'
+import { MiniKit, ResponseEvent } from './WorldApp/index'
 import { Transaction } from '../Transaction'
 
 export default class WorldApp {
+
+  static MiniKit = MiniKit
 
   static info = {
     name: 'World App',
@@ -40,25 +42,17 @@ export default class WorldApp {
   }
 
   sendTransaction(transaction) {
-    console.log('sendTransaction', transaction)
     transaction = new Transaction(transaction)
-    console.log('after transaction wrapping transaction.sent', transaction.sent)
-    console.log('after transaction wrapping transaction.succeeded', transaction.succeeded)
-    console.log('after transaction wrapping transaction.failed', transaction.failed)
 
     return new Promise(async(resolve, reject)=>{
       await transaction.prepare({ wallet: this })
-      console.log('after prepare transaction', transaction)
       transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString()
-      console.log('after nonce transaction', transaction)
+      transaction.fromBlock = await request('worldchain://latestBlockNumber')
 
-      console.log('before MiniKit.subscribe')
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
-        console.log('payload', payload)
+        MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction)
         if (payload.status == "success") {
-          console.log('before transaction.accepted', transaction)
           if (transaction.accepted) { transaction.accepted() }
-          console.log('after transaction.accepted', transaction)
           this.fetchTransaction(transaction, payload).then((transactionHash)=>{
             if(transactionHash) {
               resolve(transaction)
@@ -69,19 +63,6 @@ export default class WorldApp {
         } else {
           reject('Submitting transaction failed!')
         }
-      })
-      console.log('after MiniKit.subscribe')
-
-      console.log('before MiniKit.commands.sendTransaction', {
-        transaction: [
-          {
-            address: transaction.to,
-            abi: transaction.api?.filter((fragment)=>fragment.name === transaction.method && fragment?.inputs?.length ===  transaction.params?.args?.length),
-            functionName: transaction.method,
-            args: transaction.params?.args
-          },
-        ],
-        permit2: [transaction.params?.permit2]
       })
       MiniKit.commands.sendTransaction({
         transaction: [
@@ -94,59 +75,107 @@ export default class WorldApp {
         ],
         permit2: [transaction.params?.permit2]
       })
-      console.log('after MiniKit.commands.sendTransaction')
     })
   }
 
   retryFetchTransaction(transaction, payload, attempt) {
-    console.log('Retry Fetch transaction', attempt)
     return new Promise((resolve, reject)=>{
       setTimeout(()=>{
         this.fetchTransaction(transaction, payload, attempt+1).then(resolve).catch(reject)
-      }, (attempt < 30 ? 500 : 1000))
+      }, (attempt < 30 ? 500 : 2000))
     })
   }
 
-  fetchTransaction(transaction, payload, attempt = 1) {
-    return new Promise((resolve, reject)=>{
-      console.log('Before fetch')
-      fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}`, {
+  pollTransactionIdFromWorldchain(payload) {
+
+    return new Promise((resolve)=>{
+
+      fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}?app_id=${payload.mini_app_id}`, {
         headers: { "Content-Type": "application/json" },
       }).then((response)=>{
-        console.log('After fetch', response)
         if(response.ok) {
-          console.log('Before json')
           response.json().then((transactionJSON)=>{
-            console.log('After json', transactionJSON)
             if(transactionJSON?.external_id) {
-              transaction.id = transactionJSON?.external_id
-              transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction })
-              console.log('before transaction.sent', transaction.sent)
-              if (transaction.sent) { transaction.sent(transaction) }
-              console.log('Before provider')
-              getProvider('worldchain').then((provider)=>{
-                console.log('After provider', provider)
-                console.log('Before wait transaction', transactionJSON.external_id)
-                provider.waitForTransaction(transactionJSON.external_id).then((receipt)=>{
-                  console.log('After receipt', receipt)
-                  if(receipt && receipt.status == 1) {
-                    transaction._succeeded = true
-                    console.log('before transaction.succeeded', transaction.succeeded)
-                    if (transaction.succeeded) { transaction.succeeded(transaction) }
-                    resolve(transaction)
-                  } else {
-                    if (transaction.failed) { transaction.failed(transaction, 'Transaction failed') }
-                  }
-                }).catch(reject)
-              }).catch(reject)
+              resolve(transactionJSON?.external_id)
             } else {
-              this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject)
+              resolve()
             }
-          }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject))
+          }).catch(()=>resolve())
+        } else {
+          resolve()
+        }
+      }).catch((error)=>{
+        console.log('CATCH ERROR', error)
+        resolve()
+      })
+    })
+  }
+
+  pollEventForUserOp(transaction, payload) {
+
+    return new Promise((resolve)=>{
+
+      rpcRequest({
+        blockchain: 'worldchain',
+        method: "eth_getLogs",
+        params: [
+          {
+            "fromBlock":  ethers.utils.hexValue(transaction.fromBlock),
+            "toBlock": "latest",
+            "address": "0x0000000071727De22E5E9d8BAf0edAc6f37da032", // entry point
+            "topics": [
+              "0x49628fd1471006c1482da88028e9ce4dbb080b815c9b0344d39e5a8e6ec1419f",
+              payload.userOpHash
+            ]
+          }
+        ]
+      }).then((responseData)=>{
+        if(responseData && responseData instanceof Array) {
+          let event = responseData.find((event)=>{
+            return(!event.removed)
+          })
+          if(event && event.transactionHash) {
+            return resolve(event.transactionHash)
+          }
+        }
+        resolve()
+      }).catch(()=>resolve())
+    })
+  }
+
+
+
+  fetchTransaction(transaction, payload, attempt = 1) {
+    return new Promise((resolve, reject)=>{
+
+      Promise.all([
+        this.pollTransactionIdFromWorldchain(payload),
+        this.pollEventForUserOp(transaction, payload),
+      ]).then((results)=>{
+        let transactionHash = results ? results.filter(Boolean)[0] : undefined
+        if(transactionHash) {
+          transaction.id = transactionHash
+          transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction })
+          if (transaction.sent) { transaction.sent(transaction) }
+          getProvider('worldchain').then((provider)=>{
+            provider.waitForTransaction(transactionHash).then((receipt)=>{
+              if(receipt && receipt.status == 1) {
+                transaction._succeeded = true
+                if (transaction.succeeded) { transaction.succeeded(transaction) }
+                resolve(transaction)
+              } else {
+                if (transaction.failed) { transaction.failed(transaction, 'Transaction failed') }
+                reject(transaction)
+              }
+            }).catch(reject)
+          }).catch(reject)
         } else {
           this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject)
         }
-      }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject))
+      }).catch((error)=>{
+        console.log('CATCH ERROR!', error)
+        this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject)
+      })
     })
   }
 
@@ -156,37 +185,33 @@ export default class WorldApp {
 
   async account() {
     if(!this.getProvider()) { return undefined }
-    return MiniKit.walletAddress
+    return this.walletAddress()
+  }
+
+  walletAddress() {
+    return (window.MiniKit.user?.walletAddress || MiniKit.user?.walletAddress)
   }
 
   connect() {
 
     return new Promise( async(resolve, reject)=>{
 
-      if(MiniKit.walletAddress) {
-        return resolve(MiniKit.walletAddress)
+      if(this.walletAddress()) {
+        return resolve(this.walletAddress())
       }
 
       MiniKit.subscribe(ResponseEvent.MiniAppWalletAuth, async (payload) => {
+        MiniKit.unsubscribe(ResponseEvent.MiniAppWalletAuth)
         if (payload.status === "error") {
           return reject(payload.message)
         } else {
-          return resolve(MiniKit.walletAddress || window.MiniKit?.walletAddress)
+          return resolve(this.walletAddress())
         }
       })
 
-      const { finalPayload } = await MiniKit.commandsAsync.walletAuth({
-        nonce: crypto.randomUUID().replace(/-/g, ""),
-        expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-        notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-        statement: "Connect World App (v17.6.2)"
+      MiniKit.commands.walletAuth({
+        nonce: crypto.randomUUID().replace(/-/g, "")
       })
-
-      if(finalPayload.status == 'error') {
-        return reject(finalPayload.message)
-      } else {
-        return resolve(MiniKit.walletAddress || window.MiniKit?.walletAddress)
-      }
     })
   }
 
@@ -215,12 +240,12 @@ export default class WorldApp {
   }
 
   async transactionCount({ blockchain, address }) {
-    if(!MiniKit?.walletAddress) {
+    if(!this.walletAddress()) {
       return 0
     } else {
       return request({
         blockchain: 'worldchain',
-        address: MiniKit?.walletAddress,
+        address: this.walletAddress(),
         api: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"}],"name":"AddedOwner","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"approvedHash","type":"bytes32"},{"indexed":true,"internalType":"address","name":"owner","type":"address"}],"name":"ApproveHash","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"handler","type":"address"}],"name":"ChangedFallbackHandler","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"guard","type":"address"}],"name":"ChangedGuard","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"threshold","type":"uint256"}],"name":"ChangedThreshold","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"module","type":"address"}],"name":"DisabledModule","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"module","type":"address"}],"name":"EnabledModule","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"txHash","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"payment","type":"uint256"}],"name":"ExecutionFailure","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"ExecutionFromModuleFailure","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"ExecutionFromModuleSuccess","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"txHash","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"payment","type":"uint256"}],"name":"ExecutionSuccess","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"owner","type":"address"}],"name":"RemovedOwner","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"SafeReceived","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"initiator","type":"address"},{"indexed":false,"internalType":"address[]","name":"owners","type":"address[]"},{"indexed":false,"internalType":"uint256","name":"threshold","type":"uint256"},{"indexed":false,"internalType":"address","name":"initializer","type":"address"},{"indexed":false,"internalType":"address","name":"fallbackHandler","type":"address"}],"name":"SafeSetup","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"msgHash","type":"bytes32"}],"name":"SignMsg","type":"event"},{"stateMutability":"nonpayable","type":"fallback"},{"inputs":[],"name":"VERSION","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"_threshold","type":"uint256"}],"name":"addOwnerWithThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"hashToApprove","type":"bytes32"}],"name":"approveHash","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"approvedHashes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_threshold","type":"uint256"}],"name":"changeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"dataHash","type":"bytes32"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"bytes","name":"signatures","type":"bytes"},{"internalType":"uint256","name":"requiredSignatures","type":"uint256"}],"name":"checkNSignatures","outputs":[],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"dataHash","type":"bytes32"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"bytes","name":"signatures","type":"bytes"}],"name":"checkSignatures","outputs":[],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"prevModule","type":"address"},{"internalType":"address","name":"module","type":"address"}],"name":"disableModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"domainSeparator","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"enableModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"},{"internalType":"uint256","name":"safeTxGas","type":"uint256"},{"internalType":"uint256","name":"baseGas","type":"uint256"},{"internalType":"uint256","name":"gasPrice","type":"uint256"},{"internalType":"address","name":"gasToken","type":"address"},{"internalType":"address","name":"refundReceiver","type":"address"},{"internalType":"uint256","name":"_nonce","type":"uint256"}],"name":"encodeTransactionData","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"},{"internalType":"uint256","name":"safeTxGas","type":"uint256"},{"internalType":"uint256","name":"baseGas","type":"uint256"},{"internalType":"uint256","name":"gasPrice","type":"uint256"},{"internalType":"address","name":"gasToken","type":"address"},{"internalType":"addresspayable","name":"refundReceiver","type":"address"},{"internalType":"bytes","name":"signatures","type":"bytes"}],"name":"execTransaction","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"}],"name":"execTransactionFromModule","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"}],"name":"execTransactionFromModuleReturnData","outputs":[{"internalType":"bool","name":"success","type":"bool"},{"internalType":"bytes","name":"returnData","type":"bytes"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getChainId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"start","type":"address"},{"internalType":"uint256","name":"pageSize","type":"uint256"}],"name":"getModulesPaginated","outputs":[{"internalType":"address[]","name":"array","type":"address[]"},{"internalType":"address","name":"next","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getOwners","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"offset","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"getStorageAt","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"},{"internalType":"uint256","name":"safeTxGas","type":"uint256"},{"internalType":"uint256","name":"baseGas","type":"uint256"},{"internalType":"uint256","name":"gasPrice","type":"uint256"},{"internalType":"address","name":"gasToken","type":"address"},{"internalType":"address","name":"refundReceiver","type":"address"},{"internalType":"uint256","name":"_nonce","type":"uint256"}],"name":"getTransactionHash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"isModuleEnabled","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"isOwner","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"prevOwner","type":"address"},{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"_threshold","type":"uint256"}],"name":"removeOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"enumEnum.Operation","name":"operation","type":"uint8"}],"name":"requiredTxGas","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"handler","type":"address"}],"name":"setFallbackHandler","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"guard","type":"address"}],"name":"setGuard","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address[]","name":"_owners","type":"address[]"},{"internalType":"uint256","name":"_threshold","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"bytes","name":"data","type":"bytes"},{"internalType":"address","name":"fallbackHandler","type":"address"},{"internalType":"address","name":"paymentToken","type":"address"},{"internalType":"uint256","name":"payment","type":"uint256"},{"internalType":"addresspayable","name":"paymentReceiver","type":"address"}],"name":"setup","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"signedMessages","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"targetContract","type":"address"},{"internalType":"bytes","name":"calldataPayload","type":"bytes"}],"name":"simulateAndRevert","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"prevOwner","type":"address"},{"internalType":"address","name":"oldOwner","type":"address"},{"internalType":"address","name":"newOwner","type":"address"}],"name":"swapOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
         method: 'nonce'
       })
@@ -232,15 +257,14 @@ export default class WorldApp {
     return new Promise((resolve, reject)=>{
 
       MiniKit.subscribe(ResponseEvent.MiniAppSignMessage, async (payload) => {
+        MiniKit.unsubscribe(ResponseEvent.MiniAppSignMessage)
         if (payload.status === "error") {
           return reject()
         } else {
           return resolve(payload.signature)
         }
       })
-
       MiniKit.commands.signMessage({ message })
-
     })
   }
 }
