@@ -94,10 +94,8 @@ export default class WorldApp {
       fetch(`https://public.depay.com/transactions/worldchain/${payload.transaction_id}?app_id=${payload.mini_app_id}`, {
         headers: { "Content-Type": "application/json" },
       }).then((response)=>{
-        console.log('response', response)
         if(response.ok) {
           response.json().then((transactionJSON)=>{
-            console.log('transactionJSON', transactionJSON)
             if(transactionJSON?.external_id) {
               resolve(transactionJSON?.external_id)
             } else {
@@ -155,8 +153,8 @@ export default class WorldApp {
     return new Promise((resolve, reject)=>{
 
       Promise.all([
-        this.pollTransactionIdFromWorldchain(payload),
-        // this.pollEventForUserOp(transaction, payload),
+        // this.pollTransactionIdFromWorldchain(payload),
+        this.pollEventForUserOp(transaction, payload),
       ]).then((results)=>{
         let transactionHash = results ? results.filter(Boolean)[0] : undefined
         console.log('transactionHash', transactionHash)
