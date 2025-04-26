@@ -115,6 +115,7 @@ export default class WorldApp {
   }
 
   pollEventForUserOp(transaction, payload) {
+    console.log(pollEventForUserOp, transaction)
 
     return new Promise((resolve)=>{
 
@@ -150,12 +151,12 @@ export default class WorldApp {
 
 
   fetchTransaction(transaction, payload, attempt = 1) {
-    console.log('fetchTransaction', payload)
+    console.log('fetchTransaction', transaction, payload)
     return new Promise((resolve, reject)=>{
 
       Promise.all([
-        // this.pollTransactionIdFromWorldcoin(payload),
-        this.pollEventForUserOp(payload),
+        this.pollTransactionIdFromWorldcoin(payload),
+        // this.pollEventForUserOp(transaction, payload),
       ]).then((results)=>{
         let transactionHash = results ? results.filter(Boolean)[0] : undefined
         console.log('transactionHash', transactionHash)
