@@ -2069,7 +2069,7 @@
 
         Promise.all([
           this.pollTransactionIdFromWorldcoin(payload),
-        ]).then((transactionHashFromWorld)=>{
+        ]).then((transactionHashFromWorldcoin)=>{
           console.log('transactionHashFromWorldcoin', transactionHashFromWorldcoin);
           let transactionHash = transactionHashFromWorldcoin;
           console.log('transactionHash', transactionHash);
