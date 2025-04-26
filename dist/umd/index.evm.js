@@ -2043,9 +2043,11 @@
     }
 
     pollTransactionIdFromWorldcoin(payload) {
+      console.log('pollTransactionIdFromWorldcoin', payload);
 
       return new Promise((resolve)=>{
 
+        console.log("FETCH", `https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction`);
         fetch(`https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction`, {
           headers: { "Content-Type": "application/json" },
         }).then((response)=>{
@@ -2062,7 +2064,10 @@
           } else {
             resolve();
           }
-        }).catch(()=>resolve());
+        }).catch((error)=>{
+          console.log('CATCH ERROR', error);
+          resolve();
+        });
       })
     }
 
