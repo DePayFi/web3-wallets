@@ -2629,54 +2629,68 @@ class WorldApp {
   }
 
   retryFetchTransaction(transaction, payload, attempt) {
-    console.log('Retry Fetch transaction', attempt);
+    console.log('Retry fetch transaction', attempt);
     return new Promise((resolve, reject)=>{
       setTimeout(()=>{
         this.fetchTransaction(transaction, payload, attempt+1).then(resolve).catch(reject);
-      }, (attempt < 30 ? 500 : 1000));
+      }, (attempt < 30 ? 500 : 2000));
+    })
+  }
+
+  pollTransactionIdFromWorldcoin(payload) {
+
+    return new Promise((resolve)=>{
+
+      fetch(`"https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${payload.mini_app_id}&type=transaction",`, {
+        headers: { "Content-Type": "application/json" },
+      }).then((response)=>{
+        if(response.ok) {
+          response.json().then((transactionJSON)=>{
+            if(_optionalChain$1([transactionJSON, 'optionalAccess', _15 => _15.external_id])) {
+              resolve(_optionalChain$1([transactionJSON, 'optionalAccess', _16 => _16.external_id]));
+            } else {
+              resolve();
+            }
+          }).catch(()=>resolve());
+        } else {
+          resolve();
+        }
+      }).catch(()=>resolve());
     })
   }
 
   fetchTransaction(transaction, payload, attempt = 1) {
     return new Promise((resolve, reject)=>{
 
-      fetch(`"https://developer.worldcoin.org/api/v2/minikit/transaction/${payload.transaction_id}?app_id=${mini_app_id}&type=transaction",`, {
-        headers: { "Content-Type": "application/json" },
-      }).then((response)=>{
-        console.log('After fetch', response);
-        if(response.ok) {
-          console.log('Before json');
-          response.json().then((transactionJSON)=>{
-            console.log('After json', transactionJSON);
-            if(_optionalChain$1([transactionJSON, 'optionalAccess', _15 => _15.external_id])) {
-              transaction.id = _optionalChain$1([transactionJSON, 'optionalAccess', _16 => _16.external_id]);
-              transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction });
-              console.log('before transaction.sent', transaction.sent);
-              if (transaction.sent) { transaction.sent(transaction); }
-              console.log('Before provider');
-              getProvider('worldchain').then((provider)=>{
-                console.log('After provider', provider);
-                console.log('Before wait transaction', transactionJSON.external_id);
-                provider.waitForTransaction(transactionJSON.external_id).then((receipt)=>{
-                  console.log('After receipt', receipt);
-                  if(receipt && receipt.status == 1) {
-                    transaction._succeeded = true;
-                    console.log('before transaction.succeeded', transaction.succeeded);
-                    if (transaction.succeeded) { transaction.succeeded(transaction); }
-                    resolve(transaction);
-                  } else {
-                    if (transaction.failed) { transaction.failed(transaction, 'Transaction failed'); }
-                  }
-                }).catch(reject);
-              }).catch(reject);
-            } else {
-              this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject);
-            }
-          }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject));
+      Promise.all([
+        pollTransactionIdFromWorldcoin(payload),
+      ]).then((transactionHashFromWorld)=>{
+        console.log('transactionHashFromWorldcoin', transactionHashFromWorldcoin);
+        let transactionHash = transactionHashFromWorldcoin;
+        console.log('transactionHash', transactionHash);
+        if(transactionHash) {
+          transaction.id = transactionHash;
+          transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction });
+          if (transaction.sent) { transaction.sent(transaction); }
+          getProvider('worldchain').then((provider)=>{
+            provider.waitForTransaction(transactionHash).then((receipt)=>{
+              if(receipt && receipt.status == 1) {
+                transaction._succeeded = true;
+                if (transaction.succeeded) { transaction.succeeded(transaction); }
+                resolve(transaction);
+              } else {
+                if (transaction.failed) { transaction.failed(transaction, 'Transaction failed'); }
+                reject(transaction);
+              }
+            }).catch(reject);
+          }).catch(reject);
         } else {
           this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject);
         }
-      }).catch(()=>this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject));
+      }).catch((error)=>{
+        console.log('CATCH ERROR!', error);
+        this.retryFetchTransaction(transaction, payload, attempt).then(resolve).catch(reject);
+      });
     })
   }
 
