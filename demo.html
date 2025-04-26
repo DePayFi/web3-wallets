@@ -169,8 +169,6 @@
               <div class="px-4 pt-3">
                 <script>
                   window.worldappSendTransactionTuple = async()=>{
-                    console.log('installed?', await WorldcoinPrecompiled.MiniKit.install())
-                    console.log('WorldcoinPrecompiled.MiniKit.isInstalled()', WorldcoinPrecompiled.MiniKit.isInstalled() ? 'true' : 'false')
                     
                     const permitDeadline = Math.floor(Date.now() / 1000) + 30 * 60
 
@@ -185,9 +183,7 @@
 
                     const amount = 10000
 
-                    console.log('Before nonce', WorldcoinPrecompiled.MiniKit?.walletAddress)
-                    const nonce = (await getNonce(WorldcoinPrecompiled.MiniKit?.walletAddress)).toString()
-                    console.log('After nonce', nonce)
+                    const nonce = (await getNonce(window.MiniKit?.user?.walletAddress)).toString()
                     
                     const permitTransfer = {
                         permitted: {
