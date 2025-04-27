@@ -698,10 +698,11 @@ class WindowEthereum {
     if(typeof message === 'object') {
       let provider = this.getProvider();
       let account = await this.account();
-      if((await wallet.connectedTo(transaction.blockchain)) == false) {
-        await wallet.switchTo(transaction.blockchain);
+      let blockchain = Blockchains.findByNetworkId(message.domain.chainId);
+      if((await this.connectedTo(blockchain.name)) == false) {
+        await this.switchTo(blockchain.name);
       }
-      if((await wallet.connectedTo(transaction.blockchain)) == false) {
+      if((await this.connectedTo(blockchain.name)) == false) {
         throw({ code: 'WRONG_NETWORK' })
       }
       let signature = await provider.request({
