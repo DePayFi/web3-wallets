@@ -429,6 +429,12 @@
       if(typeof message === 'object') {
         let provider = this.getProvider();
         let account = await this.account();
+        if((await wallet.connectedTo(transaction.blockchain)) == false) {
+          await wallet.switchTo(transaction.blockchain);
+        }
+        if((await wallet.connectedTo(transaction.blockchain)) == false) {
+          throw({ code: 'WRONG_NETWORK' })
+        }
         let signature = await provider.request({
           method: 'eth_signTypedData_v4',
           params: [account, message],
@@ -1304,7 +1310,7 @@
         let account = await this.account();
         let signature = await this.signClient.request({
           topic: this.session.topic,
-          chainId: this.getValidChainId(),
+          chainId: message.domain.chainId,
           request:{
             method: 'eth_signTypedData_v4',
             params: [account, JSON.stringify(message)],

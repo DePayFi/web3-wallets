@@ -172,6 +172,12 @@ export default class WindowEthereum {
     if(typeof message === 'object') {
       let provider = this.getProvider()
       let account = await this.account()
+      if((await wallet.connectedTo(transaction.blockchain)) == false) {
+        await wallet.switchTo(transaction.blockchain)
+      }
+      if((await wallet.connectedTo(transaction.blockchain)) == false) {
+        throw({ code: 'WRONG_NETWORK' })
+      }
       let signature = await provider.request({
         method: 'eth_signTypedData_v4',
         params: [account, message],
