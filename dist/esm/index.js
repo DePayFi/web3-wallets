@@ -696,9 +696,6 @@ class WindowEthereum {
     if(typeof message === 'object') {
       let provider = this.getProvider();
       let account = await this.account();
-      if((await this.connectedTo(Blockchains.findByNetworkId(message.domain.chainId).name)) === false) {
-        throw({ code: 'WRONG_NETWORK' })
-      }
       let signature = await provider.request({
         method: 'eth_signTypedData_v4',
         params: [account, message],
@@ -2200,9 +2197,6 @@ class WalletLink {
     if(typeof message === 'object') {
       let provider = this.connector;
       let account = await this.account();
-      if((await this.connectedTo(Blockchains.findByNetworkId(message.domain.chainId).name)) === false) {
-        throw({ code: 'WRONG_NETWORK' })
-      }
       let signature = await provider.request({
         method: 'eth_signTypedData_v4',
         params: [account, message],
