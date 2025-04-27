@@ -1911,7 +1911,7 @@
         let account = await this.account();
         let signature = await this.signClient.request({
           topic: this.session.topic,
-          chainId: message.domain.chainId,
+          chainId: `eip155:${message.domain.chainId}`,
           request:{
             method: 'eth_signTypedData_v4',
             params: [account, JSON.stringify(message)],
