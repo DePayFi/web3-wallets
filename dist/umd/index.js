@@ -227,7 +227,7 @@
     let fromPubkey = new solanaWeb3_js.PublicKey(await wallet.account());
     let toPubkey = new solanaWeb3_js.PublicKey(transaction.to);
     const provider = await web3Client.getProvider(transaction.blockchain);
-    let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
+    let { blockhash, lastValidBlockHeight } = await provider.getLatestBlockhash();
     const instructions = [
       solanaWeb3_js.SystemProgram.transfer({
         fromPubkey,
@@ -237,20 +237,21 @@
     ];
     const messageV0 = new solanaWeb3_js.TransactionMessage({
       payerKey: fromPubkey,
-      recentBlockhash,
+      recentBlockhash: blockhash,
       instructions,
     }).compileToV0Message();
     const transactionV0 = new solanaWeb3_js.VersionedTransaction(messageV0);
+    transaction._lastValidBlockHeight = lastValidBlockHeight;
     return wallet._sendTransaction(transactionV0)
   };
 
   const submitInstructions = async ({ transaction, wallet })=> {
     let fromPubkey = new solanaWeb3_js.PublicKey(await wallet.account());
     const provider = await web3Client.getProvider(transaction.blockchain);
-    let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
+    let { blockhash, lastValidBlockHeight } = await provider.getLatestBlockhash();
     const messageV0 = new solanaWeb3_js.TransactionMessage({
       payerKey: fromPubkey,
-      recentBlockhash,
+      recentBlockhash: blockhash,
       instructions: transaction.instructions,
     }).compileToV0Message(
       transaction.alts ? await Promise.all(transaction.alts.map(async(alt)=>{
@@ -260,6 +261,7 @@
     if(transaction.signers && transaction.signers.length) {
       transactionV0.sign(Array.from(new Set(transaction.signers)));
     }
+    transaction._lastValidBlockHeight = lastValidBlockHeight;
     return wallet._sendTransaction(transactionV0)
   };
 

@@ -224,7 +224,7 @@ const submitSimpleTransfer$3 = async ({ transaction, wallet })=> {
   let fromPubkey = new PublicKey(await wallet.account());
   let toPubkey = new PublicKey(transaction.to);
   const provider = await getProvider(transaction.blockchain);
-  let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
+  let { blockhash, lastValidBlockHeight } = await provider.getLatestBlockhash();
   const instructions = [
     SystemProgram.transfer({
       fromPubkey,
@@ -234,20 +234,21 @@ const submitSimpleTransfer$3 = async ({ transaction, wallet })=> {
   ];
   const messageV0 = new TransactionMessage({
     payerKey: fromPubkey,
-    recentBlockhash,
+    recentBlockhash: blockhash,
     instructions,
   }).compileToV0Message();
   const transactionV0 = new VersionedTransaction(messageV0);
+  transaction._lastValidBlockHeight = lastValidBlockHeight;
   return wallet._sendTransaction(transactionV0)
 };
 
 const submitInstructions = async ({ transaction, wallet })=> {
   let fromPubkey = new PublicKey(await wallet.account());
   const provider = await getProvider(transaction.blockchain);
-  let recentBlockhash = (await provider.getLatestBlockhash()).blockhash;
+  let { blockhash, lastValidBlockHeight } = await provider.getLatestBlockhash();
   const messageV0 = new TransactionMessage({
     payerKey: fromPubkey,
-    recentBlockhash,
+    recentBlockhash: blockhash,
     instructions: transaction.instructions,
   }).compileToV0Message(
     transaction.alts ? await Promise.all(transaction.alts.map(async(alt)=>{
@@ -257,6 +258,7 @@ const submitInstructions = async ({ transaction, wallet })=> {
   if(transaction.signers && transaction.signers.length) {
     transactionV0.sign(Array.from(new Set(transaction.signers)));
   }
+  transaction._lastValidBlockHeight = lastValidBlockHeight;
   return wallet._sendTransaction(transactionV0)
 };
 
