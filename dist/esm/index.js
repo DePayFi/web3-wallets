@@ -2465,7 +2465,7 @@ class MiniKit {
   }
 
   static sendInit() {
-    sendWebviewEvent({
+    sendMiniKitEvent({
       command: 'init',
       payload: { version: this.MINIKIT_VERSION },
     });
