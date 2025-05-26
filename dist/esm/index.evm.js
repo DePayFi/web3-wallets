@@ -1970,6 +1970,8 @@ class MiniKit {
 
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
+STORAGE_KEY = '_DePayWorldAppAddressV1';
+
 class WorldApp {
 
   static __initStatic() {this.MiniKit = MiniKit;}
@@ -2142,6 +2144,9 @@ class WorldApp {
   }
 
   walletAddress() {
+    if(localStorage.getItem(STORAGE_KEY)) {
+      return localStorage.getItem(STORAGE_KEY)
+    }
     return (_optionalChain$1([window, 'access', _17 => _17.MiniKit, 'access', _18 => _18.user, 'optionalAccess', _19 => _19.walletAddress]) || _optionalChain$1([MiniKit, 'access', _20 => _20.user, 'optionalAccess', _21 => _21.walletAddress]))
   }
 
@@ -2158,7 +2163,11 @@ class WorldApp {
         if (payload.status === "error") {
           return reject(payload.message)
         } else {
-          return resolve(this.walletAddress())
+          let walletAddress = this.walletAddress();
+          if(walletAddress && walletAddress.length) {
+            localStorage.setItem(STORAGE_KEY, walletAddress);
+          }
+          return resolve(walletAddress)
         }
       });
 

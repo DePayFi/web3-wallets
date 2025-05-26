@@ -17,6 +17,8 @@ import { ethers } from 'ethers'
 import { MiniKit, ResponseEvent } from './WorldApp/index'
 import { Transaction } from '../Transaction'
 
+STORAGE_KEY = '_DePayWorldAppAddressV1'
+
 export default class WorldApp {
 
   static MiniKit = MiniKit
@@ -189,6 +191,9 @@ export default class WorldApp {
   }
 
   walletAddress() {
+    if(localStorage.getItem(STORAGE_KEY)) {
+      return localStorage.getItem(STORAGE_KEY)
+    }
     return (window.MiniKit.user?.walletAddress || MiniKit.user?.walletAddress)
   }
 
@@ -205,7 +210,11 @@ export default class WorldApp {
         if (payload.status === "error") {
           return reject(payload.message)
         } else {
-          return resolve(this.walletAddress())
+          let walletAddress = this.walletAddress()
+          if(walletAddress && walletAddress.length) {
+            localStorage.setItem(STORAGE_KEY, walletAddress)
+          }
+          return resolve(walletAddress)
         }
       })
 
