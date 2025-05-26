@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-wallets-svm",
   "moduleName": "Web3Wallets",
-  "version": "18.1.5",
+  "version": "18.1.6",
   "description": "One-Stop-Shop JavaScript library to integrate various web3 crypto wallets and multiple blockchains at once with a single interface.",
   "main": "dist/umd/index.svm.js",
   "module": "dist/esm/index.svm.js",

@@ -17,7 +17,7 @@ import { ethers } from 'ethers'
 import { MiniKit, ResponseEvent } from './WorldApp/index'
 import { Transaction } from '../Transaction'
 
-STORAGE_KEY = '_DePayWorldAppAddressV1'
+const STORAGE_KEY = '_DePayWorldAppAddressV1'
 
 export default class WorldApp {
 
