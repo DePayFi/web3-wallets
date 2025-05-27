@@ -2008,7 +2008,9 @@
         transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString();
         transaction.fromBlock = await web3ClientEvm.request('worldchain://latestBlockNumber');
 
-        MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
+        MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload, finalPayload)=> {
+          console.log('payload', payload);
+          console.log('finalPayload', finalPayload);
           MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction);
           if (payload.status == "success") {
             if (transaction.accepted) { transaction.accepted(); }
