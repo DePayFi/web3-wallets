@@ -2010,7 +2010,6 @@
 
         MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload, finalPayload)=> {
           console.log('payload', payload);
-          console.log('finalPayload', finalPayload);
           MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction);
           if (payload.status == "success") {
             if (transaction.accepted) { transaction.accepted(); }
@@ -2025,7 +2024,7 @@
             reject('Submitting transaction failed!');
           }
         });
-        MiniKit.commands.sendTransaction({
+        console.log('sendTransaction', {
           transaction: [
             {
               address: transaction.to,
@@ -2035,6 +2034,17 @@
             },
           ],
           permit2: [_optionalChain$1([transaction, 'access', _13 => _13.params, 'optionalAccess', _14 => _14.permit2])]
+        });
+        MiniKit.commands.sendTransaction({
+          transaction: [
+            {
+              address: transaction.to,
+              abi: _optionalChain$1([transaction, 'access', _15 => _15.api, 'optionalAccess', _16 => _16.filter, 'call', _17 => _17((fragment)=>fragment.name === transaction.method && _optionalChain$1([fragment, 'optionalAccess', _18 => _18.inputs, 'optionalAccess', _19 => _19.length]) ===  _optionalChain$1([transaction, 'access', _20 => _20.params, 'optionalAccess', _21 => _21.args, 'optionalAccess', _22 => _22.length]))]),
+              functionName: transaction.method,
+              args: _optionalChain$1([transaction, 'access', _23 => _23.params, 'optionalAccess', _24 => _24.args])
+            },
+          ],
+          permit2: [_optionalChain$1([transaction, 'access', _25 => _25.params, 'optionalAccess', _26 => _26.permit2])]
         });
       })
     }
@@ -2056,8 +2066,8 @@
         }).then((response)=>{
           if(response.ok) {
             response.json().then((transactionJSON)=>{
-              if(_optionalChain$1([transactionJSON, 'optionalAccess', _15 => _15.external_id])) {
-                resolve(_optionalChain$1([transactionJSON, 'optionalAccess', _16 => _16.external_id]));
+              if(_optionalChain$1([transactionJSON, 'optionalAccess', _27 => _27.external_id])) {
+                resolve(_optionalChain$1([transactionJSON, 'optionalAccess', _28 => _28.external_id]));
               } else {
                 resolve();
               }
@@ -2153,7 +2163,7 @@
       if(localStorage.getItem(STORAGE_KEY)) {
         return localStorage.getItem(STORAGE_KEY)
       }
-      return (_optionalChain$1([window, 'access', _17 => _17.MiniKit, 'access', _18 => _18.user, 'optionalAccess', _19 => _19.walletAddress]) || _optionalChain$1([MiniKit, 'access', _20 => _20.user, 'optionalAccess', _21 => _21.walletAddress]))
+      return (_optionalChain$1([window, 'access', _29 => _29.MiniKit, 'access', _30 => _30.user, 'optionalAccess', _31 => _31.walletAddress]) || _optionalChain$1([MiniKit, 'access', _32 => _32.user, 'optionalAccess', _33 => _33.walletAddress]))
     }
 
     connect() {

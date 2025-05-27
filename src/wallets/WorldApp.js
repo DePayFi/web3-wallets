@@ -53,7 +53,6 @@ export default class WorldApp {
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload, finalPayload)=> {
         console.log('payload', payload)
-        console.log('finalPayload', finalPayload)
         MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction)
         if (payload.status == "success") {
           if (transaction.accepted) { transaction.accepted() }
@@ -67,6 +66,17 @@ export default class WorldApp {
         } else {
           reject('Submitting transaction failed!')
         }
+      })
+      console.log('sendTransaction', {
+        transaction: [
+          {
+            address: transaction.to,
+            abi: transaction.api?.filter((fragment)=>fragment.name === transaction.method && fragment?.inputs?.length ===  transaction.params?.args?.length),
+            functionName: transaction.method,
+            args: transaction.params?.args
+          },
+        ],
+        permit2: [transaction.params?.permit2]
       })
       MiniKit.commands.sendTransaction({
         transaction: [
