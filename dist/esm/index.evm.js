@@ -169,6 +169,7 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
       transaction.nonce = sentTransaction.nonce || transactionCount;
       transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction });
       if (transaction.sent) transaction.sent(transaction);
+      
       retrieveConfirmedTransaction$2(sentTransaction).then(() => {
         transaction._succeeded = true;
         if (transaction.succeeded) transaction.succeeded(transaction);
@@ -183,7 +184,7 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
             if (transaction.succeeded) transaction.succeeded(transaction);
           } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
             transaction._failed = true;
-            if(transaction.failed) transaction.failed(transaction, error);  
+            if(transaction.failed) transaction.failed(transaction, error);
           }
         } else {
           transaction._failed = true;
@@ -198,9 +199,11 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
 };
 
 const retrieveConfirmedTransaction$2 = (sentTransaction)=>{
+  console.log('retrieveConfirmedTransaction', sentTransaction);
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
+        console.log('error', error);
         if(
           (error && _optionalChain$p([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
           (error && error.toString().match('undefined'))
@@ -215,6 +218,7 @@ const retrieveConfirmedTransaction$2 = (sentTransaction)=>{
         }
       });
     } catch(error) {
+      console.log('ERROR', error);
       if(
         (error && _optionalChain$p([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
         (error && error.toString().match('undefined'))

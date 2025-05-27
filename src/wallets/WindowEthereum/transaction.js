@@ -35,6 +35,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
       transaction.nonce = sentTransaction.nonce || transactionCount
       transaction.url = Blockchains.findByName(transaction.blockchain).explorerUrlFor({ transaction })
       if (transaction.sent) transaction.sent(transaction)
+      
       retrieveConfirmedTransaction(sentTransaction).then(() => {
         transaction._succeeded = true
         if (transaction.succeeded) transaction.succeeded(transaction)
@@ -49,7 +50,7 @@ const sendTransaction = async ({ transaction, wallet })=> {
             if (transaction.succeeded) transaction.succeeded(transaction)
           } else if(error.replacement && error.replacement.hash && error.receipt && error.receipt.status == 0) {
             transaction._failed = true
-            if(transaction.failed) transaction.failed(transaction, error)  
+            if(transaction.failed) transaction.failed(transaction, error)
           }
         } else {
           transaction._failed = true
@@ -64,9 +65,11 @@ const sendTransaction = async ({ transaction, wallet })=> {
 }
 
 const retrieveConfirmedTransaction = (sentTransaction)=>{
+  console.log('retrieveConfirmedTransaction', sentTransaction)
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
+        console.log('error', error)
         if(
           (error && error?.stack?.match('JSON-RPC error')) ||
           (error && error.toString().match('undefined'))
@@ -81,6 +84,7 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch(error) {
+      console.log('ERROR', error)
       if(
         (error && error?.stack?.match('JSON-RPC error')) ||
         (error && error.toString().match('undefined'))
