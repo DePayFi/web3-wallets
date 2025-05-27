@@ -199,11 +199,9 @@ const sendTransaction$2 = async ({ transaction, wallet })=> {
 };
 
 const retrieveConfirmedTransaction$2 = (sentTransaction)=>{
-  console.log('retrieveConfirmedTransaction', sentTransaction);
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        console.log('error', error);
         if(
           (error && _optionalChain$p([error, 'optionalAccess', _ => _.stack, 'optionalAccess', _2 => _2.match, 'call', _3 => _3('JSON-RPC error')])) ||
           (error && error.toString().match('undefined'))
@@ -218,7 +216,6 @@ const retrieveConfirmedTransaction$2 = (sentTransaction)=>{
         }
       });
     } catch(error) {
-      console.log('ERROR', error);
       if(
         (error && _optionalChain$p([error, 'optionalAccess', _4 => _4.stack, 'optionalAccess', _5 => _5.match, 'call', _6 => _6('JSON-RPC error')])) ||
         (error && error.toString().match('undefined'))
@@ -2008,8 +2005,7 @@ class WorldApp {
       transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString();
       transaction.fromBlock = await request('worldchain://latestBlockNumber');
 
-      MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload, finalPayload)=> {
-        console.log('payload', payload);
+      MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
         MiniKit.unsubscribe(ResponseEvent.MiniAppSendTransaction);
         if (payload.status == "success") {
           if (transaction.accepted) { transaction.accepted(); }
@@ -2024,7 +2020,7 @@ class WorldApp {
           reject('Submitting transaction failed!');
         }
       });
-      console.log('sendTransaction', {
+      MiniKit.commands.sendTransaction({
         transaction: [
           {
             address: transaction.to,
@@ -2034,17 +2030,6 @@ class WorldApp {
           },
         ],
         permit2: [_optionalChain$1([transaction, 'access', _13 => _13.params, 'optionalAccess', _14 => _14.permit2])]
-      });
-      MiniKit.commands.sendTransaction({
-        transaction: [
-          {
-            address: transaction.to,
-            abi: _optionalChain$1([transaction, 'access', _15 => _15.api, 'optionalAccess', _16 => _16.filter, 'call', _17 => _17((fragment)=>fragment.name === transaction.method && _optionalChain$1([fragment, 'optionalAccess', _18 => _18.inputs, 'optionalAccess', _19 => _19.length]) ===  _optionalChain$1([transaction, 'access', _20 => _20.params, 'optionalAccess', _21 => _21.args, 'optionalAccess', _22 => _22.length]))]),
-            functionName: transaction.method,
-            args: _optionalChain$1([transaction, 'access', _23 => _23.params, 'optionalAccess', _24 => _24.args])
-          },
-        ],
-        permit2: [_optionalChain$1([transaction, 'access', _25 => _25.params, 'optionalAccess', _26 => _26.permit2])]
       });
     })
   }
@@ -2066,8 +2051,8 @@ class WorldApp {
       }).then((response)=>{
         if(response.ok) {
           response.json().then((transactionJSON)=>{
-            if(_optionalChain$1([transactionJSON, 'optionalAccess', _27 => _27.external_id])) {
-              resolve(_optionalChain$1([transactionJSON, 'optionalAccess', _28 => _28.external_id]));
+            if(_optionalChain$1([transactionJSON, 'optionalAccess', _15 => _15.external_id])) {
+              resolve(_optionalChain$1([transactionJSON, 'optionalAccess', _16 => _16.external_id]));
             } else {
               resolve();
             }
@@ -2163,7 +2148,7 @@ class WorldApp {
     if(localStorage.getItem(STORAGE_KEY)) {
       return localStorage.getItem(STORAGE_KEY)
     }
-    return (_optionalChain$1([window, 'access', _29 => _29.MiniKit, 'access', _30 => _30.user, 'optionalAccess', _31 => _31.walletAddress]) || _optionalChain$1([MiniKit, 'access', _32 => _32.user, 'optionalAccess', _33 => _33.walletAddress]))
+    return (_optionalChain$1([window, 'access', _17 => _17.MiniKit, 'access', _18 => _18.user, 'optionalAccess', _19 => _19.walletAddress]) || _optionalChain$1([MiniKit, 'access', _20 => _20.user, 'optionalAccess', _21 => _21.walletAddress]))
   }
 
   connect() {

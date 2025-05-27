@@ -65,11 +65,9 @@ const sendTransaction = async ({ transaction, wallet })=> {
 }
 
 const retrieveConfirmedTransaction = (sentTransaction)=>{
-  console.log('retrieveConfirmedTransaction', sentTransaction)
   return new Promise((resolve, reject)=>{
     try {
       sentTransaction.wait(1).then(resolve).catch((error)=>{
-        console.log('error', error)
         if(
           (error && error?.stack?.match('JSON-RPC error')) ||
           (error && error.toString().match('undefined'))
@@ -84,7 +82,6 @@ const retrieveConfirmedTransaction = (sentTransaction)=>{
         }
       })
     } catch(error) {
-      console.log('ERROR', error)
       if(
         (error && error?.stack?.match('JSON-RPC error')) ||
         (error && error.toString().match('undefined'))
