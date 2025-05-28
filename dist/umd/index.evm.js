@@ -2006,7 +2006,6 @@
 
       return new Promise(async(resolve, reject)=>{
         await transaction.prepare({ wallet: this });
-        transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString();
         transaction.fromBlock = await web3ClientEvm.request('worldchain://latestBlockNumber');
 
         MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {

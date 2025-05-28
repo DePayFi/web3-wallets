@@ -48,7 +48,6 @@ export default class WorldApp {
 
     return new Promise(async(resolve, reject)=>{
       await transaction.prepare({ wallet: this })
-      transaction.nonce = (await this.transactionCount({ blockchain: 'worldchain', address: transaction.from })).toString()
       transaction.fromBlock = await request('worldchain://latestBlockNumber')
 
       MiniKit.subscribe(ResponseEvent.MiniAppSendTransaction, (payload)=> {
