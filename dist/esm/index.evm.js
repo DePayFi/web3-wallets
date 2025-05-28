@@ -2103,11 +2103,10 @@ class WorldApp {
   fetchTransaction(transaction, payload, attempt = 1) {
     return new Promise((resolve, reject)=>{
 
-      Promise.all([
+      Promise.race([
         this.pollTransactionIdFromWorldchain(payload),
         this.pollEventForUserOp(transaction, payload),
-      ]).then((results)=>{
-        let transactionHash = results ? results.filter(Boolean)[0] : undefined;
+      ]).then((transactionHash)=>{
         if(transactionHash) {
           transaction.id = transactionHash;
           transaction.url = Blockchains['worldchain'].explorerUrlFor({ transaction });
