@@ -2151,7 +2151,12 @@
       if(localStorage.getItem(STORAGE_KEY)) {
         return localStorage.getItem(STORAGE_KEY)
       }
-      return (_optionalChain$1([window, 'optionalAccess', _17 => _17.MiniKit, 'optionalAccess', _18 => _18.user, 'optionalAccess', _19 => _19.walletAddress]) || _optionalChain$1([MiniKit, 'optionalAccess', _20 => _20.user, 'optionalAccess', _21 => _21.walletAddress]))
+      if(window.MiniKit && window.MiniKit.user) {
+        return window.MiniKit.user.walletAddress
+      }
+      if(MiniKit && MiniKit.user) {
+        return MiniKit.user.walletAddress
+      }
     }
 
     connect() {
