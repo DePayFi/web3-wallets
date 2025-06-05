@@ -193,7 +193,7 @@ export default class WorldApp {
     if(localStorage.getItem(STORAGE_KEY)) {
       return localStorage.getItem(STORAGE_KEY)
     }
-    return (window.MiniKit.user?.walletAddress || MiniKit.user?.walletAddress)
+    return (window?.MiniKit?.user?.walletAddress || MiniKit?.user?.walletAddress)
   }
 
   connect() {
