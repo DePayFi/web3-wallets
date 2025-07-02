@@ -2613,11 +2613,11 @@ class WorldApp {
             if(transactionHash) {
               resolve(transaction);
             } else {
-              reject('Fetching transaction failed!');
+              reject('Fetching transaction failed!', payload);
             }
           }).catch(reject);
         } else {
-          reject('Submitting transaction failed!');
+          reject('Submitting transaction failed!', payload);
         }
       });
       MiniKit.commands.sendTransaction({
