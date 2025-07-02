@@ -58,11 +58,13 @@ export default class WorldApp {
             if(transactionHash) {
               resolve(transaction)
             } else {
-              reject('Fetching transaction failed!', payload)
+              console.error(payload)
+              reject('Fetching transaction failed!')
             }
           }).catch(reject)
         } else {
-          reject('Submitting transaction failed!', payload)
+          console.error(payload)
+          reject('Submitting transaction failed!')
         }
       })
       MiniKit.commands.sendTransaction({
