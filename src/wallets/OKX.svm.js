@@ -5,7 +5,7 @@ import { supported } from '../blockchains'
 export default class OKXSVM extends WindowSolana {
 
   static info = {
-    name: 'OKX',
+    name: 'OKX Wallet',
     logo: logos.okx,
     blockchains: ['solana'],
     platform: 'svm',

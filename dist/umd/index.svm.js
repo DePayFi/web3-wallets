@@ -536,7 +536,7 @@
   class OKXSVM extends WindowSolana {
 
     static __initStatic() {this.info = {
-      name: 'OKX',
+      name: 'OKX Wallet',
       logo: logos.okx,
       blockchains: ['solana'],
       platform: 'svm',

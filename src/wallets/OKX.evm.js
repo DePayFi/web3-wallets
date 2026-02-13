@@ -5,7 +5,7 @@ import { supported } from '../blockchains'
 export default class OKXEVM extends WindowEthereum {
 
   static info = {
-    name: 'OKX',
+    name: 'OKX Wallet',
     logo: logos.okx,
     blockchains: supported.evm,
     platform: 'evm',

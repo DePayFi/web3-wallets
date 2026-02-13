@@ -1003,7 +1003,7 @@ function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[
 class OKXEVM extends WindowEthereum {
 
   static __initStatic() {this.info = {
-    name: 'OKX',
+    name: 'OKX Wallet',
     logo: logos.okx,
     blockchains: supported$1.evm,
     platform: 'evm',
@@ -1020,7 +1020,7 @@ function _optionalChain$i(ops) { let lastAccessLHS = undefined; let value = ops[
 class OKXSVM extends WindowSolana {
 
   static __initStatic() {this.info = {
-    name: 'OKX',
+    name: 'OKX Wallet',
     logo: logos.okx,
     blockchains: ['solana'],
     platform: 'svm',

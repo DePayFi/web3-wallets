@@ -637,7 +637,7 @@
   class OKXEVM extends WindowEthereum {
 
     static __initStatic() {this.info = {
-      name: 'OKX',
+      name: 'OKX Wallet',
       logo: logos.okx,
       blockchains: supported$1.evm,
       platform: 'evm',
