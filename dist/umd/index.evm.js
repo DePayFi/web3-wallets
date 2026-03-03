@@ -439,7 +439,7 @@
         }
         let signature = await provider.request({
           method: 'eth_signTypedData_v4',
-          params: [account, message],
+          params: [account, JSON.stringify(message)],
           from: account,
         });
         return signature
@@ -1612,7 +1612,7 @@
         let account = await this.account();
         let signature = await provider.request({
           method: 'eth_signTypedData_v4',
-          params: [account, message],
+          params: [account, JSON.stringify(message)],
           from: account,
         });
         return signature
