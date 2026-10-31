@@ -1676,7 +1676,6 @@
     methods: [
       "eth_sendTransaction",
       "personal_sign",
-      "eth_signTypedData",
       "eth_signTypedData_v4",
     ]
   };
